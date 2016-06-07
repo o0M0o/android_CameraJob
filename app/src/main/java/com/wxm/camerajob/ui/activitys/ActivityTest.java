@@ -19,6 +19,7 @@ public class ActivityTest extends AppCompatActivity {
     private Button mBtActiveFrontCamear;
     private Button mBtActiveBackCamear;
     private Button mBtTakePhoto;
+    private Button mBtCameraClose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +35,22 @@ public class ActivityTest extends AppCompatActivity {
         mBtActiveFrontCamear = (Button)findViewById(R.id.acbt_test_frontcamera_active);
         mBtActiveBackCamear = (Button)findViewById(R.id.acbt_test_backcamera_active);
         mBtTakePhoto = (Button)findViewById(R.id.acbt_test_takephoto);
+        mBtCameraClose = (Button)findViewById(R.id.acbt_test_camera_close);
 
-        activeTakePhoto(false);
+        activeButton(mBtTakePhoto, false);
+        activeButton(mBtCameraClose, false);
+        mBtActiveFrontCamear.setTextColor(Color.GRAY);
+        mBtActiveBackCamear.setTextColor(Color.GRAY);
 
         mBtActiveFrontCamear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCamearFrag.ActiveFrontCamera();
+                activeButton(mBtCameraClose, true);
+                activeButton(mBtTakePhoto, true);
+
+                mBtActiveFrontCamear.setTextColor(Color.BLACK);
+                mBtActiveBackCamear.setTextColor(Color.GRAY);
             }
         });
 
@@ -48,6 +58,30 @@ public class ActivityTest extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCamearFrag.ActiveBackCamera();
+                activeButton(mBtCameraClose, true);
+                activeButton(mBtTakePhoto, true);
+
+                mBtActiveFrontCamear.setTextColor(Color.GRAY);
+                mBtActiveBackCamear.setTextColor(Color.BLACK);
+            }
+        });
+
+        mBtCameraClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamearFrag.CloseCamera();
+                activeButton(mBtTakePhoto, false);
+
+                mBtActiveFrontCamear.setTextColor(Color.GRAY);
+                mBtActiveBackCamear.setTextColor(Color.GRAY);
+                mBtCameraClose.setTextColor(Color.GRAY);
+            }
+        });
+
+        mBtTakePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamearFrag.TakePhoto();
             }
         });
     }
@@ -67,15 +101,16 @@ public class ActivityTest extends AppCompatActivity {
     }
 
     /**
-     * 修改是否能"take photo"
-     * @param active 如果为true则可以执行"take photo"操作
+     * 设置button的有效状态
+     * @param bt        待设定的button
+     * @param active    如果为true则button可以使用
      */
-    private void activeTakePhoto(boolean active)  {
-        mBtTakePhoto.setClickable(active);
+    private void activeButton(Button bt, boolean active)    {
+        bt.setClickable(active);
 
         if(!active)
-            mBtTakePhoto.setTextColor(Color.GRAY);
+            bt.setTextColor(Color.GRAY);
         else
-            mBtTakePhoto.setTextColor(Color.BLACK);
+            bt.setTextColor(Color.BLACK);
     }
 }

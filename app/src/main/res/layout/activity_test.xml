@@ -15,9 +15,11 @@
         android:layout_height="wrap_content"
         android:text="激活前置相机"
         android:id="@+id/acbt_test_frontcamera_active"
-        android:layout_alignTop="@+id/acbt_test_backcamera_active"
+        android:layout_marginRight="6dp"
+        android:textSize="12dp"
+        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/acbt_test_backcamera_active"
-        android:layout_marginRight="10dp" />
+        android:layout_alignParentStart="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -26,7 +28,8 @@
         android:text="拍照"
         android:id="@+id/acbt_test_takephoto"
         android:layout_alignTop="@+id/acbt_test_backcamera_active"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textSize="12dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -34,10 +37,10 @@
         android:layout_height="wrap_content"
         android:text="激活后置相机"
         android:id="@+id/acbt_test_backcamera_active"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/acbt_test_takephoto"
-        android:layout_toLeftOf="@+id/acbt_test_takephoto"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="6dp"
+        android:textSize="12dp"
+        android:layout_above="@+id/acfl_test_camera_preview"
+        android:layout_toStartOf="@+id/acbt_test_camera_close" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -47,4 +50,16 @@
         android:layout_marginTop="20dp"
         android:background="@color/highlighted_text_material_dark"
         android:id="@+id/acfl_test_camera_preview"></FrameLayout>
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="关闭相机"
+        android:id="@+id/acbt_test_camera_close"
+        android:textSize="12dp"
+        android:layout_marginRight="6dp"
+        android:layout_alignTop="@+id/acbt_test_takephoto"
+        android:layout_toStartOf="@+id/acbt_test_takephoto"
+        android:layout_toLeftOf="@+id/acbt_test_takephoto" />
 </RelativeLayout>
