@@ -1,12 +1,10 @@
 package com.wxm.camerajob.ui.activitys;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +12,7 @@ import android.widget.Button;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.ui.fragment.CameraFragment;
 
-public class ActivityTest extends AppCompatActivity {
+public class ActivityTest extends Activity {
     private CameraFragment mCamearFrag = CameraFragment.newInstance();
     private Button mBtActiveFrontCamear;
     private Button mBtActiveBackCamear;
@@ -27,7 +25,7 @@ public class ActivityTest extends AppCompatActivity {
         setContentView(R.layout.activity_test);
 
         if(null == savedInstanceState)  {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.acfl_test_camera_preview, mCamearFrag);
             transaction.commit();
         }
