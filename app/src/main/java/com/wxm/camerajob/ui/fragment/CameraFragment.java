@@ -236,7 +236,8 @@ public class CameraFragment
                     mCaptureSession = session;
                     try {
                         // Auto focus should be continuous for camera preview.
-                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                        mPreviewRequestBuilder.set(
+                                CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         // Flash is automatically enabled when necessary.
                         setAutoFlash(mPreviewRequestBuilder);
@@ -356,7 +357,10 @@ public class CameraFragment
     public boolean ActiveFrontCamera() {
         boolean ret = false;
         if((null != mTextureView) && (mTextureView.isAvailable()))  {
-            openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+            closeCamera();
+
+            openCamera(CameraCharacteristics.LENS_FACING_FRONT,
+                    mTextureView.getWidth(), mTextureView.getHeight());
             ret = true;
         }
 
@@ -370,7 +374,10 @@ public class CameraFragment
     public boolean ActiveBackCamera() {
         boolean ret = false;
         if((null != mTextureView) && (mTextureView.isAvailable()))  {
-            openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+            closeCamera();
+
+            openCamera(CameraCharacteristics.LENS_FACING_BACK,
+                    mTextureView.getWidth(), mTextureView.getHeight());
             ret = true;
         }
 
@@ -475,7 +482,19 @@ public class CameraFragment
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
         if (mTextureView.isAvailable()) {
-            openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+            Activity activity = getActivity();
+            CameraManager manager =
+                    (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+            try {
+                CameraCharacteristics characteristics
+                        = manager.getCameraCharacteristics(mCameraId);
+
+                Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                openCamera(facing, mTextureView.getWidth(), mTextureView.getHeight());
+            }
+            catch(CameraAccessException e)  {
+                e.printStackTrace();
+            }
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
@@ -516,10 +535,11 @@ public class CameraFragment
     /**
      * Sets up member variables related to camera.
      *
+     * @param face   facing lens or backing lens
      * @param width  The width of available size for camera preview
      * @param height The height of available size for camera preview
      */
-    private void setUpCameraOutputs(int width, int height) {
+    private void setUpCameraOutputs(int face, int width, int height) {
         Activity activity = getActivity();
         CameraManager manager =
                 (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
@@ -528,11 +548,15 @@ public class CameraFragment
                 CameraCharacteristics characteristics
                         = manager.getCameraCharacteristics(cameraId);
 
-                // We don't use a front facing camera in this sample.
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                /*
+                // We don't use a front facing camera in this sample.
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
                     continue;
                 }
+                */
+                if((null != facing) && (face != facing))
+                    continue;
 
                 StreamConfigurationMap map = characteristics.get(
                         CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -631,13 +655,13 @@ public class CameraFragment
     /**
      * Opens the camera specified by
      */
-    private void openCamera(int width, int height) {
+    private void openCamera(int face, int width, int height) {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
             return;
         }
-        setUpCameraOutputs(width, height);
+        setUpCameraOutputs(face, width, height);
         configureTransform(width, height);
 
         CameraManager manager =
@@ -817,12 +841,6 @@ public class CameraFragment
                 return;
             }
             // This is the CaptureRequest.Builder that we use to take a picture.
-
-/*            mImageReader = ImageReader.newInstance(mLargestSize.getWidth(), mLargestSize.getHeight(),
-                    ImageFormat.JPEG, *//*maxImages*//*2);
-            mImageReader.setOnImageAvailableListener(
-                    mOnImageAvailableListener, mBackgroundHandler);*/
-
             final CaptureRequest.Builder captureBuilder =
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(mImageReader.getSurface());
@@ -849,7 +867,7 @@ public class CameraFragment
                 }
             };
 
-            //mCaptureSession.stopRepeating();
+            mCaptureSession.stopRepeating();
             mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
