@@ -24,17 +24,19 @@ import java.util.LinkedList;
 public class CameraJobService extends JobService {
     private static final String TAG = "CameraJobService";
     private final LinkedList<JobParameters> jobParamsMap = new LinkedList<>();
+    private Context mCurContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG, "JobService created");
+        //Log.i(TAG, "JobService created");
+        mCurContext = ContextUtil.getInstance();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "JobService destroyed");
+        //Log.i(TAG, "JobService destroyed");
     }
 
     /**
@@ -63,7 +65,7 @@ public class CameraJobService extends JobService {
         // do is track which jobs have landed on our service, and
         // update the UI accordingly.
         jobParamsMap.add(params);
-        Log.i(TAG, "on start job: " + params.getJobId());
+        Log.i(TAG, "on start job: " + params.getJobId() + ", context : " + mCurContext);
         return false;
     }
 

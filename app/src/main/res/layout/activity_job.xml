@@ -13,8 +13,79 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="周期"
+        android:text="任务名 : "
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/abc_input_method_navigation_guard"
+        android:textSize="20dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/acet_job_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/textView"
+        android:layout_marginLeft="46dp"
+        android:layout_toLeftOf="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="任务类型 : "
+        android:id="@+id/textView2"
+        android:textColor="@color/abc_input_method_navigation_guard"
+        android:textSize="20dp"
+        android:layout_below="@+id/acet_job_name"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="12dp" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/acsp_job_type"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignStart="@+id/acet_job_name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="触发时间点 : "
+        android:id="@+id/textView3"
+        android:textColor="@color/abc_input_method_navigation_guard"
+        android:textSize="20dp"
+        android:layout_below="@+id/acsp_job_type"
         android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/acsp_job_point"
+        android:layout_alignBaseline="@+id/textView3"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_alignStart="@+id/acsp_job_type" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="保存"
+        android:id="@+id/acbt_job_save"
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/acsp_job_point"
+        android:textSize="18dp" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="取消"
+        android:id="@+id/acbt_job_giveup"
+        android:layout_below="@+id/acbt_job_save"
+        android:layout_alignEnd="@+id/acbt_job_save"
+        android:layout_marginTop="12dp"
+        android:textSize="18dp" />
 </RelativeLayout>
