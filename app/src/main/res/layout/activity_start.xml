@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ui.activitys.ActivityStart">
+    tools:context=".ui.activitys.ActivityStart"
+    android:id="@+id/acbt_start_testjob">
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,7 +20,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="test camera"
-        android:id="@+id/bt_totest"
+        android:id="@+id/acbt_start_testcamera"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST JOB"
+        android:id="@+id/acbt_start_testjob"
+        android:layout_below="@+id/acbt_start_testcamera"
+        android:layout_alignEnd="@+id/acbt_start_testcamera"
+        android:layout_marginTop="20dp"
+        android:layout_alignStart="@+id/acbt_start_testcamera" />
 </RelativeLayout>
