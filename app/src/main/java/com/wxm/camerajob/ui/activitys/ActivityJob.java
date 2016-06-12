@@ -1,5 +1,6 @@
 package com.wxm.camerajob.ui.activitys;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -27,7 +28,7 @@ public class ActivityJob
     private Button              mBtGiveup;
     private EditText            mEtJobName;
 
-    private ArrayAdapter<CharSequence>  mAPJobType;
+    private ArrayAdapter<CharSequence> mAPJobType;
     private ArrayAdapter<CharSequence>  mAPJobPoint;
     private Spinner                     mSPJobType;
     private Spinner                     mSPJobPoint;
@@ -42,6 +43,8 @@ public class ActivityJob
         mBtSave = (Button)findViewById(R.id.acbt_job_save);
         mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
         mEtJobName = (EditText)findViewById(R.id.acet_job_name);
+        mBtSave.setOnClickListener(this);
+        mBtGiveup.setOnClickListener(this);
 
         mSPJobType = (Spinner)findViewById(R.id.acsp_job_type);
         mSPJobPoint = (Spinner)findViewById(R.id.acsp_job_point);
@@ -57,30 +60,49 @@ public class ActivityJob
         mAPJobPoint.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         mSPJobPoint.setAdapter(mAPJobPoint);
 
+        mAPJobPoint = ArrayAdapter.createFromResource(this,
+                R.array.hourly_invoke, R.layout.spinner_jobpoint);
+        mAPJobPoint.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        mSPJobPoint.setAdapter(mAPJobPoint);
 
+        final Activity home = this;
         mSPJobType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Resources res = getResources();
                 String selitem = mAPJobType.getItem(position).toString();
-                mAPJobPoint.clear();
 
                 try {
+                    boolean modify = false;
                     switch (selitem) {
                         case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                            mAPJobPoint.addAll(res.getStringArray(R.array.minutely_invoke));
+                            //mAPJobPoint.addAll(res.getStringArray(R.array.minutely_invoke));
+                            mAPJobPoint = ArrayAdapter.createFromResource(home,
+                                    R.array.minutely_invoke, R.layout.spinner_jobpoint);
+                            modify = true;
                         }
                         break;
 
                         case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                            mAPJobPoint.addAll(res.getStringArray(R.array.hourly_invoke));
+                            //mAPJobPoint.addAll(res.getStringArray(R.array.hourly_invoke));
+                            mAPJobPoint = ArrayAdapter.createFromResource(home,
+                                    R.array.hourly_invoke, R.layout.spinner_jobpoint);
+                            modify = true;
                         }
                         break;
 
                         case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                            mAPJobPoint.addAll(res.getStringArray(R.array.daily_invoke));
+                            //mAPJobPoint.addAll(res.getStringArray(R.array.daily_invoke));
+                            mAPJobPoint = ArrayAdapter.createFromResource(home,
+                                    R.array.daily_invoke, R.layout.spinner_jobpoint);
+                            modify = true;
                         }
                         break;
+                    }
+
+                    if(modify) {
+                        mSPJobPoint.setAdapter(mAPJobPoint);
+                        mAPJobPoint.notifyDataSetChanged();
                     }
                 }
                 catch (Resources.NotFoundException e)   {
@@ -103,10 +125,12 @@ public class ActivityJob
         switch (vid)    {
             case R.id.acbt_job_save :
                 do_save();
+                finish();
                 break;
 
             case R.id.acbt_job_giveup:
                 do_giveup();
+                finish();
                 break;
         }
     }
