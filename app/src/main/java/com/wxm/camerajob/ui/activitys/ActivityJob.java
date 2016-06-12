@@ -124,8 +124,8 @@ public class ActivityJob
         int vid = v.getId();
         switch (vid)    {
             case R.id.acbt_job_save :
-                do_save();
-                finish();
+                if(do_save())
+                    finish();
                 break;
 
             case R.id.acbt_job_giveup:
@@ -149,7 +149,7 @@ public class ActivityJob
             mEtJobName.requestFocus();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("请输入人物名!").setTitle("警告");
+            builder.setMessage("请输入任务名!").setTitle("警告");
             AlertDialog dlg = builder.create();
             dlg.show();
             return false;

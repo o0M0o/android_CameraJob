@@ -77,8 +77,10 @@
         android:text="保存"
         android:id="@+id/acbt_job_save"
         android:layout_centerVertical="true"
-        android:layout_alignEnd="@+id/acsp_job_point"
-        android:textSize="18dp" />
+        android:textSize="18dp"
+        android:layout_below="@+id/acet_end_date"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -90,4 +92,29 @@
         android:layout_alignEnd="@+id/acbt_job_save"
         android:layout_marginTop="12dp"
         android:textSize="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="结束时间 : "
+        android:id="@+id/textView4"
+        android:textColor="@color/abc_input_method_navigation_guard"
+        android:textSize="20dp"
+        android:layout_below="@+id/acsp_job_point"
+        android:layout_toStartOf="@+id/acsp_job_point"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:ems="10"
+        android:id="@+id/acet_end_date"
+        android:layout_below="@+id/acsp_job_point"
+        android:layout_alignEnd="@+id/acsp_job_point"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@+id/textView4"
+        android:layout_alignStart="@id/acsp_job_point" />
 </RelativeLayout>
