@@ -69,14 +69,12 @@ public class ActivityJob
         mSPJobType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Resources res = getResources();
                 String selitem = mAPJobType.getItem(position).toString();
 
                 try {
                     boolean modify = false;
                     switch (selitem) {
                         case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                            //mAPJobPoint.addAll(res.getStringArray(R.array.minutely_invoke));
                             mAPJobPoint = ArrayAdapter.createFromResource(home,
                                     R.array.minutely_invoke, R.layout.spinner_jobpoint);
                             modify = true;
@@ -84,7 +82,6 @@ public class ActivityJob
                         break;
 
                         case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                            //mAPJobPoint.addAll(res.getStringArray(R.array.hourly_invoke));
                             mAPJobPoint = ArrayAdapter.createFromResource(home,
                                     R.array.hourly_invoke, R.layout.spinner_jobpoint);
                             modify = true;
@@ -92,7 +89,6 @@ public class ActivityJob
                         break;
 
                         case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                            //mAPJobPoint.addAll(res.getStringArray(R.array.daily_invoke));
                             mAPJobPoint = ArrayAdapter.createFromResource(home,
                                     R.array.daily_invoke, R.layout.spinner_jobpoint);
                             modify = true;
