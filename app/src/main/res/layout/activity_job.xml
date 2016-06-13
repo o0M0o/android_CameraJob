@@ -78,7 +78,7 @@
         android:id="@+id/acbt_job_save"
         android:layout_centerVertical="true"
         android:textSize="18dp"
-        android:layout_below="@+id/acet_end_date"
+        android:layout_below="@+id/acet_job_enddate"
         android:layout_marginTop="20dp"
         android:layout_alignParentRight="true" />
 
@@ -111,7 +111,7 @@
         android:layout_height="wrap_content"
         android:inputType="date"
         android:ems="10"
-        android:id="@+id/acet_end_date"
+        android:id="@+id/acet_job_enddate"
         android:layout_below="@+id/acsp_job_point"
         android:layout_alignEnd="@+id/acsp_job_point"
         android:layout_marginTop="20dp"

@@ -6,14 +6,9 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.wxm.camerajob.base.ContextUtil;
-import com.wxm.camerajob.base.GlobalDef;
-import com.wxm.camerajob.ui.activitys.ActivityStart;
 
 import java.util.LinkedList;
 
@@ -65,7 +60,7 @@ public class CameraJobService extends JobService {
         // do is track which jobs have landed on our service, and
         // update the UI accordingly.
         jobParamsMap.add(params);
-        Log.i(TAG, "on start job: " + params.getJobId() + ", context : " + mCurContext);
+        //Log.i(TAG, "on start job: " + params.getJobId() + ", context : " + mCurContext);
         return false;
     }
 
@@ -73,7 +68,7 @@ public class CameraJobService extends JobService {
     public boolean onStopJob(JobParameters params) {
         // Stop tracking these job parameters, as we've 'finished' executing.
         jobParamsMap.remove(params);
-        Log.i(TAG, "on stop job: " + params.getJobId());
+        //Log.i(TAG, "on stop job: " + params.getJobId());
         return true;
     }
 

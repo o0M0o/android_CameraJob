@@ -1,32 +1,42 @@
 package com.wxm.camerajob.ui.activitys;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.CameraJob;
 import com.wxm.camerajob.base.GlobalDef;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class ActivityJob
         extends AppCompatActivity
-        implements View.OnClickListener {
+        implements View.OnClickListener, View.OnTouchListener {
     private final static String TAG = "ActivityJob";
     private Button              mBtSave;
     private Button              mBtGiveup;
     private EditText            mEtJobName;
+    private EditText            mEtJobEndDate;
 
     private ArrayAdapter<CharSequence> mAPJobType;
     private ArrayAdapter<CharSequence>  mAPJobPoint;
@@ -43,8 +53,10 @@ public class ActivityJob
         mBtSave = (Button)findViewById(R.id.acbt_job_save);
         mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
         mEtJobName = (EditText)findViewById(R.id.acet_job_name);
+        mEtJobEndDate = (EditText)findViewById(R.id.acet_job_enddate);
         mBtSave.setOnClickListener(this);
         mBtGiveup.setOnClickListener(this);
+        mEtJobEndDate.setOnTouchListener(this);
 
         mSPJobType = (Spinner)findViewById(R.id.acsp_job_type);
         mSPJobPoint = (Spinner)findViewById(R.id.acsp_job_point);
@@ -131,6 +143,67 @@ public class ActivityJob
         }
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if(event.getAction() == MotionEvent.ACTION_DOWN)    {
+            switch(v.getId())   {
+                case R.id.acet_job_enddate :    {
+                    onTouchDate(event);
+                }
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 生成日期选择dialog，确定任务结束日期
+     * @param event 事件
+     */
+    private void onTouchDate(MotionEvent event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = View.inflate(this, R.layout.dialog_datetime, null);
+        final DatePicker datePicker = (DatePicker) view.findViewById(R.id.dldt_date);
+        final TimePicker timePicker = (TimePicker) view.findViewById(R.id.dldt_time);
+        builder.setView(view);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(System.currentTimeMillis());
+        datePicker.init(cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
+
+        final int inType = mEtJobEndDate.getInputType();
+        mEtJobEndDate.setInputType(InputType.TYPE_NULL);
+        mEtJobEndDate.onTouchEvent(event);
+        mEtJobEndDate.setInputType(inType);
+        mEtJobEndDate.setSelection(mEtJobEndDate.getText().length());
+
+        builder.setTitle("选择任务结束时间");
+        builder.setPositiveButton("确  定", new DialogInterface.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.M)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StringBuffer sb = new StringBuffer();
+                sb.append(
+                        String.format("%d-%02d-%02d %02d:%02d:00",
+                                datePicker.getYear(),
+                                datePicker.getMonth() + 1,
+                                datePicker.getDayOfMonth(),
+                                timePicker.getHour(),
+                                timePicker.getMinute()));
+
+                mEtJobEndDate.setText(sb);
+                mEtJobEndDate.requestFocus();
+
+                dialog.cancel();
+            }
+        });
+
+        Dialog dialog = builder.create();
+        dialog.show();
+    }
+
     /**
      * 保存任务并返回前activity
      * @return 如果成功返回true,否则返回false
@@ -193,6 +266,8 @@ public class ActivityJob
         Intent data = new Intent();
         setResult(GlobalDef.INTRET_JOB_GIVEUP, data);
     }
+
+
 }
 
 
