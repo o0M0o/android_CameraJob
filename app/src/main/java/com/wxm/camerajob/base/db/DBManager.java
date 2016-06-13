@@ -1,8 +1,10 @@
-package com.wxm.camerajob.base;
+package com.wxm.camerajob.base.db;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.wxm.camerajob.base.data.CameraJob;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -124,7 +126,7 @@ public class DBManager {
      * 得到job游标
      * @return job游标
      */
-    public Cursor queryJobCursor() {
+    private Cursor queryJobCursor() {
         Cursor c = mDb.rawQuery("SELECT * FROM " + DBHelper.TABNAME_JOB, null);
         return c;
     }

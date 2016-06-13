@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.Button;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.base.CameraJob;
-import com.wxm.camerajob.base.GlobalContext;
-import com.wxm.camerajob.base.GlobalDef;
+import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.handler.GlobalContext;
+import com.wxm.camerajob.base.data.GlobalDef;
 
 public class ActivityStart extends AppCompatActivity {
     private final static String TAG = "ActivityStart";
@@ -46,7 +46,7 @@ public class ActivityStart extends AppCompatActivity {
 
         /* 设置全局jobservice */
         Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                                    GlobalDef.MSGWHAT_ADDJOB_GLOBAL);
+                                    GlobalDef.MSGWHAT_JOB_ADD_GLOBAL);
         m.obj = this;
         GlobalContext.getInstance().mMsgHandler.sendMessageDelayed(m, 3000);
     }
@@ -60,6 +60,11 @@ public class ActivityStart extends AppCompatActivity {
             case GlobalDef.INTRET_JOB_SAVE :    {
                 CameraJob cj = data.getParcelableExtra(GlobalDef.STR_LOAD_JOB);
                 Log.i(TAG, "job : " + cj.toString());
+
+                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                                            GlobalDef.MSGWHAT_CAMERAJOB_ADD);
+                m.obj = cj;
+                GlobalContext.getInstance().mMsgHandler.sendMessage(m);
             }
             break;
 

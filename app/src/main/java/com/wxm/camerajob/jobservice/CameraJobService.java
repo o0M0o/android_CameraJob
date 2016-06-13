@@ -6,9 +6,12 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Message;
 import android.util.Log;
 
-import com.wxm.camerajob.base.ContextUtil;
+import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.handler.GlobalContext;
+import com.wxm.camerajob.base.utility.ContextUtil;
 
 import java.util.LinkedList;
 
@@ -61,6 +64,11 @@ public class CameraJobService extends JobService {
         // update the UI accordingly.
         jobParamsMap.add(params);
         //Log.i(TAG, "on start job: " + params.getJobId() + ", context : " + mCurContext);
+
+        //Log.i(TAG, "on start job");
+        Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                                GlobalDef.MSGWHAT_WAKEUP);
+        GlobalContext.getInstance().mMsgHandler.sendMessage(m);
         return false;
     }
 

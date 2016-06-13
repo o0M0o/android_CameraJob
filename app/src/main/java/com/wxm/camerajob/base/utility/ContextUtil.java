@@ -1,9 +1,11 @@
-package com.wxm.camerajob.base;
+package com.wxm.camerajob.base.utility;
 
 import android.app.Application;
 import android.app.job.JobScheduler;
 import android.content.Context;
 import android.util.Log;
+
+import com.wxm.camerajob.base.handler.GlobalContext;
 
 /**
  * Created by 123 on 2016/5/7.
@@ -21,7 +23,11 @@ public class ContextUtil extends Application    {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
+        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        tm.cancelAll();
+
         instance = this;
+        GlobalContext.getInstance().initContext();
     }
 
     @Override

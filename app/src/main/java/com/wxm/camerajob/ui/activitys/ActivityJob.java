@@ -23,8 +23,8 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.base.CameraJob;
-import com.wxm.camerajob.base.GlobalDef;
+import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.GlobalDef;
 
 import java.util.Calendar;
 import java.util.Date;

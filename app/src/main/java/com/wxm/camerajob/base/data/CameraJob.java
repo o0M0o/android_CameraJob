@@ -1,4 +1,4 @@
-package com.wxm.camerajob.base;
+package com.wxm.camerajob.base.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -30,9 +30,12 @@ public class CameraJob implements Parcelable {
     @Override
     public String toString()
     {
-        String ret = String.format("type : %s, name : %s, point : %s, timestamp : %s",
-                job_type, job_name, job_point,
-                ts.toString());
+//        String ret = String.format("type : %s, name : %s, point : %s, timestamp : %s",
+//                job_type, job_name, job_point,
+//                ts.toString());
+
+        String ret = String.format("name : %s, type : %s, point : %s",
+                            job_name, job_type, job_point);
         return ret;
     }
 
