@@ -1,10 +1,12 @@
 package com.wxm.camerajob.base.handler;
 
+import android.hardware.camera2.CameraCharacteristics;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
+import com.wxm.camerajob.base.utility.SilentTakePhoto;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -238,5 +240,20 @@ public class jobProcess {
                         ,curCal.get(Calendar.SECOND)));*/
 
         Log.i(TAG, "wakeup job : " + cj.toString());
+
+        Calendar curCal = Calendar.getInstance();
+        String fn = String.format(
+                        "slient_%d-%02d-%02d-%02d%02d%02d.jpg"
+                        ,curCal.get(Calendar.YEAR)
+                        ,curCal.get(Calendar.MONTH) + 1
+                        ,curCal.get(Calendar.DAY_OF_MONTH) + 1
+                        ,curCal.get(Calendar.HOUR_OF_DAY)
+                        ,curCal.get(Calendar.MINUTE)
+                        ,curCal.get(Calendar.SECOND));
+
+        SilentTakePhoto st = new SilentTakePhoto(fn);
+        st.openCamera(CameraCharacteristics.LENS_FACING_BACK, 1280, 960);
+        st.captureStillPicture();
+        st.closeCamera();
     }
 }

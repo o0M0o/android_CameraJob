@@ -190,8 +190,12 @@ public class ActivityJob
                                 datePicker.getYear(),
                                 datePicker.getMonth() + 1,
                                 datePicker.getDayOfMonth(),
+                                12,
+                                30));
+                                /*
                                 timePicker.getHour(),
                                 timePicker.getMinute()));
+                                */
 
                 mEtJobEndDate.setText(sb);
                 mEtJobEndDate.requestFocus();
