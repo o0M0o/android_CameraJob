@@ -95,10 +95,26 @@ public class GlobalContext {
                     processor_camerajob_add(msg);
                     break;
 
+                case GlobalDef.MSGWHAT_ASK_CAMERAJOB :
+                    processor_ask_cameraJob(msg);
+                    break;
+
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
                     break;
             }
+        }
+
+        /**
+         * 查询cameraJob
+         * @param msg  输入消息
+         */
+        private void processor_ask_cameraJob(Message msg)    {
+            Handler h = (Handler)msg.obj;
+
+            Message answer = Message.obtain(h, GlobalDef.MSGWHAT_ANSWER_CAMERAJOB);
+            answer.obj = getInstance().mDBManager.GetJobs();
+            answer.sendToTarget();
         }
 
         /**

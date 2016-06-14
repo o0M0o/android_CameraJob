@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/notification_template_icon_bg">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/ItemTitle"
+        android:textSize="20dp"
+        android:textColor="@color/abc_input_method_navigation_guard"
+        android:text="mainitem">
+    </TextView>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textColor="@color/hint_foreground_material_light"
+        android:textSize="12dp"
+        android:id="@+id/ItemText"
+        android:text="subitem"
+        android:layout_below="@+id/ItemTitle">
+    </TextView>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/liib_jobstatus_run"
+        android:layout_alignBottom="@+id/ItemText"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/ItemTitle"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:drawable/ic_media_play"
+        android:layout_marginEnd="60dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/liib_jobstatus_pause"
+        android:background="@android:drawable/ic_media_pause"
+        android:layout_alignTop="@+id/ItemTitle"
+        android:layout_alignBottom="@+id/ItemText"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toLeftOf="@+id/liib_jobstatus_run" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/liib_jobstatus_stop"
+        android:background="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_alignParentTop="false"
+        android:layout_alignStart="@+id/liib_jobstatus_run"
+        android:layout_alignTop="@+id/ItemTitle"
+        android:layout_alignBottom="@+id/ItemText"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentEnd="false"
+        android:layout_toRightOf="@+id/liib_jobstatus_run" />
+
+</RelativeLayout>

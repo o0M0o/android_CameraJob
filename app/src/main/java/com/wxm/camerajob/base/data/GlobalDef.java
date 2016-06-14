@@ -21,6 +21,8 @@ public class GlobalDef {
     public final static int MSGWHAT_JOB_ADD_GLOBAL      = 1001;
     public final static int MSGWHAT_WAKEUP              = 1002;
     public final static int MSGWHAT_CAMERAJOB_ADD       = 1100;
+    public final static int MSGWHAT_ASK_CAMERAJOB       = 1101;
+    public final static int MSGWHAT_ANSWER_CAMERAJOB    = 1102;
 
     public final static int INTRET_JOB_SAVE             = 2000;
     public final static int INTRET_JOB_GIVEUP           = 2001;
@@ -42,6 +44,11 @@ public class GlobalDef {
     public final static String CNSTR_EVERY_SIX_HOUR           = "每6小时";
     public final static String CNSTR_EVERY_EIGHT_HOUR         = "每8小时";
     public final static String CNSTR_EVERY_TWELVE_HOUR        = "每12小时";
+
+
+    public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
+    public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
+
 }
 
 
