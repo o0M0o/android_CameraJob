@@ -2,6 +2,7 @@ package com.wxm.camerajob.ui.activitys;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +12,9 @@ import android.widget.Button;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
-import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.handler.GlobalContext;
+import com.wxm.camerajob.base.utility.SilentTakePhoto;
 
 public class ActivityStart extends AppCompatActivity {
     private final static String TAG = "ActivityStart";
@@ -43,6 +45,16 @@ public class ActivityStart extends AppCompatActivity {
                                   }
                               });
 
+        Button bt2 = (Button)findViewById(R.id.acbt_start_testslient);
+        bt2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SilentTakePhoto st = new SilentTakePhoto("slient.jpg");
+                st.openCamera(CameraCharacteristics.LENS_FACING_BACK, 1280, 960);
+                st.captureStillPicture();
+                st.closeCamera();
+            }
+        });
 
         /* 设置全局jobservice */
         Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,

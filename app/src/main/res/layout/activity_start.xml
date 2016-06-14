@@ -34,4 +34,15 @@
         android:layout_alignEnd="@+id/acbt_start_testcamera"
         android:layout_marginTop="20dp"
         android:layout_alignStart="@+id/acbt_start_testcamera" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST SILENT"
+        android:id="@+id/acbt_start_testslient"
+        android:layout_below="@+id/acbt_start_testjob"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_alignStart="@+id/acbt_start_testjob" />
 </RelativeLayout>
