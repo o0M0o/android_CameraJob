@@ -6,13 +6,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
@@ -71,24 +74,20 @@ public class ActivityStart
 
                 mActivity.mLVList.add(map);
             }
-
             mActivity.mLVAdapter.notifyDataSetChanged();
 
-            int ct = mActivity.mLVJobs.getChildCount();
-            for(int i = 0; i < ct; ++i) {
-                View v = mActivity.mLVJobs.getChildAt(i);
-
-                ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run);
-                ImageButton ib_pause = (ImageButton)v.findViewById(R.id.liib_jobstatus_pause);
-                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
-
-                ib_play.setOnClickListener(mActivity);
-                ib_pause.setOnClickListener(mActivity);
-                ib_delete.setOnClickListener(mActivity);
-            }
+//            int ct = mActivity.mLVJobs.getChildCount();
+//            for(int i = 1; i < ct; ++i) {
+//                View v = mActivity.mLVJobs.getChildAt(i);
+//
+//                ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
+//                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
+//
+//                ib_play.setOnClickListener(mActivity);
+//                ib_delete.setOnClickListener(mActivity);
+//            }
         }
     }
-
 
     private final static String TAG = "ActivityStart";
     private ACStartMsgHandler   mSelfHandler;
@@ -107,22 +106,34 @@ public class ActivityStart
         // init view
         mLVJobs = (ListView) findViewById(R.id.aclv_start_jobs);
 
+        final ActivityStart home = this;
         mLVAdapter= new SimpleAdapter(ContextUtil.getInstance(),
                 mLVList,
                 R.layout.listitem_jobstatus,
                 new String[]{GlobalDef.STR_ITEM_TITLE, GlobalDef.STR_ITEM_TEXT},
                 new int[]{R.id.ItemTitle, R.id.ItemText}) {
             @Override
-            public int getViewTypeCount() {
-                int org_ct = getCount();
-                return org_ct < 1 ? 1 : org_ct;
-            }
+            public View getView(final int position, View view, ViewGroup arg2) {
+                if(view == null){
+                    LayoutInflater inflater = LayoutInflater.from(ContextUtil.getInstance());
+                    view = inflater.inflate(R.layout.listitem_jobstatus, null);
+                }
 
-            @Override
-            public int getItemViewType(int position) {
-                return position;
-            }
-        };
+                HashMap<String, String> htxt = mLVList.get(position);
+                TextView title = (TextView)view.findViewById(R.id.ItemTitle);
+                TextView subtitle = (TextView)view.findViewById(R.id.ItemText);
+                title.setText(htxt.get(GlobalDef.STR_ITEM_TITLE));
+                subtitle.setText(htxt.get(GlobalDef.STR_ITEM_TEXT));
+
+                ImageButton ib_play = (ImageButton)view.findViewById(R.id.liib_jobstatus_run_pause);
+                ImageButton ib_delete = (ImageButton)view.findViewById(R.id.liib_jobstatus_stop);
+
+                ib_play.setOnClickListener(home);
+                ib_delete.setOnClickListener(home);
+
+                return view;
+            }};
+
         mLVJobs.setAdapter(mLVAdapter);
         mSelfHandler = new ACStartMsgHandler(this);
 
@@ -171,13 +182,12 @@ public class ActivityStart
             case R.id.liib_jobstatus_stop : {
                 Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                         GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
-                m.obj = new Object[] {map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
+                m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
                 m.sendToTarget();
             }
             break;
         }
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

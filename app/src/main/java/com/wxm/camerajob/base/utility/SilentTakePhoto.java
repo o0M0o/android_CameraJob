@@ -15,6 +15,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -120,6 +121,8 @@ public class SilentTakePhoto {
             try {
                 output = new FileOutputStream(mFile);
                 output.write(bytes);
+
+                Log.i(TAG, "save photo to : " + mFile.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -138,12 +141,19 @@ public class SilentTakePhoto {
     /**
      * 构造函数
      */
-    public SilentTakePhoto(@NonNull String fileName)    {
-        mFile = new File(
-                ContextUtil.getInstance().getExternalFilesDir(null),
-                (fileName.isEmpty() ? "pic.jpg" : fileName));
+    public SilentTakePhoto()    {
+        int per = ContextCompat.checkSelfPermission(ContextUtil.getInstance(),
+                                        Manifest.permission.CAMERA);
+        if (PackageManager.PERMISSION_GRANTED != per) {
+            return;
+        }
 
-        Log.i(TAG, "file : " + mFile.toString());
+        startBackgroundThread();
+    }
+
+    protected void finalize() throws Throwable {
+        stopBackgroundThread();
+        super.finalize();
     }
 
 
@@ -161,7 +171,6 @@ public class SilentTakePhoto {
             return;
         }
 
-        startBackgroundThread();
         setUpCameraOutputs(face, width, height);
 
         CameraManager manager =
@@ -202,18 +211,29 @@ public class SilentTakePhoto {
         } finally {
             mCameraOpenCloseLock.release();
         }
-
-        stopBackgroundThread();
     }
 
     /**
      * Capture a still picture
      */
-    public void captureStillPicture() {
+    public void captureStillPicture(@NonNull String fileName) {
+        //获取SDCard状态,如果SDCard插入了手机且为非写保护状态
+        String en= Environment.getExternalStorageState();
+        if(en.equals(Environment.MEDIA_MOUNTED)){
+            mFile = new File(
+                    Environment.getExternalStorageDirectory(),
+                    (fileName.isEmpty() ? "pic.jpg" : fileName));
+        }else{
+            mFile = new File(
+                    ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                    (fileName.isEmpty() ? "pic.jpg" : fileName));
+        }
+
         // 等待3秒钟确认相机状态
-        for(int i = 0; (null == mCaptureSession) && (i < 3); ++i)  {
+        for(int i = 0; (null == mCaptureSession) && (i < 30); ++i)  {
             try {
-                Thread.sleep(1000);
+                Log.i(TAG, "wait 100 ms");
+                Thread.sleep(100);
             }
             catch (InterruptedException e) {
                 e.printStackTrace();
@@ -306,7 +326,6 @@ public class SilentTakePhoto {
             }
         }
         */
-
         CameraManager manager =
                 (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -332,7 +351,7 @@ public class SilentTakePhoto {
                         */
                 mImageReader = ImageReader.newInstance(
                         width, height,
-                        ImageFormat.JPEG, /*maxImages*/1);
+                        ImageFormat.JPEG, /*maxImages*/2);
 
                 mImageReader.setOnImageAvailableListener(
                         mOnImageAvailableListener

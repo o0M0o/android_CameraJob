@@ -26,7 +26,7 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/liib_jobstatus_run"
+        android:id="@+id/liib_jobstatus_run_pause"
         android:layout_alignBottom="@+id/ItemText"
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/ItemTitle"
@@ -34,19 +34,8 @@
         android:layout_marginBottom="8dp"
         android:background="@android:drawable/ic_media_play"
         android:layout_marginEnd="60dp"
-        android:clickable="true" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/liib_jobstatus_pause"
-        android:background="@android:drawable/ic_media_pause"
-        android:layout_alignTop="@+id/ItemTitle"
-        android:layout_alignBottom="@+id/ItemText"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_toLeftOf="@+id/liib_jobstatus_run"
-        android:clickable="true" />
+        android:clickable="true"
+        android:onClick="onImageButtonClick" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -54,14 +43,15 @@
         android:id="@+id/liib_jobstatus_stop"
         android:background="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_alignParentTop="false"
-        android:layout_alignStart="@+id/liib_jobstatus_run"
+        android:layout_alignStart="@+id/liib_jobstatus_run_pause"
         android:layout_alignTop="@+id/ItemTitle"
         android:layout_alignBottom="@+id/ItemText"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_alignParentEnd="false"
-        android:layout_toRightOf="@+id/liib_jobstatus_run"
-        android:clickable="true" />
+        android:layout_toRightOf="@+id/liib_jobstatus_run_pause"
+        android:clickable="true"
+        android:onClick="onImageButtonClick" />
 
 </RelativeLayout>

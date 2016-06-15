@@ -30,8 +30,8 @@ public class ContextUtil extends Application    {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
-        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        tm.cancelAll();
+//        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
+//        tm.cancelAll();
 
         // 取消旧闹钟
         Intent intent = new Intent(this, AlarmReceiver.class);

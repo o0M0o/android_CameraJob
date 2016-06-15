@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -18,7 +18,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name=".base.receiver.AlarmReceiver" android:process=":remote" />
+        <receiver
+            android:name=".base.receiver.AlarmReceiver"
+            android:process=":remote" />
+
         <activity android:name=".ui.activitys.ActivityStart">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,12 +30,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activitys.ActivityTest" />
-        <activity android:name=".ui.activitys.ActivityJob"></activity>
+        <activity android:name=".ui.activitys.ActivityJob" />
 
         <service
             android:name=".jobservice.CameraJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <activity android:name=".ui.activitys.ActivityCameraSetting"></activity>
     </application>
 
 </manifest>

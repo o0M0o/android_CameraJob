@@ -23,12 +23,14 @@ public class CameraJobProcess {
     private int                     mInitFlag;
     private LinkedList<CameraJob>   mLsJob;
     private Lock                    mLsLock;
+    private SilentTakePhoto         mSTPCamera;
 
     public CameraJobProcess() {
         mInitFlag = 0;
         mLsJob = new LinkedList<>();
 
         mLsLock = new ReentrantLock();
+        mSTPCamera = new SilentTakePhoto();
     }
 
 
@@ -59,8 +61,11 @@ public class CameraJobProcess {
         if(1 != mInitFlag)
             return;
 
-        Log.i(TAG, "processor wakeup");
+        //Log.i(TAG, "processor wakeup");
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
         mLsLock.lock();
+        mLsJob.clear();
+        mLsJob.addAll(dbm.GetJobs());
         for(CameraJob cj : mLsJob)  {
             jobWakeup(cj);
         }
@@ -284,9 +289,8 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.MINUTE)
                         ,curCal.get(Calendar.SECOND));
 
-        SilentTakePhoto st = new SilentTakePhoto(fn);
-        st.openCamera(CameraCharacteristics.LENS_FACING_BACK, 1280, 960);
-        st.captureStillPicture();
-        st.closeCamera();
+        mSTPCamera.openCamera(CameraCharacteristics.LENS_FACING_BACK, 1280, 960);
+        mSTPCamera.captureStillPicture(fn);
+        mSTPCamera.closeCamera();
     }
 }
