@@ -59,6 +59,7 @@ public class CameraJobProcess {
         if(1 != mInitFlag)
             return;
 
+        Log.i(TAG, "processor wakeup");
         mLsLock.lock();
         for(CameraJob cj : mLsJob)  {
             jobWakeup(cj);
@@ -274,7 +275,8 @@ public class CameraJobProcess {
 
         Calendar curCal = Calendar.getInstance();
         String fn = String.format(
-                        "slient_%d-%02d-%02d-%02d%02d%02d.jpg"
+                        "%s_%d%02d%02d-%02d%02d%02d.jpg"
+                        ,cj.job_name
                         ,curCal.get(Calendar.YEAR)
                         ,curCal.get(Calendar.MONTH) + 1
                         ,curCal.get(Calendar.DAY_OF_MONTH) + 1

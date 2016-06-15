@@ -18,6 +18,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <receiver android:name=".base.receiver.AlarmReceiver" android:process=":remote" />
         <activity android:name=".ui.activitys.ActivityStart">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -128,11 +128,19 @@ public class ActivityStart
 
         updateJobs();
 
-        /* 设置全局jobservice */
+        /*
+        // 设置全局jobservice
         Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                                     GlobalDef.MSGWHAT_JOB_ADD_GLOBAL);
         m.obj = this;
         m.sendToTarget();
+        */
+    }
+
+    @Override
+    public void finish() {
+        Log.i(TAG, "activity finished");
+        super.finish();
     }
 
     @Override
