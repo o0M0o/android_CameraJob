@@ -21,8 +21,10 @@ public class GlobalDef {
     public final static int MSGWHAT_JOB_ADD_GLOBAL      = 1001;
     public final static int MSGWHAT_WAKEUP              = 1002;
     public final static int MSGWHAT_CAMERAJOB_ADD       = 1100;
-    public final static int MSGWHAT_ASK_CAMERAJOB       = 1101;
-    public final static int MSGWHAT_ANSWER_CAMERAJOB    = 1102;
+    public final static int MSGWHAT_CAMERAJOB_UPDATE    = 1101;
+    public final static int MSGWHAT_ASK_CAMERAJOB       = 1102;
+    public final static int MSGWHAT_ANSWER_CAMERAJOB    = 1103;
+    public final static int MSGWHAT_CAMERAJOB_REMOVE    = 1104;
 
     public final static int INTRET_JOB_SAVE             = 2000;
     public final static int INTRET_JOB_GIVEUP           = 2001;
@@ -48,7 +50,7 @@ public class GlobalDef {
 
     public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
     public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
-
+    public final static String  STR_ITEM_ID         = "ITEM_ID";
 }
 
 

@@ -33,7 +33,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@android:drawable/ic_media_play"
-        android:layout_marginEnd="60dp" />
+        android:layout_marginEnd="60dp"
+        android:clickable="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -44,7 +45,8 @@
         android:layout_alignBottom="@+id/ItemText"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_toLeftOf="@+id/liib_jobstatus_run" />
+        android:layout_toLeftOf="@+id/liib_jobstatus_run"
+        android:clickable="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -59,6 +61,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_alignParentEnd="false"
-        android:layout_toRightOf="@+id/liib_jobstatus_run" />
+        android:layout_toRightOf="@+id/liib_jobstatus_run"
+        android:clickable="true" />
 
 </RelativeLayout>

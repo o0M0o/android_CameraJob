@@ -10,6 +10,7 @@ import com.wxm.camerajob.base.utility.SilentTakePhoto;
 
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,13 +18,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * 处理job
  * Created by 123 on 2016/6/13.
  */
-public class jobProcess {
-    private final String TAG = "jobProcess";
+public class CameraJobProcess {
+    private final String TAG = "CameraJobProcess";
     private int                     mInitFlag;
     private LinkedList<CameraJob>   mLsJob;
     private Lock                    mLsLock;
 
-    public jobProcess() {
+    public CameraJobProcess() {
         mInitFlag = 0;
         mLsJob = new LinkedList<>();
 
@@ -81,6 +82,36 @@ public class jobProcess {
         else    {
             Log.e(TAG, "添加camera job失败，camerajob = " + cj.toString());
         }
+    }
+
+    /**
+     * 移除camera job
+     * @param jobid 待移除job的id
+     */
+    public void removeCameraJob(String jobid)   {
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
+        if(dbm.RemoveJob(jobid))   {
+            mLsLock.lock();
+            mLsJob.clear();
+            mLsJob.addAll(dbm.GetJobs());
+            mLsLock.unlock();
+        }
+        else    {
+            Log.e(TAG, "移除camera job失败，jobid = " + jobid);
+        }
+    }
+
+    /**
+     * 得到所有camera job
+     * @return 所有camera job
+     */
+    public List<CameraJob> GetAllJobs() {
+        LinkedList<CameraJob> ls_ret = new LinkedList<>();
+        mLsLock.lock();
+        ls_ret.addAll(mLsJob);
+        mLsLock.unlock();
+
+        return ls_ret;
     }
 
     /**

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:orderInCategory="9000"
+        android:id="@+id/meuitem_camerajob_add"
+        app:showAsAction="ifRoom|withText"
+        android:title="@string/cn_camerajob_add"/>
+</menu>

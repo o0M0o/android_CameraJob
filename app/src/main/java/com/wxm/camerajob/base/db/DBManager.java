@@ -22,6 +22,7 @@ public class DBManager {
     private SQLiteDatabase mDb;
 
     private String mAddJobSqlTemp;
+    private String mRemoveJobSqlTemp;
     private String mModifyJobSqlTemp;
 
     public DBManager(Context context) {
@@ -48,6 +49,11 @@ public class DBManager {
                 DBHelper.COLNAME_JOB_NAME, DBHelper.COLNAME_JOB_TYPE,
                 DBHelper.COLNAME_JOB_POINT, DBHelper.COLNAME_JOB_TS,
                 DBHelper.COLNAME_JOB_ID);
+
+        mRemoveJobSqlTemp = String.format(
+                "DELETE FROM %s WHERE %s = ?",
+                DBHelper.TABNAME_JOB,
+                DBHelper.COLNAME_JOB_ID);
     }
 
     /**
@@ -62,6 +68,22 @@ public class DBManager {
                 mDb.execSQL(
                         mAddJobSqlTemp,
                         new Object[]{cj.job_name, cj.job_type, cj.job_point, cj.ts});
+            mDb.setTransactionSuccessful();
+            ret = true;
+        } finally {
+            mDb.endTransaction();
+        }
+
+        return ret;
+    }
+
+    public boolean RemoveJob(String jobid)  {
+        boolean ret = false;
+        mDb.beginTransaction();
+        try {
+            mDb.execSQL(
+                    mRemoveJobSqlTemp,
+                    new Object[]{jobid});
             mDb.setTransactionSuccessful();
             ret = true;
         } finally {

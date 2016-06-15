@@ -23,7 +23,7 @@ public class GlobalContext {
 
     public CameraJobService     mJobService;
     public GlobalMsgHandler     mMsgHandler;
-    public jobProcess           mJobProcessor;
+    public CameraJobProcess mJobProcessor;
     public DBManager            mDBManager;
 
     private static GlobalContext ourInstance = new GlobalContext();
@@ -39,7 +39,7 @@ public class GlobalContext {
     public void initContext()   {
         mJobService = new CameraJobService();
         mMsgHandler = new GlobalMsgHandler();
-        mJobProcessor = new jobProcess();
+        mJobProcessor = new CameraJobProcess();
         mDBManager = new DBManager(ContextUtil.getInstance());
 
         mJobProcessor.init(mDBManager);
@@ -95,6 +95,10 @@ public class GlobalContext {
                     processor_camerajob_add(msg);
                     break;
 
+                case GlobalDef.MSGWHAT_CAMERAJOB_REMOVE :
+                    processor_camerajob_remove(msg);
+                    break;
+
                 case GlobalDef.MSGWHAT_ASK_CAMERAJOB :
                     processor_ask_cameraJob(msg);
                     break;
@@ -106,6 +110,21 @@ public class GlobalContext {
         }
 
         /**
+         * 移除cameraJob
+         * @param msg  消息
+         */
+        private void processor_camerajob_remove(Message msg) {
+            Object[] obj_arr = (Object[])msg.obj;
+            String _id = (String) obj_arr[0];
+            Handler h = (Handler)obj_arr[1];
+            getInstance().mJobProcessor.removeCameraJob(_id);
+
+            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
+            reply.obj = getInstance().mJobProcessor.GetAllJobs();
+            reply.sendToTarget();
+        }
+
+        /**
          * 查询cameraJob
          * @param msg  输入消息
          */
@@ -113,7 +132,7 @@ public class GlobalContext {
             Handler h = (Handler)msg.obj;
 
             Message answer = Message.obtain(h, GlobalDef.MSGWHAT_ANSWER_CAMERAJOB);
-            answer.obj = getInstance().mDBManager.GetJobs();
+            answer.obj = getInstance().mJobProcessor.GetAllJobs();
             answer.sendToTarget();
         }
 
@@ -155,8 +174,15 @@ public class GlobalContext {
          * @param msg  消息
          */
         private void processor_camerajob_add(Message msg)  {
-            CameraJob cj = (CameraJob)msg.obj;
+            Object[] obj_arr = (Object[])msg.obj;
+
+            CameraJob cj = (CameraJob)obj_arr[0];
+            Handler h = (Handler)obj_arr[1];
             getInstance().mJobProcessor.addCameraJob(cj);
+
+            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
+            reply.obj = getInstance().mJobProcessor.GetAllJobs();
+            reply.sendToTarget();
         }
     }
 }

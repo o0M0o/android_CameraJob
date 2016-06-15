@@ -6,6 +6,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -19,7 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ActivityStart extends AppCompatActivity {
+public class ActivityStart
+        extends AppCompatActivity
+        implements View.OnClickListener {
     public class ACStartMsgHandler extends Handler {
         private static final String TAG = "ACStartMsgHandler";
         private ActivityStart mActivity;
@@ -33,6 +40,10 @@ public class ActivityStart extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case GlobalDef.MSGWHAT_ANSWER_CAMERAJOB:
+                    processor_answer_camerjob(msg);
+                    break;
+
+                case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
                     processor_answer_camerjob(msg);
                     break;
 
@@ -56,11 +67,25 @@ public class ActivityStart extends AppCompatActivity {
                 HashMap<String, String> map = new HashMap<>();
                 map.put(GlobalDef.STR_ITEM_TITLE, "任务 : " + cj.job_name);
                 map.put(GlobalDef.STR_ITEM_TEXT, show);
+                map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
 
                 mActivity.mLVList.add(map);
             }
 
             mActivity.mLVAdapter.notifyDataSetChanged();
+
+            int ct = mActivity.mLVJobs.getChildCount();
+            for(int i = 0; i < ct; ++i) {
+                View v = mActivity.mLVJobs.getChildAt(i);
+
+                ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run);
+                ImageButton ib_pause = (ImageButton)v.findViewById(R.id.liib_jobstatus_pause);
+                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
+
+                ib_play.setOnClickListener(mActivity);
+                ib_pause.setOnClickListener(mActivity);
+                ib_delete.setOnClickListener(mActivity);
+            }
         }
     }
 
@@ -110,6 +135,14 @@ public class ActivityStart extends AppCompatActivity {
         m.sendToTarget();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.acmeu_start_actbar, menu);
+        return true;
+    }
+
     /**
      * 加载并显示数据
      */
@@ -118,6 +151,41 @@ public class ActivityStart extends AppCompatActivity {
                 GlobalDef.MSGWHAT_ASK_CAMERAJOB);
         m.obj = mSelfHandler;
         m.sendToTarget();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        int pos = mLVJobs.getPositionForView(v);
+        HashMap<String, String> map = mLVList.get(pos);
+
+        switch (v.getId())  {
+            case R.id.liib_jobstatus_stop : {
+                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                        GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
+                m.obj = new Object[] {map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
+                m.sendToTarget();
+            }
+            break;
+        }
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.meuitem_camerajob_add : {
+                Intent intent = new Intent(this, ActivityJob.class);
+                startActivityForResult(intent, 1);
+            }
+            break;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+        return true;
     }
 
 
@@ -132,8 +200,8 @@ public class ActivityStart extends AppCompatActivity {
 
                 Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                                             GlobalDef.MSGWHAT_CAMERAJOB_ADD);
-                m.obj = cj;
-                GlobalContext.getInstance().mMsgHandler.sendMessage(m);
+                m.obj = new Object[] {cj, mSelfHandler};
+                m.sendToTarget();
             }
             break;
 
