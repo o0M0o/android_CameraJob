@@ -265,17 +265,6 @@ public class CameraJobProcess {
 
 
     private void wakeupDuty(CameraJob cj)   {
-/*        Calendar curCal = Calendar.getInstance();
-        Log.i(TAG,
-                String.format("job (%s) wakeup at '%d-%02d-%02d %02d:%02d:%02d'",
-                        cj.toString()
-                        ,curCal.get(Calendar.YEAR)
-                        ,curCal.get(Calendar.MONTH) + 1
-                        ,curCal.get(Calendar.DAY_OF_MONTH) + 1
-                        ,curCal.get(Calendar.HOUR_OF_DAY)
-                        ,curCal.get(Calendar.MINUTE)
-                        ,curCal.get(Calendar.SECOND)));*/
-
         Log.i(TAG, "wakeup job : " + cj.toString());
 
         Calendar curCal = Calendar.getInstance();

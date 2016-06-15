@@ -1,12 +1,12 @@
 package com.wxm.camerajob.ui.activitys;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
@@ -26,10 +25,34 @@ import com.wxm.camerajob.base.utility.ContextUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ActivityStart
         extends AppCompatActivity
         implements View.OnClickListener {
+    public class MySimpleAdapter extends SimpleAdapter {
+        private ActivityStart mHome;
+
+        public MySimpleAdapter(ActivityStart home, Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
+            super(context, data, resource, from, to);
+            mHome = home;
+        }
+
+        @Override
+        public View getView(final int position, View view, ViewGroup arg2) {
+            View v = super.getView(position, view, arg2);
+            if(null != v)   {
+                ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
+                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
+
+                ib_play.setOnClickListener(mHome);
+                ib_delete.setOnClickListener(mHome);
+            }
+
+            return v;
+        }
+    }
+
     public class ACStartMsgHandler extends Handler {
         private static final String TAG = "ACStartMsgHandler";
         private ActivityStart mActivity;
@@ -75,17 +98,6 @@ public class ActivityStart
                 mActivity.mLVList.add(map);
             }
             mActivity.mLVAdapter.notifyDataSetChanged();
-
-//            int ct = mActivity.mLVJobs.getChildCount();
-//            for(int i = 1; i < ct; ++i) {
-//                View v = mActivity.mLVJobs.getChildAt(i);
-//
-//                ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
-//                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
-//
-//                ib_play.setOnClickListener(mActivity);
-//                ib_delete.setOnClickListener(mActivity);
-//            }
         }
     }
 
@@ -94,7 +106,7 @@ public class ActivityStart
 
     // listview used to show jobs
     private ListView                            mLVJobs;
-    private SimpleAdapter                       mLVAdapter;
+    private MySimpleAdapter                     mLVAdapter;
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
 
     @Override
@@ -102,37 +114,15 @@ public class ActivityStart
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        //final Activity home = (Activity)this;
         // init view
         mLVJobs = (ListView) findViewById(R.id.aclv_start_jobs);
 
-        final ActivityStart home = this;
-        mLVAdapter= new SimpleAdapter(ContextUtil.getInstance(),
+        mLVAdapter= new MySimpleAdapter(this,
+                ContextUtil.getInstance(),
                 mLVList,
                 R.layout.listitem_jobstatus,
                 new String[]{GlobalDef.STR_ITEM_TITLE, GlobalDef.STR_ITEM_TEXT},
-                new int[]{R.id.ItemTitle, R.id.ItemText}) {
-            @Override
-            public View getView(final int position, View view, ViewGroup arg2) {
-                if(view == null){
-                    LayoutInflater inflater = LayoutInflater.from(ContextUtil.getInstance());
-                    view = inflater.inflate(R.layout.listitem_jobstatus, null);
-                }
-
-                HashMap<String, String> htxt = mLVList.get(position);
-                TextView title = (TextView)view.findViewById(R.id.ItemTitle);
-                TextView subtitle = (TextView)view.findViewById(R.id.ItemText);
-                title.setText(htxt.get(GlobalDef.STR_ITEM_TITLE));
-                subtitle.setText(htxt.get(GlobalDef.STR_ITEM_TEXT));
-
-                ImageButton ib_play = (ImageButton)view.findViewById(R.id.liib_jobstatus_run_pause);
-                ImageButton ib_delete = (ImageButton)view.findViewById(R.id.liib_jobstatus_stop);
-
-                ib_play.setOnClickListener(home);
-                ib_delete.setOnClickListener(home);
-
-                return view;
-            }};
+                new int[]{R.id.ItemTitle, R.id.ItemText});
 
         mLVJobs.setAdapter(mLVAdapter);
         mSelfHandler = new ACStartMsgHandler(this);

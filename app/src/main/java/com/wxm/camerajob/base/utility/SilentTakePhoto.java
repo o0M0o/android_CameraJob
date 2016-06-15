@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -217,17 +218,7 @@ public class SilentTakePhoto {
      * Capture a still picture
      */
     public void captureStillPicture(@NonNull String fileName) {
-        //获取SDCard状态,如果SDCard插入了手机且为非写保护状态
-        String en= Environment.getExternalStorageState();
-        if(en.equals(Environment.MEDIA_MOUNTED)){
-            mFile = new File(
-                    Environment.getExternalStorageDirectory(),
-                    (fileName.isEmpty() ? "pic.jpg" : fileName));
-        }else{
-            mFile = new File(
-                    ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                    (fileName.isEmpty() ? "pic.jpg" : fileName));
-        }
+        setupFile(fileName);
 
         // 等待3秒钟确认相机状态
         for(int i = 0; (null == mCaptureSession) && (i < 30); ++i)  {
@@ -306,7 +297,39 @@ public class SilentTakePhoto {
         }
     }
 
+    private void setupFile(@NonNull String fileName)    {
+        String realFileName;
+        if(fileName.isEmpty())  {
+            Calendar curCal = Calendar.getInstance();
+            realFileName= String.format(
+                    "%d%02d%02d-%02d%02d%02d.jpg"
+                    ,curCal.get(Calendar.YEAR)
+                    ,curCal.get(Calendar.MONTH) + 1
+                    ,curCal.get(Calendar.DAY_OF_MONTH) + 1
+                    ,curCal.get(Calendar.HOUR_OF_DAY)
+                    ,curCal.get(Calendar.MINUTE)
+                    ,curCal.get(Calendar.SECOND));
+        }
+        else    {
+            realFileName = fileName;
+        }
 
+        //获取SDCard状态,如果SDCard插入了手机且为非写保护状态
+        String en= Environment.getExternalStorageState();
+        if(en.equals(Environment.MEDIA_MOUNTED)){
+            File sdcardDir =Environment.getExternalStorageDirectory();
+            String path = sdcardDir.getPath()+"/CamerajobPhotos";
+            File path1 = new File(path);
+            if (!path1.exists()) {
+                path1.mkdirs();
+            }
+
+            mFile = new File(path1, realFileName);
+        }else{
+            File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            mFile = new File(innerPath, realFileName);
+        }
+    }
 
     /**
      * Sets up member variables related to camera.
