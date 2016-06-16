@@ -20,7 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context arg0, Intent data) {
-        Log.i(TAG, "app wakeup");
+        //Log.i(TAG, "app wakeup");
 
         try {
             Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,

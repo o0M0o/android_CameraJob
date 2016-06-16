@@ -1,13 +1,13 @@
 package com.wxm.camerajob.base.handler;
 
-import android.hardware.camera2.CameraCharacteristics;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.db.DBManager;
-import com.wxm.camerajob.base.utility.SilentTakePhoto;
+import com.wxm.camerajob.base.utility.SilentCameraHandler;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -24,7 +24,8 @@ public class CameraJobProcess {
     private int                     mInitFlag;
     private LinkedList<CameraJob>   mLsJob;
     private Lock                    mLsJobLock;
-    private SilentTakePhoto         mSTPCamera;
+    //private SilentTakePhoto         mSTPCamera;
+    private SilentCameraHandler     mSCHHandler;
 
     private LinkedList<CameraJobStatus>   mLsJobStatus;
     private Lock                          mLsJobStatusLock;
@@ -36,7 +37,7 @@ public class CameraJobProcess {
 
         mLsJobLock          = new ReentrantLock();
         mLsJobStatusLock    = new ReentrantLock();
-        mSTPCamera          = new SilentTakePhoto();
+        mSCHHandler         = new SilentCameraHandler();
     }
 
     protected void finalize() throws Throwable {
@@ -392,8 +393,8 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.MINUTE)
                         ,curCal.get(Calendar.SECOND));
 
-        mSTPCamera.openCamera(CameraCharacteristics.LENS_FACING_BACK, 1280, 960);
-        mSTPCamera.captureStillPicture(fn, cj);
-        mSTPCamera.closeCamera();
+        TakePhotoParam tp = new TakePhotoParam(fn);
+        tp.mTag = Integer.toString(cj._id);
+        mSCHHandler.TakePhoto(tp);
     }
 }

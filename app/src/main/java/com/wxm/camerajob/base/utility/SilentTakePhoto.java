@@ -13,7 +13,6 @@ import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
 import android.media.ImageReader;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,9 +27,6 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.Semaphore;
@@ -79,7 +75,13 @@ public class SilentTakePhoto {
             = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
-            //mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+            Log.i(TAG, "save photo : " + mFile.toString());
+
+            Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                    GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+            m.obj = new Object[] {mCurCameraJob._id, 1};
+            m.sendToTarget();
+            /*
             Image ig = reader.acquireNextImage();
             ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.remaining()];
@@ -107,6 +109,7 @@ public class SilentTakePhoto {
                     }
                 }
             }
+            */
         }
     };
 
