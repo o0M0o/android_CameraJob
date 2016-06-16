@@ -266,7 +266,7 @@ public class SilentTakePhoto {
                             Log.d(TAG, "capturefailed");
                         }
                     },
-                    null);
+                    mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }

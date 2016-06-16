@@ -39,6 +39,10 @@ public class CameraJobProcess {
         mSTPCamera          = new SilentTakePhoto();
     }
 
+    protected void finalize() throws Throwable {
+        super.finalize();
+    }
+
 
     /**
      * 初始化函数
@@ -201,8 +205,12 @@ public class CameraJobProcess {
      * @return 所有camera job
      */
     public List<CameraJob> GetAllJobs() {
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
         LinkedList<CameraJob> ls_ret = new LinkedList<>();
         mLsJobLock.lock();
+        mLsJob.clear();
+        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
+
         ls_ret.addAll(mLsJob);
         mLsJobLock.unlock();
 
@@ -214,8 +222,12 @@ public class CameraJobProcess {
      * @return 所有camera job status
      */
     public List<CameraJobStatus> GetAllJobStatus() {
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
         LinkedList<CameraJobStatus> ls_ret = new LinkedList<>();
         mLsJobStatusLock.lock();
+        mLsJobStatus.clear();
+        mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
+
         ls_ret.addAll(mLsJobStatus);
         mLsJobStatusLock.unlock();
 
@@ -251,19 +263,19 @@ public class CameraJobProcess {
         boolean ik = false;
         switch (cj.job_point)   {
             case GlobalDef.CNSTR_EVERY_TEN_SECOND : {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec % 10)
+                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec % 10)
                     ik = true;
             }
             break;
 
             case GlobalDef.CNSTR_EVERY_TWENTY_SECOND : {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec % 20)
+                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec % 20)
                     ik = true;
             }
             break;
 
             case GlobalDef.CNSTR_EVERY_THIRTY_SECOND: {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec % 30)
+                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec % 30)
                     ik = true;
             }
             break;
@@ -281,21 +293,21 @@ public class CameraJobProcess {
         switch (cj.job_point)   {
             case GlobalDef.CNSTR_EVERY_TEN_MINUTE: {
                 if((0 == curmin % 10)
-                    && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                    && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
 
             case GlobalDef.CNSTR_EVERY_TWENTY_MINUTE : {
                 if((0 == curmin % 20)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
 
             case GlobalDef.CNSTR_EVERY_THIRTY_MINUTE: {
                 if((0 == curmin % 30)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
@@ -315,7 +327,7 @@ public class CameraJobProcess {
         switch (cj.job_point)   {
             case GlobalDef.CNSTR_EVERY_ONE_HOUR: {
                 if((0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
@@ -323,7 +335,7 @@ public class CameraJobProcess {
             case GlobalDef.CNSTR_EVERY_TWO_HOUR : {
                 if((0 == curhou % 2)
                         && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
@@ -331,7 +343,7 @@ public class CameraJobProcess {
             case GlobalDef.CNSTR_EVERY_FOUR_HOUR: {
                 if((0 == curhou % 4)
                         && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
@@ -339,7 +351,7 @@ public class CameraJobProcess {
             case GlobalDef.CNSTR_EVERY_SIX_HOUR: {
                 if((0 == curhou % 6)
                         && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
@@ -347,7 +359,7 @@ public class CameraJobProcess {
             case GlobalDef.CNSTR_EVERY_EIGHT_HOUR: {
                 if((0 == curhou % 8)
                         && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;
@@ -355,7 +367,7 @@ public class CameraJobProcess {
             case GlobalDef.CNSTR_EVERY_TWELVE_HOUR: {
                 if((0 == curhou % 12)
                         && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD >= cursec))
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
                     ik = true;
             }
             break;

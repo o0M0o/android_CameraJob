@@ -22,6 +22,7 @@ import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,15 +102,16 @@ public class ActivityStart
                     }
                 }
 
-                String show = String.format("周期 : %s\n频度 : %s\n结束时间 : %s"
+                String show = String.format("周期 : %s, 频度 : %s\n结束时间 : %s"
                                         ,cj.job_type
                                         ,cj.job_point
                                         ,"2016-06-17 23:59");
 
                 if(null != curjs)   {
-                    show = String.format("%s\n已拍摄照片 : %d"
+                    show = String.format("%s\n已拍摄照片 : %d\n最后拍摄时间 : %s"
                                         ,show
-                                        ,curjs.camerajob_photo_count);
+                                        ,curjs.camerajob_photo_count
+                                        , UtilFun.TimestampToString(curjs.ts));
                 }
 
 

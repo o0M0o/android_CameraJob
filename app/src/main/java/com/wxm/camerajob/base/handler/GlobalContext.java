@@ -128,7 +128,7 @@ public class GlobalContext {
             int photo_count = (int)obj_arr[1];
             //Handler h = (Handler)obj_arr[2];
 
-            Log.i(TAG, "camerajob_id : " + camerajob_id + ", photo_count : " + photo_count);
+            //Log.i(TAG, "camerajob_id : " + camerajob_id + ", photo_count : " + photo_count);
 
             List<CameraJobStatus> js = getInstance().mJobProcessor.GetAllJobStatus();
             CameraJobStatus curjs = null;
@@ -143,7 +143,7 @@ public class GlobalContext {
                 curjs.camerajob_photo_count += photo_count;
                 curjs.ts.setTime(Calendar.getInstance().getTimeInMillis());
                 getInstance().mJobProcessor.modifyCameraJobStatus(curjs);
-                Log.i(TAG, "CameraJobStatus : " + curjs.toString());
+                //Log.i(TAG, "CameraJobStatus : " + curjs.toString());
             }
         }
 
