@@ -18,9 +18,14 @@ import android.media.ImageReader;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+
+import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.handler.GlobalContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,6 +54,8 @@ public class SilentTakePhoto {
     private CameraDevice mCameraDevice = null;
     private CameraCaptureSession mCaptureSession = null;
 
+    private CameraJob mCurCameraJob;
+
     private CameraCaptureSession.StateCallback mSessionStateCallback =
             new CameraCaptureSession.StateCallback() {
                 @Override
@@ -72,7 +79,34 @@ public class SilentTakePhoto {
             = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+            //mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+            Image ig = reader.acquireNextImage();
+            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            FileOutputStream output = null;
+            try {
+                output = new FileOutputStream(mFile);
+                output.write(bytes);
+
+                Log.i(TAG, "save photo : " + mFile.toString());
+
+                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+                m.obj = new Object[] {mCurCameraJob._id, 1};
+                m.sendToTarget();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                ig.close();
+                if (null != output) {
+                    try {
+                        output.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     };
 
@@ -100,45 +134,6 @@ public class SilentTakePhoto {
                 }
             };
 
-
-    /**
-     * Saves a JPEG {@link Image} into the specified {@link File}.
-     */
-    private static class ImageSaver implements Runnable {
-        private final Image mImage;
-        private final File mFile;
-
-        public ImageSaver(Image image, File file) {
-            mImage = image;
-            mFile = file;
-        }
-
-        @Override
-        public void run() {
-            ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            FileOutputStream output = null;
-            try {
-                output = new FileOutputStream(mFile);
-                output.write(bytes);
-
-                Log.i(TAG, "save photo to : " + mFile.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                mImage.close();
-                if (null != output) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * 构造函数
      */
@@ -165,6 +160,7 @@ public class SilentTakePhoto {
      * @param height    图高
      */
     public void openCamera(int face, int width, int height) {
+        Log.i(TAG, "openCamera");
         if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             //requestCameraPermission();
@@ -193,6 +189,7 @@ public class SilentTakePhoto {
      * 关闭相机
      */
     public void closeCamera()   {
+        Log.i(TAG, "closeCamera : " + mFile.toString());
         try {
             mCameraOpenCloseLock.acquire();
             if (null != mCaptureSession) {
@@ -217,14 +214,15 @@ public class SilentTakePhoto {
     /**
      * Capture a still picture
      */
-    public void captureStillPicture(@NonNull String fileName) {
+    public void captureStillPicture(@NonNull String fileName, CameraJob cj) {
+        mCurCameraJob = cj;
         setupFile(fileName);
 
-        // 等待3秒钟确认相机状态
-        for(int i = 0; (null == mCaptureSession) && (i < 30); ++i)  {
+        // 等待2秒钟确认相机状态
+        for(int i = 0; (null == mCaptureSession) && (i < 100); ++i)  {
             try {
-                Log.i(TAG, "wait 100 ms");
-                Thread.sleep(100);
+                Log.i(TAG, "wait 20 ms");
+                Thread.sleep(20);
             }
             catch (InterruptedException e) {
                 e.printStackTrace();

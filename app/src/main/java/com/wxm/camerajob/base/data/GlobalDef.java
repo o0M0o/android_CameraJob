@@ -25,10 +25,13 @@ public class GlobalDef {
     public final static int MSGWHAT_ASK_CAMERAJOB       = 1102;
     public final static int MSGWHAT_ANSWER_CAMERAJOB    = 1103;
     public final static int MSGWHAT_CAMERAJOB_REMOVE    = 1104;
+    public final static int MSGWHAT_CAMERAJOB_TAKEPHOTO = 1105;
+    public final static int MSGWHAT_ACSTART_UPDATEJOBS  = 1200;
 
     public final static int INTRET_JOB_SAVE             = 2000;
     public final static int INTRET_JOB_GIVEUP           = 2001;
 
+    public final static int INT_INVALID_ID              = -1;
     public final static int INT_GLOBALJOB_PERIOD        = 5000;
     public final static int INT_GLOBALJOB_CHECKPERIOD   = 5;
 
@@ -51,6 +54,11 @@ public class GlobalDef {
     public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
     public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
     public final static String  STR_ITEM_ID         = "ITEM_ID";
+
+    public final static String  STR_CAMERAJOB_RUN           = "running";
+    public final static String  STR_CAMERAJOB_STOP          = "stopped";
+    public final static String  STR_CAMERAJOB_UNKNOWN       = "unknown";
+
 }
 
 

@@ -4,6 +4,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.SilentTakePhoto;
@@ -22,15 +23,20 @@ public class CameraJobProcess {
     private final String TAG = "CameraJobProcess";
     private int                     mInitFlag;
     private LinkedList<CameraJob>   mLsJob;
-    private Lock                    mLsLock;
+    private Lock                    mLsJobLock;
     private SilentTakePhoto         mSTPCamera;
 
-    public CameraJobProcess() {
-        mInitFlag = 0;
-        mLsJob = new LinkedList<>();
+    private LinkedList<CameraJobStatus>   mLsJobStatus;
+    private Lock                          mLsJobStatusLock;
 
-        mLsLock = new ReentrantLock();
-        mSTPCamera = new SilentTakePhoto();
+    public CameraJobProcess() {
+        mInitFlag       = 0;
+        mLsJob          = new LinkedList<>();
+        mLsJobStatus    = new LinkedList<>();
+
+        mLsJobLock          = new ReentrantLock();
+        mLsJobStatusLock    = new ReentrantLock();
+        mSTPCamera          = new SilentTakePhoto();
     }
 
 
@@ -46,7 +52,8 @@ public class CameraJobProcess {
             return ret;
         }
 
-        mLsJob.addAll(dbm.GetJobs());
+        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
+        mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
 
         mInitFlag = 1;
         ret = true;
@@ -63,13 +70,13 @@ public class CameraJobProcess {
 
         //Log.i(TAG, "processor wakeup");
         DBManager dbm = GlobalContext.getInstance().mDBManager;
-        mLsLock.lock();
+        mLsJobLock.lock();
         mLsJob.clear();
-        mLsJob.addAll(dbm.GetJobs());
+        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
         for(CameraJob cj : mLsJob)  {
             jobWakeup(cj);
         }
-        mLsLock.unlock();
+        mLsJobLock.unlock();
     }
 
 
@@ -78,15 +85,80 @@ public class CameraJobProcess {
      * @param cj   待添加job
      */
     public void addCameraJob(CameraJob cj)  {
-        DBManager dbm = GlobalContext.getInstance().mDBManager;
-        if(dbm.AddJob(cj))   {
-            mLsLock.lock();
-            mLsJob.clear();
-            mLsJob.addAll(dbm.GetJobs());
-            mLsLock.unlock();
+        mLsJobLock.lock();
+
+        boolean repeat = false;
+        for(CameraJob ij : mLsJob)  {
+            if(ij.job_name.equals(cj.job_name)) {
+                repeat = true;
+                break;
+            }
+        }
+
+        if(!repeat) {
+            DBManager dbm = GlobalContext.getInstance().mDBManager;
+            if(dbm.mCameraJobHelper.AddJob(cj)) {
+                mLsJob.clear();
+                mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
+
+                int new_id = GlobalDef.INT_INVALID_ID;
+                for (CameraJob ij : mLsJob) {
+                    if (cj.job_name.equals(cj.job_name)) {
+                        new_id = ij._id;
+                        break;
+                    }
+                }
+                mLsJobLock.unlock();
+
+
+                if (GlobalDef.INT_INVALID_ID != new_id) {
+                    CameraJobStatus cjs = new CameraJobStatus();
+                    cjs.camerjob_id = new_id;
+                    cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_RUN;
+                    addCameraJobStatus(cjs);
+                }
+            }
+            else    {
+                Log.e(TAG, "添加camera job失败，camerajob = " + cj.toString());
+            }
         }
         else    {
-            Log.e(TAG, "添加camera job失败，camerajob = " + cj.toString());
+            mLsJobLock.unlock();
+        }
+    }
+
+    /**
+     * 添加camera job status
+     * @param cj   待添加job
+     */
+    public void addCameraJobStatus(CameraJobStatus cj)  {
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
+        if(dbm.mCameraJobStatusHelper.AddJobStatus(cj))   {
+            mLsJobStatusLock.lock();
+            mLsJobStatus.clear();
+            mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
+            mLsJobStatusLock.unlock();
+        }
+        else    {
+            Log.e(TAG, "添加camera job status失败，camerajobstatus = " + cj.toString());
+        }
+    }
+
+
+    /**
+     * 修改camera job status
+     * @param cj   待更新job status
+     */
+    public void modifyCameraJobStatus(CameraJobStatus cj)  {
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
+        if(dbm.mCameraJobStatusHelper.ModifyJobStatus(cj))   {
+            mLsJobStatusLock.lock();
+            mLsJobStatus.clear();
+            mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
+            mLsJobStatusLock.unlock();
+        }
+        else    {
+            Log.e(TAG, "修改camera job status失败，camerajobstatus = " + cj.toString());
         }
     }
 
@@ -96,14 +168,31 @@ public class CameraJobProcess {
      */
     public void removeCameraJob(String jobid)   {
         DBManager dbm = GlobalContext.getInstance().mDBManager;
-        if(dbm.RemoveJob(jobid))   {
-            mLsLock.lock();
+        if(dbm.mCameraJobHelper.RemoveJob(jobid))   {
+            mLsJobLock.lock();
             mLsJob.clear();
-            mLsJob.addAll(dbm.GetJobs());
-            mLsLock.unlock();
+            mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
+            mLsJobLock.unlock();
         }
         else    {
             Log.e(TAG, "移除camera job失败，jobid = " + jobid);
+        }
+    }
+
+    /**
+     * 移除camera job status
+     * @param jobstatusid 待移除jobstatus的id
+     */
+    public void removeCameraJobStatus(String jobstatusid)   {
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
+        if(dbm.mCameraJobStatusHelper.RemoveJobStatus(jobstatusid))   {
+            mLsJobStatusLock.lock();
+            mLsJobStatus.clear();
+            mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
+            mLsJobStatusLock.unlock();
+        }
+        else    {
+            Log.e(TAG, "移除camera jobstatus失败，jobstatusid = " + jobstatusid);
         }
     }
 
@@ -113,9 +202,22 @@ public class CameraJobProcess {
      */
     public List<CameraJob> GetAllJobs() {
         LinkedList<CameraJob> ls_ret = new LinkedList<>();
-        mLsLock.lock();
+        mLsJobLock.lock();
         ls_ret.addAll(mLsJob);
-        mLsLock.unlock();
+        mLsJobLock.unlock();
+
+        return ls_ret;
+    }
+
+    /**
+     * 得到所有camera job status
+     * @return 所有camera job status
+     */
+    public List<CameraJobStatus> GetAllJobStatus() {
+        LinkedList<CameraJobStatus> ls_ret = new LinkedList<>();
+        mLsJobStatusLock.lock();
+        ls_ret.addAll(mLsJobStatus);
+        mLsJobStatusLock.unlock();
 
         return ls_ret;
     }
@@ -279,7 +381,7 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.SECOND));
 
         mSTPCamera.openCamera(CameraCharacteristics.LENS_FACING_BACK, 1280, 960);
-        mSTPCamera.captureStillPicture(fn);
+        mSTPCamera.captureStillPicture(fn, cj);
         mSTPCamera.closeCamera();
     }
 }

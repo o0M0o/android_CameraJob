@@ -18,6 +18,7 @@ import android.widget.SimpleAdapter;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ActivityStart
         extends AppCompatActivity
@@ -73,22 +76,42 @@ public class ActivityStart
                     processor_answer_camerjob(msg);
                     break;
 
+                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS :
+                    updateJobs();
+                    break;
+
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
                     break;
             }
         }
 
-
         private void processor_answer_camerjob(Message msg) {
-            List<CameraJob> ls_job = (List<CameraJob>) msg.obj;
+            Object[] obj_arr = (Object[])msg.obj;
+            List<CameraJob> ls_job = (List<CameraJob>) obj_arr[0];
+            List<CameraJobStatus> ls_jobstatus = (List<CameraJobStatus>) obj_arr[1];
 
             mActivity.mLVList.clear();
             for(CameraJob cj : ls_job)  {
+                CameraJobStatus curjs = null;
+                for(CameraJobStatus ji : ls_jobstatus)    {
+                    if(ji.camerjob_id == cj._id)  {
+                        curjs = ji;
+                        break;
+                    }
+                }
+
                 String show = String.format("周期 : %s\n频度 : %s\n结束时间 : %s"
                                         ,cj.job_type
                                         ,cj.job_point
                                         ,"2016-06-17 23:59");
+
+                if(null != curjs)   {
+                    show = String.format("%s\n已拍摄照片 : %d"
+                                        ,show
+                                        ,curjs.camerajob_photo_count);
+                }
+
 
                 HashMap<String, String> map = new HashMap<>();
                 map.put(GlobalDef.STR_ITEM_TITLE, "任务 : " + cj.job_name);
@@ -108,6 +131,9 @@ public class ActivityStart
     private ListView                            mLVJobs;
     private MySimpleAdapter                     mLVAdapter;
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
+
+    private Timer                               mTimer;
+    private TimerTask                           mTimerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,13 +155,16 @@ public class ActivityStart
 
         updateJobs();
 
-        /*
-        // 设置全局jobservice
-        Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                                    GlobalDef.MSGWHAT_JOB_ADD_GLOBAL);
-        m.obj = this;
-        m.sendToTarget();
-        */
+        // set timer
+        mTimer = new Timer();
+        mTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
+            }
+        };
+
+        mTimer.schedule(mTimerTask, 5000, 5000);
     }
 
     @Override
