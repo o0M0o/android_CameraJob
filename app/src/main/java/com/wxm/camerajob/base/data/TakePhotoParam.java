@@ -1,8 +1,6 @@
 package com.wxm.camerajob.base.data;
 
-import android.hardware.camera2.CameraCharacteristics;
 import android.os.Environment;
-import android.util.Size;
 
 import com.wxm.camerajob.base.utility.ContextUtil;
 
@@ -13,18 +11,18 @@ import java.io.File;
  * Created by 123 on 2016/6/13.
  */
 public class TakePhotoParam {
-    public int      mFace;
-    public Size     mPhotoSize;
+    private final static int  WAIT_MSECS = 8000;
+
     public String   mPhotoFileDir;
     public String   mFileName;
 
     public String   mTag;
+    public long     mWaitMSecs;
 
-    public TakePhotoParam(String fn) {
-        mFace = CameraCharacteristics.LENS_FACING_BACK;
-        mPhotoSize = new Size(1280, 960);
+    public TakePhotoParam(String fn, String tag) {
+        mWaitMSecs = WAIT_MSECS;
 
-        mTag = Integer.toString(GlobalDef.INT_INVALID_ID);
+        mTag = tag;
         String en= Environment.getExternalStorageState();
         if(en.equals(Environment.MEDIA_MOUNTED)){
             File sdcardDir =Environment.getExternalStorageDirectory();

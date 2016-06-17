@@ -393,8 +393,7 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.MINUTE)
                         ,curCal.get(Calendar.SECOND));
 
-        TakePhotoParam tp = new TakePhotoParam(fn);
-        tp.mTag = Integer.toString(cj._id);
+        TakePhotoParam tp = new TakePhotoParam(fn, Integer.toString(cj._id));
         mSCHHandler.TakePhoto(tp);
     }
 }

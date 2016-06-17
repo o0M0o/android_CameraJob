@@ -2,8 +2,8 @@ package com.wxm.camerajob.base.utility;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 
+import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 
 /**
@@ -12,12 +12,6 @@ import com.wxm.camerajob.base.data.TakePhotoParam;
  */
 public class SilentCameraHandler {
     private final static String TAG = "SilentCameraHandler";
-    private final static int  WAIT_MSECS = 10000;
-    private final static int  CAPTURE_NOT_START = 0;
-    private final static int  CAPTURE_STARTING = 3;
-    private final static int  CAPTURE_FINISHED = 1;
-    private final static int  CAPTURE_FAILED = 2;
-    private int mCaptureFinishFlag = CAPTURE_NOT_START;
 
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
@@ -40,11 +34,7 @@ public class SilentCameraHandler {
 
         @Override
         public void run() {
-            Log.i(TAG, "run start");
-            mSHandler.mCamera.TakePhoto(mParam, WAIT_MSECS);
-            Log.i(TAG, "run end");
-
-            mSHandler.mCaptureFinishFlag = CAPTURE_FINISHED;
+            mSHandler.mCamera.TakePhoto(mParam);
         }
 
     }
@@ -53,8 +43,8 @@ public class SilentCameraHandler {
         mCamera = new SilentCamera();
         startBackgroundThread();
 
-        TakePhotoParam para = new TakePhotoParam("fuck.jpg");
-        mCamera.openCamera(para, mBackgroundHandler);
+        CameraParam para = new CameraParam(mBackgroundHandler);
+        mCamera.openCamera(para);
     }
 
     protected void finalize() throws Throwable {
@@ -65,13 +55,12 @@ public class SilentCameraHandler {
 
 
     public void TakePhoto(TakePhotoParam para)  {
-        if(CAPTURE_STARTING == mCaptureFinishFlag)
-            return;
-
-        mCaptureFinishFlag = CAPTURE_STARTING;
-        //mCamera.openCamera(para, mBackgroundHandler);
-        mBackgroundHandler.post(new SilentCameraRun(para,
-                                            this));
+        int cur_status = mCamera.getCameraStatus();
+        if((SilentCamera.CAMERA_IDLE == cur_status)
+            || (SilentCamera.CAMERA_TAKEPHOTO_FINISHED == cur_status)
+            ||(SilentCamera.CAMERA_TAKEPHOTO_FAILED == cur_status)) {
+            mBackgroundHandler.post(new SilentCameraRun(para, this));
+        }
     }
 
 
