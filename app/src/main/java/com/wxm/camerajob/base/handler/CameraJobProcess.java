@@ -292,6 +292,26 @@ public class CameraJobProcess {
         int curmin = curCal.get(Calendar.MINUTE);
         boolean ik = false;
         switch (cj.job_point)   {
+            case GlobalDef.CNSTR_EVERY_ONE_MINUTE: {
+                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec)
+                    ik = true;
+            }
+            break;
+
+            case GlobalDef.CNSTR_EVERY_TWO_MINUTE: {
+                if((0 == curmin % 2)
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
+                    ik = true;
+            }
+            break;
+
+            case GlobalDef.CNSTR_EVERY_FIVE_MINUTE: {
+                if((0 == curmin % 5)
+                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
+                    ik = true;
+            }
+            break;
+
             case GlobalDef.CNSTR_EVERY_TEN_MINUTE: {
                 if((0 == curmin % 10)
                     && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))

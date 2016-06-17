@@ -3,4 +3,5 @@
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="cn_camerajob_add">添加任务</string>
+    <string name="cn_camera_setting">设置相机</string>
 </resources>

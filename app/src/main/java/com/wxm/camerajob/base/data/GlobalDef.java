@@ -39,6 +39,9 @@ public class GlobalDef {
     public final static String CNSTR_EVERY_TWENTY_SECOND      = "每20秒";
     public final static String CNSTR_EVERY_THIRTY_SECOND      = "每30秒";
 
+    public final static String CNSTR_EVERY_ONE_MINUTE         = "每1分钟";
+    public final static String CNSTR_EVERY_TWO_MINUTE         = "每2分钟";
+    public final static String CNSTR_EVERY_FIVE_MINUTE        = "每5分钟";
     public final static String CNSTR_EVERY_TEN_MINUTE         = "每10分钟";
     public final static String CNSTR_EVERY_TWENTY_MINUTE      = "每20分钟";
     public final static String CNSTR_EVERY_THIRTY_MINUTE      = "每30分钟";

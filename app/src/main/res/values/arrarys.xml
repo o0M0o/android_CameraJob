@@ -11,6 +11,9 @@
         <item>每30秒</item>
     </string-array>
     <string-array name="hourly_invoke">
+        <item>每1分钟</item>
+        <item>每2分钟</item>
+        <item>每5分钟</item>
         <item>每10分钟</item>
         <item>每20分钟</item>
         <item>每30分钟</item>
