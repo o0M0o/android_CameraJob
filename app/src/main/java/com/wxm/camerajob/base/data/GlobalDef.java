@@ -9,6 +9,7 @@ public class GlobalDef {
     public final static String STR_JOB_INVOKE           = "job_invoke";
 
     public final static String STR_LOAD_JOB             = "load_job";
+    public final static String STR_LOAD_CAMERASETTING   = "load_camerasetting";
 
     public final static String STR_JOBTYPE_MINUTELY    = "minutely_job";
     public final static String STR_JOBTYPE_HOURLY      = "hourly_job";
@@ -30,6 +31,8 @@ public class GlobalDef {
 
     public final static int INTRET_JOB_SAVE             = 2000;
     public final static int INTRET_JOB_GIVEUP           = 2001;
+    public final static int INTRET_CS_ACCEPT            = 2010;
+    public final static int INTRET_CS_GIVEUP            = 2011;
 
     public final static int INT_INVALID_ID              = -1;
     public final static int INT_GLOBALJOB_PERIOD        = 5000;
@@ -57,6 +60,9 @@ public class GlobalDef {
     public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
     public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
     public final static String  STR_ITEM_ID         = "ITEM_ID";
+
+    public final static String  STR_CAMERA_DPI      = "CAMERA_DPI";
+
 
     public final static String  STR_CAMERAJOB_RUN           = "running";
     public final static String  STR_CAMERAJOB_STOP          = "stopped";

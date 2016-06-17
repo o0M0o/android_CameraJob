@@ -1,5 +1,7 @@
 package com.wxm.camerajob.base.utility;
 
+import android.util.Size;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -24,5 +26,30 @@ public class UtilFun {
         Calendar cl = Calendar.getInstance();
         cl.setTimeInMillis(ts.getTime());
         return CalenderToString(cl);
+    }
+
+
+    /**
+     * Size转换到字符串
+     * @param sz 待转换Size
+     * @return 结果
+     */
+    public static String SizeToString(Size sz) {
+        return Integer.toString(sz.getWidth())
+                + " X " + Integer.toString(sz.getHeight());
+    }
+
+    /**
+     * 字符串转换到Size
+     * @param str 待转换字符串
+     * @return 结果
+     */
+    public static Size StringToSize(String str)     {
+        String[] sz = str.split(" X ");
+        if(2 != sz.length)
+            return new Size(0, 0);
+
+
+        return new Size(Integer.parseInt(sz[0]), Integer.parseInt(sz[1]));
     }
 }

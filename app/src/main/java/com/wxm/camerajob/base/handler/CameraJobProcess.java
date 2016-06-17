@@ -7,7 +7,7 @@ import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.db.DBManager;
-import com.wxm.camerajob.base.utility.SilentCameraHandler;
+import com.wxm.camerajob.base.utility.ContextUtil;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -24,8 +24,6 @@ public class CameraJobProcess {
     private int                     mInitFlag;
     private LinkedList<CameraJob>   mLsJob;
     private Lock                    mLsJobLock;
-    //private SilentTakePhoto         mSTPCamera;
-    private SilentCameraHandler     mSCHHandler;
 
     private LinkedList<CameraJobStatus>   mLsJobStatus;
     private Lock                          mLsJobStatusLock;
@@ -37,7 +35,6 @@ public class CameraJobProcess {
 
         mLsJobLock          = new ReentrantLock();
         mLsJobStatusLock    = new ReentrantLock();
-        mSCHHandler         = new SilentCameraHandler();
     }
 
     protected void finalize() throws Throwable {
@@ -414,6 +411,6 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.SECOND));
 
         TakePhotoParam tp = new TakePhotoParam(fn, Integer.toString(cj._id));
-        mSCHHandler.TakePhoto(tp);
+        ContextUtil.getInstance().mSCHHandler.TakePhoto(tp);
     }
 }

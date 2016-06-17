@@ -17,6 +17,8 @@ import com.wxm.camerajob.base.receiver.AlarmReceiver;
 public class ContextUtil extends Application    {
     private static final String TAG = "ContextUtil";
 
+    public SilentCameraHandler  mSCHHandler;
+
     private static ContextUtil instance;
     public static ContextUtil getInstance() {
         return instance;
@@ -31,6 +33,7 @@ public class ContextUtil extends Application    {
 
 
         // 初始化context
+        mSCHHandler = new SilentCameraHandler();
         instance = this;
         GlobalContext.getInstance().initContext();
 
