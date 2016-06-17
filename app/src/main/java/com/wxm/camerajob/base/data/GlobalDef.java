@@ -68,6 +68,13 @@ public class GlobalDef {
     public final static String  STR_CAMERAJOB_STOP          = "stopped";
     public final static String  STR_CAMERAJOB_UNKNOWN       = "unknown";
 
+    public final static String  STR_CAMERAPROPERTIES_NAME       = "camera_properties";
+    public final static String  STR_PROPERTIES_FILENAME         = "appConfig.properties";
+    public final static String  STR_PROPERTIES_CAMERA_FACE      = "camera_face";
+    public final static String  STR_PROPERTIES_CAMERA_DPI       = "camera_dpi";
+    public final static String  STR_PROPERTIES_CAMERA_AUTOFLASH = "camera_autoflash";
+    public final static String  STR_PROPERTIES_CAMERA_AUTOFOCUS = "camera_autofocus";
+
 }
 
 
