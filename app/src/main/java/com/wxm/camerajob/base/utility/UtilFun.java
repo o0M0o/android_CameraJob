@@ -10,6 +10,12 @@ import java.util.Calendar;
  * Created by 123 on 2016/6/16.
  */
 public class UtilFun {
+
+    /**
+     * 日历类到字符串
+     * @param cl 日历类
+     * @return 结果
+     */
     public static String CalenderToString(Calendar cl)  {
         String ret = String.format(
                 "%d-%02d-%02d %02d:%02d:%02d"
@@ -22,6 +28,22 @@ public class UtilFun {
         return ret;
     }
 
+    /**
+     * 毫秒数到字符串
+     * @param ms 1970年以来的毫秒数
+     * @return 结果
+     */
+    public static String MilliSecsToString(long ms) {
+        Calendar cl = Calendar.getInstance();
+        cl.setTimeInMillis(ms);
+        return CalenderToString(cl);
+    }
+
+    /**
+     * 时间戳转换到字符串
+     * @param ts 时间戳
+     * @return 结果
+     */
     public static String TimestampToString(Timestamp ts)    {
         Calendar cl = Calendar.getInstance();
         cl.setTimeInMillis(ts.getTime());

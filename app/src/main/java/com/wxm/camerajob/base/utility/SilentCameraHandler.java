@@ -1,10 +1,7 @@
 package com.wxm.camerajob.base.utility;
 
-import android.content.Context;
-import android.hardware.camera2.CameraManager;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
@@ -44,9 +41,6 @@ public class SilentCameraHandler {
      */
 
     public SilentCameraHandler(CameraParam cp)    {
-        CameraManager manager = (CameraManager) ContextUtil.getInstance()
-                                    .getSystemService(Context.CAMERA_SERVICE);
-        mCamera = new SilentCamera(manager);
         startBackgroundThread();
 
         mCameraParam = cp;
@@ -65,19 +59,8 @@ public class SilentCameraHandler {
 
 
     public void TakePhoto(TakePhotoParam para)  {
+        mCamera = new SilentCamera();
         /*
-        int cur_status = mCamera.getCameraStatus();
-        if(SilentCamera.CAMERA_NOT_READY == cur_status) {
-            mCamera.openCamera(mCameraParam);
-        }
-
-        if((SilentCamera.CAMERA_IDLE == cur_status)
-            || (SilentCamera.CAMERA_TAKEPHOTO_FINISHED == cur_status)
-            ||(SilentCamera.CAMERA_TAKEPHOTO_FAILED == cur_status)) {
-            mBackgroundHandler.post(new SilentCameraRun(para, this));
-        }
-        */
-
         int cur_status = mCamera.getCameraStatus();
         if(SilentCamera.CAMERA_NOT_READY != cur_status) {
             Log.i(TAG, "相机处在使用中，放弃此次操作, mTag = '"
@@ -87,7 +70,7 @@ public class SilentCameraHandler {
                             + para.mTag + "'");
             return;
         }
-
+        */
         mCamera.TakeOncePhoto(mCameraParam, para);
     }
 

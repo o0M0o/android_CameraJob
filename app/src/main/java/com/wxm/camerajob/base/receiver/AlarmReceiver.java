@@ -30,6 +30,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             m.sendToTarget();
 
             // 设置闹钟
+            FileLogger.getLogger().info("camerajob set alarm again");
             Context ct = ContextUtil.getInstance();
             Intent intent = new Intent(ct, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(ct, 0, intent, 0);

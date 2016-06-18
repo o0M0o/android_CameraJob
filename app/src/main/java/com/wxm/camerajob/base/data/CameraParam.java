@@ -11,6 +11,9 @@ import android.util.Size;
  * Created by 123 on 2016/6/17.
  */
 public class CameraParam  implements Parcelable {
+    private final static int  WAIT_MSECS = 8000;
+    public long     mWaitMSecs;
+
     public int      mFace;
     public Size     mPhotoSize;
     public boolean  mAutoFlash;
@@ -18,6 +21,7 @@ public class CameraParam  implements Parcelable {
     public Handler  mSessionHandler;
 
     public CameraParam(Handler sessionHandler)    {
+        mWaitMSecs = WAIT_MSECS;
         mFace = CameraCharacteristics.LENS_FACING_BACK;
         mSessionHandler = sessionHandler;
 

@@ -1,6 +1,7 @@
 package com.wxm.camerajob.base.utility;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
@@ -183,10 +184,10 @@ public class SilentCamera {
         }
     };
 
-    public SilentCamera(CameraManager cm) {
+    public SilentCamera() {
         mCameraOpenCloseLock = new Semaphore(1);
-        mCameraManager = cm;
-
+        mCameraManager = (CameraManager) ContextUtil.getInstance()
+                                .getSystemService(Context.CAMERA_SERVICE);
         mHMCameraCharacteristics = new HashMap<>();
         try {
             for (String cameraId : mCameraManager.getCameraIdList()) {
@@ -202,8 +203,11 @@ public class SilentCamera {
 
     public boolean TakeOncePhoto(CameraParam cp, TakePhotoParam tp)  {
         waitOpenCamera(cp);
-        if(CAMERA_IDLE != getCameraStatus())
+        if(CAMERA_IDLE != mCameraStatus) {
+            Log.i(TAG, "in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
+            FileLogger.getLogger().info("in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
             return false;
+        }
 
         mTPParam = tp;
         long endmesc = System.currentTimeMillis() + mTPParam.mWaitMSecs;
@@ -226,41 +230,6 @@ public class SilentCamera {
         closeCamera();
         return ret;
     }
-
-
-    /**
-     * 执行拍照
-     * @param  param      拍照参数
-     * @return 成功返回true, 否则返回false
-     */
-    private boolean TakePhoto(TakePhotoParam param)  {
-        Log.i(TAG, "TakePhoto");
-        FileLogger.getLogger().info("TakePhoto");
-
-        boolean ret = false;
-        mTPParam = param;
-        long endmesc = System.currentTimeMillis() + mTPParam.mWaitMSecs;
-        if(captureStillPicture(endmesc))    {
-            // 确认拍照状态
-            while((CAMERA_TAKEPHOTO_START == getCameraStatus())
-                    && (System.currentTimeMillis() < endmesc))  {
-                try {
-                    //Log.i(TAG, "wait captureresult 300 ms");
-                    Thread.sleep(300);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if(CAMERA_TAKEPHOTO_FINISHED == getCameraStatus())
-                ret = true;
-        }
-
-        //closeCamera();
-        return ret;
-    }
-
 
     /**
      * Capture a still picture
@@ -392,7 +361,8 @@ public class SilentCamera {
         }
 
         mCParam = param;
-        setUpCameraOutputs(mCParam.mFace, mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight());
+        setUpCameraOutputs(mCParam.mFace,
+                mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight());
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -408,25 +378,25 @@ public class SilentCamera {
 
     /**
      * 打开相机
-     * 并一直等待直到操作成功或者失败
+     * 并一直等待直到操作成功或者失败或者超时
      * @param cp 相机参数
      */
     private void waitOpenCamera(CameraParam cp) {
+        long endms = System.currentTimeMillis() + cp.mWaitMSecs;
         openCamera(cp);
-
-        int cur_status = getCameraStatus();
-        if((CAMERA_TAKEPHOTO_FINISHED == cur_status) || (CAMERA_TAKEPHOTO_FAILED == cur_status))
-            mCameraStatus = CAMERA_IDLE;
 
         // 等待相机状态
         long lastms = System.currentTimeMillis();
-        while(CAMERA_IDLE != getCameraStatus())     {
+        long curms = System.currentTimeMillis();
+        while((CAMERA_NOT_READY == mCameraStatus)
+                && (curms < endms))  {
             try {
                 Thread.sleep(200);
 
-                long curms = System.currentTimeMillis();
+                curms = System.currentTimeMillis();
                 if((curms - lastms) > 1000) {
                     Log.i(TAG, "wait open camera one second...");
+                    FileLogger.getLogger().info("wait open camera one second...");
                     lastms = curms;
                 }
             }
@@ -434,10 +404,6 @@ public class SilentCamera {
                 e.printStackTrace();
                 break;
             }
-        }
-
-        if(CAMERA_IDLE != getCameraStatus()) {
-            Log.e(TAG, "in waitOpenCamera, camera is not idle");
         }
     }
 
