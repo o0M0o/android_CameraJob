@@ -94,7 +94,7 @@
         android:text="放弃"
         android:id="@+id/acbt_cs_giveup"
         android:layout_below="@+id/acbt_cs_accept"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="14dp"
         android:layout_alignRight="@+id/acbt_cs_accept"
         android:layout_alignLeft="@+id/acbt_cs_accept"
         android:textSize="22sp" />

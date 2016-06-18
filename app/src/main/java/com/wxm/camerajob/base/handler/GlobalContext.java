@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
+import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
@@ -126,7 +127,7 @@ public class GlobalContext {
          * @param msg 消息
          */
         private void processor_changecamera(Message msg) {
-            ContextUtil.getInstance().mSCHHandler.ChangeCamera();
+            ContextUtil.getInstance().mSCHHandler.ChangeCamera((CameraParam)msg.obj);
         }
 
 

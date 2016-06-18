@@ -1,7 +1,6 @@
 package com.wxm.camerajob.base.utility;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +51,9 @@ public class SilentCamera {
     private File        mFile;
     private ImageReader mImageReader;
     private boolean     mFlashSupported;
+
+    private CameraManager                           mCameraManager;
+    private HashMap<String, CameraCharacteristics>  mHMCameraCharacteristics;
 
     private Semaphore               mCameraOpenCloseLock;
     private String                  mCameraId;
@@ -105,7 +108,7 @@ public class SilentCamera {
 
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
-                    Log.i(TAG, "onError");
+                    Log.i(TAG, "onError, error = " + error);
 
                     mCameraOpenCloseLock.release();
                     camera.close();
@@ -154,6 +157,7 @@ public class SilentCamera {
                 output.write(bytes);
 
                 Log.i(TAG, "save photo to : " + mFile.toString());
+                FileLogger.getLogger().info("save photo to : " + mFile.toString());
                 Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                         GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
                 m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
@@ -179,8 +183,48 @@ public class SilentCamera {
         }
     };
 
-    public SilentCamera()   {
+    public SilentCamera(CameraManager cm) {
         mCameraOpenCloseLock = new Semaphore(1);
+        mCameraManager = cm;
+
+        mHMCameraCharacteristics = new HashMap<>();
+        try {
+            for (String cameraId : mCameraManager.getCameraIdList()) {
+                CameraCharacteristics characteristics
+                        = mCameraManager.getCameraCharacteristics(cameraId);
+
+                mHMCameraCharacteristics.put(cameraId, characteristics);
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean TakeOncePhoto(CameraParam cp, TakePhotoParam tp)  {
+        waitOpenCamera(cp);
+        if(CAMERA_IDLE != getCameraStatus())
+            return false;
+
+        mTPParam = tp;
+        long endmesc = System.currentTimeMillis() + mTPParam.mWaitMSecs;
+        if(captureStillPicture(endmesc))    {
+            while((CAMERA_TAKEPHOTO_START == getCameraStatus())
+                    && (System.currentTimeMillis() < endmesc))  {
+                try {
+                    Thread.sleep(300);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        boolean ret = true;
+        if(CAMERA_TAKEPHOTO_FINISHED != getCameraStatus())
+            ret = false;
+
+        closeCamera();
+        return ret;
     }
 
 
@@ -189,8 +233,9 @@ public class SilentCamera {
      * @param  param      拍照参数
      * @return 成功返回true, 否则返回false
      */
-    public boolean TakePhoto(TakePhotoParam param)  {
+    private boolean TakePhoto(TakePhotoParam param)  {
         Log.i(TAG, "TakePhoto");
+        FileLogger.getLogger().info("TakePhoto");
 
         boolean ret = false;
         mTPParam = param;
@@ -243,6 +288,7 @@ public class SilentCamera {
 
         if(CAMERA_IDLE != getCameraStatus()) {
             Log.e(TAG, "in captureStillPicture, camera is not idle");
+            FileLogger.getLogger().info("in captureStillPicture, camera is not idle");
             return false;
         }
 
@@ -274,6 +320,7 @@ public class SilentCamera {
                                                        @NonNull CaptureRequest request,
                                                        @NonNull TotalCaptureResult result) {
                             Log.d(TAG, "onCaptureCompleted");
+                            FileLogger.getLogger().info("onCaptureCompleted");
                             mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
                         }
 
@@ -281,6 +328,7 @@ public class SilentCamera {
                                                     @NonNull CaptureRequest request,
                                                     @NonNull CaptureFailure failure) {
                             Log.d(TAG, "onCaptureFailed");
+                            FileLogger.getLogger().info("onCaptureFailed");
                             mCameraStatus = CAMERA_TAKEPHOTO_FAILED;
                         }
                     },
@@ -295,7 +343,7 @@ public class SilentCamera {
     /**
      * 关闭相机
      */
-    public void closeCamera()   {
+   private void closeCamera()   {
         try {
             mCameraOpenCloseLock.acquire();
             if (null != mCaptureSession) {
@@ -312,6 +360,7 @@ public class SilentCamera {
             }
 
             Log.i(TAG, "Camera closed");
+            FileLogger.getLogger().info("Camera closed");
             mCameraStatus = CAMERA_NOT_READY;
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
@@ -332,8 +381,9 @@ public class SilentCamera {
      * 打开相机
      * @param param                 相机参数
      */
-    public void openCamera(CameraParam param)   {
+    private void openCamera(CameraParam param)   {
         Log.i(TAG, "openCamera");
+        FileLogger.getLogger().info("openCamera");
         if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             //requestCameraPermission();
@@ -342,20 +392,52 @@ public class SilentCamera {
         }
 
         mCParam = param;
-
         setUpCameraOutputs(mCParam.mFace, mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight());
-        CameraManager manager =
-                (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
-            manager.openCamera(mCameraId, mCameraDeviceStateCallback, mCParam.mSessionHandler);
+            mCameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mCParam.mSessionHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
+        }
+    }
+
+    /**
+     * 打开相机
+     * 并一直等待直到操作成功或者失败
+     * @param cp 相机参数
+     */
+    private void waitOpenCamera(CameraParam cp) {
+        openCamera(cp);
+
+        int cur_status = getCameraStatus();
+        if((CAMERA_TAKEPHOTO_FINISHED == cur_status) || (CAMERA_TAKEPHOTO_FAILED == cur_status))
+            mCameraStatus = CAMERA_IDLE;
+
+        // 等待相机状态
+        long lastms = System.currentTimeMillis();
+        while(CAMERA_IDLE != getCameraStatus())     {
+            try {
+                Thread.sleep(200);
+
+                long curms = System.currentTimeMillis();
+                if((curms - lastms) > 1000) {
+                    Log.i(TAG, "wait open camera one second...");
+                    lastms = curms;
+                }
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+
+        if(CAMERA_IDLE != getCameraStatus()) {
+            Log.e(TAG, "in waitOpenCamera, camera is not idle");
         }
     }
 
@@ -367,49 +449,32 @@ public class SilentCamera {
      * @param height The height of available size for camera preview
      */
     private void setUpCameraOutputs(int face, int width, int height) {
-        CameraManager manager =
-                (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
-        try {
-            for (String cameraId : manager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = manager.getCameraCharacteristics(cameraId);
+        for(String id : mHMCameraCharacteristics.keySet())  {
+            CameraCharacteristics cc = mHMCameraCharacteristics.get(id);
 
-                Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if((null != facing) && (face != facing))
-                    continue;
+            Integer facing = cc.get(CameraCharacteristics.LENS_FACING);
+            if((null != facing) && (face != facing))
+                continue;
 
-                StreamConfigurationMap map = characteristics.get(
-                        CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                if (map == null) {
-                    continue;
-                }
-
-                /*
-                // For still image captures, we use the largest available size.
-                mLargestSize = Collections.max(
-                        Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
-                        new CompareSizesByArea());
-                        */
-                mImageReader = ImageReader.newInstance(
-                        width, height,
-                        ImageFormat.JPEG, /*maxImages*/2);
-
-                mImageReader.setOnImageAvailableListener(
-                        mOnImageAvailableListener
-                        ,mCParam.mSessionHandler);
-
-                // Check if the flash is supported.
-                Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-                mFlashSupported = available == null ? false : available;
-                mCameraId = cameraId;
-                return;
+            StreamConfigurationMap map = cc.get(
+                    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            if (map == null) {
+                continue;
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            // Currently an NPE is thrown when the Camera2API is used but not supported on the
-            // device this code runs.
-            e.printStackTrace();
+
+            mImageReader = ImageReader.newInstance(
+                    width, height,
+                    ImageFormat.JPEG, /*maxImages*/2);
+
+            mImageReader.setOnImageAvailableListener(
+                    mOnImageAvailableListener
+                    ,mCParam.mSessionHandler);
+
+            // Check if the flash is supported.
+            Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+            mFlashSupported = available == null ? false : available;
+            mCameraId = id;
+            return;
         }
     }
 

@@ -8,6 +8,7 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.FileLogger;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -70,15 +71,14 @@ public class CameraJobProcess {
         if(1 != mInitFlag)
             return;
 
-        //Log.i(TAG, "processor wakeup");
-        DBManager dbm = GlobalContext.getInstance().mDBManager;
+        LinkedList<CameraJob> ls = new LinkedList<>();
         mLsJobLock.lock();
-        mLsJob.clear();
-        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
-        for(CameraJob cj : mLsJob)  {
+        ls.addAll(mLsJob);
+        mLsJobLock.unlock();
+
+        for(CameraJob cj : ls)  {
             jobWakeup(cj);
         }
-        mLsJobLock.unlock();
     }
 
 
@@ -398,6 +398,7 @@ public class CameraJobProcess {
 
     private void wakeupDuty(CameraJob cj)   {
         Log.i(TAG, "wakeup job : " + cj.toString());
+        FileLogger.getLogger().info("wakeup job : " + cj.toString());
 
         Calendar curCal = Calendar.getInstance();
         String fn = String.format(

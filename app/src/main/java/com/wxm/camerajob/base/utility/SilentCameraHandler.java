@@ -1,7 +1,10 @@
 package com.wxm.camerajob.base.utility;
 
+import android.content.Context;
+import android.hardware.camera2.CameraManager;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
@@ -13,13 +16,13 @@ import com.wxm.camerajob.base.data.TakePhotoParam;
 public class SilentCameraHandler {
     private final static String TAG = "SilentCameraHandler";
 
-    private Handler mBackgroundHandler;
-    private HandlerThread mBackgroundThread;
-    private SilentCamera   mCamera;
+    private Handler         mBackgroundHandler;
+    private HandlerThread   mBackgroundThread;
+    private SilentCamera    mCamera;
+    private CameraParam     mCameraParam;
 
     /**
      * 静默相机
-     */
     private static class SilentCameraRun implements Runnable {
         private final static String TAG = "SilentCameraHandler";
 
@@ -38,36 +41,34 @@ public class SilentCameraHandler {
         }
 
     }
+     */
 
-    public SilentCameraHandler()    {
-        mCamera = new SilentCamera();
+    public SilentCameraHandler(CameraParam cp)    {
+        CameraManager manager = (CameraManager) ContextUtil.getInstance()
+                                    .getSystemService(Context.CAMERA_SERVICE);
+        mCamera = new SilentCamera(manager);
         startBackgroundThread();
 
-        //CameraParam para = new CameraParam(mBackgroundHandler);
-        //mCamera.openCamera(para);
+        mCameraParam = cp;
+        mCameraParam.mSessionHandler = mBackgroundHandler;
     }
 
     protected void finalize() throws Throwable {
-        mCamera.closeCamera();
         stopBackgroundThread();
         super.finalize();
     }
 
-
-    public void ChangeCamera()  {
-        int cur_status = mCamera.getCameraStatus();
-        if(SilentCamera.CAMERA_NOT_READY != cur_status) {
-            mCamera.closeCamera();
-        }
+    public void ChangeCamera(CameraParam cp)  {
+        mCameraParam = cp;
+        mCameraParam.mSessionHandler = mBackgroundHandler;
     }
 
 
     public void TakePhoto(TakePhotoParam para)  {
+        /*
         int cur_status = mCamera.getCameraStatus();
         if(SilentCamera.CAMERA_NOT_READY == cur_status) {
-            CameraParam cp = PreferencesUtil.loadCameraParam();
-            cp.mSessionHandler = mBackgroundHandler;
-            mCamera.openCamera(cp);
+            mCamera.openCamera(mCameraParam);
         }
 
         if((SilentCamera.CAMERA_IDLE == cur_status)
@@ -75,6 +76,19 @@ public class SilentCameraHandler {
             ||(SilentCamera.CAMERA_TAKEPHOTO_FAILED == cur_status)) {
             mBackgroundHandler.post(new SilentCameraRun(para, this));
         }
+        */
+
+        int cur_status = mCamera.getCameraStatus();
+        if(SilentCamera.CAMERA_NOT_READY != cur_status) {
+            Log.i(TAG, "相机处在使用中，放弃此次操作, mTag = '"
+                            + para.mTag + "'");
+
+            FileLogger.getLogger().info("相机处在使用中，放弃此次操作, mTag = '"
+                            + para.mTag + "'");
+            return;
+        }
+
+        mCamera.TakeOncePhoto(mCameraParam, para);
     }
 
 

@@ -258,9 +258,14 @@ public class ActivityStart
             case GlobalDef.INTRET_CS_ACCEPT:    {
                 CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
                 Log.i(TAG, "cameraparam : " + cp.toString());
-
                 PreferencesUtil.saveCameraParam(cp);
+
+                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                                            GlobalDef.MSGWHAT_CS_CHANGECAMERA);
+                m.obj = cp;
+                m.sendToTarget();
             }
+            break;
 
             default:    {
                 Log.i(TAG, "不处理的 resultCode = " + resultCode);

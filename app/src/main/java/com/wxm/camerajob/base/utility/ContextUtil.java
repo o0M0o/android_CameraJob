@@ -29,7 +29,7 @@ public class ContextUtil extends Application    {
         // TODO Auto-generated method stub
         super.onCreate();
         instance = this;
-        mSCHHandler = new SilentCameraHandler();
+        mSCHHandler = new SilentCameraHandler(PreferencesUtil.loadCameraParam());
 //        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
 //        tm.cancelAll();
 
