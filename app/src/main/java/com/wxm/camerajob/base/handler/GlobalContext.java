@@ -111,10 +111,22 @@ public class GlobalContext {
                     processor_camerajob_takephoto(msg);
                     break;
 
+                case GlobalDef.MSGWHAT_CS_CHANGECAMERA :
+                    processor_changecamera(msg);
+                    break;
+
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
                     break;
             }
+        }
+
+        /**
+         * 拍照后消息
+         * @param msg 消息
+         */
+        private void processor_changecamera(Message msg) {
+            ContextUtil.getInstance().mSCHHandler.ChangeCamera();
         }
 
 

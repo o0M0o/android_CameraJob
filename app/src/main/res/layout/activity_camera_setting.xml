@@ -16,7 +16,8 @@
         android:id="@+id/acrb_cs_frontcamera"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:clickable="true" />
 
     <RadioButton
         android:layout_width="wrap_content"
@@ -25,7 +26,8 @@
         android:id="@+id/acrb_cs_backcamera"
         android:layout_toRightOf="@+id/acrb_cs_frontcamera"
         android:layout_marginLeft="45dp"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:clickable="true" />
 
     <Spinner
         android:layout_width="fill_parent"

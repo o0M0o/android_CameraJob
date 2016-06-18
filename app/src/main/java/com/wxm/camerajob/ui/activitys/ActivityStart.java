@@ -19,9 +19,11 @@ import android.widget.SimpleAdapter;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
+import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.ArrayList;
@@ -219,6 +221,15 @@ public class ActivityStart
             }
             break;
 
+            case R.id.meuitem_camera_setting :  {
+                Intent data = new Intent(this, ActivityCameraSetting.class);
+                data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
+                            PreferencesUtil.loadCameraParam());
+
+                startActivityForResult(data, 1);
+            }
+            break;
+
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -235,7 +246,7 @@ public class ActivityStart
         switch(resultCode)  {
             case GlobalDef.INTRET_JOB_SAVE :    {
                 CameraJob cj = data.getParcelableExtra(GlobalDef.STR_LOAD_JOB);
-                Log.i(TAG, "job : " + cj.toString());
+                Log.i(TAG, "camerajob : " + cj.toString());
 
                 Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                                             GlobalDef.MSGWHAT_CAMERAJOB_ADD);
@@ -243,6 +254,13 @@ public class ActivityStart
                 m.sendToTarget();
             }
             break;
+
+            case GlobalDef.INTRET_CS_ACCEPT:    {
+                CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
+                Log.i(TAG, "cameraparam : " + cp.toString());
+
+                PreferencesUtil.saveCameraParam(cp);
+            }
 
             default:    {
                 Log.i(TAG, "不处理的 resultCode = " + resultCode);

@@ -28,6 +28,7 @@ public class GlobalDef {
     public final static int MSGWHAT_CAMERAJOB_REMOVE    = 1104;
     public final static int MSGWHAT_CAMERAJOB_TAKEPHOTO = 1105;
     public final static int MSGWHAT_ACSTART_UPDATEJOBS  = 1200;
+    public final static int MSGWHAT_CS_CHANGECAMERA     = 1300;
 
     public final static int INTRET_JOB_SAVE             = 2000;
     public final static int INTRET_JOB_GIVEUP           = 2001;
@@ -60,6 +61,7 @@ public class GlobalDef {
     public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
     public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
     public final static String  STR_ITEM_ID         = "ITEM_ID";
+    public final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
 
     public final static String  STR_CAMERA_DPI      = "CAMERA_DPI";
 

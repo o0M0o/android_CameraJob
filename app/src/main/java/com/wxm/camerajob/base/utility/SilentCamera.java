@@ -42,11 +42,11 @@ public class SilentCamera {
     private final static String TAG = "SilentCamera";
 
     private int mCameraStatus = CAMERA_NOT_READY;
-    public final static int CAMERA_NOT_READY            = 0;
-    public final static int CAMERA_IDLE                 = 1;
-    public final static int CAMERA_TAKEPHOTO_START      = 2;
-    public final static int CAMERA_TAKEPHOTO_FINISHED   = 3;
-    public final static int CAMERA_TAKEPHOTO_FAILED     = 4;
+    public final static int CAMERA_NOT_READY            = 1;
+    public final static int CAMERA_IDLE                 = 2;
+    public final static int CAMERA_TAKEPHOTO_START      = 3;
+    public final static int CAMERA_TAKEPHOTO_FINISHED   = 4;
+    public final static int CAMERA_TAKEPHOTO_FAILED     = 5;
 
     private File        mFile;
     private ImageReader mImageReader;

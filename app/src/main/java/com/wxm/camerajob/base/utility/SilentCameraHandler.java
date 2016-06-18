@@ -43,8 +43,8 @@ public class SilentCameraHandler {
         mCamera = new SilentCamera();
         startBackgroundThread();
 
-        CameraParam para = new CameraParam(mBackgroundHandler);
-        mCamera.openCamera(para);
+        //CameraParam para = new CameraParam(mBackgroundHandler);
+        //mCamera.openCamera(para);
     }
 
     protected void finalize() throws Throwable {
@@ -54,8 +54,22 @@ public class SilentCameraHandler {
     }
 
 
+    public void ChangeCamera()  {
+        int cur_status = mCamera.getCameraStatus();
+        if(SilentCamera.CAMERA_NOT_READY != cur_status) {
+            mCamera.closeCamera();
+        }
+    }
+
+
     public void TakePhoto(TakePhotoParam para)  {
         int cur_status = mCamera.getCameraStatus();
+        if(SilentCamera.CAMERA_NOT_READY == cur_status) {
+            CameraParam cp = PreferencesUtil.loadCameraParam();
+            cp.mSessionHandler = mBackgroundHandler;
+            mCamera.openCamera(cp);
+        }
+
         if((SilentCamera.CAMERA_IDLE == cur_status)
             || (SilentCamera.CAMERA_TAKEPHOTO_FINISHED == cur_status)
             ||(SilentCamera.CAMERA_TAKEPHOTO_FAILED == cur_status)) {

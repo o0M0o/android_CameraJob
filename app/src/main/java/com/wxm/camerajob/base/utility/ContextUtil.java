@@ -28,13 +28,13 @@ public class ContextUtil extends Application    {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
+        instance = this;
+        mSCHHandler = new SilentCameraHandler();
 //        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
 //        tm.cancelAll();
 
 
         // 初始化context
-        mSCHHandler = new SilentCameraHandler();
-        instance = this;
         GlobalContext.getInstance().initContext();
 
         // 设置闹钟
