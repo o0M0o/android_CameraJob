@@ -17,6 +17,7 @@ import java.util.logging.SimpleFormatter;
 public class FileLogger {
     public final static String LOG_NAME = "camerajob_run_%g.log";
 
+    private String mLogTag;
     public Logger mLoger;
     private FileHandler mLogFH;
 
@@ -35,6 +36,8 @@ public class FileLogger {
     }
 
     public FileLogger() {
+        mLogTag =  ("P" + System.currentTimeMillis() % 100000);
+
         String logfn;
         String en = Environment.getExternalStorageState();
         if (en.equals(Environment.MEDIA_MOUNTED)) {
@@ -58,11 +61,12 @@ public class FileLogger {
             mLogFH.setFormatter(new SimpleFormatter() {
                 @Override
                 public String format(LogRecord record) {
-                    String ret = String.format("%s|%d|%s|%s|%s"
+
+                    String ret = String.format("%s|%s|%s-%d|%s|%s"
                             , UtilFun.MilliSecsToString(record.getMillis())
-                            , record.getThreadID()
-                            , record.getSourceMethodName()
                             , record.getLevel().getName()
+                            , mLogTag ,record.getThreadID()
+                            , record.getSourceMethodName()
                             , formatMessage(record)) + (System.lineSeparator());
                     return ret;
                 }

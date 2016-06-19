@@ -11,7 +11,6 @@ import android.util.Log;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.FileLogger;
 
 /**
  * Created by 123 on 2016/6/15.
@@ -22,7 +21,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context arg0, Intent data) {
         //Log.i(TAG, "app wakeup");
-        FileLogger.getLogger().info("camerajob wakeup");
+        //FileLogger.getLogger().info("camerajob wakeup");
 
         try {
             Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
@@ -30,7 +29,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             m.sendToTarget();
 
             // 设置闹钟
-            FileLogger.getLogger().info("camerajob set alarm again");
+            //FileLogger.getLogger().info("camerajob set alarm again");
             Context ct = ContextUtil.getInstance();
             Intent intent = new Intent(ct, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(ct, 0, intent, 0);

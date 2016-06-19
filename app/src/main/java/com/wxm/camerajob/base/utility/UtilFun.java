@@ -2,6 +2,9 @@ package com.wxm.camerajob.base.utility;
 
 import android.util.Size;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -10,6 +13,69 @@ import java.util.Calendar;
  * Created by 123 on 2016/6/16.
  */
 public class UtilFun {
+
+    /**
+     * 可抛出类打印字符串
+     * @param e 可抛出类
+     * @return 字符串
+     */
+    public static String ThrowableToString(Throwable e) {
+        StringWriter sw = null;
+        PrintWriter pw = null;
+        try {
+            sw = new StringWriter();
+            pw =  new PrintWriter(sw);
+            pw.append(e.getMessage());
+            e.printStackTrace(pw);
+            pw.flush();
+            sw.flush();
+        } finally {
+            if (sw != null) {
+                try {
+                    sw.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if (pw != null) {
+                pw.close();
+            }
+        }
+
+        return sw.toString();
+    }
+
+    /**
+     * 异常 --> 字符串
+     * @param e 异常
+     * @return 字符串
+     */
+    public static String ExceptionToString(Exception e) {
+        StringWriter sw = null;
+        PrintWriter pw = null;
+        try {
+            sw = new StringWriter();
+            pw =  new PrintWriter(sw);
+            //将出错的栈信息输出到printWriter中
+            e.printStackTrace(pw);
+            pw.flush();
+            sw.flush();
+        } finally {
+            if (sw != null) {
+                try {
+                    sw.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            if (pw != null) {
+                pw.close();
+            }
+        }
+
+        return sw.toString();
+    }
+
 
     /**
      * 日历类到字符串

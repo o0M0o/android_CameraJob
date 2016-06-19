@@ -28,6 +28,8 @@ public class ContextUtil extends Application    {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
+        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+
         instance = this;
         mSCHHandler = new SilentCameraHandler(PreferencesUtil.loadCameraParam());
 //        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -46,14 +48,29 @@ public class ContextUtil extends Application    {
                 System.currentTimeMillis() + GlobalDef.INT_GLOBALJOB_PERIOD, pendingIntent);
 
         Log.i(TAG, "Application created");
+        FileLogger.getLogger().info("Application created");
     }
 
     @Override
     public void onTerminate()  {
         Log.i(TAG, "Application onTerminate");
+        FileLogger.getLogger().info("Application Terminate");
 //        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
 //        tm.cancelAll();
 
         super.onTerminate();
     }
+
+
+    /**
+     * 捕获错误信息的handler
+     */
+    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+
+        @Override
+        public void uncaughtException(Thread thread, Throwable ex) {
+            FileLogger.getLogger().severe("App崩溃");
+            FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
+        }
+    };
 }

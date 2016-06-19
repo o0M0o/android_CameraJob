@@ -406,7 +406,7 @@ public class CameraJobProcess {
                         ,cj.job_name
                         ,curCal.get(Calendar.YEAR)
                         ,curCal.get(Calendar.MONTH) + 1
-                        ,curCal.get(Calendar.DAY_OF_MONTH) + 1
+                        ,curCal.get(Calendar.DAY_OF_MONTH)
                         ,curCal.get(Calendar.HOUR_OF_DAY)
                         ,curCal.get(Calendar.MINUTE)
                         ,curCal.get(Calendar.SECOND));

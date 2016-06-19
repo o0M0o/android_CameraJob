@@ -48,6 +48,7 @@ public class SilentCamera {
     public final static int CAMERA_TAKEPHOTO_START      = 3;
     public final static int CAMERA_TAKEPHOTO_FINISHED   = 4;
     public final static int CAMERA_TAKEPHOTO_FAILED     = 5;
+    public final static int CAMERA_OPEN_FAILED          = 6;
 
     private File        mFile;
     private ImageReader mImageReader;
@@ -156,6 +157,7 @@ public class SilentCamera {
             try {
                 output = new FileOutputStream(mFile);
                 output.write(bytes);
+                //mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
 
                 Log.i(TAG, "save photo to : " + mFile.toString());
                 FileLogger.getLogger().info("save photo to : " + mFile.toString());
@@ -164,11 +166,11 @@ public class SilentCamera {
                 m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
                 m.sendToTarget();
 
+                /*
                 // give up others
                 while(null != reader.acquireNextImage())    {
                 }
-
-                //mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
+                */
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -206,6 +208,9 @@ public class SilentCamera {
         if(CAMERA_IDLE != mCameraStatus) {
             Log.i(TAG, "in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
             FileLogger.getLogger().info("in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
+
+            // 释放资源
+            closeCamera();
             return false;
         }
 
@@ -370,9 +375,19 @@ public class SilentCamera {
 
             mCameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mCParam.mSessionHandler);
         } catch (CameraAccessException e) {
+            mCameraStatus = CAMERA_OPEN_FAILED;
+            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
             e.printStackTrace();
         } catch (InterruptedException e) {
+            mCameraStatus = CAMERA_OPEN_FAILED;
+            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
             throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
+        } catch (Throwable e)   {
+            mCameraStatus = CAMERA_OPEN_FAILED;
+            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+        }
+        finally {
+            mCameraOpenCloseLock.release();
         }
     }
 
@@ -384,6 +399,8 @@ public class SilentCamera {
     private void waitOpenCamera(CameraParam cp) {
         long endms = System.currentTimeMillis() + cp.mWaitMSecs;
         openCamera(cp);
+        if(CAMERA_OPEN_FAILED == mCameraStatus)
+            return;
 
         // 等待相机状态
         long lastms = System.currentTimeMillis();
