@@ -21,12 +21,12 @@ public class CameraJob implements Parcelable {
     public CameraJob()
     {
         ts = new Timestamp(0);
+        job_starttime = new Timestamp(0);
+        job_endtime = new Timestamp(0);
+
         job_name = "";
         job_type = "";
         job_point = "";
-
-        job_starttime = new Timestamp(0);
-        job_endtime = new Timestamp(0);
     }
 
     @Override
@@ -36,8 +36,9 @@ public class CameraJob implements Parcelable {
 //                job_type, job_name, job_point,
 //                ts.toString());
 
-        String ret = String.format("name : %s, type : %s, point : %s",
-                            job_name, job_type, job_point);
+        String ret = String.format("name : %s, type : %s, point : %s, " +
+                            "startdate : %s, enddate : %s",
+                            job_name, job_type, job_point, job_starttime, job_endtime);
         return ret;
     }
 
@@ -67,6 +68,10 @@ public class CameraJob implements Parcelable {
     };
 
     private CameraJob(Parcel in)   {
+        ts = new Timestamp(0);
+        job_starttime = new Timestamp(0);
+        job_endtime = new Timestamp(0);
+
         _id = in.readInt();
         job_name = in.readString();
         job_type = in.readString();

@@ -302,8 +302,8 @@ public class ActivityJob
 
         Timestamp st = UtilFun.StringToTimestamp(job_starttime);
         Timestamp et = UtilFun.StringToTimestamp(job_endtime);
-        if(0 >= st.compareTo(et))   {
-            String show = String.format("任务开始时间(%s)比结束时间(%s)早", job_starttime, job_endtime);
+        if(0 <= st.compareTo(et))   {
+            String show = String.format("任务开始时间(%s)比结束时间(%s)晚", job_starttime, job_endtime);
             Log.w(TAG, show);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -323,7 +323,7 @@ public class ActivityJob
         cj.ts.setTime(System.currentTimeMillis());
 
         data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
-        setResult(GlobalDef.INTRET_JOB_SAVE, data);
+        setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);
         return true;
     }
 
@@ -332,7 +332,7 @@ public class ActivityJob
      */
     private void do_giveup()  {
         Intent data = new Intent();
-        setResult(GlobalDef.INTRET_JOB_GIVEUP, data);
+        setResult(GlobalDef.INTRET_CAMERAJOB_GIVEUP, data);
     }
 
 

@@ -10,6 +10,7 @@ import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -237,9 +238,12 @@ public class CameraJobProcess {
      * @param cj
      */
     private void jobWakeup(CameraJob cj)    {
-        long curms = System.currentTimeMillis();
-        if((curms >= cj.job_starttime.getTime())
-            && curms < cj.job_endtime.getTime()) {
+        Timestamp cur = new Timestamp(0);
+        cur.setTime(System.currentTimeMillis());
+        long curms = cur.getTime();
+        long sms = cj.job_starttime.getTime();
+        long ems = cj.job_endtime.getTime();
+        if((curms >= sms) && (curms < ems)) {
             switch (cj.job_type) {
                 case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
                     process_mintuely_job(cj);

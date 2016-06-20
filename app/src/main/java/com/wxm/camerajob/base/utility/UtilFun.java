@@ -90,7 +90,7 @@ public class UtilFun {
                 "%d-%02d-%02d %02d:%02d:%02d"
                 ,cl.get(Calendar.YEAR)
                 ,cl.get(Calendar.MONTH) + 1
-                ,cl.get(Calendar.DAY_OF_MONTH) + 1
+                ,cl.get(Calendar.DAY_OF_MONTH)
                 ,cl.get(Calendar.HOUR_OF_DAY)
                 ,cl.get(Calendar.MINUTE)
                 ,cl.get(Calendar.SECOND));

@@ -30,8 +30,8 @@ public class GlobalDef {
     public final static int MSGWHAT_ACSTART_UPDATEJOBS  = 1200;
     public final static int MSGWHAT_CS_CHANGECAMERA     = 1300;
 
-    public final static int INTRET_JOB_SAVE             = 2000;
-    public final static int INTRET_JOB_GIVEUP           = 2001;
+    public final static int INTRET_CAMERAJOB_ACCEPT     = 2000;
+    public final static int INTRET_CAMERAJOB_GIVEUP     = 2001;
     public final static int INTRET_CS_ACCEPT            = 2010;
     public final static int INTRET_CS_GIVEUP            = 2011;
 
