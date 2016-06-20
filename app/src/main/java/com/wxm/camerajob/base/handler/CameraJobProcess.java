@@ -237,21 +237,25 @@ public class CameraJobProcess {
      * @param cj
      */
     private void jobWakeup(CameraJob cj)    {
-        switch (cj.job_type)    {
-            case GlobalDef.CNSTR_JOBTYPE_MINUTELY : {
-                process_mintuely_job(cj);
-            }
-            break;
+        long curms = System.currentTimeMillis();
+        if((curms >= cj.job_starttime.getTime())
+            && curms < cj.job_endtime.getTime()) {
+            switch (cj.job_type) {
+                case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
+                    process_mintuely_job(cj);
+                }
+                break;
 
-            case GlobalDef.CNSTR_JOBTYPE_HOURLY : {
-                process_hourly_job(cj);
-            }
-            break;
+                case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
+                    process_hourly_job(cj);
+                }
+                break;
 
-            case GlobalDef.CNSTR_JOBTYPE_DAILY : {
-                process_daily_job(cj);
+                case GlobalDef.CNSTR_JOBTYPE_DAILY: {
+                    process_daily_job(cj);
+                }
+                break;
             }
-            break;
         }
     }
 

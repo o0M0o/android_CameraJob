@@ -1,10 +1,15 @@
 package com.wxm.camerajob.base.utility;
 
+import android.content.Context;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
+
+import java.util.HashMap;
 
 /**
  * 静默相机句柄
@@ -17,6 +22,9 @@ public class SilentCameraHandler {
     private HandlerThread   mBackgroundThread;
     private SilentCamera    mCamera;
     private CameraParam     mCameraParam;
+
+    private CameraManager   mCMManager;
+    private HashMap<String, CameraCharacteristics> mHMCameraCharacteristics;
 
     /**
      * 静默相机
@@ -45,6 +53,22 @@ public class SilentCameraHandler {
 
         mCameraParam = cp;
         mCameraParam.mSessionHandler = mBackgroundHandler;
+
+        /*
+        mCMManager = (CameraManager) ContextUtil.getInstance()
+                        .getSystemService(Context.CAMERA_SERVICE);
+        mHMCameraCharacteristics = new HashMap<>();
+        try {
+            for (String cameraId : mCMManager.getCameraIdList()) {
+                CameraCharacteristics characteristics
+                        = mCMManager.getCameraCharacteristics(cameraId);
+
+                mHMCameraCharacteristics.put(cameraId, characteristics);
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        */
     }
 
     protected void finalize() throws Throwable {
@@ -59,19 +83,30 @@ public class SilentCameraHandler {
 
 
     public void TakePhoto(TakePhotoParam para)  {
-        mCamera = new SilentCamera();
-        /*
-        int cur_status = mCamera.getCameraStatus();
-        if(SilentCamera.CAMERA_NOT_READY != cur_status) {
-            Log.i(TAG, "相机处在使用中，放弃此次操作, mTag = '"
-                            + para.mTag + "'");
+        try {
+            mCMManager = (CameraManager) ContextUtil.getInstance()
+                    .getSystemService(Context.CAMERA_SERVICE);
+            mHMCameraCharacteristics = new HashMap<>();
 
-            FileLogger.getLogger().info("相机处在使用中，放弃此次操作, mTag = '"
-                            + para.mTag + "'");
-            return;
+            for (String cameraId : mCMManager.getCameraIdList()) {
+                CameraCharacteristics characteristics
+                        = mCMManager.getCameraCharacteristics(cameraId);
+
+                mHMCameraCharacteristics.put(cameraId, characteristics);
+            }
+
+            mCamera = new SilentCamera(mCMManager, mHMCameraCharacteristics);
+            mCamera.TakeOncePhoto(mCameraParam, para);
+        } catch (Throwable e)   {
+            e.printStackTrace();
+            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
         }
-        */
-        mCamera.TakeOncePhoto(mCameraParam, para);
+        finally {
+            if(null != mCamera) {
+                mCamera.closeCamera();
+                mCamera = null;
+            }
+        }
     }
 
 

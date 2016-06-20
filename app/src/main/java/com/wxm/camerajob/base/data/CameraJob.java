@@ -4,9 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * job
@@ -17,6 +14,8 @@ public class CameraJob implements Parcelable {
     public String job_name;
     public String job_type;
     public String job_point;
+    public Timestamp job_endtime;
+    public Timestamp job_starttime;
     public Timestamp ts;
 
     public CameraJob()
@@ -25,6 +24,9 @@ public class CameraJob implements Parcelable {
         job_name = "";
         job_type = "";
         job_point = "";
+
+        job_starttime = new Timestamp(0);
+        job_endtime = new Timestamp(0);
     }
 
     @Override
@@ -48,8 +50,9 @@ public class CameraJob implements Parcelable {
         out.writeString(job_name);
         out.writeString(job_type);
         out.writeString(job_point);
-        out.writeString(ts.toString());
-
+        out.writeLong(job_starttime.getTime());
+        out.writeLong(job_endtime.getTime());
+        out.writeLong(ts.getTime());
     }
 
     public static final Parcelable.Creator<CameraJob> CREATOR
@@ -68,17 +71,8 @@ public class CameraJob implements Parcelable {
         job_name = in.readString();
         job_type = in.readString();
         job_point = in.readString();
-
-        try {
-            ts = new Timestamp(0);
-
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = format.parse(in.readString());
-            ts.setTime(date.getTime());
-        }
-        catch (ParseException ex)
-        {
-            ts = new Timestamp(0);
-        }
+        job_starttime.setTime(in.readLong());
+        job_endtime.setTime(in.readLong());
+        ts.setTime(in.readLong());
     }
 }

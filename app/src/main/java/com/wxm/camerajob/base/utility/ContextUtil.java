@@ -69,7 +69,7 @@ public class ContextUtil extends Application    {
 
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
-            FileLogger.getLogger().severe("App崩溃");
+            //FileLogger.getLogger().severe("App崩溃");
             FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
         }
     };

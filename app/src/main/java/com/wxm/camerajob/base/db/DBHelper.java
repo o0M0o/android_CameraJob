@@ -22,6 +22,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public final static String COLNAME_JOB_NAME     = "job_name";
     public final static String COLNAME_JOB_TYPE     = "job_type";
     public final static String COLNAME_JOB_POINT    = "job_point";
+    public final static String COLNAME_JOB_STARTTIME     = "job_starttime";
+    public final static String COLNAME_JOB_ENDTIME       = "job_endtime";
     public final static String COLNAME_JOB_TS       = "job_ts";
 
 
@@ -47,10 +49,13 @@ public class DBHelper extends SQLiteOpenHelper {
                         "  %s NVARCHAR," +
                         "  %s NVARCHAR," +
                         "  %s NVARCHAR," +
+                        "  %s TIMESTAMP," +
+                        "  %s TIMESTAMP," +
                         "  %s TIMESTAMP)",
                 TABNAME_JOB,
                 COLNAME_JOB_ID, COLNAME_JOB_NAME,
                 COLNAME_JOB_TYPE, COLNAME_JOB_POINT,
+                COLNAME_JOB_STARTTIME, COLNAME_JOB_ENDTIME,
                 COLNAME_JOB_TS);
         db.execSQL(sql_job);
 

@@ -25,18 +25,23 @@ import android.widget.TimePicker;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.utility.UtilFun;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
 
 public class ActivityJob
         extends AppCompatActivity
         implements View.OnClickListener, View.OnTouchListener {
     private final static String TAG = "ActivityJob";
+    private final static String JOB_ENDTIME     = "job_endtime";
+    private final static String JOB_STARTTIME   = "job_starttime";
+
     private Button              mBtSave;
     private Button              mBtGiveup;
     private EditText            mEtJobName;
     private EditText            mEtJobEndDate;
+    private EditText            mEtJobStartDate;
 
     private ArrayAdapter<CharSequence> mAPJobType;
     private ArrayAdapter<CharSequence>  mAPJobPoint;
@@ -54,9 +59,18 @@ public class ActivityJob
         mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
         mEtJobName = (EditText)findViewById(R.id.acet_job_name);
         mEtJobEndDate = (EditText)findViewById(R.id.acet_job_enddate);
+        mEtJobStartDate = (EditText)findViewById(R.id.acet_job_startdate);
         mBtSave.setOnClickListener(this);
         mBtGiveup.setOnClickListener(this);
+
+        // 任务默认开始时间是“当前时间"
+        // 任务默认结束时间是“一周”
+        mEtJobStartDate.setText(UtilFun.MilliSecsToString(System.currentTimeMillis()));
+        mEtJobEndDate.setText(UtilFun.MilliSecsToString(System.currentTimeMillis()
+                                    + 1000 * 3600 * 24 * 7));
+
         mEtJobEndDate.setOnTouchListener(this);
+        mEtJobStartDate.setOnTouchListener(this);
 
         mSPJobType = (Spinner)findViewById(R.id.acsp_job_type);
         mSPJobPoint = (Spinner)findViewById(R.id.acsp_job_point);
@@ -148,7 +162,12 @@ public class ActivityJob
         if(event.getAction() == MotionEvent.ACTION_DOWN)    {
             switch(v.getId())   {
                 case R.id.acet_job_enddate :    {
-                    onTouchDate(event);
+                    onTouchDate(event, JOB_ENDTIME);
+                }
+                break;
+
+                case R.id.acet_job_startdate  :    {
+                    onTouchDate(event, JOB_STARTTIME);
                 }
                 break;
             }
@@ -158,10 +177,11 @@ public class ActivityJob
     }
 
     /**
-     * 生成日期选择dialog，确定任务结束日期
-     * @param event 事件
+     * 生成日期选择dialog
+     * @param event     事件
+     * @param timetype  日期类型
      */
-    private void onTouchDate(MotionEvent event) {
+    private void onTouchDate(MotionEvent event, String timetype) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = View.inflate(this, R.layout.dialog_datetime, null);
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.dldt_date);
@@ -179,7 +199,18 @@ public class ActivityJob
         mEtJobEndDate.setInputType(inType);
         mEtJobEndDate.setSelection(mEtJobEndDate.getText().length());
 
-        builder.setTitle("选择任务结束时间");
+        final int inType1 = mEtJobStartDate.getInputType();
+        mEtJobStartDate.setInputType(InputType.TYPE_NULL);
+        mEtJobStartDate.onTouchEvent(event);
+        mEtJobStartDate.setInputType(inType1);
+        mEtJobStartDate.setSelection(mEtJobStartDate.getText().length());
+
+        final String tt = timetype;
+        if(JOB_ENDTIME.equals(tt))
+            builder.setTitle("选择任务结束时间");
+        else
+            builder.setTitle("选择任务开始时间");
+
         builder.setPositiveButton("确  定", new DialogInterface.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.M)
             @Override
@@ -190,15 +221,19 @@ public class ActivityJob
                                 datePicker.getYear(),
                                 datePicker.getMonth() + 1,
                                 datePicker.getDayOfMonth(),
-                                12,
-                                30));
-                                /*
-                                timePicker.getHour(),
-                                timePicker.getMinute()));
-                                */
+                                (Build.VERSION.SDK_INT >= 23 ?
+                                        timePicker.getHour() : timePicker.getCurrentHour()),
+                                (Build.VERSION.SDK_INT >= 23 ?
+                                        timePicker.getMinute() : timePicker.getCurrentMinute())));
 
-                mEtJobEndDate.setText(sb);
-                mEtJobEndDate.requestFocus();
+                if(JOB_ENDTIME.equals(tt)) {
+                    mEtJobEndDate.setText(sb);
+                    mEtJobEndDate.requestFocus();
+                }
+                else    {
+                    mEtJobStartDate.setText(sb);
+                    mEtJobStartDate.requestFocus();
+                }
 
                 dialog.cancel();
             }
@@ -216,6 +251,8 @@ public class ActivityJob
         String job_name  = mEtJobName.getText().toString();
         String job_type  = mSPJobType.getSelectedItem().toString();
         String job_point = mSPJobPoint.getSelectedItem().toString();
+        String job_starttime = mEtJobStartDate.getText().toString();
+        String job_endtime = mEtJobEndDate.getText().toString();
 
         if(job_name.isEmpty())  {
             Log.i(TAG, "job name为空");
@@ -250,13 +287,40 @@ public class ActivityJob
             return false;
         }
 
-        Date curdt = new Date();
+        /*
+        // 任务默认开始时间是“当前时间"
+        // 任务默认结束时间是“一周”
+        if(job_starttime.isEmpty()) {
+            job_starttime = UtilFun.MilliSecsToString(System.currentTimeMillis());
+        }
+
+        if(job_endtime.isEmpty())   {
+            job_endtime = UtilFun.MilliSecsToString(System.currentTimeMillis()
+                                + 1000 * 3600 * 24 * 7);
+        }
+        */
+
+        Timestamp st = UtilFun.StringToTimestamp(job_starttime);
+        Timestamp et = UtilFun.StringToTimestamp(job_endtime);
+        if(0 >= st.compareTo(et))   {
+            String show = String.format("任务开始时间(%s)比结束时间(%s)早", job_starttime, job_endtime);
+            Log.w(TAG, show);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(show).setTitle("警告");
+            AlertDialog dlg = builder.create();
+            dlg.show();
+            return false;
+        }
+
         Intent data = new Intent();
         CameraJob cj = new CameraJob();
         cj.job_name = job_name;
         cj.job_type = job_type;
         cj.job_point = job_point;
-        cj.ts.setTime(curdt.getTime());
+        cj.job_starttime = st;
+        cj.job_endtime = et;
+        cj.ts.setTime(System.currentTimeMillis());
 
         data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
         setResult(GlobalDef.INTRET_JOB_SAVE, data);

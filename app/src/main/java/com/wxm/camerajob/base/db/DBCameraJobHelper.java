@@ -27,10 +27,11 @@ public class DBCameraJobHelper {
         mDb = sd;
 
         mAddJobSqlTemp = String.format(
-                "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?)",
+                "INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES (?, ?, ?, ?, ?, ?)",
                 DBHelper.TABNAME_JOB,
                 DBHelper.COLNAME_JOB_NAME, DBHelper.COLNAME_JOB_TYPE,
-                DBHelper.COLNAME_JOB_POINT, DBHelper.COLNAME_JOB_TS);
+                DBHelper.COLNAME_JOB_POINT, DBHelper.COLNAME_JOB_STARTTIME,
+                DBHelper.COLNAME_JOB_ENDTIME, DBHelper.COLNAME_JOB_TS);
 
         mModifyJobSqlTemp = String.format(
                 "UPDATE %s " +
@@ -39,10 +40,13 @@ public class DBCameraJobHelper {
                         " ,%s = ?" +
                         " ,%s = ?" +
                         " ,%s = ?" +
+                        " ,%s = ?" +
+                        " ,%s = ?" +
                         " WHERE %s = ?",
                 DBHelper.TABNAME_JOB,
                 DBHelper.COLNAME_JOB_NAME, DBHelper.COLNAME_JOB_TYPE,
-                DBHelper.COLNAME_JOB_POINT, DBHelper.COLNAME_JOB_TS,
+                DBHelper.COLNAME_JOB_POINT, DBHelper.COLNAME_JOB_STARTTIME,
+                DBHelper.COLNAME_JOB_ENDTIME, DBHelper.COLNAME_JOB_TS,
                 DBHelper.COLNAME_JOB_ID);
 
         mRemoveJobSqlTemp = String.format(
@@ -63,7 +67,8 @@ public class DBCameraJobHelper {
         try {
             mDb.execSQL(
                     mAddJobSqlTemp,
-                    new Object[]{cj.job_name, cj.job_type, cj.job_point, cj.ts});
+                    new Object[]{cj.job_name, cj.job_type, cj.job_point,
+                                 cj.job_starttime, cj.job_endtime, cj.ts});
             mDb.setTransactionSuccessful();
             ret = true;
         } finally {
@@ -105,7 +110,8 @@ public class DBCameraJobHelper {
         try {
             mDb.execSQL(
                     mModifyJobSqlTemp,
-                    new Object[]{cj.job_name, cj.job_type, cj.job_point, cj.ts, cj._id});
+                    new Object[]{cj.job_name, cj.job_type, cj.job_point,
+                                 cj.job_starttime, cj.job_endtime, cj.ts, cj._id});
             mDb.setTransactionSuccessful();
             ret = true;
         } finally {
@@ -131,12 +137,23 @@ public class DBCameraJobHelper {
             ri.job_point = c.getString(c.getColumnIndex(DBHelper.COLNAME_JOB_POINT));
 
             try {
-                Date date = format.parse(c.getString(c.getColumnIndex(DBHelper.COLNAME_JOB_TS)));
+                Date date = format.parse(c.getString(
+                                c.getColumnIndex(DBHelper.COLNAME_JOB_STARTTIME)));
+                ri.job_starttime.setTime(date.getTime());
+
+                date = format.parse(c.getString(
+                                c.getColumnIndex(DBHelper.COLNAME_JOB_ENDTIME)));
+                ri.job_endtime.setTime(date.getTime());
+
+                date = format.parse(c.getString(
+                                c.getColumnIndex(DBHelper.COLNAME_JOB_TS)));
                 ri.ts.setTime(date.getTime());
             }
             catch (ParseException ex)
             {
                 ri.ts = new Timestamp(0);
+                ri.job_starttime = new Timestamp(System.currentTimeMillis());
+                ri.job_endtime = new Timestamp(System.currentTimeMillis());
             }
 
             persons.add(ri);

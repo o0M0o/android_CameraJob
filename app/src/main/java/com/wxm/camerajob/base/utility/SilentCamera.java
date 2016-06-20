@@ -1,7 +1,6 @@
 package com.wxm.camerajob.base.utility;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
@@ -41,10 +40,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class SilentCamera {
     private final static String TAG = "SilentCamera";
+    private static Semaphore        mSLCameraGlobalLock = new Semaphore(1);
 
-    private int mCameraStatus = CAMERA_NOT_READY;
-    public final static int CAMERA_NOT_READY            = 1;
-    public final static int CAMERA_IDLE                 = 2;
+    private int mCameraStatus = CAMERA_NOT_OPEN;
+    public final static int CAMERA_NOT_OPEN             = 1;
+    public final static int CAMERA_OPEN_FINISHED        = 2;
     public final static int CAMERA_TAKEPHOTO_START      = 3;
     public final static int CAMERA_TAKEPHOTO_FINISHED   = 4;
     public final static int CAMERA_TAKEPHOTO_FAILED     = 5;
@@ -73,6 +73,7 @@ public class SilentCamera {
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     Log.i(TAG, "onOpened");
+                    FileLogger.getLogger().info("get camerdevice");
 
                     mCameraOpenCloseLock.release();
                     mCameraDevice = camera;
@@ -102,6 +103,7 @@ public class SilentCamera {
                 @Override
                 public void onDisconnected(@NonNull CameraDevice camera) {
                     Log.i(TAG, "onDisconnected");
+                    FileLogger.getLogger().info("camerdevice disconnected");
 
                     mCameraOpenCloseLock.release();
                     camera.close();
@@ -111,6 +113,7 @@ public class SilentCamera {
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
                     Log.i(TAG, "onError, error = " + error);
+                    FileLogger.getLogger().info("onError, error = " + error);
 
                     mCameraOpenCloseLock.release();
                     camera.close();
@@ -128,19 +131,19 @@ public class SilentCamera {
 
                     // The camera is already closed
                     if (null == mCameraDevice) {
-                        mCameraStatus = CAMERA_NOT_READY;
+                        mCameraStatus = CAMERA_NOT_OPEN;
                         return;
                     }
 
                     mCaptureSession = session;
-                    mCameraStatus = CAMERA_IDLE;
+                    mCameraStatus = CAMERA_OPEN_FINISHED;
                 }
 
                 @Override
                 public void onConfigureFailed(CameraCaptureSession session) {
                     Log.e(TAG, "onConfigureFailed, session : "
                             + (null != session ? session.toString() : "null"));
-                    mCameraStatus = CAMERA_NOT_READY;
+                    mCameraStatus = CAMERA_NOT_OPEN;
                 }
             };
 
@@ -186,53 +189,62 @@ public class SilentCamera {
         }
     };
 
-    public SilentCamera() {
+    public SilentCamera(CameraManager cm
+                        ,HashMap<String, CameraCharacteristics> hm) {
         mCameraOpenCloseLock = new Semaphore(1);
-        mCameraManager = (CameraManager) ContextUtil.getInstance()
-                                .getSystemService(Context.CAMERA_SERVICE);
-        mHMCameraCharacteristics = new HashMap<>();
-        try {
-            for (String cameraId : mCameraManager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = mCameraManager.getCameraCharacteristics(cameraId);
-
-                mHMCameraCharacteristics.put(cameraId, characteristics);
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+        mCameraManager = cm;
+        mHMCameraCharacteristics = hm;
     }
 
+    /**
+     * 执行一次拍照
+     * 此操作只能APP范围内串行
+     * @param cp 相机参数
+     * @param tp 拍照参数
+     * @return 成功返回true, 否则返回false
+     */
     public boolean TakeOncePhoto(CameraParam cp, TakePhotoParam tp)  {
-        waitOpenCamera(cp);
-        if(CAMERA_IDLE != mCameraStatus) {
-            Log.i(TAG, "in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
-            FileLogger.getLogger().info("in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
+        boolean ret = false;
+        try {
+            if (!mSLCameraGlobalLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+                throw new RuntimeException("Time out waiting to lock camera operation.");
+            }
 
-            // 释放资源
-            closeCamera();
-            return false;
-        }
+            waitOpenCamera(cp);
+            if(CAMERA_OPEN_FINISHED != mCameraStatus) {
+                Log.i(TAG, "in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
+                FileLogger.getLogger().info("in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
 
-        mTPParam = tp;
-        long endmesc = System.currentTimeMillis() + mTPParam.mWaitMSecs;
-        if(captureStillPicture(endmesc))    {
-            while((CAMERA_TAKEPHOTO_START == getCameraStatus())
-                    && (System.currentTimeMillis() < endmesc))  {
-                try {
-                    Thread.sleep(300);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
+                // 释放资源
+                closeCamera();
+                return false;
+            }
+
+            mTPParam = tp;
+            long endmesc = System.currentTimeMillis() + mTPParam.mWaitMSecs;
+            if(captureStillPicture(endmesc))    {
+                while((CAMERA_TAKEPHOTO_START == getCameraStatus())
+                        && (System.currentTimeMillis() < endmesc))  {
+                    try {
+                        Thread.sleep(300);
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+
+            if(CAMERA_TAKEPHOTO_FINISHED == getCameraStatus())
+                ret = true;
+
+            closeCamera();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            mSLCameraGlobalLock.release();
         }
 
-        boolean ret = true;
-        if(CAMERA_TAKEPHOTO_FINISHED != getCameraStatus())
-            ret = false;
-
-        closeCamera();
         return ret;
     }
 
@@ -243,28 +255,6 @@ public class SilentCamera {
      */
    private boolean captureStillPicture(long endmesc) {
         setupFile();
-
-       int cur_status = getCameraStatus();
-       if((CAMERA_TAKEPHOTO_FINISHED == cur_status) || (CAMERA_TAKEPHOTO_FAILED == cur_status))
-           mCameraStatus = CAMERA_IDLE;
-
-        // 等待相机状态
-        while((CAMERA_IDLE != getCameraStatus())
-                && (System.currentTimeMillis() < endmesc))  {
-            try {
-                Thread.sleep(200);
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-                break;
-            }
-        }
-
-        if(CAMERA_IDLE != getCameraStatus()) {
-            Log.e(TAG, "in captureStillPicture, camera is not idle");
-            FileLogger.getLogger().info("in captureStillPicture, camera is not idle");
-            return false;
-        }
 
         try {
             mCameraStatus = CAMERA_TAKEPHOTO_START;
@@ -294,7 +284,7 @@ public class SilentCamera {
                                                        @NonNull CaptureRequest request,
                                                        @NonNull TotalCaptureResult result) {
                             Log.d(TAG, "onCaptureCompleted");
-                            FileLogger.getLogger().info("onCaptureCompleted");
+                            //FileLogger.getLogger().info("onCaptureCompleted");
                             mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
                         }
 
@@ -302,7 +292,8 @@ public class SilentCamera {
                                                     @NonNull CaptureRequest request,
                                                     @NonNull CaptureFailure failure) {
                             Log.d(TAG, "onCaptureFailed");
-                            FileLogger.getLogger().info("onCaptureFailed");
+                            FileLogger.getLogger().warning(
+                                    "CaptureFailed, reason = "  + failure.getReason());
                             mCameraStatus = CAMERA_TAKEPHOTO_FAILED;
                         }
                     },
@@ -317,7 +308,7 @@ public class SilentCamera {
     /**
      * 关闭相机
      */
-   private void closeCamera()   {
+    public void closeCamera()   {
         try {
             mCameraOpenCloseLock.acquire();
             if (null != mCaptureSession) {
@@ -334,8 +325,8 @@ public class SilentCamera {
             }
 
             Log.i(TAG, "Camera closed");
-            FileLogger.getLogger().info("Camera closed");
-            mCameraStatus = CAMERA_NOT_READY;
+            //FileLogger.getLogger().info("Camera closed");
+            mCameraStatus = CAMERA_NOT_OPEN;
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
@@ -357,7 +348,7 @@ public class SilentCamera {
      */
     private void openCamera(CameraParam param)   {
         Log.i(TAG, "openCamera");
-        FileLogger.getLogger().info("openCamera");
+        //FileLogger.getLogger().info("openCamera");
         if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             //requestCameraPermission();
@@ -366,11 +357,17 @@ public class SilentCamera {
         }
 
         mCParam = param;
-        setUpCameraOutputs(mCParam.mFace,
-                mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight());
         try {
+            setUpCameraOutputs(mCParam.mFace,
+                    mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight());
+
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
+            }
+
+            if(null == mCameraId)   {
+                mCameraStatus = CAMERA_OPEN_FAILED;
+                return;
             }
 
             mCameraManager.openCamera(mCameraId, mCameraDeviceStateCallback, mCParam.mSessionHandler);
@@ -405,7 +402,7 @@ public class SilentCamera {
         // 等待相机状态
         long lastms = System.currentTimeMillis();
         long curms = System.currentTimeMillis();
-        while((CAMERA_NOT_READY == mCameraStatus)
+        while((CAMERA_NOT_OPEN == mCameraStatus)
                 && (curms < endms))  {
             try {
                 Thread.sleep(200);
@@ -432,6 +429,7 @@ public class SilentCamera {
      * @param height The height of available size for camera preview
      */
     private void setUpCameraOutputs(int face, int width, int height) {
+        //FileLogger.getLogger().info("setUpCameraOutputs");
         for(String id : mHMCameraCharacteristics.keySet())  {
             CameraCharacteristics cc = mHMCameraCharacteristics.get(id);
 

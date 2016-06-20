@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 工具类
@@ -25,7 +28,7 @@ public class UtilFun {
         try {
             sw = new StringWriter();
             pw =  new PrintWriter(sw);
-            pw.append(e.getMessage());
+            //pw.append(e.getMessage());
             e.printStackTrace(pw);
             pw.flush();
             sw.flush();
@@ -114,6 +117,24 @@ public class UtilFun {
         Calendar cl = Calendar.getInstance();
         cl.setTimeInMillis(ts.getTime());
         return CalenderToString(cl);
+    }
+
+    /**
+     * 时间字符串转换到时间戳
+     * @param str   待转换时间字符串
+     * @return 结果
+     */
+    public static Timestamp StringToTimestamp(String str)   {
+        Timestamp ts = new Timestamp(0);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = format.parse(str);
+            ts.setTime(date.getTime());
+        } catch (ParseException ex)     {
+            ts = new Timestamp(0);
+        }
+
+        return  ts;
     }
 
 
