@@ -55,8 +55,9 @@ public class SilentCamera {
     public final static int CAMERA_OPEN_FINISHED        = 2;
     public final static int CAMERA_TAKEPHOTO_START      = 3;
     public final static int CAMERA_TAKEPHOTO_FINISHED   = 4;
-    public final static int CAMERA_TAKEPHOTO_FAILED     = 5;
-    public final static int CAMERA_OPEN_FAILED          = 6;
+    public final static int CAMERA_TAKEPHOTO_SAVEED     = 5;
+    public final static int CAMERA_TAKEPHOTO_FAILED     = 6;
+    public final static int CAMERA_OPEN_FAILED          = 7;
 
     private ImageReader mImageReader;
     private boolean     mFlashSupported;
@@ -93,16 +94,12 @@ public class SilentCamera {
                                 mSessionStateCallback, null);
 
                         mCaptureBuilder = mCameraDevice
-                                            .createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                                .createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
                         mCaptureBuilder.addTarget(mImageReader.getSurface());
 
                         // Use the same AE and AF modes as the preview.
                         mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                                CaptureRequest.CONTROL_AF_MODE_AUTO);
-                        mCaptureBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                                CaptureRequest.CONTROL_AF_TRIGGER_START);
-                        //mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                        //        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         if (mFlashSupported) {
                             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
@@ -162,8 +159,70 @@ public class SilentCamera {
 
     private CameraCaptureSession.CaptureCallback  mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
+        private int   MAX_WAIT_FRAMES = 5;
         private File  mFile;
-        private int   MAX_WAIT_FRAMES = 15;
+
+        /**
+         * 设置输出文件
+         */
+        private void setupFile()    {
+            String realFileName;
+            if(mTPParam.mFileName.isEmpty())  {
+                Calendar curCal = Calendar.getInstance();
+                realFileName= String.format(
+                        "%d%02d%02d-%02d%02d%02d.jpg"
+                        ,curCal.get(Calendar.YEAR)
+                        ,curCal.get(Calendar.MONTH) + 1
+                        ,curCal.get(Calendar.DAY_OF_MONTH) + 1
+                        ,curCal.get(Calendar.HOUR_OF_DAY)
+                        ,curCal.get(Calendar.MINUTE)
+                        ,curCal.get(Calendar.SECOND));
+            }
+            else    {
+                realFileName = mTPParam.mFileName;
+            }
+
+            mFile = new File(mTPParam.mPhotoFileDir, realFileName);
+        }
+
+        /**
+         * 保存photo
+         */
+        private void savePhoto()    {
+            Image ig = mImageReader.acquireLatestImage();
+            if(null == ig)
+                return;
+
+            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            FileOutputStream output = null;
+            try {
+                setupFile();
+                output = new FileOutputStream(mFile);
+                output.write(bytes);
+
+                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+                m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
+                m.sendToTarget();
+
+                Log.i(TAG, "save photo to : " + mFile.toString());
+                FileLogger.getLogger().info("save photo to : " + mFile.toString());
+                mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                ig.close();
+                if (null != output) {
+                    try {
+                        output.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         @Override
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
@@ -175,8 +234,8 @@ public class SilentCamera {
             Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
             Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
             Log.d(TAG, "onCaptureCompleted, afState = " + afState +
-                        ", aeState = " + aeState +
-                        ", mCameraStatus = " + mCameraStatus);
+                    ", aeState = " + aeState +
+                    ", mCameraStatus = " + mCameraStatus);
             //FileLogger.getLogger().info("onCaptureCompleted");
             if(CAMERA_TAKEPHOTO_FINISHED == mCameraStatus)
                 return;
@@ -194,8 +253,8 @@ public class SilentCamera {
             }
 
             if(useany)  {
-                savePhoto();
                 mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
+                savePhoto();
             }
             else    {
                 captureStillPicture();
@@ -222,35 +281,6 @@ public class SilentCamera {
 
 
         /**
-         * 设置输出文件
-         */
-        private void setupFile(String tag)    {
-            String realFileName;
-            if(mTPParam.mFileName.isEmpty())  {
-                Calendar curCal = Calendar.getInstance();
-                realFileName= String.format(
-                        "%d%02d%02d-%02d%02d%02d.jpg"
-                        ,curCal.get(Calendar.YEAR)
-                        ,curCal.get(Calendar.MONTH) + 1
-                        ,curCal.get(Calendar.DAY_OF_MONTH) + 1
-                        ,curCal.get(Calendar.HOUR_OF_DAY)
-                        ,curCal.get(Calendar.MINUTE)
-                        ,curCal.get(Calendar.SECOND));
-            }
-            else    {
-                realFileName = mTPParam.mFileName;
-            }
-
-            if(!tag.isEmpty())  {
-                realFileName = realFileName.substring(0, realFileName.length() - 4)
-                                + tag
-                                + realFileName.substring(realFileName.length() - 4, 4);
-            }
-
-            mFile = new File(mTPParam.mPhotoFileDir, realFileName);
-        }
-
-        /**
          * 检查拍照结果
          * @param tr 拍照结果
          * @return  如果拍照结果可接受返回true
@@ -265,8 +295,7 @@ public class SilentCamera {
                 if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
                         CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED == afState ||
                         CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState) {
-                    if (aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED ||
-                            aeState == CaptureResult.CONTROL_AE_STATE_SEARCHING) {
+                    if (aeState != CaptureResult.CONTROL_AE_STATE_SEARCHING)    {
                         return true;
                     }
                 }
@@ -274,84 +303,21 @@ public class SilentCamera {
 
             return  false;
         }
-
-        /**
-         * 保存拍照结果
-         */
-        private void savePhoto()    {
-            Image ig = mImageReader.acquireLatestImage();
-            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            FileOutputStream output = null;
-            try {
-                setupFile("");
-                output = new FileOutputStream(mFile);
-                output.write(bytes);
-
-                Log.i(TAG, "save photo to : " + mFile.toString());
-                FileLogger.getLogger().info("save photo to : " + mFile.toString());
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
-                m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
-                m.sendToTarget();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                ig.close();
-                if (null != output) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
     };
 
 
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
+
+
         @Override
         public void onImageAvailable(ImageReader reader) {
-            /*
-            Image ig = reader.acquireNextImage();
-            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            FileOutputStream output = null;
-            try {
-                output = new FileOutputStream(mFile);
-                output.write(bytes);
-                //mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
-
-                Log.i(TAG, "save photo to : " + mFile.toString());
-                FileLogger.getLogger().info("save photo to : " + mFile.toString());
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
-                m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
-                m.sendToTarget();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                ig.close();
-                if (null != output) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            */
         }
     };
 
 
     public SilentCamera(CameraManager cm
-                        ,HashMap<String, CameraCharacteristics> hm) {
+            ,HashMap<String, CameraCharacteristics> hm) {
         mCameraOpenCloseLock = new Semaphore(1);
         mCameraManager = cm;
         mHMCameraCharacteristics = hm;
@@ -366,46 +332,26 @@ public class SilentCamera {
      */
     public boolean TakeOncePhoto(CameraParam cp, TakePhotoParam tp)  {
         mStartMSec = System.currentTimeMillis();
+        mCParam = cp;
+        mTPParam = tp;
         boolean ret = false;
         try {
             if (!mSLCameraGlobalLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera operation.");
             }
 
-            waitOpenCamera(cp);
+            waitOpenCamera();
             if(CAMERA_OPEN_FINISHED != mCameraStatus) {
                 Log.i(TAG, "in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
                 FileLogger.getLogger().info("in TakeOncePhoto, mCameraStatus = " + mCameraStatus);
 
-                // 释放资源
-                //closeCamera();
                 return false;
             }
 
-            mTPParam = tp;
-            long endmesc = System.currentTimeMillis() + mTPParam.mWaitMSecs;
             if(captureStillPicture())    {
-                /*
-                //必须等待回调函数否则会有问题
-                long curms = System.currentTimeMillis();
-                long lastms = curms;
-                while(CAMERA_TAKEPHOTO_START == getCameraStatus()) {
-                    try {
-                        Thread.sleep(300);
-
-                        curms = System.currentTimeMillis();
-                        if((curms - lastms) >= 1000)   {
-                            FileLogger.getLogger().info("wait 1 second");
-                            lastms = System.currentTimeMillis();
-                        }
-                    }
-                    catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                */
-
-                while((CAMERA_TAKEPHOTO_START == getCameraStatus())
+                long endmesc = mStartMSec + mCParam.mWaitMSecs + mTPParam.mWaitMSecs;
+                while(((CAMERA_TAKEPHOTO_START ==  mCameraStatus)
+                        || (CAMERA_TAKEPHOTO_FINISHED == mCameraStatus))
                         && (System.currentTimeMillis() < endmesc))  {
                     try {
                         Thread.sleep(300);
@@ -416,18 +362,10 @@ public class SilentCamera {
                 }
             }
 
-            if(CAMERA_TAKEPHOTO_FINISHED == getCameraStatus()) {
+            if(CAMERA_TAKEPHOTO_SAVEED == mCameraStatus)
                 ret = true;
-            }
-            else {
-                if(CAMERA_TAKEPHOTO_START == getCameraStatus())
-                    mCaptureSession.stopRepeating();
-            }
 
-            //closeCamera();
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (CameraAccessException e) {
             e.printStackTrace();
         } finally {
             mSLCameraGlobalLock.release();
@@ -520,9 +458,8 @@ public class SilentCamera {
 
     /**
      * 打开相机
-     * @param param                 相机参数
      */
-    private void openCamera(CameraParam param)   {
+    private void openCamera()   {
         Log.i(TAG, "openCamera");
         //FileLogger.getLogger().info("openCamera");
         if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), Manifest.permission.CAMERA)
@@ -532,7 +469,6 @@ public class SilentCamera {
             return;
         }
 
-        mCParam = param;
         try {
             setUpCameraOutputs(mCParam.mFace,
                     mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight());
@@ -567,11 +503,10 @@ public class SilentCamera {
     /**
      * 打开相机
      * 并一直等待直到操作成功或者失败或者超时
-     * @param cp 相机参数
      */
-    private void waitOpenCamera(CameraParam cp) {
-        long endms = System.currentTimeMillis() + cp.mWaitMSecs;
-        openCamera(cp);
+    private void waitOpenCamera() {
+        long endms = System.currentTimeMillis() + mCParam.mWaitMSecs;
+        openCamera();
         if(CAMERA_OPEN_FAILED == mCameraStatus)
             return;
 
@@ -625,7 +560,7 @@ public class SilentCamera {
 
             mImageReader = ImageReader.newInstance(
                     width, height,
-                    ImageFormat.JPEG, /*maxImages*/7);
+                    ImageFormat.JPEG, /*maxImages*/2);
 
             mImageReader.setOnImageAvailableListener(
                     mOnImageAvailableListener

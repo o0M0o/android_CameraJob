@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -159,20 +158,6 @@ public class ActivityStart
 
         // init view
         mLVJobs = (ListView) findViewById(R.id.aclv_start_jobs);
-        mLVJobs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                HashMap<String, String> hmsel =
-                        (HashMap<String, String>)parent.getItemAtPosition(position);
-
-                Intent intent = new Intent(parent.getContext(), ActivityCamerJobShow.class);
-                intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
-                        ContextUtil.getInstance()
-                                .getCameraJobPhotoDir(hmsel.get(GlobalDef.STR_ITEM_JOBNAME)));
-                startActivityForResult(intent, 1);
-            }
-        });
-
         mLVAdapter= new MySimpleAdapter(this,
                 ContextUtil.getInstance(),
                 mLVList,
@@ -237,14 +222,14 @@ public class ActivityStart
             break;
 
 
-          /* case R.id.liib_jobstatus_run_pause :    {
+           case R.id.liib_jobstatus_run_pause :    {
                 Intent intent = new Intent(this, ActivityCamerJobShow.class);
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
                         ContextUtil.getInstance()
                                 .getCameraJobPhotoDir(map.get(GlobalDef.STR_ITEM_JOBNAME)));
                 startActivityForResult(intent, 1);
             }
-            break;*/
+            break;
         }
     }
 
