@@ -4,4 +4,8 @@
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="cn_camerajob_add">添加任务</string>
     <string name="cn_camera_setting">设置相机</string>
+    <string name="cn_camera_test">测试相机</string>
+    <string name="cn_silentcamera_test">测试静默相机</string>
+    <string name="cn_accept">接受</string>
+    <string name="cn_giveup">放弃</string>
 </resources>

@@ -33,6 +33,7 @@ public class CameraParam  implements Parcelable {
     protected CameraParam(Parcel in) {
         mFace = in.readInt();
         mPhotoSize = in.readSize();
+        mWaitMSecs = in.readLong();
 
         boolean[] b_arr = new boolean[2];
         in.readBooleanArray(b_arr);
@@ -74,6 +75,7 @@ public class CameraParam  implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mFace);
         dest.writeSize(mPhotoSize);
+        dest.writeLong(mWaitMSecs);
         dest.writeBooleanArray(new boolean[] {mAutoFocus, mAutoFlash});
     }
 
@@ -93,5 +95,6 @@ public class CameraParam  implements Parcelable {
         mAutoFocus          = cp.mAutoFocus;
         mAutoFlash          = cp.mAutoFlash;
         mSessionHandler     = cp.mSessionHandler;
+        mWaitMSecs          = cp.mWaitMSecs;
     }
 }

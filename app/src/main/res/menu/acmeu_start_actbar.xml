@@ -12,4 +12,17 @@
         android:id="@+id/meuitem_camera_setting"
         app:showAsAction="never"
         android:title="@string/cn_camera_setting"/>
+
+    <item
+        android:orderInCategory="9002"
+        android:id="@+id/meuitem_camera_test"
+        app:showAsAction="never"
+        android:title="@string/cn_camera_test"/>
+
+    <item
+        android:orderInCategory="9003"
+        android:id="@+id/meuitem_silentcamera_test"
+        app:showAsAction="never"
+        android:title="@string/cn_silentcamera_test"/>
+
 </menu>

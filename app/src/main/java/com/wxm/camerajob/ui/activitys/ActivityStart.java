@@ -241,6 +241,17 @@ public class ActivityStart
             }
             break;
 
+            case R.id.meuitem_camera_test : {
+                Intent data =  new Intent(this, ActivityTest.class);
+                startActivityForResult(data, 1);
+            }
+            break;
+
+            case R.id.meuitem_silentcamera_test :   {
+                Intent data =  new Intent(this, ActivityTestSilentCamera.class);
+                startActivityForResult(data, 1);
+            }
+
             default:
                 return super.onOptionsItemSelected(item);
 

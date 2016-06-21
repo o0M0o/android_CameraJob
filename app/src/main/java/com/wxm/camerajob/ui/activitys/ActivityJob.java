@@ -12,11 +12,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -37,8 +39,8 @@ public class ActivityJob
     private final static String JOB_ENDTIME     = "job_endtime";
     private final static String JOB_STARTTIME   = "job_starttime";
 
-    private Button              mBtSave;
-    private Button              mBtGiveup;
+//    private Button              mBtSave;
+//    private Button              mBtGiveup;
     private EditText            mEtJobName;
     private EditText            mEtJobEndDate;
     private EditText            mEtJobStartDate;
@@ -55,13 +57,13 @@ public class ActivityJob
         setContentView(R.layout.activity_job);
 
         // init
-        mBtSave = (Button)findViewById(R.id.acbt_job_save);
-        mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
+//        mBtSave = (Button)findViewById(R.id.acbt_job_save);
+//        mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
         mEtJobName = (EditText)findViewById(R.id.acet_job_name);
         mEtJobEndDate = (EditText)findViewById(R.id.acet_job_enddate);
         mEtJobStartDate = (EditText)findViewById(R.id.acet_job_startdate);
-        mBtSave.setOnClickListener(this);
-        mBtGiveup.setOnClickListener(this);
+//        mBtSave.setOnClickListener(this);
+//        mBtGiveup.setOnClickListener(this);
 
         // 任务默认开始时间是“当前时间"
         // 任务默认结束时间是“一周”
@@ -142,7 +144,17 @@ public class ActivityJob
 
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.acmeu_camerajob_actbar, menu);
+        return true;
+    }
+
+
+    @Override
     public void onClick(View v)    {
+        /*
         int vid = v.getId();
         switch (vid)    {
             case R.id.acbt_job_save :
@@ -155,6 +167,31 @@ public class ActivityJob
                 finish();
                 break;
         }
+        */
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.meuitem_camerajob_accept: {
+                if(do_save())
+                    finish();
+            }
+            break;
+
+            case R.id.meuitem_camerajob_giveup  : {
+                do_giveup();
+                finish();
+            }
+            break;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+        return true;
     }
 
     @Override

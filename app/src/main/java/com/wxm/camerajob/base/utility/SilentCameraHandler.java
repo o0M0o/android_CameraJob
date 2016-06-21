@@ -82,7 +82,7 @@ public class SilentCameraHandler {
     }
 
 
-    public void TakePhoto(TakePhotoParam para)  {
+    public boolean TakePhoto(TakePhotoParam para)  {
         try {
             mCMManager = (CameraManager) ContextUtil.getInstance()
                     .getSystemService(Context.CAMERA_SERVICE);
@@ -96,7 +96,7 @@ public class SilentCameraHandler {
             }
 
             mCamera = new SilentCamera(mCMManager, mHMCameraCharacteristics);
-            mCamera.TakeOncePhoto(mCameraParam, para);
+            return mCamera.TakeOncePhoto(mCameraParam, para);
         } catch (Throwable e)   {
             e.printStackTrace();
             FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
@@ -107,6 +107,8 @@ public class SilentCameraHandler {
                 mCamera = null;
             }
         }
+
+        return false;
     }
 
 
