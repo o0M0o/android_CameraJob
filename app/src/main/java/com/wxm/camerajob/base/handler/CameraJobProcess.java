@@ -419,7 +419,8 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.MINUTE)
                         ,curCal.get(Calendar.SECOND));
 
-        TakePhotoParam tp = new TakePhotoParam(fn, Integer.toString(cj._id));
+        String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj);
+        TakePhotoParam tp = new TakePhotoParam(dirp, fn, Integer.toString(cj._id));
         ContextUtil.getInstance().mSCHHandler.TakePhoto(tp);
     }
 }

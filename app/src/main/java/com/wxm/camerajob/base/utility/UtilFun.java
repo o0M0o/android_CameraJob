@@ -1,7 +1,14 @@
 package com.wxm.camerajob.base.utility;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * 工具类
@@ -160,5 +168,65 @@ public class UtilFun {
 
 
         return new Size(Integer.parseInt(sz[0]), Integer.parseInt(sz[1]));
+    }
+
+
+    /**
+     * 加载本地图片
+     * @param url  本地图片文件地址
+     * @return 结果
+     */
+    public static Bitmap getLocalBitmap(String url) {
+        try {
+            FileInputStream fis = new FileInputStream(url);
+            return BitmapFactory.decodeStream(fis);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 转换本地图片到drawable
+     * @param url 本地图片地址
+     * @return drawable结果
+     */
+    public static Drawable getLocalDrawable(String url) {
+        Bitmap bm = getLocalBitmap(url);
+        if(null == bm)
+            return null;
+
+        return new BitmapDrawable(ContextUtil.getInstance().getResources(),
+                bm);
+    }
+
+
+    /**
+     *  遍历文件夹，搜索指定扩展名的文件
+     * @param Path          搜索目录
+     * @param Extension     扩展名
+     * @param IsIterative   是否进入子文件夹
+     * @return  满足条件的文件名
+     */
+    public static LinkedList<String> getDirFiles(String Path, String Extension, boolean IsIterative)
+    {
+        LinkedList<String> ret = new LinkedList<>();
+        File[] files =new File(Path).listFiles();
+        for (int i =0; i < files.length; i++)   {
+            File f = files[i];
+            if (f.isFile())     {
+                if (f.getPath().substring(f.getPath().length() - Extension.length()).equals(Extension))
+                    ret.add(f.getPath());
+
+                if (!IsIterative)
+                    break;
+            }
+            else if (f.isDirectory() && f.getPath().indexOf("/.") == -1) {
+                //忽略点文件（隐藏文件/文件夹）
+                getDirFiles(f.getPath(), Extension, IsIterative);
+            }
+        }
+
+        return ret;
     }
 }

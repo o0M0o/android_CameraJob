@@ -4,11 +4,15 @@ import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Environment;
 import android.util.Log;
 
+import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.receiver.AlarmReceiver;
+
+import java.io.File;
 
 /**
  * Created by 123 on 2016/5/7.
@@ -18,6 +22,8 @@ public class ContextUtil extends Application    {
     private static final String TAG = "ContextUtil";
 
     public SilentCameraHandler  mSCHHandler;
+    private String              mAppRootDir;
+    private String              mAppPhotoRootDir;
 
     private static ContextUtil instance;
     public static ContextUtil getInstance() {
@@ -32,11 +38,25 @@ public class ContextUtil extends Application    {
 
         instance = this;
         mSCHHandler = new SilentCameraHandler(PreferencesUtil.loadCameraParam());
-//        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
-//        tm.cancelAll();
-
 
         // 初始化context
+        String en= Environment.getExternalStorageState();
+        if(en.equals(Environment.MEDIA_MOUNTED)){
+            File sdcardDir =Environment.getExternalStorageDirectory();
+            String path = sdcardDir.getPath()+"/CamerajobPhotos";
+            File path1 = new File(path);
+            if (!path1.exists()) {
+                path1.mkdirs();
+            }
+
+            mAppRootDir = sdcardDir.getPath();
+            mAppPhotoRootDir = path;
+        }else{
+            File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            mAppRootDir = ContextUtil.getInstance().getExternalFilesDir(null).getPath();
+            mAppPhotoRootDir = innerPath.getPath();
+        }
+
         GlobalContext.getInstance().initContext();
 
         // 设置闹钟
@@ -73,4 +93,41 @@ public class ContextUtil extends Application    {
             FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
         }
     };
+
+
+    /**
+     * 得到camerajob的图片路径
+     * @param cj 待查camerajob
+     * @return 图片文件夹路径
+     */
+    public String getCameraJobPhotoDir(CameraJob cj)    {
+        File p = new File(mAppPhotoRootDir + "/" + cj.job_name);
+        if(!p.exists()) {
+            p.mkdirs();
+        }
+
+        return p.getPath();
+    }
+
+    /**
+     * 得到camerajob的图片路径
+     * @param cj 待查camerajob的job_name
+     * @return 图片文件夹路径
+     */
+    public String getCameraJobPhotoDir(String cj)    {
+        File p = new File(mAppPhotoRootDir + "/" + cj);
+        if(!p.exists()) {
+            p.mkdirs();
+        }
+
+        return p.getPath();
+    }
+
+    /**
+     * 得到app的图片根目录
+     * @return 图片根路径
+     */
+    public String getAppPhotoRootDir()  {
+        return mAppPhotoRootDir;
+    }
 }

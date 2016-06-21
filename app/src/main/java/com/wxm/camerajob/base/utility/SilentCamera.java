@@ -60,6 +60,7 @@ public class SilentCamera {
 
     private ImageReader mImageReader;
     private boolean     mFlashSupported;
+    private int   mCompletedTime = 0;
 
     private CameraManager                           mCameraManager;
     private HashMap<String, CameraCharacteristics>  mHMCameraCharacteristics;
@@ -92,12 +93,16 @@ public class SilentCamera {
                                 mSessionStateCallback, null);
 
                         mCaptureBuilder = mCameraDevice
-                                            .createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                                            .createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
                         mCaptureBuilder.addTarget(mImageReader.getSurface());
 
                         // Use the same AE and AF modes as the preview.
                         mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                                CaptureRequest.CONTROL_AF_MODE_AUTO);
+                        mCaptureBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                                CaptureRequest.CONTROL_AF_TRIGGER_START);
+                        //mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                        //        CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         if (mFlashSupported) {
                             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
@@ -158,7 +163,6 @@ public class SilentCamera {
     private CameraCaptureSession.CaptureCallback  mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
         private File  mFile;
-        private int   mComplettime = 0;
         private int   MAX_WAIT_FRAMES = 15;
 
         @Override
@@ -167,7 +171,7 @@ public class SilentCamera {
                                        @NonNull TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
 
-            mComplettime += 1;
+            mCompletedTime += 1;
             Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
             Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
             Log.d(TAG, "onCaptureCompleted, afState = " + afState +
@@ -179,25 +183,22 @@ public class SilentCamera {
 
             boolean useany = false;
             long endms = mStartMSec + mCParam.mWaitMSecs + mTPParam.mWaitMSecs;
-            if(endms < System.currentTimeMillis()) {
+            if(checkCaptureResult(result)) {
                 useany = true;
             }
-            else if(checkCaptureResult(result)) {
+            else if(endms < System.currentTimeMillis()) {
                 useany = true;
             }
-            else if(mComplettime >= MAX_WAIT_FRAMES)   {
+            else if(mCompletedTime >= MAX_WAIT_FRAMES)   {
                 useany = true;
             }
 
             if(useany)  {
-                mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
-                try {
-                    session.stopRepeating();
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
-
                 savePhoto();
+                mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
+            }
+            else    {
+                captureStillPicture();
             }
         }
 
@@ -314,7 +315,6 @@ public class SilentCamera {
             = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
-            Log.i(TAG, "image ok");
             /*
             Image ig = reader.acquireNextImage();
             ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
@@ -467,7 +467,7 @@ public class SilentCamera {
             mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
 
             mCameraStatus = CAMERA_TAKEPHOTO_START;
-            mCaptureSession.setRepeatingRequest(
+            mCaptureSession.capture(
                     mCaptureBuilder.build(),
                     mCaptureCallback,
                     mCParam.mSessionHandler);

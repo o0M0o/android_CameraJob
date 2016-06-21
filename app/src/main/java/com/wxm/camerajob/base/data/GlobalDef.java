@@ -10,6 +10,7 @@ public class GlobalDef {
 
     public final static String STR_LOAD_JOB             = "load_job";
     public final static String STR_LOAD_CAMERASETTING   = "load_camerasetting";
+    public final static String STR_LOAD_PHOTODIR        = "load_photodir";
 
     public final static String STR_JOBTYPE_MINUTELY    = "minutely_job";
     public final static String STR_JOBTYPE_HOURLY      = "hourly_job";
@@ -62,6 +63,7 @@ public class GlobalDef {
     public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
     public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
     public final static String  STR_ITEM_ID         = "ITEM_ID";
+    public final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";
     public final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
 
     public final static String  STR_CAMERA_DPI      = "CAMERA_DPI";

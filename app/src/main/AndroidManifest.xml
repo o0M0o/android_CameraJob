@@ -40,7 +40,9 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name=".ui.activitys.ActivityCameraSetting" />
-        <activity android:name=".ui.activitys.ActivityTestSilentCamera"></activity>
+        <activity android:name=".ui.activitys.ActivityTestSilentCamera" />
+        <activity android:name=".ui.activitys.ActivityCamerJobShow" />
+        <activity android:name=".ui.activitys.ActivityCameraJobShowNew"></activity>
     </application>
 
 </manifest>

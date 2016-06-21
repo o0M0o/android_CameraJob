@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.activitys;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,9 +13,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.utility.ContextUtil;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import com.wxm.camerajob.base.utility.UtilFun;
 
 public class ActivityTestSilentCamera extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,22 +34,6 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
         mIVPhoto = (ImageView)findViewById(R.id.aciv_photo);
     }
 
-    /**
-     * 加载本地图片
-     * http://bbs.3gstdy.com
-     * @param url
-     * @return
-     */
-    public static Bitmap getLoacalBitmap(String url) {
-        try {
-            FileInputStream fis = new FileInputStream(url);
-            return BitmapFactory.decodeStream(fis);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -65,14 +46,15 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
             break;
 
             case R.id.acbt_capture :    {
-                TakePhotoParam tp = new TakePhotoParam("tmp.jpg", "1");
+                String sp = ContextUtil.getInstance().getAppPhotoRootDir();
+                TakePhotoParam tp = new TakePhotoParam(sp, "tmp.jpg", "1");
                 if(ContextUtil.getInstance().mSCHHandler.TakePhoto(tp)) {
                     Toast.makeText(getApplicationContext(),
                             "takephoto ok",
                             Toast.LENGTH_SHORT).show();
 
                     String fn = tp.mPhotoFileDir + "/" + tp.mFileName;
-                    Bitmap bm = getLoacalBitmap(fn);
+                    Bitmap bm = UtilFun.getLocalBitmap(fn);
                     if(null != bm) {
                         mIVPhoto.setImageBitmap(bm);
                         Toast.makeText(getApplicationContext(),
