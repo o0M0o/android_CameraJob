@@ -26,49 +26,11 @@ public class SilentCameraHandler {
     private CameraManager   mCMManager;
     private HashMap<String, CameraCharacteristics> mHMCameraCharacteristics;
 
-    /**
-     * 静默相机
-    private static class SilentCameraRun implements Runnable {
-        private final static String TAG = "SilentCameraHandler";
-
-        private final TakePhotoParam mParam;
-        private final SilentCameraHandler mSHandler;
-
-        public SilentCameraRun(TakePhotoParam param,
-                               SilentCameraHandler shandler) {
-            mParam = param;
-            mSHandler = shandler;
-        }
-
-        @Override
-        public void run() {
-            mSHandler.mCamera.TakePhoto(mParam);
-        }
-
-    }
-     */
-
     public SilentCameraHandler(CameraParam cp)    {
         startBackgroundThread();
 
         mCameraParam = cp;
         mCameraParam.mSessionHandler = mBackgroundHandler;
-
-        /*
-        mCMManager = (CameraManager) ContextUtil.getInstance()
-                        .getSystemService(Context.CAMERA_SERVICE);
-        mHMCameraCharacteristics = new HashMap<>();
-        try {
-            for (String cameraId : mCMManager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = mCMManager.getCameraCharacteristics(cameraId);
-
-                mHMCameraCharacteristics.put(cameraId, characteristics);
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-        */
     }
 
     protected void finalize() throws Throwable {

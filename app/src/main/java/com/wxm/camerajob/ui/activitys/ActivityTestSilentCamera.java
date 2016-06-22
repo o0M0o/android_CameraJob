@@ -54,7 +54,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
                             Toast.LENGTH_SHORT).show();
 
                     String fn = tp.mPhotoFileDir + "/" + tp.mFileName;
-                    Bitmap bm = UtilFun.getLocalBitmap(fn);
+                    Bitmap bm = UtilFun.getRotatedLocalBitmap(fn);
                     if(null != bm) {
                         mIVPhoto.setImageBitmap(bm);
                         Toast.makeText(getApplicationContext(),
