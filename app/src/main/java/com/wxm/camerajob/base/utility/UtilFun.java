@@ -279,13 +279,11 @@ public class UtilFun {
             if (f.isFile())     {
                 if (f.getPath().substring(f.getPath().length() - Extension.length()).equals(Extension))
                     ret.add(f.getPath());
-
-                if (!IsIterative)
-                    break;
             }
             else if (f.isDirectory() && f.getPath().indexOf("/.") == -1) {
                 //忽略点文件（隐藏文件/文件夹）
-                getDirFiles(f.getPath(), Extension, IsIterative);
+                if(IsIterative)
+                    getDirFiles(f.getPath(), Extension, IsIterative);
             }
         }
 

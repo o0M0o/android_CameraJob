@@ -102,7 +102,7 @@ public class SilentCamera {
                         mCaptureBuilder.addTarget(mImageReader.getSurface());
 
                         mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                                CaptureRequest.CONTROL_AF_MODE_AUTO);
+                                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         if (mFlashSupported) {
                             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);

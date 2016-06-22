@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver android:name=".base.receiver.AlarmReceiver" />
-        <!-- android:process=":remote" /> -->
+                  <!-- android:process=":remote" /> -->
 
         <activity android:name=".ui.activitys.ActivityStart">
             <intent-filter>

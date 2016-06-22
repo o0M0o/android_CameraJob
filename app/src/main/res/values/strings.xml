@@ -8,4 +8,5 @@
     <string name="cn_silentcamera_test">测试静默相机</string>
     <string name="cn_accept">接受</string>
     <string name="cn_giveup">放弃</string>
+    <string name="cn_leave">返回</string>
 </resources>

@@ -9,4 +9,31 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.wxm.camerajob.ui.activitys.ActivityCameraJobShowNew">
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/actv_cjs_text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/abc_input_method_navigation_guard"
+        android:textSize="22sp" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/aciv_cjs_show"
+        android:layout_below="@+id/actv_cjs_text"
+        android:layout_alignParentStart="true"
+        android:background="@color/abc_search_url_text_normal"
+        android:scaleType="fitCenter"
+        android:padding="6dp" />
+
+    <Gallery
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/acg_cjs_gallery"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

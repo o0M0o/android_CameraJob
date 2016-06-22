@@ -72,8 +72,11 @@ public class CameraJobProcess {
         if(1 != mInitFlag)
             return;
 
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
         LinkedList<CameraJob> ls = new LinkedList<>();
         mLsJobLock.lock();
+        mLsJob.clear();
+        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
         ls.addAll(mLsJob);
         mLsJobLock.unlock();
 

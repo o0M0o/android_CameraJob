@@ -223,7 +223,7 @@ public class ActivityStart
 
 
            case R.id.liib_jobstatus_run_pause :    {
-                Intent intent = new Intent(this, ActivityCamerJobShow.class);
+                Intent intent = new Intent(this, ActivityCameraJobShowNew.class);
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
                         ContextUtil.getInstance()
                                 .getCameraJobPhotoDir(map.get(GlobalDef.STR_ITEM_JOBNAME)));
