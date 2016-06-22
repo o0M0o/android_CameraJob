@@ -157,9 +157,6 @@ public class SilentCamera {
 
                     mCaptureSession = session;
                     mCameraStatus = CAMERA_OPEN_FINISHED;
-
-
-
                 }
 
                 @Override
@@ -312,7 +309,7 @@ public class SilentCamera {
             if(mCParam.mAutoFocus
                 && ((null == afState)
                     || (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-                        CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED == afState ||
+                        CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN == afState ||
                         CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState)))  {
                 afflag = true;
             }

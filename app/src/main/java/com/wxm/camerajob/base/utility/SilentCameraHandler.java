@@ -20,17 +20,66 @@ public class SilentCameraHandler {
 
     private Handler         mBackgroundHandler;
     private HandlerThread   mBackgroundThread;
-    private SilentCamera    mCamera;
+    private Handler         mBackgroundHandlerCamera;
+    private HandlerThread   mBackgroundThreadCamera;
     private CameraParam     mCameraParam;
 
-    private CameraManager   mCMManager;
-    private HashMap<String, CameraCharacteristics> mHMCameraCharacteristics;
+
+    public class TakePhotoRunner implements Runnable {
+        private TakePhotoParam  mSelfTPTakePhoto;
+        private CameraParam     mSelfCameraParam;
+        public boolean          mRunResult;
+        public int             mRunStat;
+        public static final int    RUN_INIT = 0;
+        public static final int    RUN_START = 1;
+        public static final int    RUN_END = 2;
+
+        public TakePhotoRunner(CameraParam cp, TakePhotoParam tp)    {
+            mSelfTPTakePhoto = tp;
+            mSelfCameraParam = cp;
+
+            mRunResult = false;
+            mRunStat = RUN_INIT;
+        }
+
+        @Override
+        public void run() {
+            mRunStat = RUN_START;
+            SilentCamera mC = null;
+            try {
+                CameraManager mCMM = (CameraManager) ContextUtil.getInstance()
+                        .getSystemService(Context.CAMERA_SERVICE);
+                HashMap<String, CameraCharacteristics> mHM = new HashMap<>();
+
+                for (String cameraId : mCMM.getCameraIdList()) {
+                    CameraCharacteristics characteristics
+                            = mCMM.getCameraCharacteristics(cameraId);
+
+                    mHM.put(cameraId, characteristics);
+                }
+
+                mC = new SilentCamera(mCMM, mHM);
+                mRunResult = mC.TakeOncePhoto(mSelfCameraParam, mSelfTPTakePhoto);
+            } catch (Throwable e)   {
+                e.printStackTrace();
+                FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+            }
+            finally {
+                if(null != mC) {
+                    mC.closeCamera();
+                }
+
+                mRunStat = RUN_END;
+            }
+        }
+    }
+
 
     public SilentCameraHandler(CameraParam cp)    {
         startBackgroundThread();
 
         mCameraParam = cp;
-        mCameraParam.mSessionHandler = mBackgroundHandler;
+        mCameraParam.mSessionHandler = mBackgroundHandlerCamera;
     }
 
     protected void finalize() throws Throwable {
@@ -40,47 +89,53 @@ public class SilentCameraHandler {
 
     public void ChangeCamera(CameraParam cp)  {
         mCameraParam = cp;
-        mCameraParam.mSessionHandler = mBackgroundHandler;
+        mCameraParam.mSessionHandler = mBackgroundHandlerCamera;
     }
 
 
-    public boolean TakePhoto(TakePhotoParam para)  {
-        try {
-            mCMManager = (CameraManager) ContextUtil.getInstance()
-                    .getSystemService(Context.CAMERA_SERVICE);
-            mHMCameraCharacteristics = new HashMap<>();
-
-            for (String cameraId : mCMManager.getCameraIdList()) {
-                CameraCharacteristics characteristics
-                        = mCMManager.getCameraCharacteristics(cameraId);
-
-                mHMCameraCharacteristics.put(cameraId, characteristics);
-            }
-
-            mCamera = new SilentCamera(mCMManager, mHMCameraCharacteristics);
-            return mCamera.TakeOncePhoto(mCameraParam, para);
-        } catch (Throwable e)   {
-            e.printStackTrace();
-            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
-        }
-        finally {
-            if(null != mCamera) {
-                mCamera.closeCamera();
-                mCamera = null;
-            }
-        }
-
-        return false;
+    public void TakePhoto(TakePhotoParam para)  {
+        TakePhotoRunner tr = new TakePhotoRunner(mCameraParam, para);
+        mBackgroundHandler.post(tr);
     }
 
+    public boolean TakePhotoWait(TakePhotoParam para)  {
+        long sms = System.currentTimeMillis();
+        long ems = sms + para.mWaitMSecs + mCameraParam.mWaitMSecs;
+        TakePhotoRunner tr = new TakePhotoRunner(mCameraParam, para);
+        mBackgroundHandler.post(tr);
+
+        while((System.currentTimeMillis() < ems)
+                && (TakePhotoRunner.RUN_END != tr.mRunStat))    {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return tr.mRunResult;
+    }
 
     private void startBackgroundThread()    {
         mBackgroundThread = new HandlerThread("SilentCameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+
+        mBackgroundThreadCamera = new HandlerThread("SilentCameraBackground");
+        mBackgroundThreadCamera.start();
+        mBackgroundHandlerCamera = new Handler(mBackgroundThreadCamera.getLooper());
     }
 
     private void stopBackgroundThread() {
+        mBackgroundThreadCamera.quitSafely();
+        try {
+            mBackgroundThreadCamera.join();
+            mBackgroundThreadCamera = null;
+            mBackgroundHandlerCamera = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();

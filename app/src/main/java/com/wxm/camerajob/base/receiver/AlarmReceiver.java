@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
@@ -17,6 +19,15 @@ import com.wxm.camerajob.base.utility.ContextUtil;
  */
 public class AlarmReceiver extends BroadcastReceiver {
     private final static String TAG = "AlarmReceiver";
+
+    public AlarmReceiver()  {
+        super();
+    }
+
+    protected void finalize() throws Throwable {
+        super.finalize();
+    }
+
 
     @Override
     public void onReceive(Context arg0, Intent data) {

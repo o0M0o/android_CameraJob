@@ -1,11 +1,15 @@
 package com.wxm.camerajob.ui.activitys;
 
+import android.annotation.TargetApi;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Size;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,14 +25,16 @@ import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.LinkedList;
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ActivityCameraJobShowNew extends AppCompatActivity {
     private final static String TAG = "CameraJobShowNew";
+    private final static Size   SMAIL_IMAGEVIEW_SIZE = new Size(240, 240);
+
     private ImageView mIVOne;
     private ImageView mIVAll;
     private Gallery   mGGallery;
 
     private LinkedList<String> mPhotoFiles;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,8 +130,9 @@ public class ActivityCameraJobShowNew extends AppCompatActivity {
             mIVAll= new ImageView(context);
             //设置图像资源
             mIVAll.setImageBitmap(UtilFun.getRotatedLocalBitmap(mPhotoFiles.get(position)));
-            //设置imageAll视图为120×120
-            mIVAll.setLayoutParams(new Gallery.LayoutParams(360,   360));
+
+            Size sz = ActivityCameraJobShowNew.SMAIL_IMAGEVIEW_SIZE;
+            mIVAll.setLayoutParams(new Gallery.LayoutParams(sz.getWidth(), sz.getHeight()));
             //设置图像相对于视图的比例，FIT_XY表示充满X和Y轴
             mIVAll.setScaleType(ImageView.ScaleType.FIT_XY);
             //设置imageAll中每一个Item的背景资源

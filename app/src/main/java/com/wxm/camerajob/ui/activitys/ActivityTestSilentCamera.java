@@ -48,7 +48,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
             case R.id.acbt_capture :    {
                 String sp = ContextUtil.getInstance().getAppPhotoRootDir();
                 TakePhotoParam tp = new TakePhotoParam(sp, "tmp.jpg", "1");
-                if(ContextUtil.getInstance().mSCHHandler.TakePhoto(tp)) {
+                if(ContextUtil.getInstance().mSCHHandler.TakePhotoWait(tp)) {
                     Toast.makeText(getApplicationContext(),
                             "takephoto ok",
                             Toast.LENGTH_SHORT).show();
@@ -57,9 +57,9 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
                     Bitmap bm = UtilFun.getRotatedLocalBitmap(fn);
                     if(null != bm) {
                         mIVPhoto.setImageBitmap(bm);
-                        Toast.makeText(getApplicationContext(),
+/*                        Toast.makeText(getApplicationContext(),
                                 "load '" + fn + "' ok!",
-                                Toast.LENGTH_SHORT).show();
+                                Toast.LENGTH_SHORT).show();*/
                     }
                     else    {
                         Toast.makeText(getApplicationContext(),
