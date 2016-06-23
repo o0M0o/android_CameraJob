@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/notification_template_icon_bg">
+    android:layout_height="match_parent">
 
     <TextView
         android:layout_height="wrap_content"
@@ -27,31 +26,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/liib_jobstatus_run_pause"
-        android:layout_alignBottom="@+id/ItemText"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/ItemTitle"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_alignBottom="@+id/liib_jobstatus_stop"
+        android:layout_alignParentEnd="false"
+        android:layout_alignTop="@+id/liib_jobstatus_stop"
+        android:clickable="false"
+        android:onClick="onImageButtonClick"
+        android:cropToPadding="false"
         android:background="@android:drawable/ic_media_play"
-        android:layout_marginEnd="60dp"
-        android:clickable="true"
-        android:onClick="onImageButtonClick" />
+        android:layout_marginRight="6dp"
+        android:layout_toLeftOf="@+id/liib_jobstatus_stop" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/liib_jobstatus_stop"
-        android:background="@android:drawable/ic_menu_close_clear_cancel"
+        android:background="@android:drawable/ic_menu_delete"
         android:layout_alignParentTop="false"
-        android:layout_alignStart="@+id/liib_jobstatus_run_pause"
         android:layout_alignTop="@+id/ItemTitle"
         android:layout_alignBottom="@+id/ItemText"
-        android:layout_marginLeft="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_alignParentEnd="false"
-        android:layout_toRightOf="@+id/liib_jobstatus_run_pause"
+        android:layout_alignParentEnd="true"
         android:clickable="true"
-        android:onClick="onImageButtonClick" />
+        android:onClick="onImageButtonClick"
+        android:layout_marginRight="14dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/liib_jobstatus_look"
+        android:layout_alignParentTop="false"
+        android:layout_alignTop="@+id/liib_jobstatus_stop"
+        android:layout_alignBottom="@+id/liib_jobstatus_stop"
+        android:layout_alignParentEnd="false"
+        android:layout_toLeftOf="@+id/liib_jobstatus_run_pause"
+        android:layout_marginRight="6dp"
+        android:background="@android:drawable/ic_menu_gallery"
+        android:clickable="true" />
 
 </RelativeLayout>

@@ -1,7 +1,6 @@
 package com.wxm.camerajob.ui.activitys;
 
 import android.annotation.TargetApi;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -26,7 +25,7 @@ import com.wxm.camerajob.base.utility.UtilFun;
 import java.util.LinkedList;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class ActivityCameraJobShowNew extends AppCompatActivity {
+public class ActivityCameraJobPhotos extends AppCompatActivity {
     private final static String TAG = "CameraJobShowNew";
     private final static Size   SMAIL_IMAGEVIEW_SIZE = new Size(240, 240);
 
@@ -40,7 +39,7 @@ public class ActivityCameraJobShowNew extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera_job_show_new);
+        setContentView(R.layout.activity_camerajob_photos);
         loadPhotos();
 
         mIVOne = (ImageView)findViewById(R.id.aciv_cjs_show);
@@ -131,7 +130,7 @@ public class ActivityCameraJobShowNew extends AppCompatActivity {
             //设置图像资源
             mIVAll.setImageBitmap(UtilFun.getRotatedLocalBitmap(mPhotoFiles.get(position)));
 
-            Size sz = ActivityCameraJobShowNew.SMAIL_IMAGEVIEW_SIZE;
+            Size sz = ActivityCameraJobPhotos.SMAIL_IMAGEVIEW_SIZE;
             mIVAll.setLayoutParams(new Gallery.LayoutParams(sz.getWidth(), sz.getHeight()));
             //设置图像相对于视图的比例，FIT_XY表示充满X和Y轴
             mIVAll.setScaleType(ImageView.ScaleType.FIT_XY);

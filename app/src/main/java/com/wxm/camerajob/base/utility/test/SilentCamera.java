@@ -1,4 +1,4 @@
-package com.wxm.camerajob.base.utility;
+package com.wxm.camerajob.base.utility.test;
 
 import android.Manifest;
 import android.content.Context;
@@ -29,6 +29,9 @@ import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.handler.GlobalContext;
+import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.FileLogger;
+import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.io.File;
 import java.io.FileOutputStream;

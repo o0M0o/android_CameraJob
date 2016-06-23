@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.activitys;
+package com.wxm.camerajob.ui.activitys.test;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.ui.fragment.CameraFragment;
+import com.wxm.camerajob.ui.fragment.test.CameraFragment;
 
 public class ActivityTest extends Activity {
     private CameraFragment mCamearFrag = CameraFragment.newInstance();

@@ -62,11 +62,11 @@ public class FileLogger {
                 @Override
                 public String format(LogRecord record) {
 
-                    String ret = String.format("%s|%s|%s-%d|%s|%s"
+                    String ret = String.format("%s|%s|%s-%d|%s:%s|%s"
                             , UtilFun.MilliSecsToString(record.getMillis())
                             , record.getLevel().getName()
                             , mLogTag ,record.getThreadID()
-                            , record.getSourceMethodName()
+                            , record.getSourceClassName(), record.getSourceMethodName()
                             , formatMessage(record)) + (System.lineSeparator());
                     return ret;
                 }

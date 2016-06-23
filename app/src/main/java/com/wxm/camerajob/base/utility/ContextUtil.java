@@ -21,7 +21,7 @@ import java.io.File;
 public class ContextUtil extends Application    {
     private static final String TAG = "ContextUtil";
 
-    public SilentCameraHandler  mSCHHandler;
+    public SilentCameraHelper mSCHHandler;
     private String              mAppRootDir;
     private String              mAppPhotoRootDir;
 
@@ -37,7 +37,7 @@ public class ContextUtil extends Application    {
         Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
         instance = this;
-        mSCHHandler = new SilentCameraHandler(PreferencesUtil.loadCameraParam());
+        mSCHHandler = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
 
         // 初始化context
         String en= Environment.getExternalStorageState();

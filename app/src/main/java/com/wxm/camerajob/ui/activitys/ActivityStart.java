@@ -25,6 +25,8 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
+import com.wxm.camerajob.ui.activitys.test.ActivityTest;
+import com.wxm.camerajob.ui.activitys.test.ActivityTestSilentCamera;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,9 +52,11 @@ public class ActivityStart
             if(null != v)   {
                 ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
                 ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
+                ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
 
                 ib_play.setOnClickListener(mHome);
                 ib_delete.setOnClickListener(mHome);
+                ib_look.setOnClickListener(mHome);
             }
 
             return v;
@@ -222,8 +226,8 @@ public class ActivityStart
             break;
 
 
-           case R.id.liib_jobstatus_run_pause :    {
-                Intent intent = new Intent(this, ActivityCameraJobShowNew.class);
+           case R.id.liib_jobstatus_look :    {
+                Intent intent = new Intent(this, ActivityCameraJobPhotos.class);
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
                         ContextUtil.getInstance()
                                 .getCameraJobPhotoDir(map.get(GlobalDef.STR_ITEM_JOBNAME)));

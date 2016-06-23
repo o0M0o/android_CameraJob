@@ -109,7 +109,7 @@ public class CameraJobProcess {
 
                 int new_id = GlobalDef.INT_INVALID_ID;
                 for (CameraJob ij : mLsJob) {
-                    if (cj.job_name.equals(cj.job_name)) {
+                    if (ij.job_name.equals(cj.job_name)) {
                         new_id = ij._id;
                         break;
                     }

@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.fragment;
+package com.wxm.camerajob.ui.fragment.test;
 
 import android.Manifest;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.activitys;
+package com.wxm.camerajob.ui.activitys.test;
 
 import android.content.Intent;
 import android.graphics.Bitmap;

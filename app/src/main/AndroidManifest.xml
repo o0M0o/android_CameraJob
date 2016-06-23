@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activitys.ActivityTest" />
+        <activity android:name=".ui.activitys.test.ActivityTest" />
         <activity android:name=".ui.activitys.ActivityJob" />
 
         <service
@@ -40,9 +40,9 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name=".ui.activitys.ActivityCameraSetting" />
-        <activity android:name=".ui.activitys.ActivityTestSilentCamera" />
-        <activity android:name=".ui.activitys.ActivityCamerJobShow" />
-        <activity android:name=".ui.activitys.ActivityCameraJobShowNew"></activity>
+        <activity android:name=".ui.activitys.test.ActivityTestSilentCamera" />
+        <activity android:name=".ui.activitys.test.ActivityCamerJobShow" />
+        <activity android:name=".ui.activitys.ActivityCameraJobPhotos"></activity>
     </application>
 
 </manifest>
