@@ -81,10 +81,81 @@ public class SilentCamera2 {
     private CameraManager           mCMCameramanager;
     private long                    mStartMSec;
 
+    public interface SilentCamera2TakePhotoCallBack {
+        void onTakePhotoSuccess(TakePhotoParam tp);
+        void onTakePhotoFailed(TakePhotoParam tp);
+    }
+
+    public interface SilentCamera2OpenCameraCallBack {
+        void onOpenSuccess(CameraParam cp);
+        void onOpenFailed(CameraParam cp);
+    }
+
+    private SilentCamera2OpenCameraCallBack     mOCCBOpen;
+    private SilentCamera2TakePhotoCallBack      mTPCBTakePhoto;
+
+    /**
+     * 构造函数
+     */
     public SilentCamera2()  {
         mCameraOpenCloseLock = new Semaphore(1);
     }
 
+    public void setOpenCameraCallBack(SilentCamera2OpenCameraCallBack oc)   {
+        mOCCBOpen = oc;
+    }
+
+    public void setTakePhotoCallBack(SilentCamera2TakePhotoCallBack oc)   {
+        mTPCBTakePhoto = oc;
+    }
+
+    private void openCameraCallBack(Boolean ret) {
+        if(ret) {
+            String l = "camera opened";
+            Log.i(TAG, l);
+            FileLogger.getLogger().info(l);
+
+            if(null != mOCCBOpen)
+                mOCCBOpen.onOpenSuccess(mCParam);
+        }
+        else {
+            String l = "camera open failed";
+            Log.i(TAG, l);
+            FileLogger.getLogger().info(l);
+
+            if(null != mOCCBOpen)
+                mOCCBOpen.onOpenFailed(mCParam);
+        }
+    }
+
+    private void takePhotoCallBack(Boolean ret) {
+        String tag = (mTPParam == null ? "null"
+                        : (mTPParam.mTag == null ? "null" : mTPParam.mTag));
+        if(ret) {
+            String l = "take photo success, paratag = " + tag;
+            Log.i(TAG, l);
+            FileLogger.getLogger().info(l);
+
+            if(null != mTPCBTakePhoto)
+                mTPCBTakePhoto.onTakePhotoSuccess(mTPParam);
+        }
+        else {
+            String l = "take photo failed, paratag = " + tag;
+            Log.i(TAG, l);
+            FileLogger.getLogger().info(l);
+
+            if(null != mTPCBTakePhoto)
+                mTPCBTakePhoto.onTakePhotoFailed(mTPParam);
+        }
+    }
+
+    /**
+     * 设定相机
+     * 在使用相机前需要使用此函数
+     * @param cm    相机服务
+     * @param cp    相机参数
+     * @return 如果成功返回true, 否则返回false
+     */
     public boolean setupCamera(CameraManager cm, CameraParam cp)    {
         closeCamera();
 
@@ -109,16 +180,23 @@ public class SilentCamera2 {
         return true;
     }
 
-    public boolean openCamera()     {
+    /**
+     * 打开相机
+     */
+    public void openCamera()     {
         long endms = System.currentTimeMillis() + mCParam.mWaitMSecs;
         if(mCameraStatus.equals(CAMERA_TAKEPHOTO_START)
                 || mCameraStatus.equals(CAMERA_TAKEPHOTO_FINISHED))   {
             Log.w(TAG, "when open camera, status = " + mCameraStatus);
-            return false;
+
+            openCameraCallBack(false);
+            return;
         }
 
-        if(mCameraStatus.equals(CAMERA_OPEN_FINISHED))
-            return true;
+        if(mCameraStatus.equals(CAMERA_OPEN_FINISHED)) {
+            openCameraCallBack(true);
+            return;
+        }
 
         if(!mCameraStatus.equals(CAMERA_NOT_SETUP))
             closeCamera();
@@ -127,7 +205,8 @@ public class SilentCamera2 {
                 != PackageManager.PERMISSION_GRANTED) {
             //requestCameraPermission();
             Log.i(TAG, "need camera permission");
-            return false;
+            openCameraCallBack(false);
+            return;
         }
 
         try {
@@ -143,31 +222,6 @@ public class SilentCamera2 {
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
         }
-
-        // 等待相机状态
-        long lastms = System.currentTimeMillis();
-        long curms = System.currentTimeMillis();
-        while(((!CAMERA_NOT_OPEN.equals(mCameraStatus))
-                    || (!CAMERA_OPEN_FINISHED.equals(mCameraStatus)))
-                && (curms < endms))  {
-            try {
-                Thread.sleep(200);
-
-                curms = System.currentTimeMillis();
-                if((curms - lastms) > 1000) {
-                    //Log.i(TAG, "wait open camera one second...");
-                    //FileLogger.getLogger().info("wait open camera one second...");
-                    lastms = curms;
-                }
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-                getLogger().severe(UtilFun.ThrowableToString(e));
-                break;
-            }
-        }
-
-        return mCameraStatus.equals(CAMERA_OPEN_FINISHED);
     }
 
 
@@ -188,28 +242,11 @@ public class SilentCamera2 {
         mStartMSec = System.currentTimeMillis();
         mTPParam = tp;
 
-        String l = "camera opened, paratag = "
-                + ((mTPParam == null || mTPParam.mTag == null) ? "null" : mTPParam.mTag);
-        Log.i(TAG, l);
-        FileLogger.getLogger().info(l);
-
         boolean ret = false;
         if(captureStillPicture())    {
-            long endmesc = mStartMSec + mCParam.mWaitMSecs + mTPParam.mWaitMSecs;
-            while(((CAMERA_TAKEPHOTO_START.equals(mCameraStatus))
-                    || (CAMERA_TAKEPHOTO_FINISHED.equals(mCameraStatus)))
-                    && (System.currentTimeMillis() < endmesc))  {
-                try {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                    getLogger().severe(UtilFun.ThrowableToString(e));
-                }
-            }
-
-            if(CAMERA_TAKEPHOTO_SAVEED.equals(mCameraStatus))
-                ret = true;
+            ret = true;
+        } else  {
+            takePhotoCallBack(false);
         }
 
         return ret;
@@ -242,6 +279,9 @@ public class SilentCamera2 {
                     mCParam.mSessionHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+
+            return false;
         }
 
         return true;
@@ -396,6 +436,8 @@ public class SilentCamera2 {
                     mCameraStatus = CAMERA_NOT_OPEN;
                     mCameraOpenCloseLock.release();
                     camera.close();
+
+                    openCameraCallBack(false);
                 }
 
                 @Override
@@ -407,6 +449,8 @@ public class SilentCamera2 {
                     mCameraStatus = CAMERA_NOT_OPEN;
                     mCameraOpenCloseLock.release();
                     camera.close();
+
+                    openCameraCallBack(false);
                 }
             };
 
@@ -419,8 +463,9 @@ public class SilentCamera2 {
                     Log.i(TAG, "onConfigured");
                     mCaptureSession = session;
                     mCameraStatus = CAMERA_OPEN_FINISHED;
-
                     mCameraOpenCloseLock.release();
+
+                    openCameraCallBack(true);
                 }
 
                 @Override
@@ -428,8 +473,9 @@ public class SilentCamera2 {
                     Log.e(TAG, "onConfigureFailed, session : "
                             + (null != session ? session.toString() : "null"));
                     mCameraStatus = CAMERA_NOT_OPEN;
-
                     mCameraOpenCloseLock.release();
+
+                    openCameraCallBack(false);
                 }
             };
 
@@ -465,7 +511,10 @@ public class SilentCamera2 {
                 Log.i(TAG, "save photo to : " + mf.toString());
                 FileLogger.getLogger().info("save photo to : " + mf.toString());
                 mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
+
+                takePhotoCallBack(true);
             } catch (IOException e) {
+                takePhotoCallBack(false);
                 e.printStackTrace();
             } finally {
                 ig.close();
@@ -522,6 +571,7 @@ public class SilentCamera2 {
                     "CaptureFailed, reason = "  + failure.getReason());
 
             mCameraStatus = CAMERA_TAKEPHOTO_FAILED;
+            takePhotoCallBack(false);
         }
 
 

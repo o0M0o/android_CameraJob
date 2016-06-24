@@ -1,9 +1,17 @@
 package com.wxm.camerajob.ui.activitys.test;
 
+import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,6 +21,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.SilentCameraHelper;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 public class ActivityTestSilentCamera extends AppCompatActivity implements View.OnClickListener {
@@ -20,6 +29,61 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
     private Button  mBTCapture;
     private Button  mBTLeave;
     private ImageView   mIVPhoto;
+    private ACTestMsgHandler   mSelfHandler;
+    private TakePhotoParam     mTPParam;
+
+    private static final int SELFMSGWHAT_TAKEPHOTO_SUCCESS = 1;
+    private static final int SELFMSGWHAT_TAKEPHOTO_FAILED  = 2;
+
+    public class ACTestMsgHandler extends Handler {
+        private static final String TAG = "ACStartMsgHandler";
+        private ActivityTestSilentCamera mActivity;
+
+        public ACTestMsgHandler(ActivityTestSilentCamera acstart) {
+            super();
+            mActivity = acstart;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case SELFMSGWHAT_TAKEPHOTO_SUCCESS: {
+                    Toast.makeText(getApplicationContext(),
+                            "takephoto ok",
+                            Toast.LENGTH_SHORT).show();
+
+                    String fn = mTPParam.mPhotoFileDir + "/" + mTPParam.mFileName;
+                    Bitmap bm = UtilFun.getRotatedLocalBitmap(fn);
+                    if(null != bm) {
+                        mIVPhoto.setImageBitmap(bm);
+                    }
+                    else    {
+                        Toast.makeText(getApplicationContext(),
+                                "load '" + fn + "' failed!",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    mBTCapture.setClickable(true);
+                    mBTCapture.setTextColor(getResources().getColor(R.color.black));
+                }
+                break;
+
+                case SELFMSGWHAT_TAKEPHOTO_FAILED:  {
+                    Toast.makeText(getApplicationContext(),
+                            "takephoto failed",
+                            Toast.LENGTH_SHORT).show();
+
+                    mBTCapture.setClickable(true);
+                    mBTCapture.setTextColor(getResources().getColor(R.color.black));
+                }
+                break;
+
+                default:
+                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
+                    break;
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +96,12 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
         mBTLeave.setOnClickListener(this);
 
         mIVPhoto = (ImageView)findViewById(R.id.aciv_photo);
+
+        mSelfHandler = new ACTestMsgHandler(this);
+        mTPParam = null;
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -46,32 +114,29 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
             break;
 
             case R.id.acbt_capture :    {
-                String sp = ContextUtil.getInstance().getAppPhotoRootDir();
-                TakePhotoParam tp = new TakePhotoParam(sp, "tmp.jpg", "1");
-                if(ContextUtil.getInstance().mSCHHandler.TakePhotoWait(tp)) {
-                    Toast.makeText(getApplicationContext(),
-                            "takephoto ok",
-                            Toast.LENGTH_SHORT).show();
+                mBTCapture.setClickable(false);
+                mBTCapture.setTextColor(getResources().getColor(R.color.gray));
 
-                    String fn = tp.mPhotoFileDir + "/" + tp.mFileName;
-                    Bitmap bm = UtilFun.getRotatedLocalBitmap(fn);
-                    if(null != bm) {
-                        mIVPhoto.setImageBitmap(bm);
-/*                        Toast.makeText(getApplicationContext(),
-                                "load '" + fn + "' ok!",
-                                Toast.LENGTH_SHORT).show();*/
-                    }
-                    else    {
-                        Toast.makeText(getApplicationContext(),
-                                "load '" + fn + "' failed!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else    {
-                    Toast.makeText(getApplicationContext(),
-                            "takephoto failed",
-                            Toast.LENGTH_SHORT).show();
-                }
+                String sp = ContextUtil.getInstance().getAppPhotoRootDir();
+                mTPParam = new TakePhotoParam(sp, "tmp.jpg", "1");
+
+                ContextUtil.getInstance().mSCHHandler.setTakePhotoCallBack(
+                        new SilentCameraHelper.takePhotoCallBack() {
+                            @Override
+                            public void onTakePhotoSuccess(TakePhotoParam tp) {
+                                ContextUtil.getInstance().mSCHHandler.setTakePhotoCallBack(null);
+                                mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS);
+                            }
+
+                            @Override
+                            public void onTakePhotoFailed(TakePhotoParam tp) {
+                                ContextUtil.getInstance().mSCHHandler.setTakePhotoCallBack(null);
+                                mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_FAILED);
+                            }
+                        }
+                );
+
+                ContextUtil.getInstance().mSCHHandler.TakePhoto(mTPParam);
             }
             break;
         }

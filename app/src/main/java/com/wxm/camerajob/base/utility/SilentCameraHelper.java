@@ -34,7 +34,12 @@ public class SilentCameraHelper {
 
     private Semaphore                   mRunnerLock;
     private LinkedList<TakePhotoParam>  mTPList;
+    private takePhotoCallBack           mTPCBTakePhoto;
 
+    public interface takePhotoCallBack {
+        void onTakePhotoSuccess(TakePhotoParam tp);
+        void onTakePhotoFailed(TakePhotoParam tp);
+    }
 
 
     public class TakePhotoRunner implements Runnable {
@@ -44,6 +49,55 @@ public class SilentCameraHelper {
         public static final int     RUN_INIT = 0;
         public static final int     RUN_START = 1;
         public static final int     RUN_END = 2;
+
+        private SilentCamera2.SilentCamera2OpenCameraCallBack   mOCCOpen    =
+                new SilentCamera2.SilentCamera2OpenCameraCallBack() {
+                    @Override
+                    public void onOpenSuccess(CameraParam cp) {
+                        mSCCamera.takePhoto(mSelfTPTakePhoto);
+                    }
+
+                    @Override
+                    public void onOpenFailed(CameraParam cp) {
+                        mSCCamera.closeCamera();
+                        mCameraLock.release();
+
+                        mRunResult = false;
+                        mRunStat = RUN_END;
+
+                        if(null != mTPCBTakePhoto)
+                            mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
+                    }
+                };
+
+        private SilentCamera2.SilentCamera2TakePhotoCallBack  mTPCTake  =
+                new SilentCamera2.SilentCamera2TakePhotoCallBack() {
+                    @Override
+                    public void onTakePhotoSuccess(TakePhotoParam tp) {
+                        mSCCamera.closeCamera();
+                        mCameraLock.release();
+
+                        mRunResult = true;
+                        mRunStat = RUN_END;
+
+                        if(null != mTPCBTakePhoto)
+                            mTPCBTakePhoto.onTakePhotoSuccess(mSelfTPTakePhoto);
+                    }
+
+                    @Override
+                    public void onTakePhotoFailed(TakePhotoParam tp) {
+                        mSCCamera.closeCamera();
+                        mCameraLock.release();
+
+                        mRunResult = false;
+                        mRunStat = RUN_END;
+
+                        if(null != mTPCBTakePhoto)
+                            mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
+                    }
+                };
+
+
 
         public TakePhotoRunner(TakePhotoParam tp)    {
             mSelfTPTakePhoto = tp;
@@ -56,28 +110,12 @@ public class SilentCameraHelper {
         public void run() {
             mRunStat = RUN_START;
             try {
-                if(mCameraLock.tryAcquire(500, TimeUnit.MILLISECONDS)) {
-                    try {
-                        if (mSCCamera.openCamera()) {
-                            mRunResult = mSCCamera.takePhoto(mSelfTPTakePhoto);
-                        }
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                        FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
-                    } finally {
-                        mSCCamera.closeCamera();
+                mCameraLock.acquire();
+                mSCCamera.setOpenCameraCallBack(mOCCOpen);
+                mSCCamera.setTakePhotoCallBack(mTPCTake);
 
-                        mCameraLock.release();
-                        mRunStat = RUN_END;
-                    }
-                }
-                else {
-                    FileLogger.getLogger().warning("give up takephoto('"
-                                                        + mSelfTPTakePhoto.mFileName
-                                                        + "')");
-                    mRunStat = RUN_END;
-                }
-            } catch (InterruptedException e) {
+                mSCCamera.openCamera();
+            } catch (Throwable e) {
                 e.printStackTrace();
                 FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
             }
@@ -155,9 +193,8 @@ public class SilentCameraHelper {
                         mTPList.add(para);
                     }
                     else    {
-                        FileLogger.getLogger().warning("give up takephoto('"
-                                + para.mFileName
-                                + "')");
+                        FileLogger.getLogger().warning(
+                                "give up takephoto('"  + para.mFileName + "')");
                     }
                 } else  {
                     mTPList.add(para);
@@ -200,6 +237,10 @@ public class SilentCameraHelper {
 
     public boolean TakePhotoWait(TakePhotoParam para)  {
         return takePhotoUtil(para, true);
+    }
+
+    public void setTakePhotoCallBack(takePhotoCallBack tcb)  {
+        mTPCBTakePhoto = tcb;
     }
 
     private void startBackgroundThread()    {
