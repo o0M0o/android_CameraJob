@@ -29,6 +29,17 @@ public class CameraJobStatus  implements Parcelable {
         _id = GlobalDef.INT_INVALID_ID;
     }
 
+    public CameraJobStatus Clone()  {
+        CameraJobStatus n = new CameraJobStatus();
+        n._id = _id;
+        n.camerjob_id = camerjob_id;
+        n.camerajob_status = camerajob_status;
+        n.camerajob_photo_count = camerajob_photo_count;
+        n.ts = ts;
+
+        return n;
+    }
+
     @Override
     public String toString()    {
         String ret = String.format(
@@ -54,6 +65,7 @@ public class CameraJobStatus  implements Parcelable {
         out.writeString(ts.toString());
 
     }
+
 
     public static final Parcelable.Creator<CameraJobStatus> CREATOR
             = new Parcelable.Creator<CameraJobStatus>() {

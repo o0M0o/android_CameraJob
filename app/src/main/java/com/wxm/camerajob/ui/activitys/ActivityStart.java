@@ -2,6 +2,7 @@ package com.wxm.camerajob.ui.activitys;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,6 +54,23 @@ public class ActivityStart
                 ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
                 ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
                 ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
+
+                HashMap<String, String> map = mLVList.get(position);
+                String iid = map.get(GlobalDef.STR_ITEM_ID);
+                CameraJobStatus cjs = GlobalContext.getInstance()
+                        .mJobProcessor.getCameraJobStatus(Integer.parseInt(iid));
+                if(null != cjs) {
+                    if(cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))    {
+                        ib_play.setBackgroundResource(android.R.drawable.ic_media_pause);
+                    }
+                    else    {
+                        Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will run");
+                        cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_RUN;
+                        ib_play.setBackgroundResource(android.R.drawable.ic_media_play);
+                    }
+                } else  {
+                    Log.e(TAG, "can not find camerjob status");
+                }
 
                 ib_play.setOnClickListener(mHome);
                 ib_delete.setOnClickListener(mHome);
@@ -113,6 +131,7 @@ public class ActivityStart
                                         ,UtilFun.TimestampToString(cj.job_starttime)
                                         ,UtilFun.TimestampToString(cj.job_endtime));
 
+                String jobname = "任务 : " + cj.job_name;
                 if(null != curjs)   {
                     /*
                     show = String.format("%s\n执行成功%d次，失败%d次\n最后拍摄时间 : %s"
@@ -120,6 +139,7 @@ public class ActivityStart
                                         ,curjs.camerajob_photo_count ,0
                                         ,UtilFun.TimestampToString(curjs.ts));
                                         */
+                    jobname = jobname + "(" + curjs.camerajob_status + ")";
                     if(0 != curjs.camerajob_photo_count) {
                         show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
                                 , show, curjs.camerajob_photo_count
@@ -132,8 +152,9 @@ public class ActivityStart
                 }
 
 
+
                 HashMap<String, String> map = new HashMap<>();
-                map.put(GlobalDef.STR_ITEM_TITLE, "任务 : " + cj.job_name);
+                map.put(GlobalDef.STR_ITEM_TITLE, jobname);
                 map.put(GlobalDef.STR_ITEM_TEXT, show);
                 map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
                 map.put(GlobalDef.STR_ITEM_JOBNAME,  cj.job_name);
@@ -218,6 +239,7 @@ public class ActivityStart
 
         switch (v.getId())  {
             case R.id.liib_jobstatus_stop : {
+                ImageButton ib = (ImageButton)v;
                 Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                         GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
                 m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
@@ -225,6 +247,33 @@ public class ActivityStart
             }
             break;
 
+            case R.id.liib_jobstatus_run_pause :    {
+                ImageButton ib = (ImageButton)v;
+
+                ib.setClickable(false);
+                String iid = map.get(GlobalDef.STR_ITEM_ID);
+                CameraJobStatus cjs = GlobalContext.getInstance()
+                                        .mJobProcessor.getCameraJobStatus(Integer.parseInt(iid));
+                if(null != cjs) {
+                    if(cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))    {
+                        Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will pause");
+                        cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_PAUSE;
+                        ib.setBackgroundResource(android.R.drawable.ic_media_play);
+                    }
+                    else    {
+                        Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will run");
+                        cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_RUN;
+                        ib.setBackgroundResource(android.R.drawable.ic_media_pause);
+                    }
+
+                    GlobalContext.getInstance().mJobProcessor.modifyCameraJobStatus(cjs);
+                } else  {
+                    Log.e(TAG, "can not find camerjob status");
+                }
+
+                ib.setClickable(true);
+            }
+            break;
 
            case R.id.liib_jobstatus_look :    {
                 Intent intent = new Intent(this, ActivityCameraJobPhotos.class);

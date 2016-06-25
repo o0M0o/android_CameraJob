@@ -70,6 +70,7 @@ public class GlobalDef {
 
 
     public final static String  STR_CAMERAJOB_RUN           = "running";
+    public final static String  STR_CAMERAJOB_PAUSE         = "pause";
     public final static String  STR_CAMERAJOB_STOP          = "stopped";
     public final static String  STR_CAMERAJOB_UNKNOWN       = "unknown";
 

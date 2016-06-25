@@ -214,7 +214,8 @@ public class SilentCamera2 {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
-            mCMCameramanager.openCamera(mCameraId, mCameraDeviceStateCallback, mCParam.mSessionHandler);
+            mCMCameramanager.openCamera(mCameraId,
+                    mCameraDeviceStateCallback, mCParam.mSessionHandler);
         } catch (InterruptedException e) {
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
@@ -260,6 +261,7 @@ public class SilentCamera2 {
     private boolean captureStillPicture() {
         mCameraStatus = CAMERA_TAKEPHOTO_START;
         try {
+            /*
             mCaptureBuilder = mCameraDevice
                     .createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             mCaptureBuilder.addTarget(mImageReader.getSurface());
@@ -270,6 +272,7 @@ public class SilentCamera2 {
                 mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                         CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
             }
+            */
 
             // set Orientation
             mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
@@ -365,6 +368,7 @@ public class SilentCamera2 {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
+            mCaptureBuilder = null;
             if (null != mCaptureSession) {
                 mCaptureSession.close();
                 mCaptureSession = null;
@@ -488,17 +492,19 @@ public class SilentCamera2 {
         /**
          * 保存photo
          */
-        private void savePhoto()    {
+        private boolean savePhoto()    {
             Image ig = mImageReader.acquireLatestImage();
-            mImageReader.close();
-            if(null == ig)
-                return;
+            if(null == ig) {
+                return false;
+            }
 
-            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
+            boolean ret = false;
             FileOutputStream output = null;
             try {
+                ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
+                byte[] bytes = new byte[buffer.remaining()];
+                buffer.get(bytes);
+
                 File mf = new File(mTPParam.mPhotoFileDir, mTPParam.mFileName);
                 output = new FileOutputStream(mf);
                 output.write(bytes);
@@ -512,10 +518,10 @@ public class SilentCamera2 {
                 FileLogger.getLogger().info("save photo to : " + mf.toString());
                 mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
 
-                takePhotoCallBack(true);
-            } catch (IOException e) {
-                takePhotoCallBack(false);
+                ret = true;
+            } catch (Throwable e) {
                 e.printStackTrace();
+                FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
             } finally {
                 ig.close();
                 if (null != output) {
@@ -526,6 +532,8 @@ public class SilentCamera2 {
                     }
                 }
             }
+
+            return ret;
         }
 
         @Override
@@ -553,7 +561,7 @@ public class SilentCamera2 {
 
             if(useany)  {
                 mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
-                savePhoto();
+                takePhotoCallBack(savePhoto());
             }
             else    {
                 captureStillPicture();

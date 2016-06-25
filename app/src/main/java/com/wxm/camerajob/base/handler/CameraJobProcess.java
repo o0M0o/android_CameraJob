@@ -72,14 +72,7 @@ public class CameraJobProcess {
         if(1 != mInitFlag)
             return;
 
-        DBManager dbm = GlobalContext.getInstance().mDBManager;
-        LinkedList<CameraJob> ls = new LinkedList<>();
-        mLsJobLock.lock();
-        mLsJob.clear();
-        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
-        ls.addAll(mLsJob);
-        mLsJobLock.unlock();
-
+        List<CameraJob> ls = GetAllJobs();
         for(CameraJob cj : ls)  {
             jobWakeup(cj);
         }
@@ -148,6 +141,25 @@ public class CameraJobProcess {
         else    {
             Log.e(TAG, "添加camera job status失败，camerajobstatus = " + cj.toString());
         }
+    }
+
+    public CameraJobStatus getCameraJobStatus(int jobid)    {
+        CameraJobStatus cjs = null;
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
+
+        mLsJobStatusLock.lock();
+        mLsJobStatus.clear();
+        mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
+
+        for(CameraJobStatus i : mLsJobStatus)   {
+            if(i.camerjob_id == jobid)  {
+                cjs = i.Clone();
+                break;
+            }
+        }
+        mLsJobStatusLock.unlock();
+
+        return cjs;
     }
 
 
@@ -242,6 +254,15 @@ public class CameraJobProcess {
      */
     private void jobWakeup(CameraJob cj)    {
         Timestamp cur = new Timestamp(0);
+        CameraJobStatus cjs = GlobalContext.getInstance()
+                                .mJobProcessor.getCameraJobStatus(cj._id);
+        if(null == cjs)
+            return;
+
+        if(!cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))   {
+            return;
+        }
+
         cur.setTime(System.currentTimeMillis());
         long curms = cur.getTime();
         long sms = cj.job_starttime.getTime();
