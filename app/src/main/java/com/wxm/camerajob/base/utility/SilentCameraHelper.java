@@ -54,19 +54,19 @@ public class SilentCameraHelper {
                 new SilentCamera2.SilentCamera2OpenCameraCallBack() {
                     @Override
                     public void onOpenSuccess(CameraParam cp) {
+                        mSCCamera.setOpenCameraCallBack(null);
                         mSCCamera.takePhoto(mSelfTPTakePhoto);
                     }
 
                     @Override
                     public void onOpenFailed(CameraParam cp) {
+                        mSCCamera.setOpenCameraCallBack(null);
+                        mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
                         mCameraLock.release();
 
                         mRunResult = false;
                         mRunStat = RUN_END;
-
-                        if(null != mTPCBTakePhoto)
-                            mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
                     }
                 };
 
@@ -74,6 +74,7 @@ public class SilentCameraHelper {
                 new SilentCamera2.SilentCamera2TakePhotoCallBack() {
                     @Override
                     public void onTakePhotoSuccess(TakePhotoParam tp) {
+                        mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
                         mCameraLock.release();
 
@@ -86,6 +87,7 @@ public class SilentCameraHelper {
 
                     @Override
                     public void onTakePhotoFailed(TakePhotoParam tp) {
+                        mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
                         mCameraLock.release();
 

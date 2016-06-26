@@ -29,8 +29,10 @@ import com.wxm.camerajob.base.utility.UtilFun;
 import com.wxm.camerajob.ui.activitys.test.ActivityTest;
 import com.wxm.camerajob.ui.activitys.test.ActivityTestSilentCamera;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -75,6 +77,12 @@ public class ActivityStart
                 ib_play.setOnClickListener(mHome);
                 ib_delete.setOnClickListener(mHome);
                 ib_look.setOnClickListener(mHome);
+
+                String type = map.get(GlobalDef.STR_ITEM_TYPE);
+                if(type.equals(DIED_JOB))   {
+                    //ib_play.setClickable(false);
+                    ib_play.setVisibility(View.INVISIBLE);
+                }
             }
 
             return v;
@@ -94,15 +102,10 @@ public class ActivityStart
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case GlobalDef.MSGWHAT_ANSWER_CAMERAJOB:
-                    processor_answer_camerjob(msg);
-                    break;
-
                 case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
-                    processor_answer_camerjob(msg);
-                    break;
-
                 case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS :
-                    updateJobs();
+                    //processor_answer_camerjob(msg);
+                    load_camerajobs();
                     break;
 
                 default:
@@ -111,10 +114,12 @@ public class ActivityStart
             }
         }
 
-        private void processor_answer_camerjob(Message msg) {
-            Object[] obj_arr = (Object[])msg.obj;
-            List<CameraJob> ls_job = (List<CameraJob>) obj_arr[0];
-            List<CameraJobStatus> ls_jobstatus = (List<CameraJobStatus>) obj_arr[1];
+        private void load_camerajobs() {
+            LinkedList<String> dirs = UtilFun.getDirDirs(
+                                        ContextUtil.getInstance().getAppPhotoRootDir(),
+                                        false);
+            List<CameraJob> ls_job = GlobalContext.GetJobProcess().GetAllJobs();
+            List<CameraJobStatus> ls_jobstatus = GlobalContext.GetJobProcess().GetAllJobStatus();
 
             mActivity.mLVList.clear();
             for(CameraJob cj : ls_job)  {
@@ -126,46 +131,77 @@ public class ActivityStart
                     }
                 }
 
-                String show = String.format("周期/频度  : %s/%s\n开始时间 : %s\n结束时间 : %s"
-                                        ,cj.job_type  ,cj.job_point
-                                        ,UtilFun.TimestampToString(cj.job_starttime)
-                                        ,UtilFun.TimestampToString(cj.job_endtime));
+                alive_camerjob(cj, curjs);
 
-                String jobname = "任务 : " + cj.job_name;
-                if(null != curjs)   {
+                String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj._id);
+                if(!UtilFun.StringIsNullOrEmpty(dir))
+                    dirs.remove(dir);
+            }
+
+            for(String dir : dirs)  {
+                died_camerajob(dir);
+            }
+
+            mActivity.mLVAdapter.notifyDataSetChanged();
+        }
+
+        private void died_camerajob(String dir) {
+            CameraJob cj = ContextUtil.getInstance().getCameraJobFromPath(dir);
+            if(null == cj)
+                return;
+
+            String jobname = "任务 : " + cj.job_name + "(已移除)";
+            String show  = "可以查看本任务已获取图片\n可以移除本任务占据空间";
+
+            HashMap<String, String> map = new HashMap<>();
+            map.put(GlobalDef.STR_ITEM_TITLE, jobname);
+            map.put(GlobalDef.STR_ITEM_TEXT, show);
+            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
+            map.put(GlobalDef.STR_ITEM_JOBNAME,  cj.job_name);
+            map.put(GlobalDef.STR_ITEM_TYPE, DIED_JOB);
+            mActivity.mLVList.add(map);
+        }
+
+        private void alive_camerjob(CameraJob cj,  CameraJobStatus curjs)     {
+            String show = String.format("周期/频度  : %s/%s\n开始时间 : %s\n结束时间 : %s"
+                    ,cj.job_type  ,cj.job_point
+                    ,UtilFun.TimestampToString(cj.job_starttime)
+                    ,UtilFun.TimestampToString(cj.job_endtime));
+
+            String jobname = "任务 : " + cj.job_name;
+            if(null != curjs)   {
                     /*
                     show = String.format("%s\n执行成功%d次，失败%d次\n最后拍摄时间 : %s"
                                         ,show
                                         ,curjs.camerajob_photo_count ,0
                                         ,UtilFun.TimestampToString(curjs.ts));
                                         */
-                    jobname = jobname + "(" + curjs.camerajob_status + ")";
-                    if(0 != curjs.camerajob_photo_count) {
-                        show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
-                                , show, curjs.camerajob_photo_count
-                                , UtilFun.TimestampToString(curjs.ts));
-                    }
-                    else    {
-                        show = String.format("%s\n执行成功%d次"
-                                , show, curjs.camerajob_photo_count);
-                    }
+                jobname = jobname + "(" + curjs.camerajob_status + ")";
+                if(0 != curjs.camerajob_photo_count) {
+                    show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
+                            , show, curjs.camerajob_photo_count
+                            , UtilFun.TimestampToString(curjs.ts));
                 }
-
-
-
-                HashMap<String, String> map = new HashMap<>();
-                map.put(GlobalDef.STR_ITEM_TITLE, jobname);
-                map.put(GlobalDef.STR_ITEM_TEXT, show);
-                map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
-                map.put(GlobalDef.STR_ITEM_JOBNAME,  cj.job_name);
-
-                mActivity.mLVList.add(map);
+                else    {
+                    show = String.format("%s\n执行成功%d次"
+                            , show, curjs.camerajob_photo_count);
+                }
             }
-            mActivity.mLVAdapter.notifyDataSetChanged();
+
+            HashMap<String, String> map = new HashMap<>();
+            map.put(GlobalDef.STR_ITEM_TITLE, jobname);
+            map.put(GlobalDef.STR_ITEM_TEXT, show);
+            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
+            map.put(GlobalDef.STR_ITEM_JOBNAME,  cj.job_name);
+            map.put(GlobalDef.STR_ITEM_TYPE, ALIVE_JOB);
+            mActivity.mLVList.add(map);
         }
     }
 
     private final static String TAG = "ActivityStart";
+    private final static String ALIVE_JOB   = "alive";
+    private final static String DIED_JOB    = "died";
+
     private ACStartMsgHandler   mSelfHandler;
 
     // listview used to show jobs
@@ -225,10 +261,7 @@ public class ActivityStart
      * 加载并显示数据
      */
     public void updateJobs()  {
-        Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                GlobalDef.MSGWHAT_ASK_CAMERAJOB);
-        m.obj = mSelfHandler;
-        m.sendToTarget();
+        mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
     }
 
 
@@ -239,11 +272,34 @@ public class ActivityStart
 
         switch (v.getId())  {
             case R.id.liib_jobstatus_stop : {
-                ImageButton ib = (ImageButton)v;
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                        GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
-                m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
-                m.sendToTarget();
+                String type = map.get(GlobalDef.STR_ITEM_TYPE);
+                if(type.equals(ALIVE_JOB)) {
+                    ImageButton ib = (ImageButton) v;
+                    Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                            GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
+                    m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
+                    m.sendToTarget();
+                }
+                else    {
+                    String id = map.get(GlobalDef.STR_ITEM_ID);
+                    int _id = Integer.parseInt(id);
+                    String path = ContextUtil.getInstance().getCameraJobPhotoDir(_id);
+                    File f = new File(path);
+                    if(f.isDirectory()) {
+                        File[] childFiles = f.listFiles();
+                        if (childFiles == null || childFiles.length == 0) {
+                            f.delete();
+                        } else  {
+                            for(File ff : childFiles)   {
+                                ff.delete();
+                            }
+
+                            f.delete();
+                        }
+                    }
+
+                    updateJobs();
+                }
             }
             break;
 
@@ -279,7 +335,8 @@ public class ActivityStart
                 Intent intent = new Intent(this, ActivityCameraJobPhotos.class);
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
                         ContextUtil.getInstance()
-                                .getCameraJobPhotoDir(map.get(GlobalDef.STR_ITEM_JOBNAME)));
+                                .getCameraJobPhotoDir(
+                                        Integer.parseInt(map.get(GlobalDef.STR_ITEM_ID))));
                 startActivityForResult(intent, 1);
             }
             break;

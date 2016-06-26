@@ -2,14 +2,21 @@ package com.wxm.camerajob.base.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.JsonReader;
+import android.util.JsonWriter;
 
+import com.wxm.camerajob.base.utility.UtilFun;
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * job
  * Created by wxm on 2016/6/11.
  */
-public class CameraJob implements Parcelable {
+public class CameraJob
+        implements Parcelable {
     public int _id;
     public String job_name;
     public String job_type;
@@ -42,6 +49,7 @@ public class CameraJob implements Parcelable {
         return ret;
     }
 
+    // for parcel
     public int describeContents() {
         return 0;
     }
@@ -79,5 +87,58 @@ public class CameraJob implements Parcelable {
         job_starttime.setTime(in.readLong());
         job_endtime.setTime(in.readLong());
         ts.setTime(in.readLong());
+    }
+
+    // for json
+    public boolean writeToJson(JsonWriter jw)   {
+        try {
+            jw.beginObject();
+            jw.name("_id").value(_id);
+            jw.name("job_name").value(job_name);
+            jw.name("job_type").value(job_type);
+            jw.name("job_point").value(job_point);
+            jw.name("job_starttime").value(UtilFun.TimestampToString(job_starttime));
+            jw.name("job_endtime").value(UtilFun.TimestampToString(job_endtime));
+            jw.endObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static CameraJob readFromJson(JsonReader jr)  {
+        CameraJob ret = null;
+        try {
+            jr.beginObject();
+
+            while (jr.hasNext())    {
+                if(null == ret)
+                    ret = new CameraJob();
+
+                String name = jr.nextName();
+                if(name.equals("_id"))  {
+                    ret._id = jr.nextInt();
+                } else if(name.equals("job_name")) {
+                    ret.job_name = jr.nextString();
+                } else if(name.equals("job_type")) {
+                    ret.job_type = jr.nextString();
+                } else if(name.equals("job_point")) {
+                    ret.job_point = jr.nextString();
+                } else if(name.equals("job_starttime")) {
+                    ret.job_starttime = UtilFun.StringToTimestamp(jr.nextString());
+                } else if(name.equals("job_endtime")) {
+                    ret.job_endtime = UtilFun.StringToTimestamp(jr.nextString());
+                } else  {
+                    jr.skipValue();
+                }
+            }
+
+            jr.endObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
     }
 }

@@ -140,7 +140,8 @@ public class SilentCamera2 {
                 mTPCBTakePhoto.onTakePhotoSuccess(mTPParam);
         }
         else {
-            String l = "take photo failed, paratag = " + tag;
+            String l = "take photo failed, paratag = "
+                            + tag + ", camerastatus = " + mCameraStatus;
             Log.i(TAG, l);
             FileLogger.getLogger().info(l);
 
@@ -236,6 +237,7 @@ public class SilentCamera2 {
         if(!mCameraStatus.equals(CAMERA_OPEN_FINISHED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_FAILED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_SAVEED))  {
+            takePhotoCallBack(false);
             return false;
         }
 
@@ -368,6 +370,8 @@ public class SilentCamera2 {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
+//            mOCCBOpen = null;
+//            mTPCBTakePhoto = null;
             mCaptureBuilder = null;
             if (null != mCaptureSession) {
                 mCaptureSession.close();
@@ -487,7 +491,7 @@ public class SilentCamera2 {
     private CameraCaptureSession.CaptureCallback  mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
         //在有的手机上（note5)，需要若干帧后才能调整好对焦和曝光
-        private int   MAX_WAIT_FRAMES = 8;
+        private int   MAX_WAIT_FRAMES = 5;
 
         /**
          * 保存photo

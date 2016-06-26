@@ -36,6 +36,14 @@ public class GlobalContext {
         return ourInstance;
     }
 
+    public static CameraJobService GetJobService()   {
+        return getInstance().mJobService;
+    }
+
+    public static CameraJobProcess GetJobProcess()   {
+        return getInstance().mJobProcessor;
+    }
+
     private GlobalContext()  {
         initFlag = 0;
     }

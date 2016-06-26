@@ -61,6 +61,7 @@ public class GlobalDef {
 
 
     public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
+    public final static String  STR_ITEM_TYPE       = "ITEM_TYPE";
     public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
     public final static String  STR_ITEM_ID         = "ITEM_ID";
     public final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";

@@ -28,6 +28,16 @@ import java.util.LinkedList;
 public class UtilFun {
 
     /**
+     * 检查字符串是否空或者null
+     * @param cstr  待检查字符串
+     * @return   检查结果
+     */
+    public static boolean StringIsNullOrEmpty(String cstr)      {
+        return null == cstr || cstr.isEmpty();
+    }
+
+
+    /**
      * 可抛出类打印字符串
      * @param e 可抛出类
      * @return 字符串
@@ -284,6 +294,29 @@ public class UtilFun {
                 //忽略点文件（隐藏文件/文件夹）
                 if(IsIterative)
                     getDirFiles(f.getPath(), Extension, IsIterative);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 遍历文件夹，搜索子文件夹
+     * @param path              搜索目录
+     * @param isInterative      是否进入子路径
+     * @return  满足条件的子文件夹
+     */
+    public static LinkedList<String> getDirDirs(String path, boolean isInterative)  {
+        LinkedList<String> ret = new LinkedList<>();
+        File[] files =new File(path).listFiles();
+        for(File f : files)     {
+            if (f.isDirectory())     {
+                if(f.getPath().indexOf("/.") == -1)     {
+                    ret.add(f.getPath());
+
+                    if(isInterative)
+                        getDirDirs(f.getPath(), isInterative);
+                }
             }
         }
 
