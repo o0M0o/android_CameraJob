@@ -62,6 +62,7 @@ import java.util.concurrent.TimeUnit;
  * camera2预览fragment
  * Created by 123 on 2016/6/7.
  */
+@SuppressWarnings("SuspiciousNameCombination")
 public class CameraFragment
         extends Fragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
@@ -77,7 +78,6 @@ public class CameraFragment
     private CameraCaptureSession    mCaptureSession = null;
     private CaptureRequest          mPreviewRequest;
     private Size                    mPreviewSize;
-    private Size                    mLargestSize;
 
     /**
      * ID of the current {@link CameraDevice}.
@@ -226,7 +226,7 @@ public class CameraFragment
     private CameraCaptureSession.StateCallback mSessionStateCallback =
             new CameraCaptureSession.StateCallback() {
                 @Override
-                public void onConfigured(CameraCaptureSession session) {
+                public void onConfigured(@NonNull CameraCaptureSession session) {
                     // The camera is already closed
                     if (null == mCameraDevice) {
                         return;
@@ -252,7 +252,7 @@ public class CameraFragment
                 }
 
                 @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
                     showToast("Failed");
                 }
             };
@@ -352,36 +352,25 @@ public class CameraFragment
 
     /**
      * 激活前置相机
-     * @return 如果成功，返回true
      */
-    public boolean ActiveFrontCamera() {
-        boolean ret = false;
+    public void ActiveFrontCamera() {
         if((null != mTextureView) && (mTextureView.isAvailable()))  {
             closeCamera();
 
             openCamera(CameraCharacteristics.LENS_FACING_FRONT,
                     mTextureView.getWidth(), mTextureView.getHeight());
-            ret = true;
         }
-
-        return ret;
     }
 
     /**
      * 激活后置相机
-     * @return  如果成功，返回true
      */
-    public boolean ActiveBackCamera() {
-        boolean ret = false;
+    public void ActiveBackCamera() {
         if((null != mTextureView) && (mTextureView.isAvailable()))  {
             closeCamera();
-
             openCamera(CameraCharacteristics.LENS_FACING_BACK,
                     mTextureView.getWidth(), mTextureView.getHeight());
-            ret = true;
         }
-
-        return ret;
     }
 
     /**
@@ -490,7 +479,9 @@ public class CameraFragment
                         = manager.getCameraCharacteristics(mCameraId);
 
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                openCamera(facing, mTextureView.getWidth(), mTextureView.getHeight());
+                if(null != facing) {
+                    openCamera(facing, mTextureView.getWidth(), mTextureView.getHeight());
+                }
             }
             catch(CameraAccessException e)  {
                 e.printStackTrace();
@@ -565,7 +556,7 @@ public class CameraFragment
                 }
 
                 // For still image captures, we use the largest available size.
-                mLargestSize = Collections.max(
+                Size mLargestSize = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
                 mImageReader = ImageReader.newInstance(mLargestSize.getWidth(), mLargestSize.getHeight(),
@@ -963,7 +954,7 @@ public class CameraFragment
     /**
      * Compares two {@code Size}s based on their areas.
      */
-    static class CompareSizesByArea implements Comparator<Size> {
+    private static class CompareSizesByArea implements Comparator<Size> {
 
         @Override
         public int compare(Size lhs, Size rhs) {

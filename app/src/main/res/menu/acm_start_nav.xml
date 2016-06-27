@@ -4,25 +4,25 @@
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_menu_help"
-            android:title="帮助" />
+            android:title="@string/cn_help" />
         <item
             android:id="@+id/nav_setting"
             android:visible="true"
             android:icon="@drawable/ic_menu_setting"
-            android:title="设定" />
+            android:title="@string/cn_setting" />
     </group>
 
-    <item android:title="其它">
+    <item android:title="@string/cn_other">
         <menu>
             <item
                 android:id="@+id/nav_share_app"
                 android:visible="true"
                 android:icon="@drawable/ic_menu_share"
-                android:title="分享此应用" />
+                android:title= "@string/cn_sharemy" />
             <item
                 android:id="@+id/nav_contact_writer"
                 android:icon="@drawable/ic_menu_send"
-                android:title="联系作者" />
+                android:title="@string/cn_contact_writer" />
         </menu>
     </item>
 </menu>

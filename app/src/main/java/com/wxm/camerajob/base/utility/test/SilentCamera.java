@@ -37,8 +37,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  * 静默相机
  * Created by 123 on 2016/6/16.
  */
-public class SilentCamera {
+class SilentCamera {
     private final static String TAG = "SilentCamera";
     private static Semaphore        mSLCameraGlobalLock = new Semaphore(1);
     private long    mStartMSec;
@@ -62,13 +62,13 @@ public class SilentCamera {
     }
 
     private int mCameraStatus = CAMERA_NOT_OPEN;
-    public final static int CAMERA_NOT_OPEN             = 1;
-    public final static int CAMERA_OPEN_FAILED          = 2;
-    public final static int CAMERA_OPEN_FINISHED        = 3;
-    public final static int CAMERA_TAKEPHOTO_START      = 4;
-    public final static int CAMERA_TAKEPHOTO_FINISHED   = 5;
-    public final static int CAMERA_TAKEPHOTO_SAVEED     = 6;
-    public final static int CAMERA_TAKEPHOTO_FAILED     = 7;
+    private final static int CAMERA_NOT_OPEN             = 1;
+    private final static int CAMERA_OPEN_FAILED          = 2;
+    private final static int CAMERA_OPEN_FINISHED        = 3;
+    private final static int CAMERA_TAKEPHOTO_START      = 4;
+    private final static int CAMERA_TAKEPHOTO_FINISHED   = 5;
+    private final static int CAMERA_TAKEPHOTO_SAVEED     = 6;
+    private final static int CAMERA_TAKEPHOTO_FAILED     = 7;
 
     private ImageReader mImageReader;
     private boolean     mFlashSupported;
@@ -112,7 +112,7 @@ public class SilentCamera {
                         }
 
                         mCameraDevice.createCaptureSession(
-                                Arrays.asList(mImageReader.getSurface()),
+                                Collections.singletonList(mImageReader.getSurface()),
                                 mSessionStateCallback, null);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
@@ -149,7 +149,7 @@ public class SilentCamera {
                 private final static String TAG = "SessionSCB";
 
                 @Override
-                public void onConfigured(CameraCaptureSession session) {
+                public void onConfigured(@NonNull CameraCaptureSession session) {
                     Log.i(TAG, "onConfigured");
 
                     // The camera is already closed
@@ -163,7 +163,7 @@ public class SilentCamera {
                 }
 
                 @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
                     Log.e(TAG, "onConfigureFailed, session : "
                             + (null != session ? session.toString() : "null"));
                     mCameraStatus = CAMERA_NOT_OPEN;
@@ -310,10 +310,9 @@ public class SilentCamera {
 
             boolean afflag = false;
             if(mCParam.mAutoFocus
-                && ((null == afState)
                     || (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
                         CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN == afState ||
-                        CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState)))  {
+                        CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState))  {
                 afflag = true;
             }
             else    {
@@ -324,9 +323,8 @@ public class SilentCamera {
             if(afflag) {
                 // check ae
                 boolean aeflag = false;
-                if ((null == aeState)
-                        || ((CaptureResult.CONTROL_AE_STATE_SEARCHING != aeState)
-                        && (CaptureResult.CONTROL_AE_STATE_INACTIVE != aeState))) {
+                if ((CaptureResult.CONTROL_AE_STATE_SEARCHING != aeState)
+                        && (CaptureResult.CONTROL_AE_STATE_INACTIVE != aeState)) {
                     aeflag = true;
                 }
 
@@ -449,6 +447,7 @@ public class SilentCamera {
                    mCParam.mSessionHandler);
        } catch (CameraAccessException e) {
            e.printStackTrace();
+           return false;
        }
 
        return true;
@@ -605,10 +604,7 @@ public class SilentCamera {
             // Check if the flash is supported.
             Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
             mFlashSupported = available == null ? false : available;
-            if(mFlashSupported && mCParam.mAutoFlash)
-                mFlashSupported = true;
-            else
-                mFlashSupported = false;
+            mFlashSupported = mFlashSupported && mCParam.mAutoFlash;
 
             mCameraId = id;
             return;

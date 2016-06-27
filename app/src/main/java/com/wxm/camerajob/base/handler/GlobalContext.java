@@ -26,7 +26,7 @@ public class GlobalContext {
     private static final String TAG = "GlobalContext";
     private int initFlag;
 
-    public CameraJobService     mJobService;
+    private CameraJobService    mJobService;
     public GlobalMsgHandler     mMsgHandler;
     public CameraJobProcess     mJobProcessor;
     public DBManager            mDBManager;
@@ -60,8 +60,8 @@ public class GlobalContext {
         initFlag = 1;
     }
 
-    public boolean isInited()   {
-        return initFlag == 1 ? true : false;
+    private boolean isInited()   {
+        return initFlag == 1;
     }
 
     /**
@@ -101,7 +101,7 @@ public class GlobalContext {
                     break;
 
                 case GlobalDef.MSGWHAT_WAKEUP :
-                    processor_wakeup(msg);
+                    processor_wakeup();
                     break;
 
                 case GlobalDef.MSGWHAT_CAMERAJOB_ADD :
@@ -243,9 +243,8 @@ public class GlobalContext {
 
         /**
          * 处理唤醒消息
-         * @param msg   消息
          */
-        private void processor_wakeup(Message msg) {
+        private void processor_wakeup() {
             getInstance().mJobProcessor.processorWakeup();
         }
 

@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.activitys;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,14 +37,15 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class ActivityStart
         extends AppCompatActivity
         implements View.OnClickListener {
     public class MySimpleAdapter extends SimpleAdapter {
         private ActivityStart mHome;
 
-        public MySimpleAdapter(ActivityStart home, Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
-            super(context, data, resource, from, to);
+        public MySimpleAdapter(ActivityStart home, Context context, List<? extends Map<String, ?>> data, String[] from, int[] to) {
+            super(context, data, R.layout.listitem_jobstatus, from, to);
             mHome = home;
         }
 
@@ -209,9 +209,6 @@ public class ActivityStart
     private MySimpleAdapter                     mLVAdapter;
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
 
-    private Timer                               mTimer;
-    private TimerTask                           mTimerTask;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -222,7 +219,6 @@ public class ActivityStart
         mLVAdapter= new MySimpleAdapter(this,
                 ContextUtil.getInstance(),
                 mLVList,
-                R.layout.listitem_jobstatus,
                 new String[]{GlobalDef.STR_ITEM_TITLE, GlobalDef.STR_ITEM_TEXT},
                 new int[]{R.id.ItemTitle, R.id.ItemText});
 
@@ -232,8 +228,8 @@ public class ActivityStart
         updateJobs();
 
         // set timer
-        mTimer = new Timer();
-        mTimerTask = new TimerTask() {
+        Timer mTimer = new Timer();
+        TimerTask mTimerTask = new TimerTask() {
             @Override
             public void run() {
                 mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
@@ -260,7 +256,7 @@ public class ActivityStart
     /**
      * 加载并显示数据
      */
-    public void updateJobs()  {
+    private void updateJobs()  {
         mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
     }
 
@@ -274,7 +270,6 @@ public class ActivityStart
             case R.id.liib_jobstatus_stop : {
                 String type = map.get(GlobalDef.STR_ITEM_TYPE);
                 if(type.equals(ALIVE_JOB)) {
-                    ImageButton ib = (ImageButton) v;
                     Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                             GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
                     m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};

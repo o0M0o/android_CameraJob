@@ -1,11 +1,8 @@
 package com.wxm.camerajob.ui.activitys.test;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +24,6 @@ import com.wxm.camerajob.base.utility.UtilFun;
 public class ActivityTestSilentCamera extends AppCompatActivity implements View.OnClickListener {
 
     private Button  mBTCapture;
-    private Button  mBTLeave;
     private ImageView   mIVPhoto;
     private ACTestMsgHandler   mSelfHandler;
     private TakePhotoParam     mTPParam;
@@ -91,7 +87,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
         setContentView(R.layout.activity_test_silent_camera);
 
         mBTCapture = (Button)findViewById(R.id.acbt_capture);
-        mBTLeave = (Button)findViewById(R.id.acbt_leave);
+        Button mBTLeave = (Button) findViewById(R.id.acbt_leave);
         mBTCapture.setOnClickListener(this);
         mBTLeave.setOnClickListener(this);
 

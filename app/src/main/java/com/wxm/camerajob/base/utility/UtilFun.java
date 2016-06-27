@@ -20,11 +20,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 /**
  * 工具类
  * Created by 123 on 2016/6/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class UtilFun {
 
     /**
@@ -147,7 +149,7 @@ public class UtilFun {
     public static Timestamp StringToTimestamp(String str)   {
         Timestamp ts = new Timestamp(0);
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
             Date date = format.parse(str);
             ts.setTime(date.getTime());
         } catch (ParseException ex)     {
@@ -222,9 +224,7 @@ public class UtilFun {
         matrix.setRotate(degrees, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
         Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                             bitmap.getHeight(), matrix, true);
-        if (null != bitmap) {
-            bitmap.recycle();
-        }
+        bitmap.recycle();
         return bmp;
     }
 
@@ -284,16 +284,14 @@ public class UtilFun {
     {
         LinkedList<String> ret = new LinkedList<>();
         File[] files =new File(Path).listFiles();
-        for (int i =0; i < files.length; i++)   {
-            File f = files[i];
-            if (f.isFile())     {
+        for (File f : files) {
+            if (f.isFile()) {
                 if (f.getPath().substring(f.getPath().length() - Extension.length()).equals(Extension))
                     ret.add(f.getPath());
-            }
-            else if (f.isDirectory() && f.getPath().indexOf("/.") == -1) {
+            } else if (f.isDirectory() && !f.getPath().contains("/.")) {
                 //忽略点文件（隐藏文件/文件夹）
-                if(IsIterative)
-                    getDirFiles(f.getPath(), Extension, IsIterative);
+                if (IsIterative)
+                    getDirFiles(f.getPath(), Extension, true);
             }
         }
 
@@ -311,11 +309,11 @@ public class UtilFun {
         File[] files =new File(path).listFiles();
         for(File f : files)     {
             if (f.isDirectory())     {
-                if(f.getPath().indexOf("/.") == -1)     {
+                if(!f.getPath().contains("/."))     {
                     ret.add(f.getPath());
 
                     if(isInterative)
-                        getDirDirs(f.getPath(), isInterative);
+                        getDirDirs(f.getPath(), true);
                 }
             }
         }

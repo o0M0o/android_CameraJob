@@ -34,7 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +44,7 @@ import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
  * 静默相机版本2
  * Created by wxm on 2016/6/23.
  */
-public class SilentCamera2 {
+class SilentCamera2 {
     private final static String TAG = "SilentCamera2";
 
     private int                         mSensorOrientation;
@@ -57,18 +57,17 @@ public class SilentCamera2 {
     }
 
     private String mCameraStatus = CAMERA_NOT_OPEN;
-    public final static String CAMERA_NOT_SETUP            = "CAMERA_NOT_SETUP";
-    public final static String CAMERA_NOT_OPEN             = "CAMERA_NOT_OPEN";
-    public final static String CAMERA_SETUP                = "CAMERA_SETUP";
-    public final static String CAMERA_OPEN_FINISHED        = "CAMERA_OPEN_FINISHED";
-    public final static String CAMERA_TAKEPHOTO_START      = "CAMERA_TAKEPHOTO_START";
-    public final static String CAMERA_TAKEPHOTO_FINISHED   = "CAMERA_TAKEPHOTO_FINISHED";
-    public final static String CAMERA_TAKEPHOTO_SAVEED     = "CAMERA_TAKEPHOTO_SAVEED";
-    public final static String CAMERA_TAKEPHOTO_FAILED     = "CAMERA_TAKEPHOTO_FAILED";
+    private final static String CAMERA_NOT_SETUP            = "CAMERA_NOT_SETUP";
+    private final static String CAMERA_NOT_OPEN             = "CAMERA_NOT_OPEN";
+    private final static String CAMERA_SETUP                = "CAMERA_SETUP";
+    private final static String CAMERA_OPEN_FINISHED        = "CAMERA_OPEN_FINISHED";
+    private final static String CAMERA_TAKEPHOTO_START      = "CAMERA_TAKEPHOTO_START";
+    private final static String CAMERA_TAKEPHOTO_FINISHED   = "CAMERA_TAKEPHOTO_FINISHED";
+    private final static String CAMERA_TAKEPHOTO_SAVEED     = "CAMERA_TAKEPHOTO_SAVEED";
+    private final static String CAMERA_TAKEPHOTO_FAILED     = "CAMERA_TAKEPHOTO_FAILED";
 
     private Semaphore               mCameraOpenCloseLock;
     private ImageReader             mImageReader;
-    private Surface                 mImageReaderSurface;
     private String                  mCameraId;
     private CameraDevice            mCameraDevice = null;
     private CameraCaptureSession    mCaptureSession = null;
@@ -81,11 +80,13 @@ public class SilentCamera2 {
     private long                    mStartMSec;
     private int                     mCompletedTime = 0;
 
+    @SuppressWarnings("UnusedParameters")
     public interface SilentCamera2TakePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
         void onTakePhotoFailed(TakePhotoParam tp);
     }
 
+    @SuppressWarnings("UnusedParameters")
     public interface SilentCamera2OpenCameraCallBack {
         void onOpenSuccess(CameraParam cp);
         void onOpenFailed(CameraParam cp);
@@ -157,6 +158,7 @@ public class SilentCamera2 {
      * @param cp    相机参数
      * @return 如果成功返回true, 否则返回false
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean setupCamera(CameraManager cm, CameraParam cp)    {
         closeCamera();
 
@@ -167,25 +169,20 @@ public class SilentCamera2 {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
-            if(setUpCameraOutputs(mCParam.mFace,
-                    mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight()))     {
-                return true;
-            }
+            return setUpCameraOutputs(mCParam.mFace);
         } catch (InterruptedException e) {
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
+            return false;
         } finally {
             mCameraOpenCloseLock.release();
         }
-
-        return true;
     }
 
     /**
      * 打开相机
      */
     public void openCamera()     {
-        long endms = System.currentTimeMillis() + mCParam.mWaitMSecs;
         if(mCameraStatus.equals(CAMERA_TAKEPHOTO_START)
                 || mCameraStatus.equals(CAMERA_TAKEPHOTO_FINISHED))   {
             Log.w(TAG, "when open camera, status = " + mCameraStatus);
@@ -230,6 +227,7 @@ public class SilentCamera2 {
      * @param tp 拍照参数
      * @return 成功返回true, 否则返回false
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean takePhoto(TakePhotoParam tp)  {
         if(!mCameraStatus.equals(CAMERA_OPEN_FINISHED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_FAILED)
@@ -317,12 +315,9 @@ public class SilentCamera2 {
 
     /**
      * Sets up member variables related to camera.
-     *
-     * @param face   facing lens or backing lens
-     * @param width  The width of available size for camera preview
-     * @param height The height of available size for camera preview
-     */
-    private boolean setUpCameraOutputs(int face, int width, int height) {
+     *  @param face   facing lens or backing lens
+     * */
+    private boolean setUpCameraOutputs(int face) {
         //FileLogger.getLogger().info("setUpCameraOutputs");
         mCameraId = "";
         try {
@@ -340,7 +335,11 @@ public class SilentCamera2 {
                     continue;
                 }
 
-                mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                try {
+                    mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                } catch (NullPointerException e)    {
+                    FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+                }
 
                 // Check if the flash is supported.
                 Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
@@ -416,7 +415,7 @@ public class SilentCamera2 {
                                 mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
                                 ImageFormat.JPEG, /*maxImages*/5);
 
-                        mImageReaderSurface = mImageReader.getSurface();
+                        Surface mImageReaderSurface = mImageReader.getSurface();
                         mCaptureBuilder.addTarget(mImageReaderSurface);
                         mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
@@ -426,7 +425,7 @@ public class SilentCamera2 {
                         }
 
                         mCameraDevice.createCaptureSession(
-                                Arrays.asList(mImageReaderSurface),
+                                Collections.singletonList(mImageReaderSurface),
                                 mSessionStateCallback, null);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
@@ -490,7 +489,7 @@ public class SilentCamera2 {
     private CameraCaptureSession.CaptureCallback  mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
         //在有的手机上（note5)，需要若干帧后才能调整好对焦和曝光
-        private int     MAX_WAIT_FRAMES = 8;
+        private int     MAX_WAIT_FRAMES = 12;
 
         /**
          * 保存photo
@@ -551,35 +550,18 @@ public class SilentCamera2 {
             if(CAMERA_TAKEPHOTO_FINISHED.equals(mCameraStatus))
                 return;
 
-            boolean useany = false;
-            boolean tmout = false;
-            boolean countout = false;
             long endms = mStartMSec + mCParam.mWaitMSecs + mTPParam.mWaitMSecs;
             if(checkCaptureResult(result)) {
-                useany = true;
-            }
-            else if(endms < System.currentTimeMillis()) {
-                useany = true;
-                countout = true;
-            }
-            else if(mCompletedTime >= MAX_WAIT_FRAMES)   {
-                useany = true;
-                tmout = true;
-            }
-
-            if(useany)  {
                 mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
                 mCompletedTime = 0;
 
-                if(savePhoto()) {
-                    takePhotoCallBack(true);
-                }
-                else {
-                    if(tmout || countout)
-                        takePhotoCallBack(false);
-                    else
-                        captureStillPicture();
-                }
+                takePhotoCallBack(savePhoto());
+            }
+            else if(endms < System.currentTimeMillis()) {
+                takePhotoCallBack(false);
+            }
+            else if(mCompletedTime >= MAX_WAIT_FRAMES)   {
+                takePhotoCallBack(false);
             }
             else    {
                 captureStillPicture();

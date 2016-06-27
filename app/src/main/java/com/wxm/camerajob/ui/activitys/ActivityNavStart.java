@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class ActivityNavStart
         extends AppCompatActivity
         implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
@@ -59,9 +60,6 @@ public class ActivityNavStart
     private ListView                            mLVJobs;
     private MySimpleAdapter                     mLVAdapter;
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
-
-    private Timer                               mTimer;
-    private TimerTask                           mTimerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +76,12 @@ public class ActivityNavStart
                     this, drawer, tb,
                     R.string.navigation_drawer_open,
                     R.string.navigation_drawer_close);
+            assert drawer != null;
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
             NavigationView nv = (NavigationView) findViewById(R.id.start_nav_view);
+            assert nv != null;
             nv.setNavigationItemSelectedListener(this);
         }
         catch (NullPointerException e) {
@@ -93,7 +93,6 @@ public class ActivityNavStart
         mLVAdapter= new MySimpleAdapter(this,
                 ContextUtil.getInstance(),
                 mLVList,
-                R.layout.listitem_jobstatus,
                 new String[]{GlobalDef.STR_ITEM_TITLE, GlobalDef.STR_ITEM_TEXT},
                 new int[]{R.id.ItemTitle, R.id.ItemText});
 
@@ -103,8 +102,8 @@ public class ActivityNavStart
         updateJobs();
 
         // set timer
-        mTimer = new Timer();
-        mTimerTask = new TimerTask() {
+        Timer mTimer = new Timer();
+        TimerTask mTimerTask = new TimerTask() {
             @Override
             public void run() {
                 mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
@@ -127,7 +126,7 @@ public class ActivityNavStart
     /**
      * 加载并显示数据
      */
-    public void updateJobs()  {
+    private void updateJobs()  {
         mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
     }
 
@@ -177,7 +176,6 @@ public class ActivityNavStart
             case R.id.liib_jobstatus_stop : {
                 String type = map.get(GlobalDef.STR_ITEM_TYPE);
                 if(type.equals(ALIVE_JOB)) {
-                    ImageButton ib = (ImageButton) v;
                     Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                             GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
                     m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
@@ -313,6 +311,7 @@ public class ActivityNavStart
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.ac_start_outerlayout);
+        assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -334,9 +333,9 @@ public class ActivityNavStart
 
         public MySimpleAdapter(ActivityNavStart home,
                                Context context, List<? extends Map<String, ?>> data,
-                               int resource, String[] from,
+                               String[] from,
                                int[] to) {
-            super(context, data, resource, from, to);
+            super(context, data, R.layout.listitem_jobstatus, from, to);
             mHome = home;
         }
 

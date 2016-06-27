@@ -39,29 +39,23 @@ public class CameraJobProcess {
         mLsJobStatusLock    = new ReentrantLock();
     }
 
-    protected void finalize() throws Throwable {
-        super.finalize();
-    }
-
 
     /**
      * 初始化函数
      * @param dbm db辅助类
      * @return  初始化成功返回true,否则返回false
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean init(DBManager dbm)  {
-        boolean ret;
         if(1 == mInitFlag)  {
-            ret = true;
-            return ret;
+            return true;
         }
 
         mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
         mLsJobStatus.addAll(dbm.mCameraJobStatusHelper.GetAllJobStatus());
 
         mInitFlag = 1;
-        ret = true;
-        return ret;
+        return true;
     }
 
 
@@ -130,7 +124,7 @@ public class CameraJobProcess {
      * 添加camera job status
      * @param cj   待添加job
      */
-    public void addCameraJobStatus(CameraJobStatus cj)  {
+    private void addCameraJobStatus(CameraJobStatus cj)  {
         DBManager dbm = GlobalContext.getInstance().mDBManager;
         if(dbm.mCameraJobStatusHelper.AddJobStatus(cj))   {
             mLsJobStatusLock.lock();
@@ -250,7 +244,7 @@ public class CameraJobProcess {
 
     /**
      * 执行job
-     * @param cj
+     * @param cj 唤醒的任务
      */
     private void jobWakeup(CameraJob cj)    {
         Timestamp cur = new Timestamp(0);

@@ -8,7 +8,6 @@ import android.util.JsonWriter;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -43,10 +42,9 @@ public class CameraJob
 //                job_type, job_name, job_point,
 //                ts.toString());
 
-        String ret = String.format("name : %s, type : %s, point : %s, " +
+        return String.format("name : %s, type : %s, point : %s, " +
                             "startdate : %s, enddate : %s",
                             job_name, job_type, job_point, job_starttime, job_endtime);
-        return ret;
     }
 
     // for parcel
@@ -90,6 +88,7 @@ public class CameraJob
     }
 
     // for json
+    @SuppressWarnings("UnusedReturnValue")
     public boolean writeToJson(JsonWriter jw)   {
         try {
             jw.beginObject();
@@ -117,20 +116,28 @@ public class CameraJob
                     ret = new CameraJob();
 
                 String name = jr.nextName();
-                if(name.equals("_id"))  {
-                    ret._id = jr.nextInt();
-                } else if(name.equals("job_name")) {
-                    ret.job_name = jr.nextString();
-                } else if(name.equals("job_type")) {
-                    ret.job_type = jr.nextString();
-                } else if(name.equals("job_point")) {
-                    ret.job_point = jr.nextString();
-                } else if(name.equals("job_starttime")) {
-                    ret.job_starttime = UtilFun.StringToTimestamp(jr.nextString());
-                } else if(name.equals("job_endtime")) {
-                    ret.job_endtime = UtilFun.StringToTimestamp(jr.nextString());
-                } else  {
-                    jr.skipValue();
+                switch (name) {
+                    case "_id":
+                        ret._id = jr.nextInt();
+                        break;
+                    case "job_name":
+                        ret.job_name = jr.nextString();
+                        break;
+                    case "job_type":
+                        ret.job_type = jr.nextString();
+                        break;
+                    case "job_point":
+                        ret.job_point = jr.nextString();
+                        break;
+                    case "job_starttime":
+                        ret.job_starttime = UtilFun.StringToTimestamp(jr.nextString());
+                        break;
+                    case "job_endtime":
+                        ret.job_endtime = UtilFun.StringToTimestamp(jr.nextString());
+                        break;
+                    default:
+                        jr.skipValue();
+                        break;
                 }
             }
 

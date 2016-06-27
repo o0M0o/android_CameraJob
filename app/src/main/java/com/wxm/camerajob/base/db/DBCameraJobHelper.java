@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 处理camerajob的数据库类
@@ -61,6 +62,7 @@ public class DBCameraJobHelper {
      * @param cj    待添加的job
      * @return 如果添加成功返回true, 否则返回false
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean AddJob(CameraJob cj) {
         boolean ret = false;
         mDb.beginTransaction();
@@ -83,6 +85,7 @@ public class DBCameraJobHelper {
      * @param jobid     待移除job的id
      * @return 如果添加成功返回true, 否则返回false
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean RemoveJob(String jobid)  {
         boolean ret = false;
         mDb.beginTransaction();
@@ -104,6 +107,7 @@ public class DBCameraJobHelper {
      * @param cj    待修改job
      * @return  修改成功返回true, 否则返回false
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean ModifyJob(CameraJob cj)  {
         boolean ret = false;
         mDb.beginTransaction();
@@ -126,7 +130,7 @@ public class DBCameraJobHelper {
      * @return 数据库中的job
      */
     public List<CameraJob> GetJobs()    {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         LinkedList<CameraJob> persons = new LinkedList<>();
         Cursor c = queryJobCursor();
         while (c.moveToNext()) {

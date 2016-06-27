@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/ItemTitle"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textColor="@color/abc_input_method_navigation_guard"
         android:text="mainitem">
     </TextView>
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:textColor="@color/hint_foreground_material_light"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:id="@+id/ItemText"
         android:text="subitem"
         android:layout_below="@+id/ItemTitle">
@@ -30,7 +30,6 @@
         android:layout_alignParentEnd="false"
         android:layout_alignTop="@+id/liib_jobstatus_stop"
         android:clickable="false"
-        android:onClick="onImageButtonClick"
         android:cropToPadding="false"
         android:background="@android:drawable/ic_media_pause"
         android:layout_marginRight="6dp"
@@ -48,7 +47,6 @@
         android:layout_marginBottom="12dp"
         android:layout_alignParentEnd="true"
         android:clickable="true"
-        android:onClick="onImageButtonClick"
         android:layout_marginRight="14dp" />
 
     <ImageButton

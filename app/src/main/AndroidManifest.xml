@@ -35,7 +35,6 @@
 
         <activity android:name=".ui.activitys.ActivityCameraSetting" />
         <activity android:name=".ui.activitys.test.ActivityTestSilentCamera" />
-        <activity android:name=".ui.activitys.test.ActivityCamerJobShow" />
         <activity android:name=".ui.activitys.ActivityCameraJobPhotos" />
         <activity android:name=".ui.activitys.ActivityNavStart"
                   android:theme="@style/AppTheme.NoActionBar" >

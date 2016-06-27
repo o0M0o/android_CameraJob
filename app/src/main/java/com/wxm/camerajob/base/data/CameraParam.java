@@ -30,7 +30,7 @@ public class CameraParam  implements Parcelable {
         mAutoFocus = true;
     }
 
-    protected CameraParam(Parcel in) {
+    private CameraParam(Parcel in) {
         mFace = in.readInt();
         mPhotoSize = in.readSize();
         mWaitMSecs = in.readLong();

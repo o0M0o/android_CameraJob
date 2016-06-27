@@ -30,9 +30,6 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
     private final static Size   SMAIL_IMAGEVIEW_SIZE = new Size(240, 240);
 
     private ImageView mIVOne;
-    private ImageView mIVAll;
-    private Gallery   mGGallery;
-
     private LinkedList<String> mPhotoFiles;
 
     @Override
@@ -43,7 +40,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
         loadPhotos();
 
         mIVOne = (ImageView)findViewById(R.id.aciv_cjs_show);
-        mGGallery = (Gallery)findViewById(R.id.acg_cjs_gallery);
+        Gallery mGGallery = (Gallery) findViewById(R.id.acg_cjs_gallery);
 
         mGGallery.setAdapter(new ImageAdapter(this));
     }
@@ -96,8 +93,8 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
     class ImageAdapter
             extends BaseAdapter {
         //每一个gallery中图像的背景资源
-        private int galleryItemBackground;
-        private Context context;
+        private final int galleryItemBackground;
+        private final Context context;
 
         public ImageAdapter(Context context) {
             this.context = context;
@@ -126,7 +123,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
 
         //这个方法返回的ImageView就是实现拖动效果的图像
         public View getView(int position, View convertView, ViewGroup parent) {
-            mIVAll= new ImageView(context);
+            ImageView mIVAll = new ImageView(context);
             //设置图像资源
             mIVAll.setImageBitmap(UtilFun.getRotatedLocalBitmap(mPhotoFiles.get(position)));
 

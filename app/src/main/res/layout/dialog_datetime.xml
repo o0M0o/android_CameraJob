@@ -9,7 +9,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="结束日期 :"
         android:id="@+id/textView5"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textColor="@color/abc_input_method_navigation_guard"
         android:layout_marginTop="24dp" />
 
@@ -30,7 +30,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="结束时间 :"
         android:id="@+id/textView6"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:textColor="@color/abc_input_method_navigation_guard"
         android:layout_marginTop="20dp" />
 

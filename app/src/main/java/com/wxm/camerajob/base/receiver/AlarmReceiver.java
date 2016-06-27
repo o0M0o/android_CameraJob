@@ -5,8 +5,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
@@ -15,6 +13,7 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 
 /**
+ * 该类接收系统定时唤醒闹铃
  * Created by 123 on 2016/6/15.
  */
 public class AlarmReceiver extends BroadcastReceiver {
@@ -22,10 +21,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     public AlarmReceiver()  {
         super();
-    }
-
-    protected void finalize() throws Throwable {
-        super.finalize();
     }
 
 
@@ -45,7 +40,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             Intent intent = new Intent(ct, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(ct, 0, intent, 0);
             AlarmManager alarmManager =
-                    (AlarmManager)ContextUtil.getInstance().getSystemService(ct.ALARM_SERVICE);
+                    (AlarmManager)ContextUtil.getInstance().getSystemService(Context.ALARM_SERVICE);
 
             long curms = System.currentTimeMillis();
             long nextms = (curms - (curms % GlobalDef.INT_GLOBALJOB_PERIOD))

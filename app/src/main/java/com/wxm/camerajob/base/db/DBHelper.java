@@ -8,14 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
  * sqlite辅助类
  * Created by wxm on 2016/6/11.
  */
-public class DBHelper extends SQLiteOpenHelper {
+class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "AppLocal.db";
     private static final int DATABASE_VERSION = 1;
 
-    public final static String TABNAME_USER         = "tb_Usr";
-    public final static String COLNAME_USER_NAME    = "usr_name";
-    public final static String COLNAME_USER_PWD     = "usr_pwd";
+    private final static String TABNAME_USER         = "tb_Usr";
+    private final static String COLNAME_USER_NAME    = "usr_name";
+    private final static String COLNAME_USER_PWD     = "usr_pwd";
 
     public final static String TABNAME_JOB          = "tb_Job";
     public final static String COLNAME_JOB_ID       = "job_id";

@@ -1,20 +1,15 @@
 package com.wxm.camerajob.base.utility;
 
 import android.content.Context;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 静默相机句柄
@@ -36,6 +31,7 @@ public class SilentCameraHelper {
     private LinkedList<TakePhotoParam>  mTPList;
     private takePhotoCallBack           mTPCBTakePhoto;
 
+    @SuppressWarnings("UnusedParameters")
     public interface takePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
         void onTakePhotoFailed(TakePhotoParam tp);
@@ -237,9 +233,11 @@ public class SilentCameraHelper {
         takePhotoUtil(para, false);
     }
 
-    public boolean TakePhotoWait(TakePhotoParam para)  {
-        return takePhotoUtil(para, true);
-    }
+// --Commented out by Inspection START (2016/6/27 23:17):
+//    public boolean TakePhotoWait(TakePhotoParam para)  {
+//        return takePhotoUtil(para, true);
+//    }
+// --Commented out by Inspection STOP (2016/6/27 23:17)
 
     public void setTakePhotoCallBack(takePhotoCallBack tcb)  {
         mTPCBTakePhoto = tcb;

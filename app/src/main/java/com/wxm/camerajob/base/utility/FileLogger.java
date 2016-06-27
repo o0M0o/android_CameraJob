@@ -14,16 +14,16 @@ import java.util.logging.SimpleFormatter;
  * 写在文件中的日志
  * Created by 123 on 2016/6/18.
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class FileLogger {
-    public final static String LOG_NAME = "camerajob_run_%g.log";
+    private final static String LOG_NAME = "camerajob_run_%g.log";
 
     private String mLogTag;
-    public Logger mLoger;
-    private FileHandler mLogFH;
+    private Logger mLoger;
 
     private static FileLogger instance;
 
-    public static FileLogger getInstance() {
+    private static FileLogger getInstance() {
         if (null == instance) {
             instance = new FileLogger();
         }
@@ -35,7 +35,7 @@ public class FileLogger {
         return getInstance().mLoger;
     }
 
-    public FileLogger() {
+    private FileLogger() {
         mLogTag =  ("P" + System.currentTimeMillis() % 100000);
 
         String logfn;
@@ -53,11 +53,12 @@ public class FileLogger {
         } else {
             File innerPath = ContextUtil.getInstance()
                     .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+            assert innerPath != null;
             logfn = innerPath.getPath() + "/" + LOG_NAME;
         }
 
         try {
-            mLogFH = new FileHandler(logfn, true);
+            FileHandler mLogFH = new FileHandler(logfn, true);
             mLogFH.setFormatter(new SimpleFormatter() {
                 @Override
                 public String format(LogRecord record) {

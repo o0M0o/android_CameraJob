@@ -2,8 +2,6 @@ package com.wxm.camerajob.ui.activitys.test;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +11,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.ui.fragment.test.CameraFragment;
 
 public class ActivityTest extends Activity {
-    private CameraFragment mCamearFrag = CameraFragment.newInstance();
+    private final CameraFragment mCamearFrag = CameraFragment.newInstance();
     private Button mBtActiveFrontCamear;
     private Button mBtActiveBackCamear;
     private Button mBtTakePhoto;
@@ -84,19 +82,17 @@ public class ActivityTest extends Activity {
         });
     }
 
-    /**
-     * 检查手机是否存在相机
-     * @param context 上下文
-     * @return 若存在则返回true, 否则返回false
-     */
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+// --Commented out by Inspection START (2016/6/27 23:14):
+//    /**
+//     * 检查手机是否存在相机
+//     * @param context 上下文
+//     * @return 若存在则返回true, 否则返回false
+//     */
+//    private boolean checkCameraHardware(Context context) {
+//        return context.getPackageManager().hasSystemFeature(
+//                PackageManager.FEATURE_CAMERA);
+//    }
+// --Commented out by Inspection STOP (2016/6/27 23:14)
 
     /**
      * 设置button的有效状态

@@ -10,9 +10,11 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Size;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -29,25 +31,20 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class ActivityCameraSetting
         extends AppCompatActivity
         implements View.OnClickListener {
-
     private RadioButton  mRBFrontCamera;
     private RadioButton  mRBBackCamera;
-
-    private Button      mBTAccept;
-    private Button      mBTGiveup;
 
     private Switch      mSWAutoFocus;
     private Switch      mSWAutoFlash;
 
     private Spinner                     mSPPhotoSize;
-    private ArrayAdapter<CharSequence>  mAAPhotoSize;
+    private ArrayAdapter                mAAPhotoSize;
 
     private HashMap<String, CameraCharacteristics>  mHMCameras;
-    private String      mBackCameraID;
-    private String      mFrontCameraID;
 
     private LinkedList<HashMap<String, String>>     mLLDpi;
     private LinkedList<HashMap<String, String>>     mLLBackCameraDpi;
@@ -76,11 +73,6 @@ public class ActivityCameraSetting
         mRBBackCamera.setOnClickListener(this);
         mRBFrontCamera.setOnClickListener(this);
 
-        mBTAccept = (Button)findViewById(R.id.acbt_cs_accept);
-        mBTGiveup = (Button)findViewById(R.id.acbt_cs_giveup);
-        mBTAccept.setOnClickListener(this);
-        mBTGiveup.setOnClickListener(this);
-
         mSWAutoFocus = (Switch)findViewById(R.id.acsw_cs_autofocus);
         mSWAutoFlash = (Switch)findViewById(R.id.acsw_cs_autoflash);
 
@@ -93,6 +85,7 @@ public class ActivityCameraSetting
         mAAPhotoSize = new ArrayAdapter(this,
                             R.layout.listitem_photosize,
                             R.id.ItemPhotoSize);
+        assert mAAPhotoSize != null;
         mSPPhotoSize.setAdapter(mAAPhotoSize);
 
         load_camerainfo();
@@ -123,6 +116,14 @@ public class ActivityCameraSetting
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.acmeu_cameraset_actbar, menu);
+        return true;
+    }
+
     /**
      * 保存view当前的相机参数
      * @return  当前相机参数
@@ -140,49 +141,45 @@ public class ActivityCameraSetting
         else
             cp.mPhotoSize = UtilFun.StringToSize(mSPPhotoSize.getItemAtPosition(0).toString());
 
-        if(mSWAutoFlash.isChecked())
-            cp.mAutoFlash = true;
-        else
-            cp.mAutoFlash = false;
-
-        if(mSWAutoFocus.isChecked())
-            cp.mAutoFocus = true;
-        else
-            cp.mAutoFocus = false;
-
+        cp.mAutoFlash = mSWAutoFlash.isChecked();
+        cp.mAutoFocus = mSWAutoFocus.isChecked();
         return cp;
     }
 
 
     @Override
-    public void onClick(View v) {
-        int vid = v.getId();
-        switch (vid)    {
-            case R.id.acbt_cs_accept:
-                if(do_save())
-                    finish();
-                break;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.meuitem_cameraset_accept : {
+                do_save();
+                finish();
+            }
+            break;
 
-            case R.id.acbt_cs_giveup:
+            case R.id.meuitem_cameraset_giveup : {
                 do_giveup();
                 finish();
-                break;
-        }
-    }
+            }
+            break;
 
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+        return true;
+    }
 
     /**
      * 保存任务并返回前activity
-     * @return 如果成功返回true,否则返回false
      */
-    private boolean do_save()  {
+    private void do_save()  {
         Intent data = new Intent();
         CameraParam cp = new CameraParam(null);
         cp.Copy(get_cur_param());
 
         data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, cp);
         setResult(GlobalDef.INTRET_CS_ACCEPT, data);
-        return true;
     }
 
     /**
@@ -207,8 +204,8 @@ public class ActivityCameraSetting
             }
         }
 
-        mBackCameraID = "";
-        mFrontCameraID = "";
+        String mBackCameraID = "";
+        String mFrontCameraID = "";
         CameraManager manager =
                 (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -224,9 +221,7 @@ public class ActivityCameraSetting
 
                     Size[] sz_arr = map.getOutputSizes(ImageFormat.JPEG);
                     ArrayList<Size> sz_ls = new ArrayList<>();
-                    for(Size z : sz_arr)    {
-                        sz_ls.add(z);
-                    }
+                    Collections.addAll(sz_ls, sz_arr);
 
                     Collections.sort(sz_ls, new CompareSizesByArea());
                     for (Size sz : sz_ls)    {
@@ -238,17 +233,19 @@ public class ActivityCameraSetting
 
                 // 前后相机只采用第一个
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if(CameraCharacteristics.LENS_FACING_BACK  == facing)   {
-                    if(mBackCameraID.isEmpty()) {
-                        mBackCameraID = cameraId;
-                        mLLBackCameraDpi.addAll(mLLDpi);
+                if(null != facing) {
+                    if (CameraCharacteristics.LENS_FACING_BACK == facing) {
+                        if (mBackCameraID.isEmpty()) {
+                            mBackCameraID = cameraId;
+                            mLLBackCameraDpi.addAll(mLLDpi);
+                        }
                     }
-                }
 
-                if(CameraCharacteristics.LENS_FACING_FRONT == facing)   {
-                    if(mFrontCameraID.isEmpty()) {
-                        mFrontCameraID = cameraId;
-                        mLLFrontCameraDpi.addAll(mLLDpi);
+                    if (CameraCharacteristics.LENS_FACING_FRONT == facing) {
+                        if (mFrontCameraID.isEmpty()) {
+                            mFrontCameraID = cameraId;
+                            mLLFrontCameraDpi.addAll(mLLDpi);
+                        }
                     }
                 }
             }
@@ -335,5 +332,7 @@ public class ActivityCameraSetting
     }
 
 
-
+    @Override
+    public void onClick(View v) {
+    }
 }

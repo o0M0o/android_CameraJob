@@ -28,8 +28,8 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * 后台方式获取照片
  * Created by 123 on 2016/6/13.
  */
-public class SilentTakePhoto {
+class SilentTakePhoto {
     private static final String TAG = "SilentTakePhoto";
 
     private String mCameraId;
@@ -56,7 +56,7 @@ public class SilentTakePhoto {
     private CameraCaptureSession.StateCallback mSessionStateCallback =
             new CameraCaptureSession.StateCallback() {
                 @Override
-                public void onConfigured(CameraCaptureSession session) {
+                public void onConfigured(@NonNull CameraCaptureSession session) {
                     // The camera is already closed
                     if (null == mCameraDevice) {
                         return;
@@ -66,9 +66,8 @@ public class SilentTakePhoto {
                 }
 
                 @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-                    Log.e(TAG, "onConfigureFailed, session : "
-                                    + (null != session ? session.toString() : "null"));
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                    Log.e(TAG, "onConfigureFailed, session : " + session.toString());
                 }
             };
 
@@ -138,18 +137,20 @@ public class SilentTakePhoto {
                 }
             };
 
-    /**
-     * 构造函数
-     */
-    public SilentTakePhoto()    {
-        int per = ContextCompat.checkSelfPermission(ContextUtil.getInstance(),
-                                        Manifest.permission.CAMERA);
-        if (PackageManager.PERMISSION_GRANTED != per) {
-            return;
-        }
-
-        startBackgroundThread();
-    }
+// --Commented out by Inspection START (2016/6/27 23:17):
+//    /**
+//     * 构造函数
+//     */
+//    public SilentTakePhoto()    {
+//        int per = ContextCompat.checkSelfPermission(ContextUtil.getInstance(),
+//                                        Manifest.permission.CAMERA);
+//        if (PackageManager.PERMISSION_GRANTED != per) {
+//            return;
+//        }
+//
+//        startBackgroundThread();
+//    }
+// --Commented out by Inspection STOP (2016/6/27 23:17)
 
     protected void finalize() throws Throwable {
         stopBackgroundThread();
@@ -299,6 +300,7 @@ public class SilentTakePhoto {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void setupFile(@NonNull String fileName)    {
         String realFileName;
         if(fileName.isEmpty())  {
@@ -388,9 +390,7 @@ public class SilentTakePhoto {
                 mCameraId = cameraId;
                 return;
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (CameraAccessException | NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
             e.printStackTrace();
@@ -412,7 +412,7 @@ public class SilentTakePhoto {
         try {
             // Here, we create a CameraCaptureSession for camera preview.
             mCameraDevice.createCaptureSession(
-                    Arrays.asList(mImageReader.getSurface()),
+                    Collections.singletonList(mImageReader.getSurface()),
                     mSessionStateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();

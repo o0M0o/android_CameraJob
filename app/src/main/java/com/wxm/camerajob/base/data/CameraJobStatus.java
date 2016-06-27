@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * 拍照任务状态
@@ -87,7 +88,7 @@ public class CameraJobStatus  implements Parcelable {
         try {
             ts = new Timestamp(0);
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
             Date date = format.parse(in.readString());
             ts.setTime(date.getTime());
         }

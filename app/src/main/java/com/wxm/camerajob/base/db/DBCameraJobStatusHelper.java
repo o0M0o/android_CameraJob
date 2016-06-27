@@ -11,8 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
+ * 辅助处理camerajob的状态
  * Created by 123 on 2016/6/16.
  */
 public class DBCameraJobStatusHelper {
@@ -55,6 +57,7 @@ public class DBCameraJobStatusHelper {
      * @param cjs    待添加的job status
      * @return 如果添加成功返回true, 否则返回false
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean AddJobStatus(CameraJobStatus cjs) {
         boolean ret = false;
         mDb.beginTransaction();
@@ -78,6 +81,7 @@ public class DBCameraJobStatusHelper {
      * @param jobstatusid     待移除jobstatus的id
      * @return 如果添加成功返回true, 否则返回false
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean RemoveJobStatus(String jobstatusid)  {
         boolean ret = false;
         mDb.beginTransaction();
@@ -99,6 +103,7 @@ public class DBCameraJobStatusHelper {
      * @param cj    待修改jobstatus
      * @return  修改成功返回true, 否则返回false
      */
+    @SuppressWarnings("ConstantConditions")
     public boolean ModifyJobStatus(CameraJobStatus cj)  {
         boolean ret = false;
         mDb.beginTransaction();
@@ -121,7 +126,7 @@ public class DBCameraJobStatusHelper {
      * @return 数据库中的job status
      */
     public List<CameraJobStatus> GetAllJobStatus()    {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         LinkedList<CameraJobStatus> persons = new LinkedList<>();
         Cursor c = queryJobCursor();
         while (c.moveToNext()) {

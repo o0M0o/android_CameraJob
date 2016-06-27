@@ -19,22 +19,16 @@ import java.util.LinkedList;
  * app的jobservice
  * Created by wxm on 2016/6/10.
  */
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class CameraJobService extends JobService {
     private static final String TAG = "CameraJobService";
     private final LinkedList<JobParameters> jobParamsMap = new LinkedList<>();
-    private Context mCurContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
         //Log.i(TAG, "JobService created");
-        mCurContext = ContextUtil.getInstance();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //Log.i(TAG, "JobService destroyed");
+        //Context mCurContext = ContextUtil.getInstance();
     }
 
     /**

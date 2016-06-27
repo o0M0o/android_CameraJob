@@ -15,13 +15,9 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.receiver.AlarmReceiver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 
 /**
  * Created by 123 on 2016/5/7.
@@ -32,6 +28,7 @@ public class ContextUtil extends Application    {
     private static final String INFO_FN = "info.json";
 
     public SilentCameraHelper   mSCHHandler;
+    @SuppressWarnings("FieldCanBeLocal")
     private String              mAppRootDir;
     private String              mAppPhotoRootDir;
 
@@ -40,6 +37,7 @@ public class ContextUtil extends Application    {
         return instance;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
@@ -62,9 +60,13 @@ public class ContextUtil extends Application    {
             mAppRootDir = sdcardDir.getPath();
             mAppPhotoRootDir = path;
         }else{
-            File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            mAppRootDir = ContextUtil.getInstance().getExternalFilesDir(null).getPath();
-            mAppPhotoRootDir = innerPath.getPath();
+            try {
+                File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                mAppRootDir = ContextUtil.getInstance().getExternalFilesDir(null).getPath();
+                mAppPhotoRootDir = innerPath.getPath();
+            } catch (NullPointerException e)    {
+                FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+            }
         }
 
         GlobalContext.getInstance().initContext();
@@ -110,6 +112,7 @@ public class ContextUtil extends Application    {
      * @param cj 待查camerajob
      * @return 图片文件夹路径
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public String getCameraJobPhotoDir(CameraJob cj)    {
         File p = new File(mAppPhotoRootDir + "/" + cj._id);
         if(!p.exists()) {
