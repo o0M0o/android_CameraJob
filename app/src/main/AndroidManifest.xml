@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
@@ -22,14 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver android:name=".base.receiver.AlarmReceiver" />
-                  <!-- android:process=":remote" /> -->
+        <!-- android:process=":remote" /> -->
 
         <activity android:name=".ui.activitys.ActivityStart">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".ui.activitys.test.ActivityTest" />
         <activity android:name=".ui.activitys.ActivityJob" />
@@ -42,7 +36,14 @@
         <activity android:name=".ui.activitys.ActivityCameraSetting" />
         <activity android:name=".ui.activitys.test.ActivityTestSilentCamera" />
         <activity android:name=".ui.activitys.test.ActivityCamerJobShow" />
-        <activity android:name=".ui.activitys.ActivityCameraJobPhotos"></activity>
+        <activity android:name=".ui.activitys.ActivityCameraJobPhotos" />
+        <activity android:name=".ui.activitys.ActivityNavStart"
+                  android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

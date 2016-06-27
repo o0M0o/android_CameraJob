@@ -35,12 +35,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import static com.wxm.camerajob.base.utility.FileLogger.*;
+import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
 
 /**
  * 静默相机版本2
@@ -70,6 +68,7 @@ public class SilentCamera2 {
 
     private Semaphore               mCameraOpenCloseLock;
     private ImageReader             mImageReader;
+    private Surface                 mImageReaderSurface;
     private String                  mCameraId;
     private CameraDevice            mCameraDevice = null;
     private CameraCaptureSession    mCaptureSession = null;
@@ -80,6 +79,7 @@ public class SilentCamera2 {
     private CameraParam             mCParam;
     private CameraManager           mCMCameramanager;
     private long                    mStartMSec;
+    private int                     mCompletedTime = 0;
 
     public interface SilentCamera2TakePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
@@ -217,10 +217,7 @@ public class SilentCamera2 {
 
             mCMCameramanager.openCamera(mCameraId,
                     mCameraDeviceStateCallback, mCParam.mSessionHandler);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            getLogger().severe(UtilFun.ThrowableToString(e));
-        } catch (CameraAccessException e) {
+        } catch (InterruptedException | CameraAccessException e){
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
         }
@@ -246,6 +243,7 @@ public class SilentCamera2 {
         mTPParam = tp;
 
         boolean ret = false;
+        mCompletedTime = 0;
         if(captureStillPicture())    {
             ret = true;
         } else  {
@@ -352,7 +350,7 @@ public class SilentCamera2 {
                 mCameraStatus = CAMERA_SETUP;
                 return true;
             }
-        } catch (CameraAccessException e) {
+        } catch (NullPointerException | CameraAccessException e) {
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
         }
@@ -416,8 +414,10 @@ public class SilentCamera2 {
 
                         mImageReader = ImageReader.newInstance(
                                 mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
-                                ImageFormat.JPEG, /*maxImages*/2);
-                        mCaptureBuilder.addTarget(mImageReader.getSurface());
+                                ImageFormat.JPEG, /*maxImages*/5);
+
+                        mImageReaderSurface = mImageReader.getSurface();
+                        mCaptureBuilder.addTarget(mImageReaderSurface);
                         mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         if (mFlashSupported) {
@@ -426,7 +426,7 @@ public class SilentCamera2 {
                         }
 
                         mCameraDevice.createCaptureSession(
-                                Arrays.asList(mImageReader.getSurface()),
+                                Arrays.asList(mImageReaderSurface),
                                 mSessionStateCallback, null);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
@@ -467,7 +467,7 @@ public class SilentCamera2 {
                 private final static String TAG = "SessionSCB";
 
                 @Override
-                public void onConfigured(CameraCaptureSession session) {
+                public void onConfigured(@NonNull CameraCaptureSession session) {
                     Log.i(TAG, "onConfigured");
                     mCaptureSession = session;
                     mCameraStatus = CAMERA_OPEN_FINISHED;
@@ -477,9 +477,8 @@ public class SilentCamera2 {
                 }
 
                 @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-                    Log.e(TAG, "onConfigureFailed, session : "
-                            + (null != session ? session.toString() : "null"));
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                    Log.e(TAG, "onConfigureFailed, session : " + session.toString());
                     mCameraStatus = CAMERA_NOT_OPEN;
                     mCameraOpenCloseLock.release();
 
@@ -491,7 +490,7 @@ public class SilentCamera2 {
     private CameraCaptureSession.CaptureCallback  mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
         //在有的手机上（note5)，需要若干帧后才能调整好对焦和曝光
-        private int   MAX_WAIT_FRAMES = 5;
+        private int     MAX_WAIT_FRAMES = 8;
 
         /**
          * 保存photo
@@ -499,6 +498,7 @@ public class SilentCamera2 {
         private boolean savePhoto()    {
             Image ig = mImageReader.acquireLatestImage();
             if(null == ig) {
+                FileLogger.getLogger().severe("can not get image");
                 return false;
             }
 
@@ -546,26 +546,40 @@ public class SilentCamera2 {
                                        @NonNull TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
 
-            int mCompletedTime = 1;
+            mCompletedTime += 1;
             //FileLogger.getLogger().info("onCaptureCompleted");
             if(CAMERA_TAKEPHOTO_FINISHED.equals(mCameraStatus))
                 return;
 
             boolean useany = false;
+            boolean tmout = false;
+            boolean countout = false;
             long endms = mStartMSec + mCParam.mWaitMSecs + mTPParam.mWaitMSecs;
             if(checkCaptureResult(result)) {
                 useany = true;
             }
             else if(endms < System.currentTimeMillis()) {
                 useany = true;
+                countout = true;
             }
             else if(mCompletedTime >= MAX_WAIT_FRAMES)   {
                 useany = true;
+                tmout = true;
             }
 
             if(useany)  {
                 mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
-                takePhotoCallBack(savePhoto());
+                mCompletedTime = 0;
+
+                if(savePhoto()) {
+                    takePhotoCallBack(true);
+                }
+                else {
+                    if(tmout || countout)
+                        takePhotoCallBack(false);
+                    else
+                        captureStillPicture();
+                }
             }
             else    {
                 captureStillPicture();
@@ -596,21 +610,22 @@ public class SilentCamera2 {
             // check focus
             Integer afState = tr.get(CaptureResult.CONTROL_AF_STATE);
             Integer aeState = tr.get(CaptureResult.CONTROL_AE_STATE);
-            Log.d(TAG, "onCaptureCompleted, afState = " + afState +
-                    ", aeState = " + aeState +
+            Log.d(TAG, "onCaptureCompleted, " +
+                    "afState = " + (afState == null ? "null" : afState) +
+                    ", aeState = " + (aeState == null ? "null" : aeState) +
                     ", mCameraStatus = " + mCameraStatus);
 
 
             // 旧驱动没有检查曝光和对焦功能
-            if((null == afState)||(null == aeState))
+            if((null == afState)||(null == aeState)) {
                 return true;
+            }
 
             boolean afflag = false;
             if(mCParam.mAutoFocus
-                    && ((null == afState)
-                    || (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
+                    && ( CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
                     CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN == afState ||
-                    CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState)))  {
+                    CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState))  {
                 afflag = true;
             }
             else    {
@@ -621,13 +636,12 @@ public class SilentCamera2 {
             if(afflag) {
                 // check ae
                 boolean aeflag = false;
-                if ((null == aeState)
-                        || ((CaptureResult.CONTROL_AE_STATE_SEARCHING != aeState)
-                        && (CaptureResult.CONTROL_AE_STATE_INACTIVE != aeState))) {
+                if ((CaptureResult.CONTROL_AE_STATE_SEARCHING != aeState)
+                        && (CaptureResult.CONTROL_AE_STATE_INACTIVE != aeState)) {
                     aeflag = true;
                 }
 
-                return  afflag && aeflag;
+                return aeflag;
             }
 
             return false;

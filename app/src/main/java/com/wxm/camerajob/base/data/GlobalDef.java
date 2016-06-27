@@ -67,6 +67,12 @@ public class GlobalDef {
     public final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";
     public final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
 
+    static public final String STR_HELP_TYPE            = "HELP_TYPE";
+    static public final String STR_HELP_MAIN            = "help_main";
+    static public final String STR_HELP_START           = "help_start";
+    static public final String STR_HELP_DAILYDETAIL     = "help_dailydetail";
+    static public final String STR_HELP_RECORD          = "help_dailydetail";
+
     public final static String  STR_CAMERA_DPI      = "CAMERA_DPI";
 
 

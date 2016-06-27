@@ -9,4 +9,10 @@
     <string name="cn_accept">接受</string>
     <string name="cn_giveup">放弃</string>
     <string name="cn_leave">返回</string>
+
+    <string name="contact_email">fly_in_wind@qq.com</string>
+    <string name="contact_studio">oko studio</string>
+
+    <string name="navigation_drawer_open">打开导航绘图</string>
+    <string name="navigation_drawer_close">关闭导航绘图</string>
 </resources>
