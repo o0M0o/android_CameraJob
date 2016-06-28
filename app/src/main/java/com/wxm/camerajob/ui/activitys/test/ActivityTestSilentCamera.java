@@ -3,12 +3,14 @@ package com.wxm.camerajob.ui.activitys.test;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,7 +34,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
     private static final int SELFMSGWHAT_TAKEPHOTO_FAILED  = 2;
 
     public class ACTestMsgHandler extends Handler {
-        private static final String TAG = "ACStartMsgHandler";
+        private static final String TAG = "ACTestMsgHandler";
         private ActivityTestSilentCamera mActivity;
 
         public ACTestMsgHandler(ActivityTestSilentCamera acstart) {
@@ -48,8 +50,13 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
                             "takephoto ok",
                             Toast.LENGTH_SHORT).show();
 
+                    Rect rt = new Rect();
+                    mIVPhoto.getDrawingRect(rt);
+                    Size psz = new Size(rt.width(), rt.height());
+                    Log.i(TAG, "perfence size : " + psz);
+
                     String fn = mTPParam.mPhotoFileDir + "/" + mTPParam.mFileName;
-                    Bitmap bm = UtilFun.getRotatedLocalBitmap(fn);
+                    Bitmap bm = UtilFun.getRotatedLocalBitmap(fn, psz);
                     if(null != bm) {
                         mIVPhoto.setImageBitmap(bm);
                     }

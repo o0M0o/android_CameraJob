@@ -17,8 +17,8 @@
         android:id="@+id/actv_cjs_text"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:textColor="@color/abc_input_method_navigation_guard"
-        android:textSize="22sp" />
+        android:textColor="@color/darkblue"
+        android:textSize="18sp" />
 
     <ImageView
         android:layout_width="fill_parent"

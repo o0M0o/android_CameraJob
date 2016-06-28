@@ -3,6 +3,7 @@ package com.wxm.camerajob.ui.activitys;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +28,7 @@ import java.util.LinkedList;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ActivityCameraJobPhotos extends AppCompatActivity {
-    private final static String TAG = "CameraJobShowNew";
+    private final static String TAG = "ACCameraJobPhotos";
     private final static Size   SMAIL_IMAGEVIEW_SIZE = new Size(240, 240);
 
     private TextView            mTVTip;
@@ -46,6 +47,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
         //mIVAll = new ImageView(this);
         mIVOne = (ImageView)findViewById(R.id.aciv_cjs_show);
         assert mIVOne != null;
+        mIVOne.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         mTVTip = (TextView)findViewById(R.id.actv_cjs_text);
         assert mTVTip != null;
@@ -61,6 +63,17 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.acmenu_camerajobshow_actbar, menu);
         return true;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
+        Log.i(TAG, "screen changed");
+
+/*        Rect rt = new Rect();
+        mIVOne.getDrawingRect(rt);
+        mSZPreference = new Size(rt.width(), rt.height());*/
     }
 
     @Override
@@ -126,8 +139,8 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
             String fn = mPhotoFiles.get(position);
 
             //将此索引的图像设为imageOne显示
-            mIVOne.setImageBitmap(UtilFun.getRotatedLocalBitmap(fn));
-            mIVOne.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            Size sz = new Size(1024, 1024);
+            mIVOne.setImageBitmap(UtilFun.getRotatedLocalBitmap(fn, sz));
 
             int pos = fn.lastIndexOf("/");
             if(pos > 0)
@@ -148,7 +161,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
             mIVAll.setLayoutParams(new Gallery.LayoutParams(sz.getWidth(), sz.getHeight()));
             mIVAll.setScaleType(ImageView.ScaleType.FIT_XY);
             mIVAll.setBackgroundResource(galleryItemBackground);
-            mIVAll.setImageBitmap(UtilFun.getRotatedLocalBitmap(mPhotoFiles.get(position)));
+            mIVAll.setImageBitmap(UtilFun.getRotatedLocalBitmap(mPhotoFiles.get(position), sz));
             return mIVAll;
         }
     }

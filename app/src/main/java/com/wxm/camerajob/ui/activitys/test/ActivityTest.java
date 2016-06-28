@@ -1,16 +1,21 @@
 package com.wxm.camerajob.ui.activitys.test;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import com.wxm.camerajob.R;
+import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.ui.fragment.test.CameraFragment;
 
-public class ActivityTest extends Activity {
+public class ActivityTest extends AppCompatActivity {
     private final CameraFragment mCamearFrag = CameraFragment.newInstance();
     private Button mBtActiveFrontCamear;
     private Button mBtActiveBackCamear;
@@ -106,5 +111,31 @@ public class ActivityTest extends Activity {
             bt.setTextColor(Color.GRAY);
         else
             bt.setTextColor(Color.BLACK);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.acm_testcamera_actbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.meuitem_testcamera_leave: {
+                Intent data = new Intent();
+                setResult(GlobalDef.INTRET_CS_GIVEUP, data);
+                finish();
+            }
+            break;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+        return true;
     }
 }
