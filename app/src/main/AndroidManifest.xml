@@ -33,15 +33,19 @@
 
         <activity android:name=".ui.activitys.ActivityCameraSetting" />
         <activity android:name=".ui.activitys.test.ActivityTestSilentCamera" />
-        <activity android:name=".ui.activitys.ActivityCameraJobPhotos"
+        <activity
+            android:name=".ui.activitys.ActivityCameraJobPhotos"
             android:configChanges="orientation|screenSize" />
-        <activity android:name=".ui.activitys.ActivityNavStart"
-                  android:theme="@style/AppTheme.NoActionBar" >
+        <activity
+            android:name=".ui.activitys.ActivityNavStart"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.activitys.ACHelp"></activity>
     </application>
 
 </manifest>

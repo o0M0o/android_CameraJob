@@ -37,7 +37,6 @@ import com.wxm.camerajob.base.utility.UtilFun;
 import com.wxm.camerajob.ui.activitys.test.ActivityTest;
 import com.wxm.camerajob.ui.activitys.test.ActivityTestSilentCamera;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -175,32 +174,18 @@ public class ActivityNavStart
         switch (v.getId())  {
             case R.id.liib_jobstatus_stop : {
                 String type = map.get(GlobalDef.STR_ITEM_TYPE);
+                Message m;
                 if(type.equals(ALIVE_JOB)) {
-                    Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                    m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                             GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
-                    m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
-                    m.sendToTarget();
                 }
                 else    {
-                    String id = map.get(GlobalDef.STR_ITEM_ID);
-                    int _id = Integer.parseInt(id);
-                    String path = ContextUtil.getInstance().getCameraJobPhotoDir(_id);
-                    File f = new File(path);
-                    if(f.isDirectory()) {
-                        File[] childFiles = f.listFiles();
-                        if (childFiles == null || childFiles.length == 0) {
-                            f.delete();
-                        } else  {
-                            for(File ff : childFiles)   {
-                                ff.delete();
-                            }
-
-                            f.delete();
-                        }
-                    }
-
-                    updateJobs();
+                    m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                            GlobalDef.MSGWHAT_CAMERAJOB_DELETE);
                 }
+
+                m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
+                m.sendToTarget();
             }
             break;
 
@@ -212,23 +197,23 @@ public class ActivityNavStart
                 CameraJobStatus cjs = GlobalContext.getInstance()
                         .mJobProcessor.getCameraJobStatus(Integer.parseInt(iid));
                 if(null != cjs) {
+                    Message m;
                     if(cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))    {
                         Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will pause");
-                        cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_PAUSE;
-                        ib.setBackgroundResource(android.R.drawable.ic_media_play);
+                        m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                                GlobalDef.MSGWHAT_CAMERAJOB_TOPAUSE);
                     }
                     else    {
                         Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will run");
-                        cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_RUN;
-                        ib.setBackgroundResource(android.R.drawable.ic_media_pause);
+                        m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                                GlobalDef.MSGWHAT_CAMERAJOB_TORUN);
                     }
 
-                    GlobalContext.getInstance().mJobProcessor.modifyCameraJobStatus(cjs);
+                    m.obj = new Object[] {iid, mSelfHandler};
+                    m.sendToTarget();
                 } else  {
                     Log.e(TAG, "can not find camerjob status");
                 }
-
-                ib.setClickable(true);
             }
             break;
 
@@ -284,9 +269,9 @@ public class ActivityNavStart
         int id = item.getItemId();
         switch(id)  {
             case R.id.nav_help :    {
-                /*Toast.makeText(getApplicationContext(),
-                        "invoke help!",
-                        Toast.LENGTH_SHORT).show();*/
+                Intent d = new Intent(this, ACHelp.class);
+                d.putExtra(GlobalDef.STR_HELP_TYPE, GlobalDef.STR_HELP_MAIN);
+                startActivityForResult(d, 1);
             }
             break;
 
@@ -354,11 +339,11 @@ public class ActivityNavStart
                 if(null != cjs) {
                     if(cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))    {
                         ib_play.setBackgroundResource(android.R.drawable.ic_media_pause);
+                        ib_play.setClickable(true);
                     }
                     else    {
-                        Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will run");
-                        cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_RUN;
                         ib_play.setBackgroundResource(android.R.drawable.ic_media_play);
+                        ib_play.setClickable(true);
                     }
                 } else  {
                     Log.e(TAG, "can not find camerjob status");

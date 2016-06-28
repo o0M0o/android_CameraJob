@@ -429,8 +429,8 @@ public class CameraJobProcess {
 
         Calendar curCal = Calendar.getInstance();
         String fn = String.format(
-                        "%s_%d%02d%02d-%02d%02d%02d.jpg"
-                        ,cj.job_name
+                        "%d_%d%02d%02d-%02d%02d%02d.jpg"
+                        ,cj._id
                         ,curCal.get(Calendar.YEAR)
                         ,curCal.get(Calendar.MONTH) + 1
                         ,curCal.get(Calendar.DAY_OF_MONTH)

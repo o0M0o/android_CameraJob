@@ -38,6 +38,26 @@ public class UtilFun {
         return null == cstr || cstr.isEmpty();
     }
 
+    /**
+     * 删除目录
+     * @param path  待删除目录路径
+     */
+    public static void DeleteDirectory(String path)  {
+        File f = new File(path);
+        if(f.isDirectory()) {
+            File[] childFiles = f.listFiles();
+            if (childFiles == null || childFiles.length == 0) {
+                f.delete();
+            } else  {
+                for(File ff : childFiles)   {
+                    ff.delete();
+                }
+
+                f.delete();
+            }
+        }
+    }
+
 
     /**
      * 可抛出类打印字符串

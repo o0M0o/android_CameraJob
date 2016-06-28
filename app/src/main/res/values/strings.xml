@@ -9,11 +9,11 @@
     <string name="cn_accept">接受</string>
     <string name="cn_giveup">放弃</string>
     <string name="cn_leave">返回</string>
-	<string name="cn_help">帮助</string>
-	<string name="cn_setting">设定</string>
-	<string name="cn_other">其它</string>
-	<string name="cn_sharemy">分享此应用</string>
-	<string name="cn_contact_writer">联系作者</string>
+    <string name="cn_help">帮助</string>
+    <string name="cn_setting">设定</string>
+    <string name="cn_other">其它</string>
+    <string name="cn_sharemy">分享此应用</string>
+    <string name="cn_contact_writer">联系作者</string>
 
     <string name="cn_unknown_photofile">未知照片</string>
 
@@ -27,9 +27,9 @@
     <string name="navigation_drawer_open">打开导航绘图</string>
     <string name="navigation_drawer_close">关闭导航绘图</string>
 
-	<string name="cn_frontcamera">前摄像头</string>
-	<string name="cn_backcamera">后摄像头</string>
-	<string name="cn_cameradpi">图像大小</string>
-	<string name="cn_autofocus">自动对焦</string>
-	<string name="cn_autoflash">自动闪光灯</string>
+    <string name="cn_frontcamera">前摄像头</string>
+    <string name="cn_backcamera">后摄像头</string>
+    <string name="cn_cameradpi">图像大小</string>
+    <string name="cn_autofocus">自动对焦</string>
+    <string name="cn_autoflash">自动闪光灯</string>
 </resources>
