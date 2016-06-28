@@ -32,8 +32,8 @@
         android:clickable="false"
         android:cropToPadding="false"
         android:background="@android:drawable/ic_media_pause"
-        android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@+id/liib_jobstatus_stop" />
+        android:layout_marginEnd="6dp"
+        android:layout_toStartOf="@+id/liib_jobstatus_stop" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
         android:layout_marginBottom="12dp"
         android:layout_alignParentEnd="true"
         android:clickable="true"
-        android:layout_marginRight="14dp" />
+        android:layout_marginEnd="14dp" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -57,8 +57,8 @@
         android:layout_alignTop="@+id/liib_jobstatus_stop"
         android:layout_alignBottom="@+id/liib_jobstatus_stop"
         android:layout_alignParentEnd="false"
-        android:layout_toLeftOf="@+id/liib_jobstatus_run_pause"
-        android:layout_marginRight="6dp"
+        android:layout_toStartOf="@+id/liib_jobstatus_run_pause"
+        android:layout_marginEnd="6dp"
         android:background="@android:drawable/ic_menu_gallery"
         android:clickable="true" />
 

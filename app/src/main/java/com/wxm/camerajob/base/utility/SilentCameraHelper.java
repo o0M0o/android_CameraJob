@@ -31,7 +31,6 @@ public class SilentCameraHelper {
     private LinkedList<TakePhotoParam>  mTPList;
     private takePhotoCallBack           mTPCBTakePhoto;
 
-    @SuppressWarnings("UnusedParameters")
     public interface takePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
         void onTakePhotoFailed(TakePhotoParam tp);

@@ -15,6 +15,12 @@
 	<string name="cn_sharemy">分享此应用</string>
 	<string name="cn_contact_writer">联系作者</string>
 
+    <string name="cn_unknown_photofile">未知照片</string>
+
+    <string name="cnhint_camerajob_name">任务名称(英文/数字)</string>
+    <string name="cnhint_camerajob_starttime">任务开始时间</string>
+    <string name="cnhint_camerajob_endtime">任务结束时间</string>
+
     <string name="contact_email">fly_in_wind@qq.com</string>
     <string name="contact_studio">oko studio</string>
 

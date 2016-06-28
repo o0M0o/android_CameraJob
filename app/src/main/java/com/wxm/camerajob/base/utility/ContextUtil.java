@@ -27,7 +27,7 @@ public class ContextUtil extends Application    {
     private static final String TAG = "ContextUtil";
     private static final String INFO_FN = "info.json";
 
-    public SilentCameraHelper   mSCHHandler;
+    private SilentCameraHelper   mSCHHandler;
     @SuppressWarnings("FieldCanBeLocal")
     private String              mAppRootDir;
     private String              mAppPhotoRootDir;
@@ -62,7 +62,10 @@ public class ContextUtil extends Application    {
         }else{
             try {
                 File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                mAppRootDir = ContextUtil.getInstance().getExternalFilesDir(null).getPath();
+                File rootPath = ContextUtil.getInstance().getExternalFilesDir(null);
+                assert innerPath != null && rootPath != null;
+
+                mAppRootDir = rootPath.getPath();
                 mAppPhotoRootDir = innerPath.getPath();
             } catch (NullPointerException e)    {
                 FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
@@ -91,6 +94,13 @@ public class ContextUtil extends Application    {
 //        tm.cancelAll();
 
         super.onTerminate();
+    }
+
+    public static SilentCameraHelper getCameraHelper() {
+        if(null != instance)
+            return instance.mSCHHandler;
+        else
+            return null;
     }
 
 

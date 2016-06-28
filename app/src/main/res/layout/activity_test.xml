@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="激活前置相机"
         android:id="@+id/acbt_test_frontcamera_active"
-        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
         android:textSize="12sp"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/acbt_test_backcamera_active" />
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="激活后置相机"
         android:id="@+id/acbt_test_backcamera_active"
-        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
         android:textSize="12sp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
@@ -59,7 +59,7 @@
         android:text="关闭相机"
         android:id="@+id/acbt_test_camera_close"
         android:textSize="12sp"
-        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
         android:layout_below="@+id/acbt_test_frontcamera_active"
         android:layout_alignStart="@+id/acbt_test_frontcamera_active"
         android:layout_alignEnd="@+id/acbt_test_frontcamera_active" />

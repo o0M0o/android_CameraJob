@@ -422,6 +422,7 @@ public class CameraJobProcess {
     }
 
 
+    @SuppressWarnings("ConstantConditions")
     private void wakeupDuty(CameraJob cj)   {
         Log.i(TAG, "wakeup job : " + cj.toString());
         FileLogger.getLogger().info("wakeup job : " + cj.toString());
@@ -439,6 +440,6 @@ public class CameraJobProcess {
 
         String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj);
         TakePhotoParam tp = new TakePhotoParam(dirp, fn, Integer.toString(cj._id));
-        ContextUtil.getInstance().mSCHHandler.TakePhoto(tp);
+        ContextUtil.getCameraHelper().TakePhoto(tp);
     }
 }

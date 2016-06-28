@@ -87,8 +87,11 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
         setContentView(R.layout.activity_test_silent_camera);
 
         mBTCapture = (Button)findViewById(R.id.acbt_capture);
-        Button mBTLeave = (Button) findViewById(R.id.acbt_leave);
+        assert mBTCapture != null;
         mBTCapture.setOnClickListener(this);
+
+        Button mBTLeave = (Button) findViewById(R.id.acbt_leave);
+        assert mBTLeave != null;
         mBTLeave.setOnClickListener(this);
 
         mIVPhoto = (ImageView)findViewById(R.id.aciv_photo);
@@ -116,23 +119,27 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
                 String sp = ContextUtil.getInstance().getAppPhotoRootDir();
                 mTPParam = new TakePhotoParam(sp, "tmp.jpg", "1");
 
-                ContextUtil.getInstance().mSCHHandler.setTakePhotoCallBack(
+                //noinspection ConstantConditions
+                ContextUtil.getCameraHelper().setTakePhotoCallBack(
                         new SilentCameraHelper.takePhotoCallBack() {
                             @Override
                             public void onTakePhotoSuccess(TakePhotoParam tp) {
-                                ContextUtil.getInstance().mSCHHandler.setTakePhotoCallBack(null);
+                                //noinspection ConstantConditions
+                                ContextUtil.getCameraHelper().setTakePhotoCallBack(null);
                                 mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS);
                             }
 
                             @Override
                             public void onTakePhotoFailed(TakePhotoParam tp) {
-                                ContextUtil.getInstance().mSCHHandler.setTakePhotoCallBack(null);
+                                //noinspection ConstantConditions
+                                ContextUtil.getCameraHelper().setTakePhotoCallBack(null);
                                 mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_FAILED);
                             }
                         }
                 );
 
-                ContextUtil.getInstance().mSCHHandler.TakePhoto(mTPParam);
+                //noinspection ConstantConditions
+                ContextUtil.getCameraHelper().TakePhoto(mTPParam);
             }
             break;
         }

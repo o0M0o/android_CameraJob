@@ -130,6 +130,13 @@ class SilentCamera2 {
     }
 
     private void takePhotoCallBack(Boolean ret) {
+        try {
+            mCaptureSession.abortCaptures();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+        }
+
         String tag = (mTPParam == null ? "null"
                         : (mTPParam.mTag == null ? "null" : mTPParam.mTag));
         if(ret) {
@@ -331,15 +338,14 @@ class SilentCamera2 {
 
                 StreamConfigurationMap map = cc.get(
                         CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                if (map == null) {
+                if (map == null)
                     continue;
-                }
 
-                try {
-                    mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
-                } catch (NullPointerException e)    {
-                    FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
-                }
+                Integer or = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                if(null != or)
+                    mSensorOrientation = or.intValue();
+                else
+                    mSensorOrientation = 90;
 
                 // Check if the flash is supported.
                 Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);

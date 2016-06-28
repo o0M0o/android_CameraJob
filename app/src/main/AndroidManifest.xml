@@ -23,8 +23,6 @@
         <receiver android:name=".base.receiver.AlarmReceiver" />
         <!-- android:process=":remote" /> -->
 
-        <activity android:name=".ui.activitys.ActivityStart">
-        </activity>
         <activity android:name=".ui.activitys.test.ActivityTest" />
         <activity android:name=".ui.activitys.ActivityJob" />
 

@@ -24,12 +24,14 @@ public class CameraJobService extends JobService {
     private static final String TAG = "CameraJobService";
     private final LinkedList<JobParameters> jobParamsMap = new LinkedList<>();
 
+    /*
     @Override
     public void onCreate() {
         super.onCreate();
         //Log.i(TAG, "JobService created");
         //Context mCurContext = ContextUtil.getInstance();
     }
+    */
 
     /**
      * When the app's MainActivity is created, it starts this service. This is so that the

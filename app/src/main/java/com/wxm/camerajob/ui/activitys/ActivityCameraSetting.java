@@ -42,7 +42,7 @@ public class ActivityCameraSetting
     private Switch      mSWAutoFlash;
 
     private Spinner                     mSPPhotoSize;
-    private ArrayAdapter                mAAPhotoSize;
+    private ArrayAdapter<String>        mAAPhotoSize;
 
     private HashMap<String, CameraCharacteristics>  mHMCameras;
 
@@ -85,7 +85,6 @@ public class ActivityCameraSetting
         mAAPhotoSize = new ArrayAdapter(this,
                             R.layout.listitem_photosize,
                             R.id.ItemPhotoSize);
-        assert mAAPhotoSize != null;
         mSPPhotoSize.setAdapter(mAAPhotoSize);
 
         load_camerainfo();

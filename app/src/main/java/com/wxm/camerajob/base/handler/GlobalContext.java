@@ -27,9 +27,9 @@ public class GlobalContext {
     private int initFlag;
 
     private CameraJobService    mJobService;
-    public GlobalMsgHandler     mMsgHandler;
-    public CameraJobProcess     mJobProcessor;
-    public DBManager            mDBManager;
+    public  GlobalMsgHandler     mMsgHandler;
+    public  CameraJobProcess     mJobProcessor;
+    public  DBManager            mDBManager;
 
     private static GlobalContext ourInstance = new GlobalContext();
     public static GlobalContext getInstance() {
@@ -135,7 +135,8 @@ public class GlobalContext {
          * @param msg 消息
          */
         private void processor_changecamera(Message msg) {
-            ContextUtil.getInstance().mSCHHandler.ChangeCamera((CameraParam)msg.obj);
+            //noinspection ConstantConditions
+            ContextUtil.getCameraHelper().ChangeCamera((CameraParam)msg.obj);
         }
 
 
