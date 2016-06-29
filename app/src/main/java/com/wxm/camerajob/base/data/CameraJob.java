@@ -35,6 +35,19 @@ public class CameraJob
         job_point = "";
     }
 
+    public CameraJob Clone()  {
+        CameraJob n = new CameraJob();
+        n._id = _id;
+        n.job_name = job_name;
+        n.job_type = job_type;
+        n.job_point = job_point;
+        n.job_endtime = job_endtime;
+        n.job_starttime = job_starttime;
+        n.ts = ts;
+
+        return n;
+    }
+
     @Override
     public String toString()
     {

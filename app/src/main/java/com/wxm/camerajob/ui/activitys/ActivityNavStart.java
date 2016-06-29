@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
@@ -276,16 +275,16 @@ public class ActivityNavStart
             break;
 
             case R.id.nav_setting :    {
-                Toast.makeText(getApplicationContext(),
-                        "invoke setting!",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),
+//                        "invoke setting!",
+//                        Toast.LENGTH_SHORT).show();
             }
             break;
 
             case R.id.nav_share_app :    {
-                Toast.makeText(getApplicationContext(),
-                        "invoke share!",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),
+//                        "invoke share!",
+//                        Toast.LENGTH_SHORT).show();
             }
             break;
 
@@ -451,7 +450,9 @@ public class ActivityNavStart
                                         ,curjs.camerajob_photo_count ,0
                                         ,UtilFun.TimestampToString(curjs.ts));
                                         */
-                jobname = jobname + "(" + curjs.camerajob_status + ")";
+                String status = curjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN) ?
+                                "运行" : "暂停";
+                jobname = jobname + "(" + status + ")";
                 if(0 != curjs.camerajob_photo_count) {
                     show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
                             , show, curjs.camerajob_photo_count

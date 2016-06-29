@@ -123,31 +123,13 @@ public class ContextUtil extends Application    {
      * @return 图片文件夹路径
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public String getCameraJobPhotoDir(CameraJob cj)    {
+    public String createCameraJobPhotoDir(CameraJob cj)    {
         File p = new File(mAppPhotoRootDir + "/" + cj._id);
         if(!p.exists()) {
             p.mkdirs();
-            FileWriter fw = null;
-            if(p.exists())  {
-                try {
-                    fw = new FileWriter(new File(p.getPath(), INFO_FN));
-                    JsonWriter jw = new JsonWriter(fw);
-                    cj.writeToJson(jw);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    FileLogger.getLogger().severe("write camerajob("
-                                                + cj.toString() + ") to file failed");
-                } finally {
-                    if(null != fw)  {
-                        try {
-                            fw.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        } else  {
+        }
+
+        if(p.exists())  {
             FileWriter fw = null;
             try {
                 fw = new FileWriter(new File(p.getPath(), INFO_FN));
@@ -166,9 +148,11 @@ public class ContextUtil extends Application    {
                     }
                 }
             }
+
+            return p.getPath();
         }
 
-        return p.getPath();
+        return "";
     }
 
     /**

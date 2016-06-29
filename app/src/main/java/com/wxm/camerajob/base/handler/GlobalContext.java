@@ -319,10 +319,17 @@ public class GlobalContext {
 
             CameraJob cj = (CameraJob)obj_arr[0];
             Handler h = (Handler)obj_arr[1];
-            GetJobProcess().addCameraJob(cj);
+            int nid = GetJobProcess().addCameraJob(cj);
+            CameraJob nj = GetJobProcess().getCameraJob(nid);
 
-            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-            reply.sendToTarget();
+            //create prjdir
+            if(null != nj) {
+                if(!UtilFun.StringIsNullOrEmpty(
+                        ContextUtil.getInstance().createCameraJobPhotoDir(nj))) {
+                    Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
+                    reply.sendToTarget();
+                }
+            }
         }
     }
 }

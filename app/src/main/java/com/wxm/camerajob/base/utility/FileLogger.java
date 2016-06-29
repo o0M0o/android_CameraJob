@@ -75,7 +75,7 @@ public class FileLogger {
 
             mLoger = Logger.getLogger("camerajob_runlog");
             mLoger.addHandler(mLogFH);
-            mLoger.setLevel(Level.INFO);
+            mLoger.setLevel(Level.WARNING);
         } catch (IOException e) {
             e.printStackTrace();
         }

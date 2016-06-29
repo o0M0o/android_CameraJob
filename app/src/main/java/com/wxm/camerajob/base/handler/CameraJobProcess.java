@@ -76,8 +76,10 @@ public class CameraJobProcess {
     /**
      * 添加camera job
      * @param cj   待添加job
+     * @return  新camerajob id
      */
-    public void addCameraJob(CameraJob cj)  {
+    public int addCameraJob(CameraJob cj)  {
+        int ret = GlobalDef.INT_INVALID_ID;
         mLsJobLock.lock();
 
         boolean repeat = false;
@@ -105,6 +107,8 @@ public class CameraJobProcess {
 
 
                 if (GlobalDef.INT_INVALID_ID != new_id) {
+                    ret = new_id;
+
                     CameraJobStatus cjs = new CameraJobStatus();
                     cjs.camerjob_id = new_id;
                     cjs.camerajob_status = GlobalDef.STR_CAMERAJOB_RUN;
@@ -118,6 +122,8 @@ public class CameraJobProcess {
         else    {
             mLsJobLock.unlock();
         }
+
+        return ret;
     }
 
     /**
@@ -137,6 +143,11 @@ public class CameraJobProcess {
         }
     }
 
+    /**
+     * 根据camerajob找到其status
+     * @param jobid camerajob id
+     * @return 对应的status或者null
+     */
     public CameraJobStatus getCameraJobStatus(int jobid)    {
         CameraJobStatus cjs = null;
         DBManager dbm = GlobalContext.getInstance().mDBManager;
@@ -154,6 +165,30 @@ public class CameraJobProcess {
         mLsJobStatusLock.unlock();
 
         return cjs;
+    }
+
+    /**
+     * 根据ID找到对应的camerajob
+     * @param jobid camerajob 的id
+     * @return 对应的camerajob或者null
+     */
+    public CameraJob getCameraJob(int jobid)    {
+        CameraJob cj = null;
+        DBManager dbm = GlobalContext.getInstance().mDBManager;
+
+        mLsJobLock.lock();
+        mLsJob.clear();
+        mLsJob.addAll(dbm.mCameraJobHelper.GetJobs());
+
+        for(CameraJob i : mLsJob)   {
+            if(i._id == jobid)  {
+                cj = i.Clone();
+                break;
+            }
+        }
+        mLsJobLock.unlock();
+
+        return cj;
     }
 
 
@@ -438,7 +473,7 @@ public class CameraJobProcess {
                         ,curCal.get(Calendar.MINUTE)
                         ,curCal.get(Calendar.SECOND));
 
-        String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj);
+        String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj._id);
         TakePhotoParam tp = new TakePhotoParam(dirp, fn, Integer.toString(cj._id));
         ContextUtil.getCameraHelper().TakePhoto(tp);
     }

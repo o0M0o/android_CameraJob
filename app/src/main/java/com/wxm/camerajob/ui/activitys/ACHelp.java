@@ -3,6 +3,9 @@ package com.wxm.camerajob.ui.activitys;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -40,6 +43,35 @@ public class ACHelp extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.acm_help_actbar, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.meuitem_help_leave: {
+                Intent data = new Intent();
+                setResult(GlobalDef.INTRET_NOTCARE, data);
+                finish();
+            }
+            break;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+
+        return true;
+    }
+
+
 
     /**
      * 加载应用主帮助信息
