@@ -613,7 +613,8 @@ class SilentCamera2 {
             if(mCParam.mAutoFocus
                     && ( CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
                     CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN == afState ||
-                    CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState))  {
+                    CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState ||
+                    CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED == afState))  {
                 afflag = true;
             }
             else    {

@@ -7,7 +7,7 @@
             android:title="@string/cn_help" />
         <item
             android:id="@+id/nav_setting"
-            android:visible="true"
+            android:visible="false"
             android:checkable="false"
             android:icon="@drawable/ic_menu_setting"
             android:title="@string/cn_setting" />
@@ -17,7 +17,7 @@
         <menu>
             <item
                 android:id="@+id/nav_share_app"
-                android:visible="true"
+                android:visible="false"
                 android:checkable="false"
                 android:icon="@drawable/ic_menu_share"
                 android:title= "@string/cn_sharemy" />
