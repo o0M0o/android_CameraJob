@@ -57,6 +57,7 @@ public class ActivityCameraSetting
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_setting);
+        ContextUtil.getInstance().addActivity(this);
 
         Intent data = getIntent();
         CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);

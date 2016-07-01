@@ -35,8 +35,8 @@ public class GlobalDef {
     public final static int INTRET_NOTCARE              = 9000;
 
     public final static int INT_INVALID_ID              = -1;
-    public final static int INT_GLOBALJOB_PERIOD        = 5000;
-    public final static int INT_GLOBALJOB_CHECKPERIOD   = 5;
+    public final static int INT_GLOBALJOB_PERIOD        = 10000;
+    public final static int INT_GLOBALJOB_CHECKPERIOD   = 10;
 
     public final static String CNSTR_EVERY_TEN_SECOND         = "每10秒";
     public final static String CNSTR_EVERY_TWENTY_SECOND      = "每20秒";

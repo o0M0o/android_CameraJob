@@ -1,16 +1,22 @@
 package com.wxm.camerajob.ui.activitys;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,9 +46,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WAKE_LOCK;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class ActivityNavStart
@@ -51,6 +62,8 @@ public class ActivityNavStart
     private static final String TAG = "ActivityNavStart";
     private final static String ALIVE_JOB   = "alive";
     private final static String DIED_JOB    = "died";
+
+    private static final int REQUEST_ALL                    = 99;
 
     private ACNavStartMsgHandler   mSelfHandler;
 
@@ -63,7 +76,14 @@ public class ActivityNavStart
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_nav_start);
+        ContextUtil.getInstance().addActivity(this);
 
+        if(mayRequestPermission()) {
+            initActivity();
+        }
+    }
+
+    private void initActivity() {
         try {
             // set nav view
             Toolbar tb = (Toolbar) findViewById(R.id.ac_navw_toolbar);
@@ -109,6 +129,74 @@ public class ActivityNavStart
         };
 
         mTimer.schedule(mTimerTask, 5000, 5000);
+    }
+
+
+    private boolean mayRequestPermission() {
+        ArrayList<String> ls_str = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ls_str.add(WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ls_str.add(CAMERA);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, WAKE_LOCK)
+                != PackageManager.PERMISSION_GRANTED) {
+            ls_str.add(WAKE_LOCK);
+        }
+
+
+        if(ls_str.isEmpty()) {
+            ContextUtil.getInstance().initAppContext();
+            return true;
+        }
+
+        String[] str_arr = ls_str.toArray(new String[ls_str.size()]);
+        ActivityCompat.requestPermissions(this, str_arr, REQUEST_ALL);
+        return false;
+    }
+
+
+    /**
+     * Callback received when a permissions request has been completed.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_ALL) {
+            boolean ct = true;
+            for(int pos = 0; pos < grantResults.length; pos++)      {
+                if(grantResults[pos] != PackageManager.PERMISSION_GRANTED)  {
+                    ct = false;
+                    String msg = String.format(Locale.CHINA,
+                                    "由于缺少必须的权限(%s)，本APP无法运行!",
+                                    permissions[pos]);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage(msg)
+                            .setTitle("警告")
+                            .setCancelable(false)
+                            .setPositiveButton("离开应用", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ContextUtil.getInstance().onTerminate();
+                                }
+                            });
+
+                    AlertDialog dlg = builder.create();
+                    dlg.show();
+                }
+            }
+
+            if(ct) {
+                ContextUtil.getInstance().initAppContext();
+                initActivity();
+            }
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package com.wxm.camerajob.base.utility;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -18,6 +19,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 123 on 2016/5/7.
@@ -26,6 +29,10 @@ import java.io.IOException;
 public class ContextUtil extends Application    {
     private static final String TAG = "ContextUtil";
     private static final String INFO_FN = "info.json";
+
+    private List<Activity> activities = new ArrayList<Activity>();
+
+
 
     private SilentCameraHelper   mSCHHandler;
     @SuppressWarnings("FieldCanBeLocal")
@@ -45,6 +52,14 @@ public class ContextUtil extends Application    {
         Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
         instance = this;
+        //initAppContext();
+    }
+
+    public void addActivity(Activity activity) {
+        activities.add(activity);
+    }
+
+    public void initAppContext() {
         mSCHHandler = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
 
         // 初始化context
@@ -94,6 +109,12 @@ public class ContextUtil extends Application    {
 //        tm.cancelAll();
 
         super.onTerminate();
+
+        for (Activity activity : activities) {
+            activity.finish();
+        }
+
+        System.exit(0);
     }
 
     public static SilentCameraHelper getCameraHelper() {

@@ -11,6 +11,7 @@ import android.webkit.WebView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.utility.ContextUtil;
 
 public class ACHelp extends AppCompatActivity {
     private String HELP_MAIN_FILEPATH = "file:///android_asset/help_main.html";
@@ -24,6 +25,7 @@ public class ACHelp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_help);
+        ContextUtil.getInstance().addActivity(this);
 
         mWVHelp = (WebView)findViewById(R.id.ac_help_webvw);
         assert mWVHelp != null;

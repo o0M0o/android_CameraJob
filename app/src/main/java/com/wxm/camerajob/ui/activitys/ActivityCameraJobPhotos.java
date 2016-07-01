@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.LinkedList;
@@ -38,9 +39,10 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_camerajob_photos);
+        ContextUtil.getInstance().addActivity(this);
+
         mPhotoFiles = new LinkedList<>();
         loadPhotos();
 

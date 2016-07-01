@@ -27,6 +27,7 @@ import android.widget.TimePicker;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.sql.Timestamp;
@@ -55,6 +56,7 @@ public class ActivityJob
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job);
+        ContextUtil.getInstance().addActivity(this);
 
         // init
 //        mBtSave = (Button)findViewById(R.id.acbt_job_save);
