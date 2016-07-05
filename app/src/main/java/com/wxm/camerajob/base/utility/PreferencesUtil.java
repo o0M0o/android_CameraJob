@@ -13,6 +13,11 @@ import com.wxm.camerajob.base.data.MySize;
  * Created by 123 on 2016/6/18.
  */
 public class PreferencesUtil {
+    private static final String CAMERA_SET = "camera_set";
+    private static final String CAMERA_SET_FLAG = "camera_set_flag";
+    private static final String CAMERA_SET_FLAG_ISSET = "camera_isset";
+    private static final String CAMERA_SET_FLAG_NOSET = "camera_noset";
+
     /**
      * 加载相机参数配置
      * (相机参数配置为app唯一性配置)
@@ -56,6 +61,41 @@ public class PreferencesUtil {
                 cp.mAutoFocus).apply();
         param.edit().putBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH,
                 cp.mAutoFlash).apply();
+
+        setCameraSetFlag(true);
+    }
+
+
+    /**
+     * 检查相机是否已经设置过
+     * @return 设置过相机返回true
+     */
+    public static boolean checkCameraIsSet()    {
+        Context ct = ContextUtil.getInstance();
+        SharedPreferences param = ct.getSharedPreferences(
+                CAMERA_SET,
+                Context.MODE_PRIVATE);
+
+        String fg = param.getString(CAMERA_SET_FLAG, CAMERA_SET_FLAG_NOSET);
+        if(fg.equals(CAMERA_SET_FLAG_ISSET))
+            return true;
+        else
+            return false;
+    }
+
+
+    /**
+     * 设置相机“设置标志"
+     * @param bisset 相机设置过否标志
+     */
+    public static void setCameraSetFlag(boolean bisset) {
+        Context ct = ContextUtil.getInstance();
+        SharedPreferences param = ct.getSharedPreferences(
+                CAMERA_SET,
+                Context.MODE_PRIVATE);
+
+        param.edit().putString(CAMERA_SET_FLAG,
+                bisset ? CAMERA_SET_FLAG_ISSET : CAMERA_SET_FLAG_NOSET).apply();
     }
 
 }

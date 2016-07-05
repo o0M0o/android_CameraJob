@@ -444,6 +444,8 @@ public class ActivityNavStart
                 if(type.equals(DIED_JOB))   {
                     //ib_play.setClickable(false);
                     ib_play.setVisibility(View.INVISIBLE);
+                } else  {
+                    ib_play.setVisibility(View.VISIBLE);
                 }
             }
 

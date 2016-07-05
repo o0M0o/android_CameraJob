@@ -242,6 +242,8 @@ public class ActivityCameraSetting
                 mFrontCameraID = Integer.toString(id);
                 mLLFrontCameraDpi.addAll(mLLDpi);
             }
+
+            ca.release();
         }
     }
 

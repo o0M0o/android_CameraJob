@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -26,8 +27,11 @@ import android.widget.TimePicker;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.sql.Timestamp;
@@ -57,7 +61,29 @@ public class ActivityJob
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job);
         ContextUtil.getInstance().addActivity(this);
+        initActivity();
 
+        final ActivityJob home = this;
+        if(!PreferencesUtil.checkCameraIsSet())     {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("相机未设置，需要先设置相机");
+            builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent data = new Intent(home, ActivityCameraSetting.class);
+                    data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
+                            PreferencesUtil.loadCameraParam());
+
+                    startActivityForResult(data, 1);
+                }
+            });
+
+            Dialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
+    private void initActivity() {
         // init
 //        mBtSave = (Button)findViewById(R.id.acbt_job_save);
 //        mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
@@ -170,6 +196,50 @@ public class ActivityJob
                 break;
         }
         */
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch(resultCode)  {
+            case GlobalDef.INTRET_CS_ACCEPT:    {
+                CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
+                Log.i(TAG, "cameraparam : " + cp.toString());
+                PreferencesUtil.saveCameraParam(cp);
+
+                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                        GlobalDef.MSGWHAT_CS_CHANGECAMERA);
+                m.obj = cp;
+                m.sendToTarget();
+            }
+            break;
+
+            case GlobalDef.INTRET_CS_GIVEUP :   {
+                final ActivityJob home = this;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("相机未设置，需要先设置相机");
+                builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent data = new Intent(home, ActivityCameraSetting.class);
+                        data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
+                                PreferencesUtil.loadCameraParam());
+
+                        startActivityForResult(data, 1);
+                    }
+                });
+
+                Dialog dialog = builder.create();
+                dialog.show();
+            }
+
+            default:    {
+                Log.i(TAG, "不处理的 resultCode = " + resultCode);
+            }
+            break;
+        }
     }
 
 
