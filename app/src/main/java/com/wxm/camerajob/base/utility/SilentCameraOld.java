@@ -72,6 +72,7 @@ public class SilentCameraOld extends SilentCamera {
 
     @Override
     public void openCamera() {
+        Log.i(TAG, "open camera, current status = " + mCameraStatus);
         if(mCameraStatus.equals(CAMERA_TAKEPHOTO_START)
                 || mCameraStatus.equals(CAMERA_TAKEPHOTO_FINISHED))   {
             Log.w(TAG, "when open camera, status = " + mCameraStatus);
@@ -110,14 +111,19 @@ public class SilentCameraOld extends SilentCamera {
 
             mCamera.setParameters(cpa);
             mCameraStatus = CAMERA_OPEN_FINISHED;
+            openCameraCallBack(true);
         } catch (Exception e){
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
+            openCameraCallBack(false);
+        } finally {
+            mCameraLock.release();
         }
     }
 
     @Override
     public boolean takePhoto(TakePhotoParam tp) {
+        Log.i(TAG, "takephoto, current status = " + mCameraStatus);
         if(!mCameraStatus.equals(CAMERA_OPEN_FINISHED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_FAILED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_SAVEED))  {

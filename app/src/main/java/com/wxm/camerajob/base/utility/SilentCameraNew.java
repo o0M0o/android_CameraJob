@@ -18,7 +18,6 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -27,9 +26,7 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.wxm.camerajob.base.data.CameraParam;
-import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
-import com.wxm.camerajob.base.handler.GlobalContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -390,11 +387,6 @@ public class SilentCameraNew extends SilentCamera {
                 File mf = new File(mTPParam.mPhotoFileDir, mTPParam.mFileName);
                 output = new FileOutputStream(mf);
                 output.write(bytes);
-
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
-                m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
-                m.sendToTarget();
 
                 Log.i(TAG, "save photo to : " + mf.toString());
                 FileLogger.getLogger().info("save photo to : " + mf.toString());

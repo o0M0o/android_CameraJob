@@ -2,9 +2,12 @@ package com.wxm.camerajob.base.utility;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 
 import com.wxm.camerajob.base.data.CameraParam;
+import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
+import com.wxm.camerajob.base.handler.GlobalContext;
 
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
@@ -22,9 +25,7 @@ public class SilentCameraHelper {
     private HandlerThread   mBackgroundThreadCamera;
     private CameraParam     mCameraParam;
 
-    private Semaphore       mCameraLock;
-    //private SilentCamera    mSCCamera;
-
+    private Semaphore                   mCameraLock;
     private Semaphore                   mRunnerLock;
     private LinkedList<TakePhotoParam>  mTPList;
     private takePhotoCallBack           mTPCBTakePhoto;
@@ -200,6 +201,12 @@ public class SilentCameraHelper {
 
                         mRunResult = true;
                         mRunStat = RUN_END;
+
+                        //send msg
+                        Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                                GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+                        m.obj = new Object[] {Integer.parseInt(mSelfTPTakePhoto.mTag), 1};
+                        m.sendToTarget();
 
                         if(null != mTPCBTakePhoto)
                             mTPCBTakePhoto.onTakePhotoSuccess(mSelfTPTakePhoto);
