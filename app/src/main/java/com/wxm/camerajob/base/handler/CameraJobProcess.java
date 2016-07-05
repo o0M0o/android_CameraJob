@@ -9,6 +9,7 @@ import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
+import com.wxm.camerajob.base.utility.SilentCameraHelper;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -475,6 +476,10 @@ public class CameraJobProcess {
 
         String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj._id);
         TakePhotoParam tp = new TakePhotoParam(dirp, fn, Integer.toString(cj._id));
-        ContextUtil.getCameraHelper().TakePhoto(tp);
+
+        SilentCameraHelper sh = ContextUtil.getCameraHelper();
+        if(null != sh) {
+            sh.TakePhoto(tp);
+        }
     }
 }

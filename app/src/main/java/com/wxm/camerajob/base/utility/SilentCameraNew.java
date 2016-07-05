@@ -1,6 +1,7 @@
 package com.wxm.camerajob.base.utility;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
@@ -16,11 +17,11 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -35,144 +36,44 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
 
 /**
- * 静默相机版本2
- * Created by wxm on 2016/6/23.
+ * 使用camera2 api
+ * Created by 123 on 2016/7/4.
  */
-class SilentCamera2 {
-    private final static String TAG = "SilentCamera2";
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+public class SilentCameraNew extends SilentCamera {
+    private final static String TAG = "SilentCameraNew";
 
-    private int                         mSensorOrientation;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
+    private ImageReader     mImageReader;
 
-    private String mCameraStatus = CAMERA_NOT_OPEN;
-    private final static String CAMERA_NOT_SETUP            = "CAMERA_NOT_SETUP";
-    private final static String CAMERA_NOT_OPEN             = "CAMERA_NOT_OPEN";
-    private final static String CAMERA_SETUP                = "CAMERA_SETUP";
-    private final static String CAMERA_OPEN_FINISHED        = "CAMERA_OPEN_FINISHED";
-    private final static String CAMERA_TAKEPHOTO_START      = "CAMERA_TAKEPHOTO_START";
-    private final static String CAMERA_TAKEPHOTO_FINISHED   = "CAMERA_TAKEPHOTO_FINISHED";
-    private final static String CAMERA_TAKEPHOTO_SAVEED     = "CAMERA_TAKEPHOTO_SAVEED";
-    private final static String CAMERA_TAKEPHOTO_FAILED     = "CAMERA_TAKEPHOTO_FAILED";
-
-    private Semaphore               mCameraOpenCloseLock;
-    private ImageReader             mImageReader;
     private String                  mCameraId;
     private CameraDevice            mCameraDevice = null;
     private CameraCaptureSession    mCaptureSession = null;
     private CaptureRequest.Builder  mCaptureBuilder = null;
-    private boolean                 mFlashSupported;
 
-    private TakePhotoParam          mTPParam;
-    private CameraParam             mCParam;
     private CameraManager           mCMCameramanager;
-    private long                    mStartMSec;
-    private int                     mCompletedTime = 0;
 
-    @SuppressWarnings("UnusedParameters")
-    public interface SilentCamera2TakePhotoCallBack {
-        void onTakePhotoSuccess(TakePhotoParam tp);
-        void onTakePhotoFailed(TakePhotoParam tp);
+    private int                     mCompletedTime;
+
+    public SilentCameraNew()    {
+        super();
+        mCompletedTime = 0;
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public interface SilentCamera2OpenCameraCallBack {
-        void onOpenSuccess(CameraParam cp);
-        void onOpenFailed(CameraParam cp);
-    }
-
-    private SilentCamera2OpenCameraCallBack     mOCCBOpen;
-    private SilentCamera2TakePhotoCallBack      mTPCBTakePhoto;
-
-    /**
-     * 构造函数
-     */
-    public SilentCamera2()  {
-        mCameraOpenCloseLock = new Semaphore(1);
-    }
-
-    public void setOpenCameraCallBack(SilentCamera2OpenCameraCallBack oc)   {
-        mOCCBOpen = oc;
-    }
-
-    public void setTakePhotoCallBack(SilentCamera2TakePhotoCallBack oc)   {
-        mTPCBTakePhoto = oc;
-    }
-
-    private void openCameraCallBack(Boolean ret) {
-        if(ret) {
-            String l = "camera opened";
-            Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
-
-            if(null != mOCCBOpen)
-                mOCCBOpen.onOpenSuccess(mCParam);
-        }
-        else {
-            String l = "camera open failed";
-            Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
-
-            if(null != mOCCBOpen)
-                mOCCBOpen.onOpenFailed(mCParam);
-        }
-    }
-
-    private void takePhotoCallBack(Boolean ret) {
-        try {
-            mCaptureSession.abortCaptures();
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
-        }
-
-        String tag = (mTPParam == null ? "null"
-                        : (mTPParam.mTag == null ? "null" : mTPParam.mTag));
-        if(ret) {
-            String l = "take photo success, paratag = " + tag;
-            Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
-
-            if(null != mTPCBTakePhoto)
-                mTPCBTakePhoto.onTakePhotoSuccess(mTPParam);
-        }
-        else {
-            String l = "take photo failed, paratag = "
-                            + tag + ", camerastatus = " + mCameraStatus;
-            Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
-
-            if(null != mTPCBTakePhoto)
-                mTPCBTakePhoto.onTakePhotoFailed(mTPParam);
-        }
-    }
-
-    /**
-     * 设定相机
-     * 在使用相机前需要使用此函数
-     * @param cm    相机服务
-     * @param cp    相机参数
-     * @return 如果成功返回true, 否则返回false
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean setupCamera(CameraManager cm, CameraParam cp)    {
+    @Override
+    public boolean setupCamera(CameraParam cp) {
         closeCamera();
 
-        mCMCameramanager = cm;
         mCParam = cp;
+        mCMCameramanager = (CameraManager) ContextUtil.getInstance()
+                                .getSystemService(Context.CAMERA_SERVICE);
+
         try {
-            if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
@@ -182,25 +83,23 @@ class SilentCamera2 {
             getLogger().severe(UtilFun.ThrowableToString(e));
             return false;
         } finally {
-            mCameraOpenCloseLock.release();
+            mCameraLock.release();
         }
     }
 
-    /**
-     * 打开相机
-     */
-    public void openCamera()     {
+    @Override
+    public void openCamera() {
         if(mCameraStatus.equals(CAMERA_TAKEPHOTO_START)
                 || mCameraStatus.equals(CAMERA_TAKEPHOTO_FINISHED))   {
             Log.w(TAG, "when open camera, status = " + mCameraStatus);
 
             openCameraCallBack(false);
-            return;
+            return ;
         }
 
         if(mCameraStatus.equals(CAMERA_OPEN_FINISHED)) {
             openCameraCallBack(true);
-            return;
+            return ;
         }
 
         if(!mCameraStatus.equals(CAMERA_NOT_SETUP))
@@ -211,11 +110,11 @@ class SilentCamera2 {
             //requestCameraPermission();
             Log.i(TAG, "need camera permission");
             openCameraCallBack(false);
-            return;
+            return ;
         }
 
         try {
-            if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
 
@@ -227,15 +126,8 @@ class SilentCamera2 {
         }
     }
 
-
-    /**
-     * 执行一次拍照
-     * 此操作只能APP范围内串行
-     * @param tp 拍照参数
-     * @return 成功返回true, 否则返回false
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean takePhoto(TakePhotoParam tp)  {
+    @Override
+    public boolean takePhoto(TakePhotoParam tp) {
         if(!mCameraStatus.equals(CAMERA_OPEN_FINISHED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_FAILED)
                 && !mCameraStatus.equals(CAMERA_TAKEPHOTO_SAVEED))  {
@@ -258,67 +150,41 @@ class SilentCamera2 {
         return ret;
     }
 
-
-    /**
-     * Capture a still picture
-     * @return 成功返回true, 否则返回false
-     */
-    private boolean captureStillPicture() {
-        mCameraStatus = CAMERA_TAKEPHOTO_START;
+    @Override
+    public void closeCamera() {
         try {
-            /*
-            mCaptureBuilder = mCameraDevice
-                    .createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            mCaptureBuilder.addTarget(mImageReader.getSurface());
-
-            mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            if (mFlashSupported) {
-                mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                        CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+                throw new RuntimeException("Time out waiting to lock camera opening.");
             }
-            */
 
-            // set Orientation
-            mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
-            mCaptureSession.capture(
-                    mCaptureBuilder.build(),
-                    mCaptureCallback,
-                    mCParam.mSessionHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+            mCaptureBuilder = null;
+            if (null != mCaptureSession) {
+                mCaptureSession.close();
+                mCaptureSession = null;
+            }
+            if (null != mCameraDevice) {
+                mCameraDevice.close();
+                mCameraDevice = null;
+            }
 
-            return false;
+            if (null != mImageReader) {
+                mImageReader.close();
+                mImageReader = null;
+            }
+
+            String l = "camera closed, paratag = "
+                    + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
+            Log.i(TAG, l);
+            getLogger().info(l);
+            mCameraStatus = CAMERA_NOT_SETUP;
+        } catch (InterruptedException e) {
+            getLogger().severe(UtilFun.ThrowableToString(e));
+            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
+        } finally {
+            mCameraLock.release();
         }
-
-        return true;
     }
 
-    /**
-     * Retrieves the JPEG orientation from the specified screen rotation.
-     *
-     * @return The JPEG orientation (one of 0, 90, 270, and 360)
-     */
-    private int getOrientation() {
-        Display dp =  ((WindowManager)
-                ContextUtil.getInstance()
-                        .getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
-
-        int rotation = dp.getRotation();
-
-        // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
-        // We have to take that into account and rotate JPEG properly.
-        // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
-        // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
-        int ret = (ORIENTATIONS.get(rotation) + mSensorOrientation + 270) % 360;
-
-//        Log.i(TAG, "Orientation : display = " + rotation
-//                + ", sensor = " + mSensorOrientation
-//                + ", ret = " + ret);
-        return ret;
-    }
 
     /**
      * Sets up member variables related to camera.
@@ -353,55 +219,62 @@ class SilentCamera2 {
 
                 mCameraId = cameraId;
                 mCameraStatus = CAMERA_SETUP;
-                return true;
             }
         } catch (NullPointerException | CameraAccessException e) {
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
+            return false;
         }
 
-        return false;
+        return true;
     }
-
 
     /**
-     * 关闭相机
+     * Capture a still picture
+     * @return 成功返回true, 否则返回false
      */
-    public void closeCamera()   {
+    private boolean captureStillPicture() {
+        mCameraStatus = CAMERA_TAKEPHOTO_START;
         try {
-            if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                throw new RuntimeException("Time out waiting to lock camera opening.");
-            }
+            // set Orientation
+            mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
+            mCaptureSession.capture(
+                    mCaptureBuilder.build(),
+                    mCaptureCallback,
+                    mCParam.mSessionHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
 
-//            mOCCBOpen = null;
-//            mTPCBTakePhoto = null;
-            mCaptureBuilder = null;
-            if (null != mCaptureSession) {
-                mCaptureSession.close();
-                mCaptureSession = null;
-            }
-            if (null != mCameraDevice) {
-                mCameraDevice.close();
-                mCameraDevice = null;
-            }
-
-            if (null != mImageReader) {
-                mImageReader.close();
-                mImageReader = null;
-            }
-
-            String l = "camera closed, paratag = "
-                    + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
-            Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
-            mCameraStatus = CAMERA_NOT_SETUP;
-        } catch (InterruptedException e) {
-            getLogger().severe(UtilFun.ThrowableToString(e));
-            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
-        } finally {
-            mCameraOpenCloseLock.release();
+            return false;
         }
+
+        return true;
     }
+
+    /**
+     * Retrieves the JPEG orientation from the specified screen rotation.
+     *
+     * @return The JPEG orientation (one of 0, 90, 270, and 360)
+     */
+    private int getOrientation() {
+        Display dp =  ((WindowManager)
+                ContextUtil.getInstance()
+                        .getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay();
+
+        int rotation = dp.getRotation();
+
+        // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
+        // We have to take that into account and rotate JPEG properly.
+        // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
+        // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
+        int ret = (ORIENTATIONS.get(rotation) + mSensorOrientation + 270) % 360;
+        Log.i(TAG, "Orientation : display = " + rotation
+                + ", sensor = " + mSensorOrientation + ", ret = " + ret);
+        return ret;
+    }
+
 
     private CameraDevice.StateCallback mCameraDeviceStateCallback =
             new CameraDevice.StateCallback() {
@@ -437,7 +310,7 @@ class SilentCamera2 {
                         e.printStackTrace();
                     }
 
-                    mCameraOpenCloseLock.release();
+                    mCameraLock.release();
                 }
 
                 @Override
@@ -447,7 +320,7 @@ class SilentCamera2 {
 
                     mCameraDevice = null;
                     mCameraStatus = CAMERA_NOT_OPEN;
-                    mCameraOpenCloseLock.release();
+                    mCameraLock.release();
                     camera.close();
 
                     openCameraCallBack(false);
@@ -460,7 +333,7 @@ class SilentCamera2 {
 
                     mCameraDevice = null;
                     mCameraStatus = CAMERA_NOT_OPEN;
-                    mCameraOpenCloseLock.release();
+                    mCameraLock.release();
                     camera.close();
 
                     openCameraCallBack(false);
@@ -476,7 +349,7 @@ class SilentCamera2 {
                     Log.i(TAG, "onConfigured");
                     mCaptureSession = session;
                     mCameraStatus = CAMERA_OPEN_FINISHED;
-                    mCameraOpenCloseLock.release();
+                    mCameraLock.release();
 
                     openCameraCallBack(true);
                 }
@@ -485,7 +358,7 @@ class SilentCamera2 {
                 public void onConfigureFailed(@NonNull CameraCaptureSession session) {
                     Log.e(TAG, "onConfigureFailed, session : " + session.toString());
                     mCameraStatus = CAMERA_NOT_OPEN;
-                    mCameraOpenCloseLock.release();
+                    mCameraLock.release();
 
                     openCameraCallBack(false);
                 }

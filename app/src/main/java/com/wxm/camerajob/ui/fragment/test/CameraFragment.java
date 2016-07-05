@@ -1,6 +1,7 @@
 package com.wxm.camerajob.ui.fragment.test;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -27,6 +28,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -63,6 +65,7 @@ import java.util.concurrent.TimeUnit;
  * Created by 123 on 2016/6/7.
  */
 @SuppressWarnings("SuspiciousNameCombination")
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CameraFragment
         extends Fragment
         implements FragmentCompat.OnRequestPermissionsResultCallback {
@@ -405,6 +408,7 @@ public class CameraFragment
      * @param aspectRatio       The aspect ratio
      * @return The optimal {@code Size}, or an arbitrary one if none were big enough
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
                                           int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
 
@@ -530,6 +534,7 @@ public class CameraFragment
      * @param width  The width of available size for camera preview
      * @param height The height of available size for camera preview
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setUpCameraOutputs(int face, int width, int height) {
         Activity activity = getActivity();
         CameraManager manager =

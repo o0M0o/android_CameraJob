@@ -1,7 +1,5 @@
 package com.wxm.camerajob.base.utility;
 
-import android.content.Context;
-import android.hardware.camera2.CameraManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -25,7 +23,7 @@ public class SilentCameraHelper {
     private CameraParam     mCameraParam;
 
     private Semaphore       mCameraLock;
-    private SilentCamera2   mSCCamera;
+    //private SilentCamera    mSCCamera;
 
     private Semaphore                   mRunnerLock;
     private LinkedList<TakePhotoParam>  mTPList;
@@ -36,99 +34,6 @@ public class SilentCameraHelper {
         void onTakePhotoFailed(TakePhotoParam tp);
     }
 
-
-    public class TakePhotoRunner implements Runnable {
-        private TakePhotoParam      mSelfTPTakePhoto;
-        public boolean              mRunResult;
-        public int                  mRunStat;
-        public static final int     RUN_INIT = 0;
-        public static final int     RUN_START = 1;
-        public static final int     RUN_END = 2;
-
-        private SilentCamera2.SilentCamera2OpenCameraCallBack   mOCCOpen    =
-                new SilentCamera2.SilentCamera2OpenCameraCallBack() {
-                    @Override
-                    public void onOpenSuccess(CameraParam cp) {
-                        mSCCamera.setOpenCameraCallBack(null);
-                        mSCCamera.takePhoto(mSelfTPTakePhoto);
-                    }
-
-                    @Override
-                    public void onOpenFailed(CameraParam cp) {
-                        mSCCamera.setOpenCameraCallBack(null);
-                        mSCCamera.setTakePhotoCallBack(null);
-                        mSCCamera.closeCamera();
-                        mCameraLock.release();
-
-                        mRunResult = false;
-                        mRunStat = RUN_END;
-                    }
-                };
-
-        private SilentCamera2.SilentCamera2TakePhotoCallBack  mTPCTake  =
-                new SilentCamera2.SilentCamera2TakePhotoCallBack() {
-                    @Override
-                    public void onTakePhotoSuccess(TakePhotoParam tp) {
-                        mSCCamera.setTakePhotoCallBack(null);
-                        mSCCamera.closeCamera();
-                        mCameraLock.release();
-
-                        mRunResult = true;
-                        mRunStat = RUN_END;
-
-                        if(null != mTPCBTakePhoto)
-                            mTPCBTakePhoto.onTakePhotoSuccess(mSelfTPTakePhoto);
-                    }
-
-                    @Override
-                    public void onTakePhotoFailed(TakePhotoParam tp) {
-                        mSCCamera.setTakePhotoCallBack(null);
-                        mSCCamera.closeCamera();
-                        mCameraLock.release();
-
-                        mRunResult = false;
-                        mRunStat = RUN_END;
-
-                        if(null != mTPCBTakePhoto)
-                            mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
-                    }
-                };
-
-
-
-        public TakePhotoRunner(TakePhotoParam tp)    {
-            mSelfTPTakePhoto = tp;
-
-            mRunResult = false;
-            mRunStat = RUN_INIT;
-        }
-
-        @Override
-        public void run() {
-            mRunStat = RUN_START;
-            try {
-                mCameraLock.acquire();
-                mSCCamera.setOpenCameraCallBack(mOCCOpen);
-                mSCCamera.setTakePhotoCallBack(mTPCTake);
-
-                mSCCamera.openCamera();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
-            }
-
-            try {
-                mRunnerLock.acquire();
-                mTPList.remove(mSelfTPTakePhoto);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                mRunnerLock.release();
-            }
-        }
-    }
-
-
     public SilentCameraHelper(CameraParam cp)    {
         startBackgroundThread();
 
@@ -137,11 +42,6 @@ public class SilentCameraHelper {
 
         // for camera
         mCameraLock = new Semaphore(1);
-        mSCCamera = new SilentCamera2();
-
-        CameraManager mCMM = (CameraManager) ContextUtil.getInstance()
-                .getSystemService(Context.CAMERA_SERVICE);
-        mSCCamera.setupCamera(mCMM, mCameraParam);
 
         // for runner list
         mRunnerLock = new Semaphore(1);
@@ -156,18 +56,6 @@ public class SilentCameraHelper {
     public void ChangeCamera(CameraParam cp)  {
         mCameraParam = cp;
         mCameraParam.mSessionHandler = mBackgroundHandlerCamera;
-
-        CameraManager mCMM = (CameraManager) ContextUtil.getInstance()
-                .getSystemService(Context.CAMERA_SERVICE);
-
-        try {
-            mCameraLock.acquire();
-            mSCCamera.setupCamera(mCMM, mCameraParam);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }finally {
-            mCameraLock.release();
-        }
     }
 
     private boolean takePhotoUtil(TakePhotoParam para, boolean bw)  {
@@ -269,6 +157,106 @@ public class SilentCameraHelper {
             mBackgroundHandler = null;
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public class TakePhotoRunner implements Runnable {
+        private SilentCamera        mSCCamera;
+        private TakePhotoParam      mSelfTPTakePhoto;
+        public boolean              mRunResult;
+        public int                  mRunStat;
+        public static final int     RUN_INIT = 0;
+        public static final int     RUN_START = 1;
+        public static final int     RUN_END = 2;
+
+        private SilentCamera.SilentCameraOpenCameraCallBack mOCCOpen    =
+                new SilentCamera.SilentCameraOpenCameraCallBack() {
+                    @Override
+                    public void onOpenSuccess(CameraParam cp) {
+                        mSCCamera.setOpenCameraCallBack(null);
+                        mSCCamera.takePhoto(mSelfTPTakePhoto);
+                    }
+
+                    @Override
+                    public void onOpenFailed(CameraParam cp) {
+                        mSCCamera.setOpenCameraCallBack(null);
+                        mSCCamera.setTakePhotoCallBack(null);
+                        mSCCamera.closeCamera();
+                        mCameraLock.release();
+
+                        mRunResult = false;
+                        mRunStat = RUN_END;
+                    }
+                };
+
+        private SilentCamera.SilentCameraTakePhotoCallBack mTPCTake  =
+                new SilentCamera.SilentCameraTakePhotoCallBack() {
+                    @Override
+                    public void onTakePhotoSuccess(TakePhotoParam tp) {
+                        mSCCamera.setTakePhotoCallBack(null);
+                        mSCCamera.closeCamera();
+                        mCameraLock.release();
+
+                        mRunResult = true;
+                        mRunStat = RUN_END;
+
+                        if(null != mTPCBTakePhoto)
+                            mTPCBTakePhoto.onTakePhotoSuccess(mSelfTPTakePhoto);
+                    }
+
+                    @Override
+                    public void onTakePhotoFailed(TakePhotoParam tp) {
+                        mSCCamera.setTakePhotoCallBack(null);
+                        mSCCamera.closeCamera();
+                        mCameraLock.release();
+
+                        mRunResult = false;
+                        mRunStat = RUN_END;
+
+                        if(null != mTPCBTakePhoto)
+                            mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
+                    }
+                };
+
+
+
+        public TakePhotoRunner(TakePhotoParam tp)    {
+            mSelfTPTakePhoto = tp;
+
+            mRunResult = false;
+            mRunStat = RUN_INIT;
+        }
+
+        @Override
+        public void run() {
+            mRunStat = RUN_START;
+            try {
+                mCameraLock.acquire();
+                if(ContextUtil.useNewCamera())
+                    mSCCamera = new SilentCameraNew();
+                else
+                    mSCCamera = new SilentCameraOld();
+
+                mSCCamera.setupCamera(mCameraParam);
+
+                mSCCamera.setOpenCameraCallBack(mOCCOpen);
+                mSCCamera.setTakePhotoCallBack(mTPCTake);
+
+                mSCCamera.openCamera();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+            }
+
+            try {
+                mRunnerLock.acquire();
+                mTPList.remove(mSelfTPTakePhoto);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                mRunnerLock.release();
+            }
         }
     }
 }

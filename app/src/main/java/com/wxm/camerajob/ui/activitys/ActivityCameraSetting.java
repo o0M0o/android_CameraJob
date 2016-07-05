@@ -1,12 +1,15 @@
 package com.wxm.camerajob.ui.activitys;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.ImageFormat;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Size;
@@ -22,6 +25,7 @@ import android.widget.Switch;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.MySize;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 
@@ -83,14 +87,17 @@ public class ActivityCameraSetting
         mSWAutoFocus.setOnClickListener(this);
 
         mSPPhotoSize = (Spinner)findViewById(R.id.acsp_cs_dpi);
-        mAAPhotoSize = new ArrayAdapter(this,
+        mAAPhotoSize = new ArrayAdapter<>(this,
                             R.layout.listitem_photosize,
                             R.id.ItemPhotoSize);
         mSPPhotoSize.setAdapter(mAAPhotoSize);
 
-        load_camerainfo();
-        load_cameraparam(cp);
+        if(ContextUtil.useNewCamera())
+            load_camerainfo_new();
+        else
+            load_camerainfo_old();
 
+        load_cameraparam(cp);
         mRBBackCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,15 +138,15 @@ public class ActivityCameraSetting
     private CameraParam get_cur_param() {
         CameraParam cp = new CameraParam(null);
         if(mRBBackCamera.isChecked())
-            cp.mFace = CameraCharacteristics.LENS_FACING_BACK;
+            cp.mFace = CameraParam.LENS_FACING_BACK;
         else
-            cp.mFace = CameraCharacteristics.LENS_FACING_FRONT;
+            cp.mFace = CameraParam.LENS_FACING_FRONT;
 
         Object sel = mSPPhotoSize.getSelectedItem();
         if(null != sel)
-            cp.mPhotoSize = UtilFun.StringToSize(sel.toString());
+            cp.mPhotoSize = UtilFun.StringToMySize(sel.toString());
         else
-            cp.mPhotoSize = UtilFun.StringToSize(mSPPhotoSize.getItemAtPosition(0).toString());
+            cp.mPhotoSize = UtilFun.StringToMySize(mSPPhotoSize.getItemAtPosition(0).toString());
 
         cp.mAutoFlash = mSWAutoFlash.isChecked();
         cp.mAutoFocus = mSWAutoFocus.isChecked();
@@ -191,10 +198,62 @@ public class ActivityCameraSetting
     }
 
 
+    private void load_camerainfo_old()  {
+        class CompareSizesByArea implements Comparator<MySize> {
+            @Override
+            public int compare(MySize lhs, MySize rhs) {
+                // We cast here to ensure the multiplications won't overflow
+                return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
+                        (long) rhs.getWidth() * rhs.getHeight());
+            }
+        }
+
+        String mBackCameraID = "";
+        String mFrontCameraID = "";
+
+        int cc = Camera.getNumberOfCameras();
+        Camera.CameraInfo ci = new Camera.CameraInfo();
+        for(int id = 0; id < cc; id++)  {
+            Camera ca = Camera.open(id);
+            Camera.Parameters cpa = ca.getParameters();
+
+            LinkedList<MySize> ls_sz = new LinkedList<>();
+            for(Camera.Size cs : cpa.getSupportedPictureSizes())    {
+                ls_sz.add(new MySize(cs.width, cs.height));
+            }
+
+            Collections.sort(ls_sz, new CompareSizesByArea());
+            for (MySize sz : ls_sz)    {
+                HashMap<String, String> hmap = new HashMap<>();
+                hmap.put(GlobalDef.STR_CAMERA_DPI, UtilFun.MySizeToString(sz));
+                mLLDpi.add(hmap);
+            }
+
+            // 前后相机只采用第一个
+            Camera.getCameraInfo(id, ci);
+            if(Camera.CameraInfo.CAMERA_FACING_BACK == ci.facing
+                    && mBackCameraID.isEmpty())   {
+                mBackCameraID = Integer.toString(id);
+                mLLBackCameraDpi.addAll(mLLDpi);
+            }
+
+            if(Camera.CameraInfo.CAMERA_FACING_FRONT == ci.facing
+                    && mFrontCameraID.isEmpty())   {
+                mFrontCameraID = Integer.toString(id);
+                mLLFrontCameraDpi.addAll(mLLDpi);
+            }
+        }
+    }
+
+
+
+
+
     /**
      * 加载系统相机信息
      */
-    private void load_camerainfo() {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void load_camerainfo_new() {
         class CompareSizesByArea implements Comparator<Size> {
             @Override
             public int compare(Size lhs, Size rhs) {
@@ -234,18 +293,16 @@ public class ActivityCameraSetting
                 // 前后相机只采用第一个
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 if(null != facing) {
-                    if (CameraCharacteristics.LENS_FACING_BACK == facing) {
-                        if (mBackCameraID.isEmpty()) {
-                            mBackCameraID = cameraId;
-                            mLLBackCameraDpi.addAll(mLLDpi);
-                        }
+                    if (CameraCharacteristics.LENS_FACING_BACK == facing
+                            && mBackCameraID.isEmpty()) {
+                        mBackCameraID = cameraId;
+                        mLLBackCameraDpi.addAll(mLLDpi);
                     }
 
-                    if (CameraCharacteristics.LENS_FACING_FRONT == facing) {
-                        if (mFrontCameraID.isEmpty()) {
-                            mFrontCameraID = cameraId;
-                            mLLFrontCameraDpi.addAll(mLLDpi);
-                        }
+                    if (CameraCharacteristics.LENS_FACING_FRONT == facing
+                            && mFrontCameraID.isEmpty()) {
+                        mFrontCameraID = cameraId;
+                        mLLFrontCameraDpi.addAll(mLLDpi);
                     }
                 }
             }
@@ -310,7 +367,7 @@ public class ActivityCameraSetting
      * @param cp 填充参数
      */
     private void fill_others(CameraParam cp)    {
-        String dpi = UtilFun.SizeToString(cp.mPhotoSize);
+        String dpi = UtilFun.MySizeToString(cp.mPhotoSize);
         int pos = mAAPhotoSize.getPosition(dpi);
         if(-1 == pos)   {
             mSPPhotoSize.setSelection(0);

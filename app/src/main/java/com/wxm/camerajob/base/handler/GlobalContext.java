@@ -1,8 +1,6 @@
 package com.wxm.camerajob.base.handler;
 
-import android.app.job.JobInfo;
 import android.content.ComponentName;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -13,8 +11,8 @@ import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.SilentCameraHelper;
 import com.wxm.camerajob.base.utility.UtilFun;
-import com.wxm.camerajob.jobservice.CameraJobService;
 
 import java.util.Calendar;
 import java.util.List;
@@ -27,7 +25,6 @@ public class GlobalContext {
     private static final String TAG = "GlobalContext";
     private int initFlag;
 
-    private CameraJobService    mJobService;
     public  GlobalMsgHandler     mMsgHandler;
     public  CameraJobProcess     mJobProcessor;
     public  DBManager            mDBManager;
@@ -35,10 +32,6 @@ public class GlobalContext {
     private static GlobalContext ourInstance = new GlobalContext();
     public static GlobalContext getInstance() {
         return ourInstance;
-    }
-
-    public static CameraJobService GetJobService()   {
-        return getInstance().mJobService;
     }
 
     public static CameraJobProcess GetJobProcess()   {
@@ -51,7 +44,6 @@ public class GlobalContext {
 
 
     public void initContext()   {
-        mJobService = new CameraJobService();
         mMsgHandler = new GlobalMsgHandler();
         mJobProcessor = new CameraJobProcess();
         mDBManager = new DBManager(ContextUtil.getInstance());
@@ -204,7 +196,10 @@ public class GlobalContext {
          */
         private void processor_changecamera(Message msg) {
             //noinspection ConstantConditions
-            ContextUtil.getCameraHelper().ChangeCamera((CameraParam)msg.obj);
+            SilentCameraHelper sh = ContextUtil.getCameraHelper();
+            if(null != sh) {
+                sh.ChangeCamera((CameraParam) msg.obj);
+            }
         }
 
 
@@ -283,8 +278,10 @@ public class GlobalContext {
          * @param msg  输入消息
          */
         private void processor_addjob(Message msg)    {
+            /*
             JobInfo ji = (JobInfo)msg.obj;
             getInstance().mJobService.scheduleJob(ji);
+            */
         }
 
         /**
@@ -292,6 +289,7 @@ public class GlobalContext {
          * @param msg  输入消息
          */
         private void processor_addjob_global(Message msg)    {
+            /*
             mServiceComponent = new ComponentName((Context)msg.obj,
                                     CameraJobService.class);
 
@@ -301,6 +299,7 @@ public class GlobalContext {
             builder.setPersisted(true);
 
             GetJobService().scheduleJob(builder.build());
+            */
         }
 
         /**

@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Size;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.MySize;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 
@@ -30,7 +30,7 @@ import java.util.LinkedList;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ActivityCameraJobPhotos extends AppCompatActivity {
     private final static String TAG = "ACCameraJobPhotos";
-    private final static Size   SMAIL_IMAGEVIEW_SIZE = new Size(240, 240);
+    private final static MySize SMAIL_IMAGEVIEW_SIZE = new MySize(240, 240);
 
     private TextView            mTVTip;
     //private ImageView           mIVAll;
@@ -141,7 +141,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
             String fn = mPhotoFiles.get(position);
 
             //将此索引的图像设为imageOne显示
-            Size sz = new Size(1024, 1024);
+            MySize sz = new MySize(1024, 1024);
             mIVOne.setImageBitmap(UtilFun.getRotatedLocalBitmap(fn, sz));
 
             int pos = fn.lastIndexOf("/");
@@ -159,7 +159,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
             //设置图像资源
             //设置图像相对于视图的比例，FIT_XY表示充满X和Y轴
             //设置imageAll中每一个Item的背景资源
-            Size sz = ActivityCameraJobPhotos.SMAIL_IMAGEVIEW_SIZE;
+            MySize sz = ActivityCameraJobPhotos.SMAIL_IMAGEVIEW_SIZE;
             mIVAll.setLayoutParams(new Gallery.LayoutParams(sz.getWidth(), sz.getHeight()));
             mIVAll.setScaleType(ImageView.ScaleType.FIT_XY);
             mIVAll.setBackgroundResource(galleryItemBackground);

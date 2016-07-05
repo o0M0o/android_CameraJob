@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.util.JsonReader;
 import android.util.JsonWriter;
@@ -60,7 +63,10 @@ public class ContextUtil extends Application    {
     }
 
     public void initAppContext() {
-        mSCHHandler = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
+        if(checkCameraHardware(this))
+            mSCHHandler = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
+        else
+            mSCHHandler = null;
 
         // 初始化context
         String en= Environment.getExternalStorageState();
@@ -122,6 +128,26 @@ public class ContextUtil extends Application    {
             return instance.mSCHHandler;
         else
             return null;
+    }
+
+    /** Check if this device has a camera */
+    private boolean checkCameraHardware(Context context) {
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            // this device has a camera
+            return true;
+        } else {
+            // no camera on this device
+            return false;
+        }
+    }
+
+
+    /**
+     * 是否使用新相机API
+     * @return 如果使用新相机API则返回true
+     */
+    public static boolean useNewCamera()   {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
 

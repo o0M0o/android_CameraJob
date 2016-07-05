@@ -1,11 +1,13 @@
 package com.wxm.camerajob.jobservice;
 
+import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Message;
 import android.util.Log;
 
@@ -19,6 +21,7 @@ import java.util.LinkedList;
  * app的jobservice
  * Created by wxm on 2016/6/10.
  */
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class CameraJobService extends JobService {
     private static final String TAG = "CameraJobService";

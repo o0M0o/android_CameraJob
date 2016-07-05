@@ -1,12 +1,16 @@
 package com.wxm.camerajob.base.utility;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.os.Build;
 import android.util.Size;
+
+import com.wxm.camerajob.base.data.MySize;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -185,6 +189,7 @@ public class UtilFun {
      * @param sz 待转换Size
      * @return 结果
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static String SizeToString(Size sz) {
         return Integer.toString(sz.getWidth())
                 + " X " + Integer.toString(sz.getHeight());
@@ -195,6 +200,7 @@ public class UtilFun {
      * @param str 待转换字符串
      * @return 结果
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Size StringToSize(String str)     {
         String[] sz = str.split(" X ");
         if(2 != sz.length)
@@ -202,6 +208,30 @@ public class UtilFun {
 
 
         return new Size(Integer.parseInt(sz[0]), Integer.parseInt(sz[1]));
+    }
+
+
+    /**
+     * MySize转换到字符串
+     * @param sz 待转换Size
+     * @return 结果
+     */
+    public static String MySizeToString(MySize sz)  {
+        return Integer.toString(sz.getWidth())
+                + " X " + Integer.toString(sz.getHeight());
+    }
+
+    /**
+     * 字符串转换到MySize
+     * @param str 待转换字符串
+     * @return 结果
+     */
+    public static MySize StringToMySize(String str)     {
+        String[] sz = str.split(" X ");
+        if(2 != sz.length)
+            return new MySize(0, 0);
+
+        return new MySize(Integer.parseInt(sz[0]), Integer.parseInt(sz[1]));
     }
 
 
@@ -227,7 +257,7 @@ public class UtilFun {
      * @param wsz  想要的bitmap尺寸（可以为null)
      * @return 结果
      */
-    public static Bitmap getRotatedLocalBitmap(String url, Size wsz) {
+    public static Bitmap getRotatedLocalBitmap(String url, MySize wsz) {
         return rotateBitmap(getLocalBitmap(url), readPictureDegree(url), wsz);
     }
 
@@ -238,7 +268,7 @@ public class UtilFun {
      * @param wantSZ  想要的bitmap尺寸（可以为null)
      * @return Bitmap 旋转后的图片
      */
-    public static Bitmap rotateBitmap(Bitmap bitmap, int degrees, Size wantSZ) {
+    public static Bitmap rotateBitmap(Bitmap bitmap, int degrees, MySize wantSZ) {
         if (degrees == 0 || null == bitmap) {
             return bitmap;
         }

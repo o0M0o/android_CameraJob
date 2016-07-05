@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Size;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.MySize;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.SilentCameraHelper;
@@ -52,7 +52,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
 
                     Rect rt = new Rect();
                     mIVPhoto.getDrawingRect(rt);
-                    Size psz = new Size(rt.width(), rt.height());
+                    MySize psz = new MySize(rt.width(), rt.height());
                     Log.i(TAG, "perfence size : " + psz);
 
                     String fn = mTPParam.mPhotoFileDir + "/" + mTPParam.mFileName;
@@ -127,26 +127,30 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
                 mTPParam = new TakePhotoParam(sp, "tmp.jpg", "1");
 
                 //noinspection ConstantConditions
-                ContextUtil.getCameraHelper().setTakePhotoCallBack(
-                        new SilentCameraHelper.takePhotoCallBack() {
-                            @Override
-                            public void onTakePhotoSuccess(TakePhotoParam tp) {
-                                //noinspection ConstantConditions
-                                ContextUtil.getCameraHelper().setTakePhotoCallBack(null);
-                                mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS);
-                            }
+                final SilentCameraHelper sh = ContextUtil.getCameraHelper();
+                if(null != sh) {
+                    sh.setTakePhotoCallBack(
+                            new SilentCameraHelper.takePhotoCallBack() {
+                                @Override
+                                public void onTakePhotoSuccess(TakePhotoParam tp) {
+                                    //noinspection ConstantConditions
+                                    sh.setTakePhotoCallBack(null);
+                                    mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS);
+                                }
 
-                            @Override
-                            public void onTakePhotoFailed(TakePhotoParam tp) {
-                                //noinspection ConstantConditions
-                                ContextUtil.getCameraHelper().setTakePhotoCallBack(null);
-                                mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_FAILED);
+                                @Override
+                                public void onTakePhotoFailed(TakePhotoParam tp) {
+                                    //noinspection ConstantConditions
+                                    sh.setTakePhotoCallBack(null);
+                                    mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_FAILED);
+                                }
                             }
-                        }
-                );
+                    );
 
-                //noinspection ConstantConditions
-                ContextUtil.getCameraHelper().TakePhoto(mTPParam);
+                    //noinspection ConstantConditions
+                    sh.TakePhoto(mTPParam);
+                }
+
             }
             break;
         }
