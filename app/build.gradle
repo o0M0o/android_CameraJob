@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         defkey {
-            storeFile file('E:/backup/appkey/andriodapp-key.jks')
-            keyAlias 'frist-app-key'
-            keyPassword 'hugo99505'
-            storePassword 'hugo99505'
+            keyAlias 'andriodapp-key-longtime.jks'
+            keyPassword 'w789065'
+            storeFile file('E:/backup/appkey/andriodapp-key-longtime.jks')
+            storePassword 'w127865'
         }
     }
     compileSdkVersion 23
