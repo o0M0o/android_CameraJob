@@ -12,12 +12,9 @@ public class DBManager {
     public DBCameraJobStatusHelper  mCameraJobStatusHelper;
 
     public DBManager(Context context) {
-        DBHelper mHelper = new DBHelper(context);
-        //因为getWritableDatabase内部调用了mContext.openOrCreateDatabase(mName, 0, mFactory);
-        //所以要确保context已初始化,我们可以把实例化DBManager的步骤放在Activity的onCreate里
-        SQLiteDatabase mDb = mHelper.getWritableDatabase();
+        DBOrmLiteHelper helper = new DBOrmLiteHelper(context);
 
-        mCameraJobHelper = new DBCameraJobHelper(mDb);
-        mCameraJobStatusHelper = new DBCameraJobStatusHelper(mDb);
+        mCameraJobHelper = new DBCameraJobHelper(helper);
+        mCameraJobStatusHelper = new DBCameraJobStatusHelper(helper);
     }
 }

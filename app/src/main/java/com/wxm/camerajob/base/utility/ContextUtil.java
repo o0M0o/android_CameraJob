@@ -171,7 +171,7 @@ public class ContextUtil extends Application    {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public String createCameraJobPhotoDir(CameraJob cj)    {
-        File p = new File(mAppPhotoRootDir + "/" + cj._id);
+        File p = new File(mAppPhotoRootDir + "/" + cj.get_id());
         if(!p.exists()) {
             p.mkdirs();
         }

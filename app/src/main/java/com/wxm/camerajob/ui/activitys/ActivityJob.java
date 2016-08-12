@@ -41,8 +41,8 @@ public class ActivityJob
         extends AppCompatActivity
         implements View.OnClickListener, View.OnTouchListener {
     private final static String TAG = "ActivityJob";
-    private final static String JOB_ENDTIME     = "job_endtime";
-    private final static String JOB_STARTTIME   = "job_starttime";
+    private final static String JOB_ENDTIME     = "Endtime";
+    private final static String JOB_STARTTIME   = "Starttime";
 
 //    private Button              mBtSave;
 //    private Button              mBtGiveup;
@@ -399,12 +399,12 @@ public class ActivityJob
         /*
         // 任务默认开始时间是“当前时间"
         // 任务默认结束时间是“一周”
-        if(job_starttime.isEmpty()) {
-            job_starttime = UtilFun.MilliSecsToString(System.currentTimeMillis());
+        if(Starttime.isEmpty()) {
+            Starttime = UtilFun.MilliSecsToString(System.currentTimeMillis());
         }
 
-        if(job_endtime.isEmpty())   {
-            job_endtime = UtilFun.MilliSecsToString(System.currentTimeMillis()
+        if(Endtime.isEmpty())   {
+            Endtime = UtilFun.MilliSecsToString(System.currentTimeMillis()
                                 + 1000 * 3600 * 24 * 7);
         }
         */
@@ -424,12 +424,12 @@ public class ActivityJob
 
         Intent data = new Intent();
         CameraJob cj = new CameraJob();
-        cj.job_name = job_name;
-        cj.job_type = job_type;
-        cj.job_point = job_point;
-        cj.job_starttime = st;
-        cj.job_endtime = et;
-        cj.ts.setTime(System.currentTimeMillis());
+        cj.setName(job_name);
+        cj.setType(job_type);
+        cj.setPoint(job_point);
+        cj.setStarttime(st);
+        cj.setEndtime(et);
+        cj.getTs().setTime(System.currentTimeMillis());
 
         data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
         setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);

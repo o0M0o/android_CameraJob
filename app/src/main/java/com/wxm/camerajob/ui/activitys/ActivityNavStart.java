@@ -281,17 +281,18 @@ public class ActivityNavStart
 
                 ib.setClickable(false);
                 String iid = map.get(GlobalDef.STR_ITEM_ID);
-                CameraJobStatus cjs = GlobalContext.getInstance()
-                        .mJobProcessor.getCameraJobStatus(Integer.parseInt(iid));
+                CameraJob cjs = GlobalContext.GetDBManager()
+                                        .mCameraJobHelper
+                                        .GetJob(Integer.parseInt(iid));
                 if(null != cjs) {
                     Message m;
-                    if(cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))    {
-                        Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will pause");
+                    if(cjs.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))    {
+                        Log.i(TAG, "camerjob(id = " + cjs.get_id() + ") will pause");
                         m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                                 GlobalDef.MSGWHAT_CAMERAJOB_TOPAUSE);
                     }
                     else    {
-                        Log.i(TAG, "camerjob(id = " + cjs.camerjob_id + ") will run");
+                        Log.i(TAG, "camerjob(id = " + cjs.get_id() + ") will run");
                         m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                                 GlobalDef.MSGWHAT_CAMERAJOB_TORUN);
                     }
@@ -421,10 +422,12 @@ public class ActivityNavStart
 
                 HashMap<String, String> map = mLVList.get(position);
                 String iid = map.get(GlobalDef.STR_ITEM_ID);
-                CameraJobStatus cjs = GlobalContext.getInstance()
-                        .mJobProcessor.getCameraJobStatus(Integer.parseInt(iid));
+
+                CameraJob cjs = GlobalContext.GetDBManager()
+                        .mCameraJobHelper
+                        .GetJob(Integer.parseInt(iid));
                 if(null != cjs) {
-                    if(cjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN))    {
+                    if(cjs.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))    {
                         ib_play.setBackgroundResource(android.R.drawable.ic_media_pause);
                         ib_play.setClickable(true);
                     }
@@ -482,22 +485,13 @@ public class ActivityNavStart
             LinkedList<String> dirs = UtilFun.getDirDirs(
                     ContextUtil.getInstance().getAppPhotoRootDir(),
                     false);
-            List<CameraJob> ls_job = GlobalContext.GetJobProcess().GetAllJobs();
-            List<CameraJobStatus> ls_jobstatus = GlobalContext.GetJobProcess().GetAllJobStatus();
+            List<CameraJob> ls_job = GlobalContext.GetDBManager().mCameraJobHelper.GetJobs();
 
             mLVList.clear();
             for(CameraJob cj : ls_job)  {
-                CameraJobStatus curjs = null;
-                for(CameraJobStatus ji : ls_jobstatus)    {
-                    if(ji.camerjob_id == cj._id)  {
-                        curjs = ji;
-                        break;
-                    }
-                }
+                alive_camerjob(cj);
 
-                alive_camerjob(cj, curjs);
-
-                String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj._id);
+                String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
                 if(!UtilFun.StringIsNullOrEmpty(dir))
                     dirs.remove(dir);
             }
@@ -514,51 +508,43 @@ public class ActivityNavStart
             if(null == cj)
                 return;
 
-            String jobname = "任务 : " + cj.job_name + "(已移除)";
+            String jobname = "任务 : " + cj.getName() + "(已移除)";
             String show  = "可以查看本任务已获取图片\n可以移除本任务占据空间";
 
             HashMap<String, String> map = new HashMap<>();
             map.put(GlobalDef.STR_ITEM_TITLE, jobname);
             map.put(GlobalDef.STR_ITEM_TEXT, show);
-            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
-            map.put(GlobalDef.STR_ITEM_JOBNAME,  cj.job_name);
+            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj.get_id()));
+            map.put(GlobalDef.STR_ITEM_JOBNAME, cj.getName());
             map.put(GlobalDef.STR_ITEM_TYPE, DIED_JOB);
             mLVList.add(map);
         }
 
-        private void alive_camerjob(CameraJob cj,  CameraJobStatus curjs)     {
+        private void alive_camerjob(CameraJob cj)     {
             String show = String.format("周期/频度  : %s/%s\n开始时间 : %s\n结束时间 : %s"
-                    ,cj.job_type  ,cj.job_point
-                    ,UtilFun.TimestampToString(cj.job_starttime)
-                    ,UtilFun.TimestampToString(cj.job_endtime));
+                    , cj.getType(), cj.getPoint()
+                    ,UtilFun.TimestampToString(cj.getStarttime())
+                    ,UtilFun.TimestampToString(cj.getEndtime()));
 
-            String jobname = "任务 : " + cj.job_name;
-            if(null != curjs)   {
-                    /*
-                    show = String.format("%s\n执行成功%d次，失败%d次\n最后拍摄时间 : %s"
-                                        ,show
-                                        ,curjs.camerajob_photo_count ,0
-                                        ,UtilFun.TimestampToString(curjs.ts));
-                                        */
-                String status = curjs.camerajob_status.equals(GlobalDef.STR_CAMERAJOB_RUN) ?
-                                "运行" : "暂停";
-                jobname = jobname + "(" + status + ")";
-                if(0 != curjs.camerajob_photo_count) {
-                    show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
-                            , show, curjs.camerajob_photo_count
-                            , UtilFun.TimestampToString(curjs.ts));
-                }
-                else    {
-                    show = String.format("%s\n执行成功%d次"
-                            , show, curjs.camerajob_photo_count);
-                }
+            String jobname = "任务 : " + cj.getName();
+            String status = cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN) ?
+                    "运行" : "暂停";
+            jobname = jobname + "(" + status + ")";
+            if(0 != cj.getStatus().getJob_photo_count()) {
+                show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
+                        , show, cj.getStatus().getJob_photo_count()
+                        , UtilFun.TimestampToString(cj.getStatus().getTs()));
+            }
+            else    {
+                show = String.format("%s\n执行成功%d次"
+                        , show, cj.getStatus().getJob_photo_count());
             }
 
             HashMap<String, String> map = new HashMap<>();
             map.put(GlobalDef.STR_ITEM_TITLE, jobname);
             map.put(GlobalDef.STR_ITEM_TEXT, show);
-            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj._id));
-            map.put(GlobalDef.STR_ITEM_JOBNAME,  cj.job_name);
+            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj.get_id()));
+            map.put(GlobalDef.STR_ITEM_JOBNAME, cj.getName());
             map.put(GlobalDef.STR_ITEM_TYPE, ALIVE_JOB);
             mLVList.add(map);
         }

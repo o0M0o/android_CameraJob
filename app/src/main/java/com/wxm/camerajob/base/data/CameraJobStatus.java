@@ -3,6 +3,10 @@ package com.wxm.camerajob.base.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,30 +17,36 @@ import java.util.Locale;
  * 拍照任务状态
  * Created by 123 on 2016/6/16.
  */
+@DatabaseTable(tableName = "tbCameraJobStatus")
 public class CameraJobStatus  implements Parcelable {
-    public int _id;
-    public int camerjob_id;
-    public String camerajob_status;
-    public int camerajob_photo_count;
-    public Timestamp ts;
+    public final static String FIELD_ID = "_id";
+
+    @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
+    private int _id;
+
+    @DatabaseField(columnName = "job_status", dataType = DataType.STRING)
+    private String job_status;
+
+    @DatabaseField(columnName = "job_photo_count", dataType = DataType.INTEGER)
+    private int job_photo_count;
+
+    @DatabaseField(columnName = "ts",  dataType = DataType.TIME_STAMP)
+    private Timestamp ts;
 
     public CameraJobStatus()    {
-        ts = new Timestamp(0);
-        camerjob_id =  GlobalDef.INT_INVALID_ID;
+        setTs(new Timestamp(0));
+        setJob_status(GlobalDef.STR_CAMERAJOB_UNKNOWN);
+        setJob_photo_count(0);
 
-        camerajob_status = GlobalDef.STR_CAMERAJOB_UNKNOWN;
-        camerajob_photo_count = 0;
-
-        _id = GlobalDef.INT_INVALID_ID;
+        set_id(GlobalDef.INT_INVALID_ID);
     }
 
     public CameraJobStatus Clone()  {
         CameraJobStatus n = new CameraJobStatus();
-        n._id = _id;
-        n.camerjob_id = camerjob_id;
-        n.camerajob_status = camerajob_status;
-        n.camerajob_photo_count = camerajob_photo_count;
-        n.ts = ts;
+        n.set_id(get_id());
+        n.setJob_status(getJob_status());
+        n.setJob_photo_count(getJob_photo_count());
+        n.setTs(getTs());
 
         return n;
     }
@@ -44,12 +54,11 @@ public class CameraJobStatus  implements Parcelable {
     @Override
     public String toString()    {
         String ret = String.format(
-                "id : %d, camerajob_id : %d, camerajob_status : %s, camerajob_photo_count : %d, ts : %s"
-                ,_id
-                ,camerjob_id
-                ,camerajob_status
-                ,camerajob_photo_count
-                ,ts.toString());
+                "id : %d, job_status : %s, job_photo_count : %d, ts : %s"
+                , get_id()
+                , getJob_status()
+                , getJob_photo_count()
+                , getTs().toString());
 
         return ret;
     }
@@ -59,11 +68,10 @@ public class CameraJobStatus  implements Parcelable {
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(_id);
-        out.writeInt(camerjob_id);
-        out.writeString(camerajob_status);
-        out.writeInt(camerajob_photo_count);
-        out.writeString(ts.toString());
+        out.writeInt(get_id());
+        out.writeString(getJob_status());
+        out.writeInt(getJob_photo_count());
+        out.writeString(getTs().toString());
 
     }
 
@@ -79,22 +87,53 @@ public class CameraJobStatus  implements Parcelable {
         }
     };
 
-    private CameraJobStatus(Parcel in)   {
-        _id = in.readInt();
-        camerjob_id = in.readInt();
-        camerajob_status = in.readString();
-        camerajob_photo_count = in.readInt();
+    public CameraJobStatus(Parcel in)   {
+        set_id(in.readInt());
+        setJob_status(in.readString());
+        setJob_photo_count(in.readInt());
 
         try {
-            ts = new Timestamp(0);
+            setTs(new Timestamp(0));
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
             Date date = format.parse(in.readString());
-            ts.setTime(date.getTime());
+            getTs().setTime(date.getTime());
         }
         catch (ParseException ex)
         {
-            ts = new Timestamp(0);
+            setTs(new Timestamp(0));
         }
+    }
+
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
+    public String getJob_status() {
+        return job_status;
+    }
+
+    public void setJob_status(String job_status) {
+        this.job_status = job_status;
+    }
+
+    public int getJob_photo_count() {
+        return job_photo_count;
+    }
+
+    public void setJob_photo_count(int job_photo_count) {
+        this.job_photo_count = job_photo_count;
+    }
+
+    public Timestamp getTs() {
+        return ts;
+    }
+
+    public void setTs(Timestamp ts) {
+        this.ts = ts;
     }
 }

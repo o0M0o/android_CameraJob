@@ -5,6 +5,9 @@ import android.os.Parcelable;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.io.IOException;
@@ -14,36 +17,57 @@ import java.sql.Timestamp;
  * job
  * Created by wxm on 2016/6/11.
  */
-public class CameraJob
-        implements Parcelable {
-    public int _id;
-    public String job_name;
-    public String job_type;
-    public String job_point;
-    public Timestamp job_endtime;
-    public Timestamp job_starttime;
-    public Timestamp ts;
+@DatabaseTable(tableName = "tbCameraJob")
+public class CameraJob implements Parcelable {
+    public final static String FIELD_ID = "_id";
+
+    @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
+    private int _id;
+
+    @DatabaseField(columnName = "name", canBeNull = false, dataType = DataType.STRING)
+    private String Name;
+
+    @DatabaseField(columnName = "type", canBeNull = false, dataType = DataType.STRING)
+    private String Type;
+
+    @DatabaseField(columnName = "point", canBeNull = false, dataType = DataType.STRING)
+    private String Point;
+
+    @DatabaseField(columnName = "status_id", foreign = true,
+            foreignColumnName = CameraJobStatus.FIELD_ID,  canBeNull = false)
+    private CameraJobStatus  Status;
+
+    @DatabaseField(columnName = "endtime", canBeNull = false, dataType = DataType.STRING)
+    private Timestamp Endtime;
+
+    @DatabaseField(columnName = "starttime", canBeNull = false, dataType = DataType.STRING)
+    private Timestamp Starttime;
+
+    @DatabaseField(columnName = "ts",  dataType = DataType.TIME_STAMP)
+    private Timestamp ts;
 
     public CameraJob()
     {
-        ts = new Timestamp(0);
-        job_starttime = new Timestamp(0);
-        job_endtime = new Timestamp(0);
+        setTs(new Timestamp(0));
+        setStarttime(new Timestamp(0));
+        setEndtime(new Timestamp(0));
+        setStatus(new CameraJobStatus());
 
-        job_name = "";
-        job_type = "";
-        job_point = "";
+        setName("");
+        setType("");
+        setPoint("");
     }
 
     public CameraJob Clone()  {
         CameraJob n = new CameraJob();
-        n._id = _id;
-        n.job_name = job_name;
-        n.job_type = job_type;
-        n.job_point = job_point;
-        n.job_endtime = job_endtime;
-        n.job_starttime = job_starttime;
-        n.ts = ts;
+        n.set_id(get_id());
+        n.setName(getName());
+        n.setStatus(getStatus());
+        n.setType(getType());
+        n.setPoint(getPoint());
+        n.setEndtime(getEndtime());
+        n.setStarttime(getStarttime());
+        n.setTs(getTs());
 
         return n;
     }
@@ -51,13 +75,10 @@ public class CameraJob
     @Override
     public String toString()
     {
-//        String ret = String.format("type : %s, name : %s, point : %s, timestamp : %s",
-//                job_type, job_name, job_point,
-//                ts.toString());
-
         return String.format("name : %s, type : %s, point : %s, " +
-                            "startdate : %s, enddate : %s",
-                            job_name, job_type, job_point, job_starttime, job_endtime);
+                            "startdate : %s, enddate : %s, status : %s",
+                getName(), getType(), getPoint(),
+                getStarttime(), getEndtime(), getStatus().toString());
     }
 
     // for parcel
@@ -66,13 +87,14 @@ public class CameraJob
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(_id);
-        out.writeString(job_name);
-        out.writeString(job_type);
-        out.writeString(job_point);
-        out.writeLong(job_starttime.getTime());
-        out.writeLong(job_endtime.getTime());
-        out.writeLong(ts.getTime());
+        out.writeInt(get_id());
+        out.writeString(getName());
+        out.writeString(getType());
+        out.writeString(getPoint());
+        out.writeLong(getStarttime().getTime());
+        out.writeLong(getEndtime().getTime());
+        out.writeLong(getTs().getTime());
+        Status.writeToParcel(out, flags);
     }
 
     public static final Parcelable.Creator<CameraJob> CREATOR
@@ -86,18 +108,19 @@ public class CameraJob
         }
     };
 
-    private CameraJob(Parcel in)   {
-        ts = new Timestamp(0);
-        job_starttime = new Timestamp(0);
-        job_endtime = new Timestamp(0);
+    public CameraJob(Parcel in)   {
+        setTs(new Timestamp(0));
+        setStarttime(new Timestamp(0));
+        setEndtime(new Timestamp(0));
 
-        _id = in.readInt();
-        job_name = in.readString();
-        job_type = in.readString();
-        job_point = in.readString();
-        job_starttime.setTime(in.readLong());
-        job_endtime.setTime(in.readLong());
-        ts.setTime(in.readLong());
+        set_id(in.readInt());
+        setName(in.readString());
+        setType(in.readString());
+        setPoint(in.readString());
+        getStarttime().setTime(in.readLong());
+        getEndtime().setTime(in.readLong());
+        getTs().setTime(in.readLong());
+        setStatus(new CameraJobStatus(in));
     }
 
     // for json
@@ -105,12 +128,12 @@ public class CameraJob
     public boolean writeToJson(JsonWriter jw)   {
         try {
             jw.beginObject();
-            jw.name("_id").value(_id);
-            jw.name("job_name").value(job_name);
-            jw.name("job_type").value(job_type);
-            jw.name("job_point").value(job_point);
-            jw.name("job_starttime").value(UtilFun.TimestampToString(job_starttime));
-            jw.name("job_endtime").value(UtilFun.TimestampToString(job_endtime));
+            jw.name("_id").value(get_id());
+            jw.name("Name").value(getName());
+            jw.name("Type").value(getType());
+            jw.name("Point").value(getPoint());
+            jw.name("Starttime").value(UtilFun.TimestampToString(getStarttime()));
+            jw.name("Endtime").value(UtilFun.TimestampToString(getEndtime()));
             jw.endObject();
         } catch (IOException e) {
             e.printStackTrace();
@@ -131,22 +154,22 @@ public class CameraJob
                 String name = jr.nextName();
                 switch (name) {
                     case "_id":
-                        ret._id = jr.nextInt();
+                        ret.set_id(jr.nextInt());
                         break;
-                    case "job_name":
-                        ret.job_name = jr.nextString();
+                    case "Name":
+                        ret.setName(jr.nextString());
                         break;
-                    case "job_type":
-                        ret.job_type = jr.nextString();
+                    case "Type":
+                        ret.setType(jr.nextString());
                         break;
-                    case "job_point":
-                        ret.job_point = jr.nextString();
+                    case "Point":
+                        ret.setPoint(jr.nextString());
                         break;
-                    case "job_starttime":
-                        ret.job_starttime = UtilFun.StringToTimestamp(jr.nextString());
+                    case "Starttime":
+                        ret.setStarttime(UtilFun.StringToTimestamp(jr.nextString()));
                         break;
-                    case "job_endtime":
-                        ret.job_endtime = UtilFun.StringToTimestamp(jr.nextString());
+                    case "Endtime":
+                        ret.setEndtime(UtilFun.StringToTimestamp(jr.nextString()));
                         break;
                     default:
                         jr.skipValue();
@@ -160,5 +183,69 @@ public class CameraJob
         }
 
         return ret;
+    }
+
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public void setType(String type) {
+        Type = type;
+    }
+
+    public String getPoint() {
+        return Point;
+    }
+
+    public void setPoint(String point) {
+        Point = point;
+    }
+
+    public Timestamp getEndtime() {
+        return Endtime;
+    }
+
+    public void setEndtime(Timestamp endtime) {
+        Endtime = endtime;
+    }
+
+    public Timestamp getStarttime() {
+        return Starttime;
+    }
+
+    public void setStarttime(Timestamp starttime) {
+        Starttime = starttime;
+    }
+
+    public Timestamp getTs() {
+        return ts;
+    }
+
+    public void setTs(Timestamp ts) {
+        this.ts = ts;
+    }
+
+    public CameraJobStatus getStatus() {
+        return Status;
+    }
+
+    public void setStatus(CameraJobStatus status) {
+        Status = status;
     }
 }

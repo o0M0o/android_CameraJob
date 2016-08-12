@@ -33,6 +33,20 @@ import java.util.Locale;
 @SuppressWarnings("WeakerAccess")
 public class UtilFun {
 
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object obj) {
+        /*
+        try {
+            return (T) obj;
+        }catch (ClassCastException | NullPointerException e)   {
+            Log.e(TAG, ToolUtil.ExceptionToString(e));
+        }
+
+        return null;
+        */
+        return (T) obj;
+    }
+
     /**
      * 检查字符串是否空或者null
      * @param cstr  待检查字符串
