@@ -31,7 +31,6 @@ import android.widget.SimpleAdapter;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
-import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
@@ -62,6 +61,14 @@ public class ActivityNavStart
     private static final String TAG = "ActivityNavStart";
     private final static String ALIVE_JOB   = "alive";
     private final static String DIED_JOB    = "died";
+
+    private final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
+    private final static String  STR_ITEM_TYPE       = "ITEM_TYPE";
+    private final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
+    private final static String  STR_ITEM_ID         = "ITEM_ID";
+    private final static String  STR_ITEM_STATUS     = "ITEM_STATUS";
+    private final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";
+    private final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
 
     private static final int REQUEST_ALL                    = 99;
 
@@ -111,20 +118,18 @@ public class ActivityNavStart
         mLVAdapter= new MySimpleAdapter(this,
                 ContextUtil.getInstance(),
                 mLVList,
-                new String[]{GlobalDef.STR_ITEM_TITLE, GlobalDef.STR_ITEM_TEXT},
+                new String[]{STR_ITEM_TITLE, STR_ITEM_TEXT},
                 new int[]{R.id.ItemTitle, R.id.ItemText});
 
         mLVJobs.setAdapter(mLVAdapter);
         mSelfHandler = new ACNavStartMsgHandler(this);
-
-        updateJobs();
 
         // set timer
         Timer mTimer = new Timer();
         TimerTask mTimerTask = new TimerTask() {
             @Override
             public void run() {
-                mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
+                updateJobs();
             }
         };
 
@@ -260,7 +265,7 @@ public class ActivityNavStart
 
         switch (v.getId())  {
             case R.id.liib_jobstatus_stop : {
-                String type = map.get(GlobalDef.STR_ITEM_TYPE);
+                String type = map.get(STR_ITEM_TYPE);
                 Message m;
                 if(type.equals(ALIVE_JOB)) {
                     m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
@@ -271,7 +276,7 @@ public class ActivityNavStart
                             GlobalDef.MSGWHAT_CAMERAJOB_DELETE);
                 }
 
-                m.obj = new Object[]{map.get(GlobalDef.STR_ITEM_ID), mSelfHandler};
+                m.obj = new Object[]{mSelfHandler, map.get(STR_ITEM_ID)};
                 m.sendToTarget();
             }
             break;
@@ -280,28 +285,12 @@ public class ActivityNavStart
                 ImageButton ib = (ImageButton)v;
 
                 ib.setClickable(false);
-                String iid = map.get(GlobalDef.STR_ITEM_ID);
-                CameraJob cjs = GlobalContext.GetDBManager()
-                                        .mCameraJobHelper
-                                        .GetJob(Integer.parseInt(iid));
-                if(null != cjs) {
-                    Message m;
-                    if(cjs.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))    {
-                        Log.i(TAG, "camerjob(id = " + cjs.get_id() + ") will pause");
-                        m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                                GlobalDef.MSGWHAT_CAMERAJOB_TOPAUSE);
-                    }
-                    else    {
-                        Log.i(TAG, "camerjob(id = " + cjs.get_id() + ") will run");
-                        m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
-                                GlobalDef.MSGWHAT_CAMERAJOB_TORUN);
-                    }
-
-                    m.obj = new Object[] {iid, mSelfHandler};
-                    m.sendToTarget();
-                } else  {
-                    Log.e(TAG, "can not find camerjob status");
-                }
+                int id = Integer.parseInt(map.get(STR_ITEM_ID));
+                Message m;
+                m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                        GlobalDef.MSGWHAT_CAMERAJOB_RUNPAUSESWITCH);
+                m.obj = new Object[] {mSelfHandler, id};
+                m.sendToTarget();
             }
             break;
 
@@ -310,7 +299,7 @@ public class ActivityNavStart
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
                         ContextUtil.getInstance()
                                 .getCameraJobPhotoDir(
-                                        Integer.parseInt(map.get(GlobalDef.STR_ITEM_ID))));
+                                        Integer.parseInt(map.get(STR_ITEM_ID))));
                 startActivityForResult(intent, 1);
             }
             break;
@@ -328,7 +317,7 @@ public class ActivityNavStart
 
                 Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
                         GlobalDef.MSGWHAT_CAMERAJOB_ADD);
-                m.obj = new Object[] {cj, mSelfHandler};
+                m.obj = new Object[] {mSelfHandler, cj};
                 m.sendToTarget();
             }
             break;
@@ -421,29 +410,28 @@ public class ActivityNavStart
                 ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
 
                 HashMap<String, String> map = mLVList.get(position);
-                String iid = map.get(GlobalDef.STR_ITEM_ID);
+                String status = map.get(STR_ITEM_STATUS);
+                if(status.equals(GlobalDef.STR_CAMERAJOB_RUN))  {
+                    ib_play.setVisibility(View.VISIBLE);
 
-                CameraJob cjs = GlobalContext.GetDBManager()
-                        .mCameraJobHelper
-                        .GetJob(Integer.parseInt(iid));
-                if(null != cjs) {
-                    if(cjs.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))    {
-                        ib_play.setBackgroundResource(android.R.drawable.ic_media_pause);
-                        ib_play.setClickable(true);
-                    }
-                    else    {
-                        ib_play.setBackgroundResource(android.R.drawable.ic_media_play);
-                        ib_play.setClickable(true);
-                    }
+                    ib_play.setBackgroundResource(android.R.drawable.ic_media_pause);
+                    ib_play.setClickable(true);
+                    ib_play.setOnClickListener(mHome);
+                } else if(status.equals(GlobalDef.STR_CAMERAJOB_PAUSE))     {
+                    ib_play.setVisibility(View.VISIBLE);
+
+                    ib_play.setBackgroundResource(android.R.drawable.ic_media_play);
+                    ib_play.setClickable(true);
+                    ib_play.setOnClickListener(mHome);
                 } else  {
-                    Log.e(TAG, "can not find camerjob status");
+                    ib_play.setVisibility(View.INVISIBLE);
+                    ib_play.setClickable(false);
                 }
 
-                ib_play.setOnClickListener(mHome);
                 ib_delete.setOnClickListener(mHome);
                 ib_look.setOnClickListener(mHome);
 
-                String type = map.get(GlobalDef.STR_ITEM_TYPE);
+                String type = map.get(STR_ITEM_TYPE);
                 if(type.equals(DIED_JOB))   {
                     //ib_play.setClickable(false);
                     ib_play.setVisibility(View.INVISIBLE);
@@ -468,12 +456,18 @@ public class ActivityNavStart
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case GlobalDef.MSGWHAT_ANSWER_CAMERAJOB:
                 case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
-                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS :
-                    //processor_answer_camerjob(msg);
-                    load_camerajobs();
+                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS : {
+                        Message m = Message.obtain(this, GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
+                        m.sendToTarget();
+                    }
                     break;
+
+                case GlobalDef.MSGWHAT_REPLAY :     {
+                    if(GlobalDef.MSGWHAT_CAMERAJOB_ASKALL == msg.arg1) {
+                        load_camerajobs(msg);
+                    }
+                }
 
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
@@ -481,19 +475,20 @@ public class ActivityNavStart
             }
         }
 
-        private void load_camerajobs() {
+        private void load_camerajobs(Message msg) {
             LinkedList<String> dirs = UtilFun.getDirDirs(
                     ContextUtil.getInstance().getAppPhotoRootDir(),
                     false);
-            List<CameraJob> ls_job = GlobalContext.GetDBManager().mCameraJobHelper.GetJobs();
+            List<CameraJob> lsjob = UtilFun.cast(msg.arg1);
+            if(null != lsjob) {
+                mLVList.clear();
+                for (CameraJob cj : lsjob) {
+                    alive_camerjob(cj);
 
-            mLVList.clear();
-            for(CameraJob cj : ls_job)  {
-                alive_camerjob(cj);
-
-                String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
-                if(!UtilFun.StringIsNullOrEmpty(dir))
-                    dirs.remove(dir);
+                    String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
+                    if (!UtilFun.StringIsNullOrEmpty(dir))
+                        dirs.remove(dir);
+                }
             }
 
             for(String dir : dirs)  {
@@ -512,11 +507,12 @@ public class ActivityNavStart
             String show  = "可以查看本任务已获取图片\n可以移除本任务占据空间";
 
             HashMap<String, String> map = new HashMap<>();
-            map.put(GlobalDef.STR_ITEM_TITLE, jobname);
-            map.put(GlobalDef.STR_ITEM_TEXT, show);
-            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj.get_id()));
-            map.put(GlobalDef.STR_ITEM_JOBNAME, cj.getName());
-            map.put(GlobalDef.STR_ITEM_TYPE, DIED_JOB);
+            map.put(STR_ITEM_TITLE, jobname);
+            map.put(STR_ITEM_TEXT, show);
+            map.put(STR_ITEM_ID,  Integer.toString(cj.get_id()));
+            map.put(STR_ITEM_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
+            map.put(STR_ITEM_JOBNAME, cj.getName());
+            map.put(STR_ITEM_TYPE, DIED_JOB);
             mLVList.add(map);
         }
 
@@ -541,11 +537,12 @@ public class ActivityNavStart
             }
 
             HashMap<String, String> map = new HashMap<>();
-            map.put(GlobalDef.STR_ITEM_TITLE, jobname);
-            map.put(GlobalDef.STR_ITEM_TEXT, show);
-            map.put(GlobalDef.STR_ITEM_ID,  Integer.toString(cj.get_id()));
-            map.put(GlobalDef.STR_ITEM_JOBNAME, cj.getName());
-            map.put(GlobalDef.STR_ITEM_TYPE, ALIVE_JOB);
+            map.put(STR_ITEM_TITLE, jobname);
+            map.put(STR_ITEM_TEXT, show);
+            map.put(STR_ITEM_ID,  Integer.toString(cj.get_id()));
+            map.put(STR_ITEM_STATUS, cj.getStatus().getJob_status());
+            map.put(STR_ITEM_JOBNAME, cj.getName());
+            map.put(STR_ITEM_TYPE, ALIVE_JOB);
             mLVList.add(map);
         }
     }

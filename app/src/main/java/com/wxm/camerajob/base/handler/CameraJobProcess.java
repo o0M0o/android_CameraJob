@@ -50,12 +50,10 @@ public class CameraJobProcess {
     /**
      * 任务处理器唤醒函数
      */
-    public void processorWakeup()   {
+    public void processorWakeup(List<CameraJob> ls)   {
         if(1 != mInitFlag)
             return;
 
-        DBManager dbm = GlobalContext.getInstance().mDBManager;
-        List<CameraJob> ls = dbm.mCameraJobHelper.GetJobs();
         for(CameraJob cj : ls)  {
             jobWakeup(cj);
         }
