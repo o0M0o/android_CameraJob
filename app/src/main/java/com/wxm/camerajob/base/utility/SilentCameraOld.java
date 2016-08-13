@@ -221,7 +221,7 @@ public class SilentCameraOld extends SilentCamera {
             }
 
             if(ret) {
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
                 m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
                 m.sendToTarget();

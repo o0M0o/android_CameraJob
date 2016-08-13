@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         defkey {
-            keyAlias 'andriodapp-key-longtime.jks'
+            keyAlias 'andriodapp-key-longtime'
             keyPassword 'w789065'
             storeFile file('E:/backup/appkey/andriodapp-key-longtime.jks')
             storePassword 'w127865'

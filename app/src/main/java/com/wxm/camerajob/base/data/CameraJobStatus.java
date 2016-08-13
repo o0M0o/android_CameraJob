@@ -38,7 +38,7 @@ public class CameraJobStatus  implements Parcelable {
         setJob_status(GlobalDef.STR_CAMERAJOB_UNKNOWN);
         setJob_photo_count(0);
 
-        set_id(GlobalDef.INT_INVALID_ID);
+        set_id(0);
     }
 
     public CameraJobStatus Clone()  {

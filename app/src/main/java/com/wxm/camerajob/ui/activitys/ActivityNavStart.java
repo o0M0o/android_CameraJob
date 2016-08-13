@@ -268,26 +268,26 @@ public class ActivityNavStart
                 String type = map.get(STR_ITEM_TYPE);
                 Message m;
                 if(type.equals(ALIVE_JOB)) {
-                    m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                    m = Message.obtain(GlobalContext.getMsgHandlder(),
                             GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
                 }
                 else    {
-                    m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                    m = Message.obtain(GlobalContext.getMsgHandlder(),
                             GlobalDef.MSGWHAT_CAMERAJOB_DELETE);
                 }
 
-                m.obj = new Object[]{mSelfHandler, map.get(STR_ITEM_ID)};
+                int id = Integer.parseInt(map.get(STR_ITEM_ID));
+                m.obj = new Object[]{mSelfHandler, id};
                 m.sendToTarget();
             }
             break;
 
             case R.id.liib_jobstatus_run_pause :    {
-                ImageButton ib = (ImageButton)v;
-
-                ib.setClickable(false);
+                //ImageButton ib = (ImageButton)v;
+                //ib.setClickable(false);
                 int id = Integer.parseInt(map.get(STR_ITEM_ID));
                 Message m;
-                m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CAMERAJOB_RUNPAUSESWITCH);
                 m.obj = new Object[] {mSelfHandler, id};
                 m.sendToTarget();
@@ -315,7 +315,7 @@ public class ActivityNavStart
                 CameraJob cj = data.getParcelableExtra(GlobalDef.STR_LOAD_JOB);
                 Log.i(TAG, "camerajob : " + cj.toString());
 
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CAMERAJOB_ADD);
                 m.obj = new Object[] {mSelfHandler, cj};
                 m.sendToTarget();
@@ -327,7 +327,7 @@ public class ActivityNavStart
                 Log.i(TAG, "cameraparam : " + cp.toString());
                 PreferencesUtil.saveCameraParam(cp);
 
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CS_CHANGECAMERA);
                 m.obj = cp;
                 m.sendToTarget();
@@ -430,14 +430,6 @@ public class ActivityNavStart
 
                 ib_delete.setOnClickListener(mHome);
                 ib_look.setOnClickListener(mHome);
-
-                String type = map.get(STR_ITEM_TYPE);
-                if(type.equals(DIED_JOB))   {
-                    //ib_play.setClickable(false);
-                    ib_play.setVisibility(View.INVISIBLE);
-                } else  {
-                    ib_play.setVisibility(View.VISIBLE);
-                }
             }
 
             return v;
@@ -458,16 +450,19 @@ public class ActivityNavStart
             switch (msg.what) {
                 case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
                 case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS : {
-                        Message m = Message.obtain(this, GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
+                        Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                                        GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
+                        m.obj = this;
                         m.sendToTarget();
                     }
                     break;
 
                 case GlobalDef.MSGWHAT_REPLAY :     {
-                    if(GlobalDef.MSGWHAT_CAMERAJOB_ASKALL == msg.arg1) {
-                        load_camerajobs(msg);
+                        if(GlobalDef.MSGWHAT_CAMERAJOB_ASKALL == msg.arg1) {
+                            load_camerajobs(msg);
+                        }
                     }
-                }
+                    break;
 
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
@@ -479,7 +474,7 @@ public class ActivityNavStart
             LinkedList<String> dirs = UtilFun.getDirDirs(
                     ContextUtil.getInstance().getAppPhotoRootDir(),
                     false);
-            List<CameraJob> lsjob = UtilFun.cast(msg.arg1);
+            List<CameraJob> lsjob = UtilFun.cast(msg.obj);
             if(null != lsjob) {
                 mLVList.clear();
                 for (CameraJob cj : lsjob) {

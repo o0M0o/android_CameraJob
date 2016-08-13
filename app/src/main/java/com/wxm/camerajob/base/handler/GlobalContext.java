@@ -24,13 +24,17 @@ public class GlobalContext {
     private static final String TAG = "GlobalContext";
     private int initFlag;
 
-    public  GlobalMsgHandler     mMsgHandler;
+    private GlobalMsgHandler    mMsgHandler;
     private CameraJobProcess     mJobProcessor;
     private DBManager            mDBManager;
 
     private static GlobalContext ourInstance = new GlobalContext();
     public static GlobalContext getInstance() {
         return ourInstance;
+    }
+
+    public static Handler getMsgHandlder()   {
+        return UtilFun.cast(getInstance().mMsgHandler);
     }
 
     private static CameraJobProcess GetJobProcess()   {
@@ -183,7 +187,7 @@ public class GlobalContext {
             CameraJob cj = GetDBManager().mCameraJobHelper.GetJob(_id);
             if(null != cj) {
                 CameraJobStatus cjs = cj.getStatus();
-                cjs.setJob_status(cjs.getJob_status() == GlobalDef.STR_CAMERAJOB_PAUSE ?
+                cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
                         GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
                 GetDBManager().mCameraJobStatusHelper.ModifyJobStatus(cjs);
 
@@ -237,7 +241,7 @@ public class GlobalContext {
                 curjs.setJob_photo_count(curjs.getJob_photo_count() + photo_count);
                 curjs.getTs().setTime(Calendar.getInstance().getTimeInMillis());
 
-                GetDBManager().mCameraJobHelper.ModifyJob(js);
+                GetDBManager().mCameraJobStatusHelper.ModifyJobStatus(curjs);
                 //Log.i(TAG, "CameraJobStatus : " + curjs.toString());
             }
         }

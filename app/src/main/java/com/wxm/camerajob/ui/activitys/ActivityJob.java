@@ -208,7 +208,7 @@ public class ActivityJob
                 Log.i(TAG, "cameraparam : " + cp.toString());
                 PreferencesUtil.saveCameraParam(cp);
 
-                Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CS_CHANGECAMERA);
                 m.obj = cp;
                 m.sendToTarget();
@@ -430,6 +430,7 @@ public class ActivityJob
         cj.setStarttime(st);
         cj.setEndtime(et);
         cj.getTs().setTime(System.currentTimeMillis());
+        cj.getStatus().setJob_status(GlobalDef.STR_CAMERAJOB_RUN);
 
         data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
         setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);

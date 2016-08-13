@@ -33,14 +33,14 @@ public class CameraJob implements Parcelable {
     @DatabaseField(columnName = "point", canBeNull = false, dataType = DataType.STRING)
     private String Point;
 
-    @DatabaseField(columnName = "status_id", foreign = true,
+    @DatabaseField(columnName = "status_id", foreign = true, foreignAutoCreate = true,
             foreignColumnName = CameraJobStatus.FIELD_ID,  canBeNull = false)
     private CameraJobStatus  Status;
 
-    @DatabaseField(columnName = "endtime", canBeNull = false, dataType = DataType.STRING)
+    @DatabaseField(columnName = "endtime", canBeNull = false, dataType = DataType.TIME_STAMP)
     private Timestamp Endtime;
 
-    @DatabaseField(columnName = "starttime", canBeNull = false, dataType = DataType.STRING)
+    @DatabaseField(columnName = "starttime", canBeNull = false, dataType = DataType.TIME_STAMP)
     private Timestamp Starttime;
 
     @DatabaseField(columnName = "ts",  dataType = DataType.TIME_STAMP)

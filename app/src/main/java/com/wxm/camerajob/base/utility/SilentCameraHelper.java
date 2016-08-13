@@ -203,7 +203,7 @@ public class SilentCameraHelper {
                         mRunStat = RUN_END;
 
                         //send msg
-                        Message m = Message.obtain(GlobalContext.getInstance().mMsgHandler,
+                        Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                                 GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
                         m.obj = new Object[] {Integer.parseInt(mSelfTPTakePhoto.mTag), 1};
                         m.sendToTarget();
