@@ -38,6 +38,8 @@ import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
+import com.wxm.camerajob.ui.activitys.helper.ACNavStartAdapter;
+import com.wxm.camerajob.ui.activitys.helper.ACNavStartMsgHandler;
 import com.wxm.camerajob.ui.activitys.test.ActivityTest;
 import com.wxm.camerajob.ui.activitys.test.ActivityTestSilentCamera;
 
@@ -59,24 +61,24 @@ public class ActivityNavStart
         extends AppCompatActivity
         implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "ActivityNavStart";
-    private final static String ALIVE_JOB   = "alive";
-    private final static String DIED_JOB    = "died";
+    public final static String ALIVE_JOB   = "alive";
+    public final static String DIED_JOB    = "died";
 
-    private final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
-    private final static String  STR_ITEM_TYPE       = "ITEM_TYPE";
-    private final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
-    private final static String  STR_ITEM_ID         = "ITEM_ID";
-    private final static String  STR_ITEM_STATUS     = "ITEM_STATUS";
-    private final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";
-    private final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
+    public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
+    public final static String  STR_ITEM_TYPE       = "ITEM_TYPE";
+    public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
+    public final static String  STR_ITEM_ID         = "ITEM_ID";
+    public final static String  STR_ITEM_STATUS     = "ITEM_STATUS";
+    public final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";
+    public final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
 
     private static final int REQUEST_ALL                    = 99;
 
-    private ACNavStartMsgHandler   mSelfHandler;
+    private ACNavStartMsgHandler mSelfHandler;
 
     // listview used to show jobs
     private ListView                            mLVJobs;
-    private MySimpleAdapter                     mLVAdapter;
+    private ACNavStartAdapter                   mLVAdapter;
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
 
     @Override
@@ -115,7 +117,7 @@ public class ActivityNavStart
 
         // init list view
         mLVJobs = (ListView) findViewById(R.id.aclv_start_jobs);
-        mLVAdapter= new MySimpleAdapter(this,
+        mLVAdapter= new ACNavStartAdapter(this,
                 ContextUtil.getInstance(),
                 mLVList,
                 new String[]{STR_ITEM_TITLE, STR_ITEM_TEXT},
@@ -136,6 +138,16 @@ public class ActivityNavStart
         mTimer.schedule(mTimerTask, 5000, 5000);
     }
 
+    /**
+     * 更新数据
+     * @param lsdata 新数据
+     */
+    public void updateData(List<HashMap<String, String>> lsdata) {
+        mLVList.clear();
+        mLVList.addAll(lsdata);
+
+        mLVAdapter.notifyDataSetChanged();
+    }
 
     private boolean mayRequestPermission() {
         ArrayList<String> ls_str = new ArrayList<>();
@@ -388,157 +400,5 @@ public class ActivityNavStart
         //data.putExtra(Intent.EXTRA_SUBJECT, "这是标题");
         //data.putExtra(Intent.EXTRA_TEXT, "这是内容");
         startActivity(data);
-    }
-
-    public class MySimpleAdapter extends SimpleAdapter {
-        private ActivityNavStart mHome;
-
-        public MySimpleAdapter(ActivityNavStart home,
-                               Context context, List<? extends Map<String, ?>> data,
-                               String[] from,
-                               int[] to) {
-            super(context, data, R.layout.listitem_jobstatus, from, to);
-            mHome = home;
-        }
-
-        @Override
-        public View getView(final int position, View view, ViewGroup arg2) {
-            View v = super.getView(position, view, arg2);
-            if(null != v)   {
-                ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
-                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
-                ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
-
-                HashMap<String, String> map = mLVList.get(position);
-                String status = map.get(STR_ITEM_STATUS);
-                if(status.equals(GlobalDef.STR_CAMERAJOB_RUN))  {
-                    ib_play.setVisibility(View.VISIBLE);
-
-                    ib_play.setBackgroundResource(android.R.drawable.ic_media_pause);
-                    ib_play.setClickable(true);
-                    ib_play.setOnClickListener(mHome);
-                } else if(status.equals(GlobalDef.STR_CAMERAJOB_PAUSE))     {
-                    ib_play.setVisibility(View.VISIBLE);
-
-                    ib_play.setBackgroundResource(android.R.drawable.ic_media_play);
-                    ib_play.setClickable(true);
-                    ib_play.setOnClickListener(mHome);
-                } else  {
-                    ib_play.setVisibility(View.INVISIBLE);
-                    ib_play.setClickable(false);
-                }
-
-                ib_delete.setOnClickListener(mHome);
-                ib_look.setOnClickListener(mHome);
-            }
-
-            return v;
-        }
-    }
-
-    public class ACNavStartMsgHandler extends Handler {
-        private static final String TAG = "ACNavStartMsgHandler";
-        private ActivityNavStart mActivity;
-
-        public ACNavStartMsgHandler(ActivityNavStart acstart) {
-            super();
-            mActivity = acstart;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
-                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS : {
-                        Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                                        GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
-                        m.obj = this;
-                        m.sendToTarget();
-                    }
-                    break;
-
-                case GlobalDef.MSGWHAT_REPLAY :     {
-                        if(GlobalDef.MSGWHAT_CAMERAJOB_ASKALL == msg.arg1) {
-                            load_camerajobs(msg);
-                        }
-                    }
-                    break;
-
-                default:
-                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-                    break;
-            }
-        }
-
-        private void load_camerajobs(Message msg) {
-            LinkedList<String> dirs = UtilFun.getDirDirs(
-                    ContextUtil.getInstance().getAppPhotoRootDir(),
-                    false);
-            List<CameraJob> lsjob = UtilFun.cast(msg.obj);
-            if(null != lsjob) {
-                mLVList.clear();
-                for (CameraJob cj : lsjob) {
-                    alive_camerjob(cj);
-
-                    String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
-                    if (!UtilFun.StringIsNullOrEmpty(dir))
-                        dirs.remove(dir);
-                }
-            }
-
-            for(String dir : dirs)  {
-                died_camerajob(dir);
-            }
-
-            mLVAdapter.notifyDataSetChanged();
-        }
-
-        private void died_camerajob(String dir) {
-            CameraJob cj = ContextUtil.getInstance().getCameraJobFromPath(dir);
-            if(null == cj)
-                return;
-
-            String jobname = "任务 : " + cj.getName() + "(已移除)";
-            String show  = "可以查看本任务已获取图片\n可以移除本任务占据空间";
-
-            HashMap<String, String> map = new HashMap<>();
-            map.put(STR_ITEM_TITLE, jobname);
-            map.put(STR_ITEM_TEXT, show);
-            map.put(STR_ITEM_ID,  Integer.toString(cj.get_id()));
-            map.put(STR_ITEM_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
-            map.put(STR_ITEM_JOBNAME, cj.getName());
-            map.put(STR_ITEM_TYPE, DIED_JOB);
-            mLVList.add(map);
-        }
-
-        private void alive_camerjob(CameraJob cj)     {
-            String show = String.format("周期/频度  : %s/%s\n开始时间 : %s\n结束时间 : %s"
-                    , cj.getType(), cj.getPoint()
-                    ,UtilFun.TimestampToString(cj.getStarttime())
-                    ,UtilFun.TimestampToString(cj.getEndtime()));
-
-            String jobname = "任务 : " + cj.getName();
-            String status = cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN) ?
-                    "运行" : "暂停";
-            jobname = jobname + "(" + status + ")";
-            if(0 != cj.getStatus().getJob_photo_count()) {
-                show = String.format("%s\n执行成功%d次\n最后拍摄时间 : %s"
-                        , show, cj.getStatus().getJob_photo_count()
-                        , UtilFun.TimestampToString(cj.getStatus().getTs()));
-            }
-            else    {
-                show = String.format("%s\n执行成功%d次"
-                        , show, cj.getStatus().getJob_photo_count());
-            }
-
-            HashMap<String, String> map = new HashMap<>();
-            map.put(STR_ITEM_TITLE, jobname);
-            map.put(STR_ITEM_TEXT, show);
-            map.put(STR_ITEM_ID,  Integer.toString(cj.get_id()));
-            map.put(STR_ITEM_STATUS, cj.getStatus().getJob_status());
-            map.put(STR_ITEM_JOBNAME, cj.getName());
-            map.put(STR_ITEM_TYPE, ALIVE_JOB);
-            mLVList.add(map);
-        }
     }
 }

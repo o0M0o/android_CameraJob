@@ -60,7 +60,7 @@ public class ActivityCameraSetting
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera_setting);
+        setContentView(R.layout.ac_camera_setting);
         ContextUtil.getInstance().addActivity(this);
 
         Intent data = getIntent();

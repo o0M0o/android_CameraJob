@@ -91,7 +91,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test_silent_camera);
+        setContentView(R.layout.ac_test_silent_camera);
 
         mBTCapture = (Button)findViewById(R.id.acbt_capture);
         assert mBTCapture != null;

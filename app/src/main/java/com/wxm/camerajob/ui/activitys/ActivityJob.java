@@ -59,7 +59,7 @@ public class ActivityJob
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_job);
+        setContentView(R.layout.ac_job);
         ContextUtil.getInstance().addActivity(this);
         initActivity();
 
@@ -292,7 +292,7 @@ public class ActivityJob
      */
     private void onTouchDate(MotionEvent event, String timetype) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = View.inflate(this, R.layout.dialog_datetime, null);
+        View view = View.inflate(this, R.layout.dlg_datetime, null);
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.dldt_date);
         final TimePicker timePicker = (TimePicker) view.findViewById(R.id.dldt_time);
         builder.setView(view);

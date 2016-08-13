@@ -27,5 +27,5 @@
         android:layout_height = "match_parent"
         android:layout_alignEnd="@id/ac_navw_toolbar"
         android:layout_marginTop="?attr/actionBarSize"
-        layout="@layout/activity_start" />
+        layout="@layout/ac_start" />
 </android.support.design.widget.CoordinatorLayout>

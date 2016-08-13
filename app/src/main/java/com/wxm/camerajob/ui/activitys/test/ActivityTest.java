@@ -25,7 +25,7 @@ public class ActivityTest extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.ac_test);
 
         if(null == savedInstanceState)  {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
