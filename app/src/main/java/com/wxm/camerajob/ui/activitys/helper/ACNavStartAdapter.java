@@ -9,7 +9,7 @@ import android.widget.SimpleAdapter;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.utility.UtilFun;
-import com.wxm.camerajob.ui.activitys.ActivityNavStart;
+import com.wxm.camerajob.ui.activitys.ACNavStart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,10 +21,10 @@ import java.util.Map;
  * Created by wxm on 2016/8/13.
  */
 public class ACNavStartAdapter extends SimpleAdapter {
-    private ActivityNavStart mHome;
+    private ACNavStart mHome;
     private ArrayList<HashMap<String, String>> mLVList;
 
-    public ACNavStartAdapter(ActivityNavStart home,
+    public ACNavStartAdapter(ACNavStart home,
                            Context context, List<? extends Map<String, ?>> data,
                            String[] from,
                            int[] to) {
@@ -42,7 +42,7 @@ public class ACNavStartAdapter extends SimpleAdapter {
             ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
 
             HashMap<String, String> map = mLVList.get(position);
-            String status = map.get(ActivityNavStart.STR_ITEM_STATUS);
+            String status = map.get(ACNavStart.STR_ITEM_STATUS);
             if(status.equals(GlobalDef.STR_CAMERAJOB_RUN))  {
                 ib_play.setVisibility(View.VISIBLE);
 

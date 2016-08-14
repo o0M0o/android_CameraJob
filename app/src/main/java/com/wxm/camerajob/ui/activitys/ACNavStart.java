@@ -1,13 +1,11 @@
 package com.wxm.camerajob.ui.activitys;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -24,10 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
@@ -45,22 +40,22 @@ import com.wxm.camerajob.ui.activitys.test.ActivityTestSilentCamera;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import butterknife.ButterKnife;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WAKE_LOCK;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class ActivityNavStart
+public class ACNavStart
         extends AppCompatActivity
         implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = "ActivityNavStart";
+    private static final String TAG = "ACNavStart";
     public final static String ALIVE_JOB   = "alive";
     public final static String DIED_JOB    = "died";
 
@@ -76,7 +71,6 @@ public class ActivityNavStart
 
     private ACNavStartMsgHandler mSelfHandler;
 
-    // listview used to show jobs
     private ListView                            mLVJobs;
     private ACNavStartAdapter                   mLVAdapter;
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
@@ -85,6 +79,8 @@ public class ActivityNavStart
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_nav_start);
+        ButterKnife.bind(this);
+
         ContextUtil.getInstance().addActivity(this);
 
         if(mayRequestPermission()) {
@@ -243,7 +239,7 @@ public class ActivityNavStart
             break;
 
             case R.id.meuitem_camera_setting :  {
-                Intent data = new Intent(this, ActivityCameraSetting.class);
+                Intent data = new Intent(this, ACCameraSetting.class);
                 data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
                         PreferencesUtil.loadCameraParam());
 
@@ -307,12 +303,16 @@ public class ActivityNavStart
             break;
 
             case R.id.liib_jobstatus_look :    {
-                Intent intent = new Intent(this, ActivityCameraJobPhotos.class);
+                ACJobGallery jg = new ACJobGallery();
+                jg.OpenGallery(this, "");
+                /*
+                Intent intent = new Intent(this, ACCameraJobPhotos.class);
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
                         ContextUtil.getInstance()
                                 .getCameraJobPhotoDir(
                                         Integer.parseInt(map.get(STR_ITEM_ID))));
                 startActivityForResult(intent, 1);
+                */
             }
             break;
         }

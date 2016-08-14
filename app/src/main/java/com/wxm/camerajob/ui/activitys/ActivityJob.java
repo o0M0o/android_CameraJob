@@ -70,7 +70,7 @@ public class ActivityJob
             builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent data = new Intent(home, ActivityCameraSetting.class);
+                    Intent data = new Intent(home, ACCameraSetting.class);
                     data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
                             PreferencesUtil.loadCameraParam());
 
@@ -223,7 +223,7 @@ public class ActivityJob
                 builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent data = new Intent(home, ActivityCameraSetting.class);
+                        Intent data = new Intent(home, ACCameraSetting.class);
                         data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
                                 PreferencesUtil.loadCameraParam());
 

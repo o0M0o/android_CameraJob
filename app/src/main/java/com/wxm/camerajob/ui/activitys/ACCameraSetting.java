@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-public class ActivityCameraSetting
+public class ACCameraSetting
         extends AppCompatActivity
         implements View.OnClickListener {
     private RadioButton  mRBFrontCamera;

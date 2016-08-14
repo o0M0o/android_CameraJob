@@ -9,7 +9,7 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
-import com.wxm.camerajob.ui.activitys.ActivityNavStart;
+import com.wxm.camerajob.ui.activitys.ACNavStart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +23,10 @@ import java.util.List;
 
 public class ACNavStartMsgHandler extends Handler {
     private static final String TAG = "ACNavStartMsgHandler";
-    private ActivityNavStart mActivity;
+    private ACNavStart mActivity;
     private ArrayList<HashMap<String, String>> mLVList = new ArrayList<>();
 
-    public ACNavStartMsgHandler(ActivityNavStart acstart) {
+    public ACNavStartMsgHandler(ACNavStart acstart) {
         super();
         mActivity = acstart;
     }
@@ -88,12 +88,12 @@ public class ACNavStartMsgHandler extends Handler {
         String show  = "可以查看本任务已获取图片\n可以移除本任务占据空间";
 
         HashMap<String, String> map = new HashMap<>();
-        map.put(ActivityNavStart.STR_ITEM_TITLE, jobname);
-        map.put(ActivityNavStart.STR_ITEM_TEXT, show);
-        map.put(ActivityNavStart.STR_ITEM_ID,  Integer.toString(cj.get_id()));
-        map.put(ActivityNavStart.STR_ITEM_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
-        map.put(ActivityNavStart.STR_ITEM_JOBNAME, cj.getName());
-        map.put(ActivityNavStart.STR_ITEM_TYPE, ActivityNavStart.DIED_JOB);
+        map.put(ACNavStart.STR_ITEM_TITLE, jobname);
+        map.put(ACNavStart.STR_ITEM_TEXT, show);
+        map.put(ACNavStart.STR_ITEM_ID,  Integer.toString(cj.get_id()));
+        map.put(ACNavStart.STR_ITEM_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
+        map.put(ACNavStart.STR_ITEM_JOBNAME, cj.getName());
+        map.put(ACNavStart.STR_ITEM_TYPE, ACNavStart.DIED_JOB);
         mLVList.add(map);
     }
 
@@ -118,12 +118,12 @@ public class ACNavStartMsgHandler extends Handler {
         }
 
         HashMap<String, String> map = new HashMap<>();
-        map.put(ActivityNavStart.STR_ITEM_TITLE, jobname);
-        map.put(ActivityNavStart.STR_ITEM_TEXT, show);
-        map.put(ActivityNavStart.STR_ITEM_ID,  Integer.toString(cj.get_id()));
-        map.put(ActivityNavStart.STR_ITEM_STATUS, cj.getStatus().getJob_status());
-        map.put(ActivityNavStart.STR_ITEM_JOBNAME, cj.getName());
-        map.put(ActivityNavStart.STR_ITEM_TYPE, ActivityNavStart.ALIVE_JOB);
+        map.put(ACNavStart.STR_ITEM_TITLE, jobname);
+        map.put(ACNavStart.STR_ITEM_TEXT, show);
+        map.put(ACNavStart.STR_ITEM_ID,  Integer.toString(cj.get_id()));
+        map.put(ACNavStart.STR_ITEM_STATUS, cj.getStatus().getJob_status());
+        map.put(ACNavStart.STR_ITEM_JOBNAME, cj.getName());
+        map.put(ACNavStart.STR_ITEM_TYPE, ACNavStart.ALIVE_JOB);
         mLVList.add(map);
     }
 }

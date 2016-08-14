@@ -42,7 +42,6 @@
         android:background="@android:drawable/ic_menu_delete"
         android:layout_alignParentTop="false"
         android:layout_alignTop="@+id/ItemTitle"
-        android:layout_alignBottom="@+id/ItemText"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
         android:layout_alignParentEnd="true"

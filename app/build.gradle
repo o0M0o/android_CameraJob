@@ -5,7 +5,7 @@ android {
         defkey {
             keyAlias 'andriodapp-key-longtime'
             keyPassword 'w789065'
-            storeFile file('E:/backup/appkey/andriodapp-key-longtime.jks')
+            storeFile file('G:/backup/appkey/andriodapp-key-longtime.jks')
             storePassword 'w127865'
         }
     }
@@ -15,8 +15,8 @@ android {
         applicationId "com.wxm.camerajob"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.02"
+        versionCode 4
+        versionName "1.04"
         signingConfig signingConfigs.defkey
     }
     buildTypes {
@@ -33,6 +33,7 @@ android {
     }
 }
 
+apply plugin: 'com.neenbedankt.android-apt'
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -45,4 +46,11 @@ dependencies {
     compile files('libs/extend_libs/ormlite/ormlite-android-5.0.jar')
     compile files('libs/extend_libs/ormlite/ormlite-core-5.0.jar')
     compile files('libs/extend_libs/ormlite/ormlite-android-5.0-javadoc.jar')
+    compile 'com.facebook.fresco:fresco:0.12.0'
+    compile project(':galleryfinal')
+    compile 'com.jakewharton:butterknife:8.2.1'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'org.xutils:xutils:3.3.36'
+    compile 'cn.finalteam:toolsfinal:1.1.4'
+    apt 'com.jakewharton:butterknife-compiler:8.0.1'
 }

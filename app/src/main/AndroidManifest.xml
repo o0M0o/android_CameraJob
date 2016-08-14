@@ -30,13 +30,13 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <activity android:name=".ui.activitys.ActivityCameraSetting" />
+        <activity android:name=".ui.activitys.ACCameraSetting" />
         <activity android:name=".ui.activitys.test.ActivityTestSilentCamera" />
         <activity
-            android:name=".ui.activitys.ActivityCameraJobPhotos"
+            android:name=".ui.activitys.ACCameraJobPhotos"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".ui.activitys.ActivityNavStart"
+            android:name=".ui.activitys.ACNavStart"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +44,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activitys.ACHelp"></activity>
+        <activity android:name=".ui.activitys.ACHelp"/>
     </application>
 
 </manifest>

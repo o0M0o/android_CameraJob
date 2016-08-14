@@ -28,7 +28,7 @@ import com.wxm.camerajob.base.utility.UtilFun;
 import java.util.LinkedList;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class ActivityCameraJobPhotos extends AppCompatActivity {
+public class ACCameraJobPhotos extends AppCompatActivity {
     private final static String TAG = "ACCameraJobPhotos";
     private final static MySize SMAIL_IMAGEVIEW_SIZE = new MySize(240, 240);
 
@@ -159,7 +159,7 @@ public class ActivityCameraJobPhotos extends AppCompatActivity {
             //设置图像资源
             //设置图像相对于视图的比例，FIT_XY表示充满X和Y轴
             //设置imageAll中每一个Item的背景资源
-            MySize sz = ActivityCameraJobPhotos.SMAIL_IMAGEVIEW_SIZE;
+            MySize sz = ACCameraJobPhotos.SMAIL_IMAGEVIEW_SIZE;
             mIVAll.setLayoutParams(new Gallery.LayoutParams(sz.getWidth(), sz.getHeight()));
             mIVAll.setScaleType(ImageView.ScaleType.FIT_XY);
             mIVAll.setBackgroundResource(galleryItemBackground);
