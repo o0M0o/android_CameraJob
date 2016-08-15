@@ -1,6 +1,7 @@
 package com.wxm.camerajob.base.utility;
 
 import android.os.Environment;
+import android.support.design.BuildConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +76,12 @@ public class FileLogger {
 
             mLoger = Logger.getLogger("camerajob_runlog");
             mLoger.addHandler(mLogFH);
-            mLoger.setLevel(Level.WARNING);
+
+            if(BuildConfig.DEBUG)
+                mLoger.setLevel(Level.INFO);
+            else
+                mLoger.setLevel(Level.WARNING);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

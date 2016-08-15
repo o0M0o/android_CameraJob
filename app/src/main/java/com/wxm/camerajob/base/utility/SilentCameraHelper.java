@@ -11,6 +11,7 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 静默相机句柄
@@ -26,7 +27,6 @@ public class SilentCameraHelper {
     private CameraParam     mCameraParam;
 
     private Semaphore                   mCameraLock;
-    private Semaphore                   mRunnerLock;
     private LinkedList<TakePhotoParam>  mTPList;
     private takePhotoCallBack           mTPCBTakePhoto;
 
@@ -45,7 +45,6 @@ public class SilentCameraHelper {
         mCameraLock = new Semaphore(1);
 
         // for runner list
-        mRunnerLock = new Semaphore(1);
         mTPList = new LinkedList<>();
     }
 
@@ -62,37 +61,25 @@ public class SilentCameraHelper {
     private boolean takePhotoUtil(TakePhotoParam para, boolean bw)  {
         long sms = System.currentTimeMillis();
         boolean re = false;
-        if(!((null == para.mTag) || para.mTag.isEmpty()))  {
-            try {
-                mRunnerLock.acquire();
-                if(!((null == para.mTag) || para.mTag.isEmpty())) {
-                    for (TakePhotoParam r : mTPList) {
-                        if (!((null == r.mTag) || r.mTag.isEmpty())) {
-                            if (r.mTag.equals(para.mTag)) {
-                                re = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if(!re) {
-                        mTPList.add(para);
-                    }
-                    else    {
+        if(!UtilFun.StringIsNullOrEmpty(para.mTag))  {
+            synchronized (mTPList) {
+                for (TakePhotoParam r : mTPList) {
+                    if(para.mTag.equals(r.mTag))    {
                         FileLogger.getLogger().warning(
-                                "give up takephoto('"  + para.mFileName + "')");
+                                "give up takephoto('" + para.mFileName + "')");
+
+                        re = true;
+                        break;
                     }
-                } else  {
-                    mTPList.add(para);
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                mRunnerLock.release();
             }
         }
 
         if(!re) {
+            synchronized (mTPList) {
+                mTPList.add(para);
+            }
+
             TakePhotoRunner tr = new TakePhotoRunner(para);
             mBackgroundHandler.post(tr);
 
@@ -238,31 +225,43 @@ public class SilentCameraHelper {
         @Override
         public void run() {
             mRunStat = RUN_START;
+            boolean bt = false;
             try {
-                mCameraLock.acquire();
-                if(ContextUtil.useNewCamera())
-                    mSCCamera = new SilentCameraNew();
-                else
-                    mSCCamera = new SilentCameraOld();
+                int tc = 0;
+                while (!bt && (tc < 10)) {
+                    tc++;
+                    if (mCameraLock.tryAcquire(3, TimeUnit.SECONDS)) {
+                        bt =true;
 
-                mSCCamera.setupCamera(mCameraParam);
+                        if (ContextUtil.useNewCamera())
+                            mSCCamera = new SilentCameraNew();
+                        else
+                            mSCCamera = new SilentCameraOld();
 
-                mSCCamera.setOpenCameraCallBack(mOCCOpen);
-                mSCCamera.setTakePhotoCallBack(mTPCTake);
+                        mSCCamera.setupCamera(mCameraParam);
 
-                mSCCamera.openCamera();
+                        mSCCamera.setOpenCameraCallBack(mOCCOpen);
+                        mSCCamera.setTakePhotoCallBack(mTPCTake);
+
+                        mSCCamera.openCamera();
+                    } else  {
+                        Thread.sleep(3000);
+                    }
+                }
             } catch (Throwable e) {
                 e.printStackTrace();
                 FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+
+                mCameraLock.release();
             }
 
-            try {
-                mRunnerLock.acquire();
+            if(!bt) {
+                FileLogger.getLogger().severe(
+                        "camera busy, give up : " + mSelfTPTakePhoto.mFileName);
+            }
+
+            synchronized (mTPList)  {
                 mTPList.remove(mSelfTPTakePhoto);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                mRunnerLock.release();
             }
         }
     }

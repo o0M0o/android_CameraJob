@@ -3,7 +3,6 @@ package com.wxm.camerajob.base.handler;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
-import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.db.DBManager;
@@ -15,8 +14,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 处理job
@@ -25,9 +22,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CameraJobProcess {
     private final String TAG = "CameraJobProcess";
     private int                     mInitFlag;
+    private LinkedList<CameraJob>   mActiveJob;
 
     public CameraJobProcess() {
         mInitFlag       = 0;
+        mActiveJob      = new LinkedList<>();
     }
 
 
@@ -43,6 +42,7 @@ public class CameraJobProcess {
         }
 
         mInitFlag = 1;
+        mActiveJob.clear();
         return true;
     }
 
@@ -54,8 +54,13 @@ public class CameraJobProcess {
         if(1 != mInitFlag)
             return;
 
+        mActiveJob.clear();
         for(CameraJob cj : ls)  {
-            jobWakeup(cj);
+            cheakJobWakeup(cj);
+        }
+        
+        for(CameraJob cj : mActiveJob)  {
+            wakeupDuty(cj);
         }
     }
 
@@ -65,7 +70,7 @@ public class CameraJobProcess {
      * 执行job
      * @param cj 唤醒的任务
      */
-    private void jobWakeup(CameraJob cj)    {
+    private void cheakJobWakeup(CameraJob cj)    {
         Timestamp cur = new Timestamp(0);
 
         if(!cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))   {
@@ -121,7 +126,7 @@ public class CameraJobProcess {
         }
 
         if(ik)
-            wakeupDuty(cj);
+            mActiveJob.add(cj);
     }
 
     private void process_hourly_job(CameraJob cj) {
@@ -173,7 +178,7 @@ public class CameraJobProcess {
         }
 
         if(ik)
-            wakeupDuty(cj);
+            mActiveJob.add(cj);
     }
 
 
@@ -233,7 +238,7 @@ public class CameraJobProcess {
         }
 
         if(ik)
-            wakeupDuty(cj);
+            mActiveJob.add(cj);
     }
 
 
