@@ -376,6 +376,32 @@ public class UtilFun {
         return ret;
     }
 
+
+    /**
+     *  遍历文件夹，搜索指定扩展名的文件
+     * @param Path          搜索目录
+     * @param Extension     扩展名
+     * @param IsIterative   是否进入子文件夹
+     * @return  满足条件的文件数量
+     */
+    public static int getDirFilesCount(String Path, String Extension, boolean IsIterative)
+    {
+        int ret = 0;
+        File[] files =new File(Path).listFiles();
+        for (File f : files) {
+            if (f.isFile()) {
+                if (f.getPath().substring(f.getPath().length() - Extension.length()).equals(Extension))
+                    ret++;
+            } else if (f.isDirectory() && !f.getPath().contains("/.")) {
+                //忽略点文件（隐藏文件/文件夹）
+                if (IsIterative)
+                    getDirFiles(f.getPath(), Extension, true);
+            }
+        }
+
+        return ret;
+    }
+
     /**
      * 遍历文件夹，搜索子文件夹
      * @param path              搜索目录

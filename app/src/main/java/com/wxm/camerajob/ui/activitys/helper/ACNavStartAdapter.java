@@ -8,6 +8,7 @@ import android.widget.SimpleAdapter;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.UtilFun;
 import com.wxm.camerajob.ui.activitys.ACNavStart;
 
@@ -39,7 +40,6 @@ public class ACNavStartAdapter extends SimpleAdapter {
         if(null != v)   {
             ImageButton ib_play = (ImageButton)v.findViewById(R.id.liib_jobstatus_run_pause);
             ImageButton ib_delete = (ImageButton)v.findViewById(R.id.liib_jobstatus_stop);
-            ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
 
             HashMap<String, String> map = mLVList.get(position);
             String status = map.get(ACNavStart.STR_ITEM_STATUS);
@@ -61,7 +61,19 @@ public class ACNavStartAdapter extends SimpleAdapter {
             }
 
             ib_delete.setOnClickListener(mHome);
-            ib_look.setOnClickListener(mHome);
+
+
+            ImageButton ib_look = (ImageButton)v.findViewById(R.id.liib_jobstatus_look);
+            String pp = ContextUtil.getInstance()
+                    .getCameraJobPhotoDir(
+                            Integer.parseInt(map.get(ACNavStart.STR_ITEM_ID)));
+            if(0 == UtilFun.getDirFilesCount(pp, "jpg", false)) {
+                ib_look.setVisibility(View.INVISIBLE);
+            }
+            else    {
+                ib_look.setVisibility(View.VISIBLE);
+                ib_look.setOnClickListener(mHome);
+            }
         }
 
         return v;

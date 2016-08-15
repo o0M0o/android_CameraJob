@@ -16,6 +16,7 @@ import com.wxm.camerajob.ui.listener.UILPauseOnScrollListener;
 
 import org.xutils.x;
 
+import java.io.File;
 import java.util.List;
 
 import cn.finalteam.galleryfinal.CoreConfig;
@@ -77,12 +78,13 @@ public class ACJobGallery {
         //functionConfigBuilder.setSelected(mPhotoList);//添加过滤集合
         final FunctionConfig functionConfig = functionConfigBuilder.build();
 
-
+        File pp = new File(photodir);
         CoreConfig coreConfig = new CoreConfig.Builder(mAC, imageLoader, themeConfig)
-            .setFunctionConfig(functionConfig)
-            .setPauseOnScrollListener(pauseOnScrollListener)
-            .setNoAnimcation(false)
-            .build();
+                .setFunctionConfig(functionConfig)
+                .setPauseOnScrollListener(pauseOnScrollListener)
+                .setNoAnimcation(false)
+                .setShowPhotoFolder(pp)
+                .build();
         GalleryFinal.init(coreConfig);
 
         if (mutiSelect) {

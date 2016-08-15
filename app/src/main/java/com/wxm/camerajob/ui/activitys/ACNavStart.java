@@ -303,8 +303,12 @@ public class ACNavStart
             break;
 
             case R.id.liib_jobstatus_look :    {
+                String pp = ContextUtil.getInstance()
+                                .getCameraJobPhotoDir(
+                                        Integer.parseInt(map.get(STR_ITEM_ID)));
+
                 ACJobGallery jg = new ACJobGallery();
-                jg.OpenGallery(this, "");
+                jg.OpenGallery(this, pp);
                 /*
                 Intent intent = new Intent(this, ACCameraJobPhotos.class);
                 intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
