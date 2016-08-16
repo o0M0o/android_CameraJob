@@ -18,6 +18,9 @@ public class PreferencesUtil {
     private static final String CAMERA_SET_FLAG_ISSET = "camera_isset";
     private static final String CAMERA_SET_FLAG_NOSET = "camera_noset";
 
+    private static final String CAMERA_USEOLD = "camera_useold";
+    private static final String CAMERA_USEOLD_FLAG = "camera_useold_flag";
+
     /**
      * 加载相机参数配置
      * (相机参数配置为app唯一性配置)
@@ -98,4 +101,21 @@ public class PreferencesUtil {
                 bisset ? CAMERA_SET_FLAG_ISSET : CAMERA_SET_FLAG_NOSET).apply();
     }
 
+
+    /**
+     * 返回是否使用旧相机驱动
+     * @return  如果返回{@code true}则强制使用旧相机驱动
+     */
+    public static boolean checkUseOldCamera()    {
+        Context ct = ContextUtil.getInstance();
+        SharedPreferences param = ct.getSharedPreferences(
+                CAMERA_USEOLD,
+                Context.MODE_PRIVATE);
+
+        String fg = param.getString(CAMERA_USEOLD_FLAG, String.valueOf(false));
+        if(fg.equals(String.valueOf(true)))
+            return true;
+        else
+            return false;
+    }
 }

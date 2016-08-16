@@ -147,7 +147,8 @@ public class ContextUtil extends Application    {
      * @return 如果使用新相机API则返回true
      */
     public static boolean useNewCamera()   {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && !PreferencesUtil.checkUseOldCamera();
     }
 
 
