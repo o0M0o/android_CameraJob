@@ -7,6 +7,9 @@ import android.view.Surface;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -109,6 +112,39 @@ public abstract class SilentCamera {
             if(null != mTPCBTakePhoto)
                 mTPCBTakePhoto.onTakePhotoFailed(mTPParam);
         }
+    }
+
+
+    /**
+     * 保存照片到文件
+     * @param data          照片数据
+     * @param fileDir       文件所在文件夹
+     * @param fileName      文件名
+     * @return   执行成功返回{@code true}
+     */
+    protected boolean savePhotoToFile(byte[] data, String fileDir, String fileName) {
+        boolean ret = false;
+        FileOutputStream output = null;
+        File mf = new File(fileDir, fileName);
+        try {
+            output = new FileOutputStream(mf);
+            output.write(data);
+            ret = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+        } finally {
+            if(null != output)  {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+                }
+            }
+        }
+
+        return ret;
     }
 
 

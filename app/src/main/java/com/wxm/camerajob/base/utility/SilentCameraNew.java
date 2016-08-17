@@ -18,6 +18,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -26,11 +27,10 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.wxm.camerajob.base.data.CameraParam;
+import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
+import com.wxm.camerajob.base.handler.GlobalContext;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -377,36 +377,23 @@ public class SilentCameraNew extends SilentCamera {
                 return false;
             }
 
-            boolean ret = false;
-            FileOutputStream output = null;
-            try {
-                ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
-                byte[] bytes = new byte[buffer.remaining()];
-                buffer.get(bytes);
+            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
 
-                File mf = new File(mTPParam.mPhotoFileDir, mTPParam.mFileName);
-                output = new FileOutputStream(mf);
-                output.write(bytes);
+            boolean ret = savePhotoToFile(bytes, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+            if(ret) {
+                String l = "save photo to : " + mTPParam.mFileName;
+                Log.i(TAG, l);
+                getLogger().info(l);
 
-                Log.i(TAG, "save photo to : " + mf.toString());
-                FileLogger.getLogger().info("save photo to : " + mf.toString());
-                mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
-
-                ret = true;
-            } catch (Throwable e) {
-                e.printStackTrace();
-                FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
-            } finally {
-                ig.close();
-                if (null != output) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+                m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
+                m.sendToTarget();
             }
 
+            mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
             return ret;
         }
 

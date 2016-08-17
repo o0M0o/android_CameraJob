@@ -9,9 +9,6 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.handler.GlobalContext;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
@@ -194,33 +191,12 @@ public class SilentCameraOld extends SilentCamera {
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            boolean ret = false;
-            FileOutputStream output = null;
-            try {
-                File pictureFile = new File(mTPParam.mPhotoFileDir, mTPParam.mFileName);
-                output = new FileOutputStream(pictureFile);
-                output.write(data);
-                ret = true;
-
-                Log.i(TAG, "save photo to : " + pictureFile.toString());
-                getLogger().info("save photo to : " + pictureFile.toString());
-            } catch (Throwable e) {
-                e.printStackTrace();
-                Log.e(TAG, UtilFun.ThrowableToString(e));
-                getLogger().severe(UtilFun.ThrowableToString(e));
-            } finally {
-                if(null != output)  {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Log.e(TAG, UtilFun.ThrowableToString(e));
-                        getLogger().severe(UtilFun.ThrowableToString(e));
-                    }
-                }
-            }
-
+            boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
             if(ret) {
+                String l = "save photo to : " + mTPParam.mFileName;
+                Log.i(TAG, l);
+                getLogger().info(l);
+
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
                 m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};

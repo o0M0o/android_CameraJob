@@ -3,6 +3,7 @@ package com.wxm.camerajob.ui.activitys;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -132,6 +133,13 @@ public class ACNavStart
         };
 
         mTimer.schedule(mTimerTask, 5000, 5000);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
+        mLVAdapter.notifyDataSetChanged();
     }
 
     /**
