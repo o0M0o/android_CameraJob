@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import cn.wxm.andriodutillib.util.UtilFun;
+
 /**
  * 静默相机句柄
  * Created by 123 on 2016/6/16.

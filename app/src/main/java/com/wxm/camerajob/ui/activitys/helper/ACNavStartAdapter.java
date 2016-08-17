@@ -9,13 +9,15 @@ import android.widget.SimpleAdapter;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.UtilFun;
 import com.wxm.camerajob.ui.activitys.ACNavStart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cn.wxm.andriodutillib.util.FileUtil;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * activity adapter
@@ -67,7 +69,7 @@ public class ACNavStartAdapter extends SimpleAdapter {
             String pp = ContextUtil.getInstance()
                     .getCameraJobPhotoDir(
                             Integer.parseInt(map.get(ACNavStart.STR_ITEM_ID)));
-            if(0 == UtilFun.getDirFilesCount(pp, "jpg", false)) {
+            if(0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
                 ib_look.setVisibility(View.INVISIBLE);
             }
             else    {

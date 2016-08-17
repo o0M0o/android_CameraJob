@@ -6,7 +6,8 @@ import android.hardware.camera2.CameraCharacteristics;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.MySize;
+
+import cn.wxm.andriodutillib.type.MySize;
 
 /**
  * 配置管理类
@@ -37,8 +38,8 @@ public class PreferencesUtil {
                 CameraCharacteristics.LENS_FACING_BACK);
 
         String sz_str = param.getString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
-                                UtilFun.MySizeToString(new MySize(1280, 960)));
-        cp.mPhotoSize = UtilFun.StringToMySize(sz_str);
+                                new MySize(1280, 960).toString());
+        cp.mPhotoSize = MySize.parseSize(sz_str);
         cp.mAutoFocus = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFOCUS, true);
         cp.mAutoFlash = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH, true);
 
@@ -54,16 +55,16 @@ public class PreferencesUtil {
     public static void saveCameraParam(CameraParam cp) {
         Context ct = ContextUtil.getInstance();
         SharedPreferences param = ct.getSharedPreferences(
-                GlobalDef.STR_CAMERAPROPERTIES_NAME,
-                Context.MODE_PRIVATE);
+                    GlobalDef.STR_CAMERAPROPERTIES_NAME,
+                    Context.MODE_PRIVATE);
         param.edit().putInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
-                cp.mFace).apply();
+                    cp.mFace).apply();
         param.edit().putString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
-                UtilFun.MySizeToString(cp.mPhotoSize)).apply();
+                    cp.mPhotoSize.toString()).apply();
         param.edit().putBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFOCUS,
-                cp.mAutoFocus).apply();
+                    cp.mAutoFocus).apply();
         param.edit().putBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH,
-                cp.mAutoFlash).apply();
+                    cp.mAutoFlash).apply();
 
         setCameraSetFlag(true);
     }

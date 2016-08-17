@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import cn.wxm.andriodutillib.type.MySize;
+
 /**
  * 相机参数
  * Created by 123 on 2016/6/17.
@@ -17,7 +19,7 @@ public class CameraParam  implements Parcelable {
     public long     mWaitMSecs;
 
     public int      mFace;
-    public MySize   mPhotoSize;
+    public MySize mPhotoSize;
     public boolean  mAutoFlash;
     public boolean  mAutoFocus;
     public Handler  mSessionHandler;

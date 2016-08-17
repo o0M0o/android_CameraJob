@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>build.gradle</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(169,183,198); }
+.s1 { color: rgb(106,135,89); }
+.s2 { color: rgb(104,151,187); }
+</style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+build.gradle</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">apply plugin: </span><span class="s1">'com.android.library'</span><span class="s0"> 
+ 
+android { 
+    signingConfigs { 
+        defkey { 
+            keyAlias </span><span class="s1">'andriodapp-key-longtime'</span><span class="s0"> 
+            keyPassword </span><span class="s1">'w789065'</span><span class="s0"> 
+            storeFile file(</span><span class="s1">'G:/backup/appkey/andriodapp-key-longtime.jks'</span><span class="s0">) 
+            storePassword </span><span class="s1">'w127865'</span><span class="s0"> 
+        } 
+    } 
+    compileSdkVersion </span><span class="s2">23</span><span class="s0"> 
+    buildToolsVersion </span><span class="s1">&quot;23.0.2&quot;</span><span class="s0"> 
+    defaultConfig { 
+        minSdkVersion </span><span class="s2">18</span><span class="s0"> 
+        targetSdkVersion </span><span class="s2">23</span><span class="s0"> 
+        versionCode </span><span class="s2">1</span><span class="s0"> 
+        versionName </span><span class="s1">&quot;1.0&quot;</span><span class="s0"> 
+    } 
+    buildTypes { 
+        release { 
+            minifyEnabled true 
+            proguardFiles getDefaultProguardFile(</span><span class="s1">'proguard-android.txt'</span><span class="s0">), </span><span class="s1">'proguard-rules.pro'</span><span class="s0"> 
+            signingConfig signingConfigs.defkey 
+        } 
+        debug { 
+            signingConfig signingConfigs.defkey 
+        } 
+    } 
+} 
+ 
+dependencies { 
+    compile fileTree(include: [</span><span class="s1">'*.jar'</span><span class="s0">], dir: </span><span class="s1">'libs'</span><span class="s0">) 
+    testCompile </span><span class="s1">'junit:junit:4.12'</span><span class="s0"> 
+    compile </span><span class="s1">'com.android.support:appcompat-v7:23.4.0'</span><span class="s0"> 
+} 
+</span></pre>
+</body>
+</html>

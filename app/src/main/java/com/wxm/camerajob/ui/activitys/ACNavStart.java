@@ -33,7 +33,6 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
-import com.wxm.camerajob.base.utility.UtilFun;
 import com.wxm.camerajob.ui.activitys.helper.ACNavStartAdapter;
 import com.wxm.camerajob.ui.activitys.helper.ACNavStartMsgHandler;
 import com.wxm.camerajob.ui.activitys.test.ActivityTest;
@@ -47,6 +46,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.ButterKnife;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WAKE_LOCK;

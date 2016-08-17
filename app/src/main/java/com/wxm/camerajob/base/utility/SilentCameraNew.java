@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import cn.wxm.andriodutillib.util.UtilFun;
+
 import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
 
 /**

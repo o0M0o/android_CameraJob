@@ -32,10 +32,11 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
-import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+
+import cn.wxm.andriodutillib.util.UtilFun;
 
 public class ActivityJob
         extends AppCompatActivity

@@ -25,15 +25,16 @@ import android.widget.Switch;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.MySize;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import cn.wxm.andriodutillib.type.MySize;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class ACCameraSetting
@@ -144,9 +145,9 @@ public class ACCameraSetting
 
         Object sel = mSPPhotoSize.getSelectedItem();
         if(null != sel)
-            cp.mPhotoSize = UtilFun.StringToMySize(sel.toString());
+            cp.mPhotoSize = MySize.parseSize(sel.toString());
         else
-            cp.mPhotoSize = UtilFun.StringToMySize(mSPPhotoSize.getItemAtPosition(0).toString());
+            cp.mPhotoSize = MySize.parseSize(mSPPhotoSize.getItemAtPosition(0).toString());
 
         cp.mAutoFlash = mSWAutoFlash.isChecked();
         cp.mAutoFocus = mSWAutoFocus.isChecked();
@@ -225,7 +226,7 @@ public class ACCameraSetting
             Collections.sort(ls_sz, new CompareSizesByArea());
             for (MySize sz : ls_sz)    {
                 HashMap<String, String> hmap = new HashMap<>();
-                hmap.put(GlobalDef.STR_CAMERA_DPI, UtilFun.MySizeToString(sz));
+                hmap.put(GlobalDef.STR_CAMERA_DPI, sz.toString());
                 mLLDpi.add(hmap);
             }
 
@@ -369,7 +370,7 @@ public class ACCameraSetting
      * @param cp 填充参数
      */
     private void fill_others(CameraParam cp)    {
-        String dpi = UtilFun.MySizeToString(cp.mPhotoSize);
+        String dpi = cp.mPhotoSize.toString();
         int pos = mAAPhotoSize.getPosition(dpi);
         if(-1 == pos)   {
             mSPPhotoSize.setSelection(0);

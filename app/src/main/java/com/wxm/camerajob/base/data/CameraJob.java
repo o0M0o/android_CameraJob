@@ -8,10 +8,11 @@ import android.util.JsonWriter;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * job

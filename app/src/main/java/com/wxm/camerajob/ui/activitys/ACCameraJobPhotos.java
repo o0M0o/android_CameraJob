@@ -21,11 +21,14 @@ import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.MySize;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.LinkedList;
+
+import cn.wxm.andriodutillib.type.MySize;
+import cn.wxm.andriodutillib.util.FileUtil;
+import cn.wxm.andriodutillib.util.ImageUtil;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ACCameraJobPhotos extends AppCompatActivity {
@@ -103,7 +106,7 @@ public class ACCameraJobPhotos extends AppCompatActivity {
         if(null != data)    {
             String p = data.getStringExtra(GlobalDef.STR_LOAD_PHOTODIR);
             if(!UtilFun.StringIsNullOrEmpty(p))   {
-                mPhotoFiles.addAll(UtilFun.getDirFiles(p, "jpg", false));
+                mPhotoFiles.addAll(FileUtil.getDirFiles(p, "jpg", false));
             }
         }
 
@@ -142,7 +145,7 @@ public class ACCameraJobPhotos extends AppCompatActivity {
 
             //将此索引的图像设为imageOne显示
             MySize sz = new MySize(1024, 1024);
-            mIVOne.setImageBitmap(UtilFun.getRotatedLocalBitmap(fn, sz));
+            mIVOne.setImageBitmap(ImageUtil.getRotatedLocalBitmap(fn, sz));
 
             int pos = fn.lastIndexOf("/");
             if(pos > 0)
@@ -163,7 +166,7 @@ public class ACCameraJobPhotos extends AppCompatActivity {
             mIVAll.setLayoutParams(new Gallery.LayoutParams(sz.getWidth(), sz.getHeight()));
             mIVAll.setScaleType(ImageView.ScaleType.FIT_XY);
             mIVAll.setBackgroundResource(galleryItemBackground);
-            mIVAll.setImageBitmap(UtilFun.getRotatedLocalBitmap(mPhotoFiles.get(position), sz));
+            mIVAll.setImageBitmap(ImageUtil.getRotatedLocalBitmap(mPhotoFiles.get(position), sz));
             return mIVAll;
         }
     }

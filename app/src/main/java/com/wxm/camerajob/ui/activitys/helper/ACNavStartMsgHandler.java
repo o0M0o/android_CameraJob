@@ -8,13 +8,15 @@ import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.UtilFun;
 import com.wxm.camerajob.ui.activitys.ACNavStart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import cn.wxm.andriodutillib.util.FileUtil;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * activity msg handler
@@ -57,7 +59,7 @@ public class ACNavStartMsgHandler extends Handler {
     }
 
     private void load_camerajobs(Message msg) {
-        LinkedList<String> dirs = UtilFun.getDirDirs(
+        LinkedList<String> dirs = FileUtil.getDirDirs(
                 ContextUtil.getInstance().getAppPhotoRootDir(),
                 false);
         List<CameraJob> lsjob = UtilFun.cast(msg.obj);

@@ -11,10 +11,12 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.SilentCameraHelper;
-import com.wxm.camerajob.base.utility.UtilFun;
 
 import java.util.Calendar;
 import java.util.List;
+
+import cn.wxm.andriodutillib.util.FileUtil;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * app context
@@ -207,7 +209,7 @@ public class GlobalContext {
 
             String path = ContextUtil.getInstance()
                     .getCameraJobPhotoDir(_id);
-            UtilFun.DeleteDirectory(path);
+            FileUtil.DeleteDirectory(path);
 
             Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
             reply.sendToTarget();

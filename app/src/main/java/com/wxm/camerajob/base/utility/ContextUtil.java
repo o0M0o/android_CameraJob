@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.wxm.andriodutillib.util.UtilFun;
+
 /**
  * Created by 123 on 2016/5/7.
  * 获取全局context

@@ -10,14 +10,20 @@ android {
         }
     }
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "24.0.1"
     defaultConfig {
         applicationId "com.wxm.camerajob"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.04"
+        versionCode 5
+        versionName "1.05"
         signingConfig signingConfigs.defkey
+
+        /*
+        jackOptions {
+            enabled true
+        }
+        */
     }
     buildTypes {
         release {
@@ -31,7 +37,15 @@ android {
     }
     productFlavors {
     }
+
+    /*
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    */
 }
+
 
 apply plugin: 'com.neenbedankt.android-apt'
 dependencies {
@@ -53,4 +67,5 @@ dependencies {
     compile 'org.xutils:xutils:3.3.36'
     compile 'cn.finalteam:toolsfinal:1.1.4'
     apt 'com.jakewharton:butterknife-compiler:8.0.1'
+    compile project(':AndriodUtillib')
 }

@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
+import cn.wxm.andriodutillib.util.UtilFun;
+
 /**
  * 静默相机基类
  * Created by 123 on 2016/7/4.

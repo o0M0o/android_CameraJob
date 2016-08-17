@@ -20,7 +20,7 @@ import java.sql.SQLException;
 public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
     private static final String     TAG                 = "DBOrmLiteHelper";
     private static final String     DATABASE_NAME       = "AppLocal.db";
-    private static final int        DATABASE_VERSION    = 3;
+    private static final int        DATABASE_VERSION    = 5;
 
 
     private RuntimeExceptionDao<CameraJob, Integer> mRDAOCameraJob = null;
@@ -40,7 +40,7 @@ public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database,
                           ConnectionSource connectionSource, int oldVersion, int newVersion) {
-        if(3 == newVersion) {
+        if(5 == newVersion) {
             CreateAndInitTable();
         }
     }

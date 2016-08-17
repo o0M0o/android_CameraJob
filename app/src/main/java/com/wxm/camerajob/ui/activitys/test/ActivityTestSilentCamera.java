@@ -17,11 +17,12 @@ import android.widget.Toast;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.MySize;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.SilentCameraHelper;
-import com.wxm.camerajob.base.utility.UtilFun;
+
+import cn.wxm.andriodutillib.type.MySize;
+import cn.wxm.andriodutillib.util.ImageUtil;
 
 public class ActivityTestSilentCamera extends AppCompatActivity implements View.OnClickListener {
 
@@ -56,7 +57,7 @@ public class ActivityTestSilentCamera extends AppCompatActivity implements View.
                     Log.i(TAG, "perfence size : " + psz);
 
                     String fn = mTPParam.mPhotoFileDir + "/" + mTPParam.mFileName;
-                    Bitmap bm = UtilFun.getRotatedLocalBitmap(fn, psz);
+                    Bitmap bm = ImageUtil.getRotatedLocalBitmap(fn, psz);
                     if(null != bm) {
                         mIVPhoto.setImageBitmap(bm);
                     }
