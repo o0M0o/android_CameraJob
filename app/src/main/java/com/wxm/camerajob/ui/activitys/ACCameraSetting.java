@@ -257,9 +257,9 @@ public class ACCameraSetting
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void load_camerainfo_new() {
-        class CompareSizesByArea implements Comparator<Size> {
+        class CompareSizesByArea implements Comparator<MySize> {
             @Override
-            public int compare(Size lhs, Size rhs) {
+            public int compare(MySize lhs, MySize rhs) {
                 // We cast here to ensure the multiplications won't overflow
                 return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
                         (long) rhs.getWidth() * rhs.getHeight());
@@ -282,11 +282,13 @@ public class ACCameraSetting
                     mLLDpi.clear();
 
                     Size[] sz_arr = map.getOutputSizes(ImageFormat.JPEG);
-                    ArrayList<Size> sz_ls = new ArrayList<>();
-                    Collections.addAll(sz_ls, sz_arr);
+                    ArrayList<MySize> mysz_ls = new ArrayList<>();
+                    for(Size i : sz_arr)    {
+                        mysz_ls.add(new MySize(i.getWidth(), i.getHeight()));
+                    }
 
-                    Collections.sort(sz_ls, new CompareSizesByArea());
-                    for (Size sz : sz_ls)    {
+                    Collections.sort(mysz_ls, new CompareSizesByArea());
+                    for (MySize sz : mysz_ls)    {
                         HashMap<String, String> hmap = new HashMap<>();
                         hmap.put(GlobalDef.STR_CAMERA_DPI, UtilFun.SizeToString(sz));
                         mLLDpi.add(hmap);

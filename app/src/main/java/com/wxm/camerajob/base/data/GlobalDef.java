@@ -75,6 +75,7 @@ public class GlobalDef {
     public final static String  STR_PROPERTIES_CAMERA_AUTOFLASH = "camera_autoflash";
     public final static String  STR_PROPERTIES_CAMERA_AUTOFOCUS = "camera_autofocus";
 
+    public final static String STR_ERROR_NOFIND_CONTROL = "找不到指定的控件";
 }
 
 

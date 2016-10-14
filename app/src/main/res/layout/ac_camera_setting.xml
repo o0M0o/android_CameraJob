@@ -4,75 +4,122 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ui.activitys.ACCameraSetting">
+    tools:context=".ui.activitys.ACCameraSetting"
+    android:background="@color/grey_1">
 
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cn_frontcamera"
-        android:id="@+id/acrb_cs_frontcamera"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:textSize="22sp"
-        android:clickable="true" />
+    <RelativeLayout
+        android:id="@+id/rl_camera"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cn_backcamera"
-        android:id="@+id/acrb_cs_backcamera"
-        android:layout_toEndOf="@+id/acrb_cs_frontcamera"
-        android:layout_marginStart="45dp"
-        android:textSize="22sp"
-        android:clickable="true" />
+        <RadioButton
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cn_frontcamera"
+            android:id="@+id/acrb_cs_frontcamera"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="24dp"
+            android:textSize="22sp"
+            android:clickable="true" />
 
-    <Spinner
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/acsp_cs_dpi"
-        android:layout_alignParentStart="false"
-        android:layout_marginStart="20dp"
-        android:layout_alignTop="@+id/textView7"
-        android:layout_toEndOf="@+id/textView7"
-        android:layout_alignBottom="@+id/textView7" />
+        <RadioButton
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cn_backcamera"
+            android:id="@+id/acrb_cs_backcamera"
+            android:layout_toEndOf="@+id/acrb_cs_frontcamera"
+            android:layout_marginStart="45dp"
+            android:textSize="22sp"
+            android:clickable="true" />
+    </RelativeLayout>
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cn_autofocus"
-        android:id="@+id/acsw_cs_autofocus"
-        android:layout_below="@+id/acsp_cs_dpi"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp"
-        android:textSize="22sp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="70dp" />
+    <RelativeLayout
+        android:id="@+id/rl_dpi"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:layout_below="@id/rl_camera"
+        android:layout_marginTop="1dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cn_autoflash"
-        android:id="@+id/acsw_cs_autoflash"
-        android:layout_below="@+id/acsw_cs_autofocus"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp"
-        android:textSize="22sp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="70dp" />
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/cn_cameradpi"
+            android:id="@+id/textView7"
+            android:textColor="@color/black"
+            android:textSize="22sp"
+            android:layout_marginStart="24dp"
+            android:layout_alignParentStart="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/cn_cameradpi"
-        android:id="@+id/textView7"
-        android:textColor="@color/abc_input_method_navigation_guard"
-        android:textSize="22sp"
-        android:layout_alignEnd="@+id/acrb_cs_frontcamera"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/acrb_cs_frontcamera"
-        android:layout_marginTop="20dp" />
+        <Spinner
+            android:layout_centerHorizontal="true"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/acsp_cs_dpi"
+            android:layout_toEndOf="@+id/textView7"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_alignBottom="@+id/textView7" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_other"
+        android:layout_below="@id/rl_dpi"
+        android:layout_marginTop="1dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cn_autofocus"
+            android:id="@+id/acsw_cs_autofocus"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="128dp"
+            android:textSize="22sp" />
+
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cn_autoflash"
+            android:id="@+id/acsw_cs_autoflash"
+            android:layout_below="@+id/acsw_cs_autofocus"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="128dp"
+            android:textSize="22sp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_preview"
+        android:layout_below="@id/rl_other"
+        android:layout_marginTop="1dp"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/bt_preview"
+            android:text="@string/camera_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
 </RelativeLayout>

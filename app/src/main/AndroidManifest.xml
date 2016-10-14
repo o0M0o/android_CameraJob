@@ -14,17 +14,19 @@
 
     <application
         android:name=".base.utility.ContextUtil"
-        tools:replace="andriod:label"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_camera"
         android:label="@string/cn_app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="andriod:label">
         <receiver android:name=".base.receiver.AlarmReceiver" />
         <!-- android:process=":remote" /> -->
 
-        <activity android:name=".ui.activitys.test.ActivityTest" />
+        <activity
+            android:name=".ui.activitys.test.ActivityTest"
+            android:exported="true"/>
         <activity android:name=".ui.activitys.ActivityJob" />
 
         <service
@@ -47,7 +49,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activitys.ACHelp"/>
+        <activity android:name=".ui.activitys.ACHelp" />
+        <activity
+            android:name=".ui.activitys.ACCameraPreview"
+            android:exported="true"/>
     </application>
 
 </manifest>

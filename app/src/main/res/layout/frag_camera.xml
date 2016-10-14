@@ -5,7 +5,7 @@
 
     <com.wxm.camerajob.ui.view.AutoFitTextureView
         android:id="@+id/frag_camera_textureview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
