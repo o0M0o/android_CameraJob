@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
@@ -42,7 +43,7 @@ import android.widget.Toast;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraParam;
-import com.wxm.camerajob.base.utility.PreferencesUtil;
+import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.ui.view.AutoFitTextureView;
 
 import java.util.ArrayList;
@@ -104,7 +105,9 @@ public class CameraPreview extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.frag_camera, null);
-        mCPParam = PreferencesUtil.loadCameraParam();
+
+        Intent it = getActivity().getIntent();
+        mCPParam = it.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
         return v;
     }
 

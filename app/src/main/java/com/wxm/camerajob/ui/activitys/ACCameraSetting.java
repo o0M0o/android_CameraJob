@@ -134,6 +134,7 @@ public class ACCameraSetting
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(ac, ACCameraPreview.class);
+                it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
                 startActivityForResult(it, 1);
             }
         });
