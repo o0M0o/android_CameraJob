@@ -27,7 +27,6 @@ import android.widget.TimePicker;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
-import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
@@ -205,13 +204,9 @@ public class ActivityJob
 
         switch(resultCode)  {
             case GlobalDef.INTRET_CS_ACCEPT:    {
-                CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
-                Log.i(TAG, "cameraparam : " + cp.toString());
-                PreferencesUtil.saveCameraParam(cp);
-
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CS_CHANGECAMERA);
-                m.obj = cp;
+                m.obj = PreferencesUtil.loadCameraParam();
                 m.sendToTarget();
             }
             break;

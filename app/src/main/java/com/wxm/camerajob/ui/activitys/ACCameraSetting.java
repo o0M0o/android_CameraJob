@@ -1,6 +1,7 @@
 package com.wxm.camerajob.ui.activitys;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.ImageFormat;
@@ -18,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -26,6 +28,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.utility.ContextUtil;
+import com.wxm.camerajob.base.utility.PreferencesUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,14 +61,15 @@ public class ACCameraSetting
     private CameraParam         mCPBack;
     private CameraParam         mCPFront;
 
+    private Button              mBTPreview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_camera_setting);
         ContextUtil.getInstance().addActivity(this);
 
-        Intent data = getIntent();
-        CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
+        CameraParam cp = PreferencesUtil.loadCameraParam();
         mHMCameras = new HashMap<>();
         mLLDpi = new LinkedList<>();
         mLLBackCameraDpi = new LinkedList<>();
@@ -122,6 +126,17 @@ public class ACCameraSetting
                 fill_frontcamera();
             }
         });
+
+        // for camera preview
+        final Activity ac = this;
+        mBTPreview = UtilFun.cast(findViewById(R.id.bt_preview));
+        mBTPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(ac, ACCameraPreview.class);
+                startActivityForResult(it, 1);
+            }
+        });
     }
 
     @Override
@@ -145,9 +160,9 @@ public class ACCameraSetting
 
         Object sel = mSPPhotoSize.getSelectedItem();
         if(null != sel)
-            cp.mPhotoSize = MySize.parseSize(sel.toString());
+            cp.mPhotoSize = UtilFun.StringToSize(sel.toString());
         else
-            cp.mPhotoSize = MySize.parseSize(mSPPhotoSize.getItemAtPosition(0).toString());
+            cp.mPhotoSize = UtilFun.StringToSize(mSPPhotoSize.getItemAtPosition(0).toString());
 
         cp.mAutoFlash = mSWAutoFlash.isChecked();
         cp.mAutoFocus = mSWAutoFocus.isChecked();
@@ -159,13 +174,18 @@ public class ACCameraSetting
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.meuitem_cameraset_accept : {
-                do_save();
+                CameraParam cp = get_cur_param();
+                PreferencesUtil.saveCameraParam(cp);
+
+                Intent data = new Intent();
+                setResult(GlobalDef.INTRET_CS_ACCEPT, data);
                 finish();
             }
             break;
 
             case R.id.meuitem_cameraset_giveup : {
-                do_giveup();
+                Intent data = new Intent();
+                setResult(GlobalDef.INTRET_CS_GIVEUP, data);
                 finish();
             }
             break;
@@ -179,26 +199,8 @@ public class ACCameraSetting
     }
 
     /**
-     * 保存任务并返回前activity
+     * 加载旧版相机信息
      */
-    private void do_save()  {
-        Intent data = new Intent();
-        CameraParam cp = new CameraParam(null);
-        cp.Copy(get_cur_param());
-
-        data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, cp);
-        setResult(GlobalDef.INTRET_CS_ACCEPT, data);
-    }
-
-    /**
-     * 放弃当前任务
-     */
-    private void do_giveup()  {
-        Intent data = new Intent();
-        setResult(GlobalDef.INTRET_CS_GIVEUP, data);
-    }
-
-
     private void load_camerainfo_old()  {
         class CompareSizesByArea implements Comparator<MySize> {
             @Override
@@ -248,12 +250,8 @@ public class ACCameraSetting
         }
     }
 
-
-
-
-
     /**
-     * 加载系统相机信息
+     * 加载新版系统相机信息
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void load_camerainfo_new() {
@@ -315,7 +313,6 @@ public class ACCameraSetting
             e.printStackTrace();
         }
     }
-
 
     /**
      * 展示设定

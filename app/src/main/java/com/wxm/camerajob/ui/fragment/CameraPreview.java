@@ -41,6 +41,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.wxm.camerajob.R;
+import com.wxm.camerajob.base.data.CameraParam;
+import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.ui.view.AutoFitTextureView;
 
 import java.util.ArrayList;
@@ -93,6 +95,8 @@ public class CameraPreview extends Fragment {
     private static final int MAX_PREVIEW_WIDTH  = 1920;
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
+    private CameraParam     mCPParam;
+
     public static CameraPreview newInstance() {
         return new CameraPreview();
     }
@@ -100,6 +104,7 @@ public class CameraPreview extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.frag_camera, null);
+        mCPParam = PreferencesUtil.loadCameraParam();
         return v;
     }
 
@@ -236,10 +241,9 @@ public class CameraPreview extends Fragment {
             = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-            //openCamera(width, height);
             closeCamera();
-            openCamera(CameraCharacteristics.LENS_FACING_FRONT,
-                    mTextureView.getWidth(), mTextureView.getHeight());
+            openCamera(mCPParam.mFace,
+                    mCPParam.mPhotoSize.getWidth(), mCPParam.mPhotoSize.getHeight());
         }
 
         @Override

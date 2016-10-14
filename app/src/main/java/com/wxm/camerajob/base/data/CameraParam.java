@@ -12,8 +12,8 @@ import cn.wxm.andriodutillib.type.MySize;
  * Created by 123 on 2016/6/17.
  */
 public class CameraParam  implements Parcelable {
-    public final static int     LENS_FACING_BACK = 1;
-    public final static int     LENS_FACING_FRONT = 2;
+    public final static int     LENS_FACING_BACK  = 1;
+    public final static int     LENS_FACING_FRONT = 0;
 
     private final static int  WAIT_MSECS = 8000;
     public long     mWaitMSecs;

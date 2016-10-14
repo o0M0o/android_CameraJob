@@ -27,7 +27,6 @@ import android.widget.ListView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
-import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
@@ -248,9 +247,6 @@ public class ACNavStart
 
             case R.id.meuitem_camera_setting :  {
                 Intent data = new Intent(this, ACCameraSetting.class);
-                data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
-                        PreferencesUtil.loadCameraParam());
-
                 startActivityForResult(data, 1);
             }
             break;
@@ -347,13 +343,9 @@ public class ACNavStart
             break;
 
             case GlobalDef.INTRET_CS_ACCEPT:    {
-                CameraParam cp = data.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
-                Log.i(TAG, "cameraparam : " + cp.toString());
-                PreferencesUtil.saveCameraParam(cp);
-
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSGWHAT_CS_CHANGECAMERA);
-                m.obj = cp;
+                m.obj = PreferencesUtil.loadCameraParam();
                 m.sendToTarget();
             }
             break;

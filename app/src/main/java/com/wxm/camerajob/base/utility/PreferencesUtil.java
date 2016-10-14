@@ -8,6 +8,7 @@ import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 
 import cn.wxm.andriodutillib.type.MySize;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * 配置管理类
@@ -39,7 +40,7 @@ public class PreferencesUtil {
 
         String sz_str = param.getString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
                                 new MySize(1280, 960).toString());
-        cp.mPhotoSize = MySize.parseSize(sz_str);
+        cp.mPhotoSize = UtilFun.StringToSize(sz_str);
         cp.mAutoFocus = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFOCUS, true);
         cp.mAutoFlash = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH, true);
 
