@@ -154,7 +154,7 @@ public class TFSettingCamera extends TFSettingBase {
             mBTPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent it = new Intent(getRootActivity(), ACCameraPreview.class);
+                    Intent it = new Intent(getActivity(), ACCameraPreview.class);
                     it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
                     startActivityForResult(it, 1);
                 }

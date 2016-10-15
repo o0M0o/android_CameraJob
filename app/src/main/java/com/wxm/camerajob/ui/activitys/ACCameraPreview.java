@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.fragment.utility.CameraPreview;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -23,6 +24,7 @@ public class ACCameraPreview extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_camera_preview);
+        ContextUtil.getInstance().addActivity(this);
 
         if(null == savedInstanceState)  {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
