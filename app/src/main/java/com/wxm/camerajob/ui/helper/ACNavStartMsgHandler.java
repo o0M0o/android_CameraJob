@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.activitys.helper;
+package com.wxm.camerajob.ui.helper;
 
 import android.os.Handler;
 import android.os.Message;

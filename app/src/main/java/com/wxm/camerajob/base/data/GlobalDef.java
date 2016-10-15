@@ -33,6 +33,9 @@ public class GlobalDef {
     public final static int INTRET_CAMERAJOB_GIVEUP     = 2001;
     public final static int INTRET_CS_ACCEPT            = 2010;
     public final static int INTRET_CS_GIVEUP            = 2011;
+    public final static int INTRET_ACCEPT               = 2020;
+    public final static int INTRET_GIVEUP               = 2021;
+
     public final static int INTRET_NOTCARE              = 9000;
 
     public final static int INT_INVALID_ID              = -1;

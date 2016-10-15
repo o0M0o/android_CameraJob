@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:orderInCategory="900"
+        app:showAsAction="always"
+        android:id="@+id/mi_save"
+        android:title="@string/cn_save" />
+
+    <item
+        android:orderInCategory="901"
+        app:showAsAction="ifRoom"
+        android:id="@+id/mi_giveup"
+        android:title="@string/cn_giveup" />
+
+    <item
+        android:orderInCategory="902"
+        app:showAsAction="ifRoom"
+        android:id="@+id/mi_leave"
+        android:title="@string/cn_leave" />
+
+</menu>

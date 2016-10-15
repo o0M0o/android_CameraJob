@@ -32,10 +32,10 @@ import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
-import com.wxm.camerajob.ui.activitys.helper.ACNavStartAdapter;
-import com.wxm.camerajob.ui.activitys.helper.ACNavStartMsgHandler;
-import com.wxm.camerajob.ui.activitys.test.ActivityTest;
-import com.wxm.camerajob.ui.activitys.test.ActivityTestSilentCamera;
+import com.wxm.camerajob.ui.helper.ACNavStartAdapter;
+import com.wxm.camerajob.ui.helper.ACNavStartMsgHandler;
+import com.wxm.camerajob.ui.test.ActivityTest;
+import com.wxm.camerajob.ui.test.ActivityTestSilentCamera;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -242,6 +242,12 @@ public class ACNavStart
             case R.id.meuitem_camerajob_add : {
                 Intent intent = new Intent(this, ActivityJob.class);
                 startActivityForResult(intent, 1);
+            }
+            break;
+
+            case R.id.meuitem_setting :  {
+                Intent data = new Intent(this, ACSetting.class);
+                startActivityForResult(data, 1);
             }
             break;
 

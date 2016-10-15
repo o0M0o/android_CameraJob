@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.activitys.loader;
+package com.wxm.camerajob.base.utility;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

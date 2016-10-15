@@ -11,7 +11,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.wxm.camerajob.ui.activitys.loader.UILImageLoader;
+import com.wxm.camerajob.base.utility.UILImageLoader;
 import com.wxm.camerajob.ui.listener.UILPauseOnScrollListener;
 
 import org.xutils.x;

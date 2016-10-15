@@ -34,4 +34,7 @@
     <string name="cn_autofocus">自动对焦</string>
     <string name="cn_autoflash">自动闪光灯</string>
     <string name="camera_preview">相机预览</string>
+    <string name="setting_camera">相机设定</string>
+    <string name="setting_directory">目录设置</string>
+    <string name="setting_version">检查版本</string>
 </resources>

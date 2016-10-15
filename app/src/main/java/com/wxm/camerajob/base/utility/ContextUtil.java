@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
+import android.support.design.BuildConfig;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
@@ -34,6 +35,7 @@ import cn.wxm.andriodutillib.util.UtilFun;
 public class ContextUtil extends Application    {
     private static final String TAG = "ContextUtil";
     private static final String INFO_FN = "info.json";
+    private static final String SELF_PACKAGE_NAME = "com.wxm.camerajob";
 
     private List<Activity> activities = new ArrayList<Activity>();
 
@@ -258,5 +260,50 @@ public class ContextUtil extends Application    {
      */
     public String getAppPhotoRootDir()  {
         return mAppPhotoRootDir;
+    }
+
+
+
+    /**
+     * 获取包版本号
+     * @param context  包上下文
+     * @return   包版本号
+     */
+    public static int getVerCode(Context context) {
+        int verCode = -1;
+        try {
+            verCode = context.getPackageManager().getPackageInfo(SELF_PACKAGE_NAME, 0).versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        return verCode;
+    }
+
+
+    /**
+     * 获取包版本名
+     * @param context  包上下文
+     * @return   包版本名
+     */
+    public static String getVerName(Context context) {
+        String verName = "";
+        try {
+            verName = context.getPackageManager().getPackageInfo(SELF_PACKAGE_NAME, 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        return verName;
+    }
+
+    /**
+     * 在测试版本满足条件后抛出异常
+     * @param bThrow    若true则抛出异常
+     */
+    public static void throwExIf(boolean bThrow) throws AssertionError {
+        if(BuildConfig.DEBUG && bThrow)     {
+            throw new AssertionError("测试版本出现异常");
+        }
     }
 }

@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ui.activitys.test.ActivityTestSilentCamera">
+    tools:context=".ui.test.ActivityTestSilentCamera">
 
     <ImageView
         android:layout_width="fill_parent"

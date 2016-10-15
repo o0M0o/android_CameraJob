@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.ui.fragment.CameraPreview;
+import com.wxm.camerajob.ui.fragment.utility.CameraPreview;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ACCameraPreview extends AppCompatActivity {

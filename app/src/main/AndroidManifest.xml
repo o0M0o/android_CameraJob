@@ -25,8 +25,8 @@
         <!-- android:process=":remote" /> -->
 
         <activity
-            android:name=".ui.activitys.test.ActivityTest"
-            android:exported="true"/>
+            android:name=".ui.test.ActivityTest"
+            android:exported="true" />
         <activity android:name=".ui.activitys.ActivityJob" />
 
         <service
@@ -35,7 +35,7 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name=".ui.activitys.ACCameraSetting" />
-        <activity android:name=".ui.activitys.test.ActivityTestSilentCamera" />
+        <activity android:name=".ui.test.ActivityTestSilentCamera" />
         <activity
             android:name=".ui.activitys.ACCameraJobPhotos"
             android:configChanges="orientation|screenSize" />
@@ -52,7 +52,8 @@
         <activity android:name=".ui.activitys.ACHelp" />
         <activity
             android:name=".ui.activitys.ACCameraPreview"
-            android:exported="true"/>
+            android:exported="true" />
+        <activity android:name=".ui.activitys.ACSetting"></activity>
     </application>
 
 </manifest>

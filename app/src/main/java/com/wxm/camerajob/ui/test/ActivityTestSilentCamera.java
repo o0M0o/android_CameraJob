@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.activitys.test;
+package com.wxm.camerajob.ui.test;
 
 import android.annotation.TargetApi;
 import android.content.Intent;

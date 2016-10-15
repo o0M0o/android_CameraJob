@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.fragment;
+package com.wxm.camerajob.ui.fragment.utility;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
