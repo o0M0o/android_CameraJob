@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.fragment.setting;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.ui.activitys.ACCameraSetting;
 import com.wxm.camerajob.ui.activitys.ACSetting;
 
 import cn.wxm.andriodutillib.util.UtilFun;
@@ -57,8 +55,7 @@ public class TFSettingMain extends TFSettingBase {
             rl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent it = new Intent(ac, ACCameraSetting.class);
-                    startActivityForResult(it, 1);
+                    toPageByIdx(ACSetting.PAGE_IDX_CAMERA);
                 }
             });
         }

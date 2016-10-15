@@ -18,6 +18,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.fragment.setting.TFSettingBase;
+import com.wxm.camerajob.ui.fragment.setting.TFSettingCamera;
 import com.wxm.camerajob.ui.fragment.setting.TFSettingCheckVersion;
 import com.wxm.camerajob.ui.fragment.setting.TFSettingDirectory;
 import com.wxm.camerajob.ui.fragment.setting.TFSettingMain;
@@ -27,10 +28,11 @@ import cn.wxm.andriodutillib.util.UtilFun;
 public class ACSetting extends AppCompatActivity {
     private ViewPager mVPPages;
 
-    private final static int   PAGE_COUNT              = 3;
+    private final static int   PAGE_COUNT              = 4;
     public final static int    PAGE_IDX_MAIN           = 0;
     public final static int    PAGE_IDX_CHECK_VERSION  = 1;
     public final static int    PAGE_IDX_DIRECTORY      = 2;
+    public final static int    PAGE_IDX_CAMERA         = 3;
 
     // for menuitem
     private MenuItem    mMISave;
@@ -162,6 +164,7 @@ public class ACSetting extends AppCompatActivity {
             mFRFrags[PAGE_IDX_MAIN]             = new TFSettingMain();
             mFRFrags[PAGE_IDX_CHECK_VERSION]    = new TFSettingCheckVersion();
             mFRFrags[PAGE_IDX_DIRECTORY]        = new TFSettingDirectory();
+            mFRFrags[PAGE_IDX_CAMERA]           = new TFSettingCamera();
         }
 
         @Override
