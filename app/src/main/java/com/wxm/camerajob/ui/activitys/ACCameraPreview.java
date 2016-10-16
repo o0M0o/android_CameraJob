@@ -45,6 +45,8 @@ public class ACCameraPreview extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.meuitem_testcamera_leave: {
+                mCameraFrag.CloseCamera();
+
                 Intent data = new Intent();
                 setResult(GlobalDef.INTRET_CS_GIVEUP, data);
                 finish();

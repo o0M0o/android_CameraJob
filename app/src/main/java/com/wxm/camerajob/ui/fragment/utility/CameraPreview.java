@@ -23,7 +23,6 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +54,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import cn.wxm.andriodutillib.type.MySize;
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * 相机预览fragment
@@ -76,7 +76,6 @@ public class CameraPreview extends Fragment {
     private MySize mPreviewSize;
 
     private String          mCameraId;
-    private ImageReader mImageReader;
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
@@ -163,7 +162,6 @@ public class CameraPreview extends Fragment {
 
     /**
      * 激活前置相机
-     */
     public void ActiveFrontCamera() {
         if((null != mTextureView) && (mTextureView.isAvailable()))  {
             closeCamera();
@@ -174,7 +172,6 @@ public class CameraPreview extends Fragment {
 
     /**
      * 激活后置相机
-     */
     public void ActiveBackCamera() {
         if((null != mTextureView) && (mTextureView.isAvailable()))  {
             closeCamera();
@@ -182,6 +179,7 @@ public class CameraPreview extends Fragment {
                     mTextureView.getWidth(), mTextureView.getHeight());
         }
     }
+     */
 
     /**
      * 关闭相机
@@ -264,21 +262,13 @@ public class CameraPreview extends Fragment {
         }
     };
 
-    private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
-        if (mFlashSupported) {
-            requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-        }
-    }
-
     private CameraCaptureSession.StateCallback mSessionStateCallback =
             new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     // The camera is already closed
-                    if (null == mCameraDevice) {
+                    if (null == mCameraDevice)
                         return;
-                    }
 
                     // When the session is ready, we start displaying the preview.
                     mCaptureSession = session;
@@ -288,7 +278,10 @@ public class CameraPreview extends Fragment {
                                 CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         // Flash is automatically enabled when necessary.
-                        setAutoFlash(mPreviewRequestBuilder);
+                        if (mFlashSupported) {
+                            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+                        }
 
                         // Finally, we start displaying the camera preview.
                         mPreviewRequest = mPreviewRequestBuilder.build();
@@ -400,9 +393,8 @@ public class CameraPreview extends Fragment {
             mPreviewRequestBuilder.addTarget(surface);
 
             // Here, we create a CameraCaptureSession for camera preview.
-            mCameraDevice.createCaptureSession(
-                    Arrays.asList(surface, mImageReader.getSurface()),
-                    mSessionStateCallback, null);
+            mCameraDevice.createCaptureSession(Collections.singletonList(surface),
+                                mSessionStateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -415,6 +407,9 @@ public class CameraPreview extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void openCamera(int face, int width, int height) {
         setUpCameraOutputs(face, width, height);
+        if(UtilFun.StringIsNullOrEmpty(mCameraId))
+            return;
+
         configureTransform(width, height);
 
         CameraManager manager =
@@ -446,10 +441,6 @@ public class CameraPreview extends Fragment {
                 mCameraDevice.close();
                 mCameraDevice = null;
             }
-            if (null != mImageReader) {
-                mImageReader.close();
-                mImageReader = null;
-            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
@@ -478,9 +469,8 @@ public class CameraPreview extends Fragment {
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
             bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
             matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-            float scale = Math.max(
-                    (float) viewHeight / mPreviewSize.getHeight(),
-                    (float) viewWidth / mPreviewSize.getWidth());
+            float scale = Math.max((float) viewHeight / mPreviewSize.getHeight(),
+                            (float) viewWidth / mPreviewSize.getWidth());
             matrix.postScale(scale, scale, centerX, centerY);
             matrix.postRotate(90 * (rotation - 2), centerX, centerY);
         } else if (Surface.ROTATION_180 == rotation) {
@@ -571,14 +561,9 @@ public class CameraPreview extends Fragment {
                     mysz_ls.add(new MySize(i.getWidth(), i.getHeight()));
                 }
 
-                // For still image captures, we use the largest available size.
-                MySize mLargestSize = Collections.max(mysz_ls, new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(mLargestSize.getWidth(),
-                        mLargestSize.getHeight(),
-                        ImageFormat.JPEG, /*maxImages*/2);
-
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
+                MySize mLargestSize = Collections.max(mysz_ls, new CompareSizesByArea());
                 int displayRotation = ac.getWindowManager().getDefaultDisplay().getRotation();
                 //noinspection ConstantConditions
                 mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
@@ -602,25 +587,25 @@ public class CameraPreview extends Fragment {
 
                 Point displaySize = new Point();
                 ac.getWindowManager().getDefaultDisplay().getSize(displaySize);
-                int rotatedPreviewWidth = width;
-                int rotatedPreviewHeight = height;
-                int maxPreviewWidth = displaySize.x;
-                int maxPreviewHeight = displaySize.y;
 
+                int rotatedPreviewWidth;
+                int rotatedPreviewHeight;
+                int maxPreviewWidth;
+                int maxPreviewHeight;
                 if (swappedDimensions) {
                     rotatedPreviewWidth = height;
                     rotatedPreviewHeight = width;
                     maxPreviewWidth = displaySize.y;
                     maxPreviewHeight = displaySize.x;
+                } else  {
+                    rotatedPreviewWidth = width;
+                    rotatedPreviewHeight = height;
+                    maxPreviewWidth = displaySize.x;
+                    maxPreviewHeight = displaySize.y;
                 }
 
-                if (maxPreviewWidth > MAX_PREVIEW_WIDTH) {
-                    maxPreviewWidth = MAX_PREVIEW_WIDTH;
-                }
-
-                if (maxPreviewHeight > MAX_PREVIEW_HEIGHT) {
-                    maxPreviewHeight = MAX_PREVIEW_HEIGHT;
-                }
+                maxPreviewWidth = Math.min(MAX_PREVIEW_WIDTH, maxPreviewWidth);
+                maxPreviewHeight = Math.min(MAX_PREVIEW_HEIGHT, maxPreviewHeight);
 
                 List<Size> sz_ls1 = Arrays.asList(map.getOutputSizes(SurfaceTexture.class));
                 MySize[] mysz_ls1 = new MySize[sz_ls1.size()];
@@ -641,11 +626,9 @@ public class CameraPreview extends Fragment {
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 int orientation = getResources().getConfiguration().orientation;
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    mTextureView.setAspectRatio(
-                            mPreviewSize.getWidth(), mPreviewSize.getHeight());
+                    mTextureView.setAspectRatio(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                 } else {
-                    mTextureView.setAspectRatio(
-                            mPreviewSize.getHeight(), mPreviewSize.getWidth());
+                    mTextureView.setAspectRatio(mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
 
                 // Check if the flash is supported.
