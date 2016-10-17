@@ -3,7 +3,7 @@ package com.wxm.camerajob.ui.fragment.setting;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.wxm.camerajob.ui.activitys.ACSetting;
+import com.wxm.camerajob.ui.acutility.ACSetting;
 
 import cn.wxm.andriodutillib.util.UtilFun;
 

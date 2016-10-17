@@ -8,7 +8,7 @@ import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.ui.activitys.ACNavStart;
+import com.wxm.camerajob.ui.acinterface.ACNavStart;
 
 import java.util.ArrayList;
 import java.util.HashMap;

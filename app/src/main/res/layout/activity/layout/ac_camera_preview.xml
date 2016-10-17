@@ -4,7 +4,7 @@
     android:id="@+id/ac_camera_preview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wxm.camerajob.ui.activitys.ACCameraPreview">
+    tools:context="com.wxm.camerajob.ui.acutility.ACCameraPreview">
 
     <FrameLayout
         android:layout_width="match_parent"

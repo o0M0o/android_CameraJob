@@ -9,7 +9,6 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.handler.GlobalContext;
 
-import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -24,30 +23,27 @@ public class SilentCameraHelper {
 
     private Handler         mBackgroundHandler;
     private HandlerThread   mBackgroundThread;
-    private Handler         mBackgroundHandlerCamera;
-    private HandlerThread   mBackgroundThreadCamera;
+    private Handler mBackgroundCameraHandler;
+    private HandlerThread mBackgroundCameraThread;
     private CameraParam     mCameraParam;
 
     private Semaphore                   mCameraLock;
-    private LinkedList<TakePhotoParam>  mTPList;
     private takePhotoCallBack           mTPCBTakePhoto;
+
 
     public interface takePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
         void onTakePhotoFailed(TakePhotoParam tp);
     }
 
-    public SilentCameraHelper(CameraParam cp)    {
+    SilentCameraHelper(CameraParam cp)    {
         startBackgroundThread();
 
         mCameraParam = cp;
-        mCameraParam.mSessionHandler = mBackgroundHandlerCamera;
+        mCameraParam.mSessionHandler = mBackgroundCameraHandler;
 
         // for camera
         mCameraLock = new Semaphore(1);
-
-        // for runner list
-        mTPList = new LinkedList<>();
     }
 
     protected void finalize() throws Throwable {
@@ -55,87 +51,54 @@ public class SilentCameraHelper {
         super.finalize();
     }
 
-    public void ChangeCamera(CameraParam cp)  {
-        mCameraParam = cp;
-        mCameraParam.mSessionHandler = mBackgroundHandlerCamera;
-    }
-
-    private boolean takePhotoUtil(TakePhotoParam para, boolean bw)  {
-        long sms = System.currentTimeMillis();
-        boolean re = false;
-        if(!UtilFun.StringIsNullOrEmpty(para.mTag))  {
-            synchronized (mTPList) {
-                for (TakePhotoParam r : mTPList) {
-                    if(para.mTag.equals(r.mTag))    {
-                        FileLogger.getLogger().warning(
-                                "give up takephoto('" + para.mFileName + "')");
-
-                        re = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if(!re) {
-            synchronized (mTPList) {
-                mTPList.add(para);
-            }
-
-            TakePhotoRunner tr = new TakePhotoRunner(para);
-            mBackgroundHandler.post(tr);
-
-            if(bw) {
-                long ems = sms + para.mWaitMSecs + mCameraParam.mWaitMSecs;
-                while ((System.currentTimeMillis() < ems)
-                        && (TakePhotoRunner.RUN_END != tr.mRunStat)) {
-                    try {
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                return tr.mRunResult;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-
-    public void TakePhoto(TakePhotoParam para)  {
-        takePhotoUtil(para, false);
-    }
-
-// --Commented out by Inspection START (2016/6/27 23:17):
-//    public boolean TakePhotoWait(TakePhotoParam para)  {
-//        return takePhotoUtil(para, true);
-//    }
-// --Commented out by Inspection STOP (2016/6/27 23:17)
-
+    /**
+     *  设置拍照回调接口
+     * @param tcb  回调参数
+     */
     public void setTakePhotoCallBack(takePhotoCallBack tcb)  {
         mTPCBTakePhoto = tcb;
     }
 
+    /**
+     * 更新拍照参数
+     * @param cp  拍照参数
+     */
+    public void ChangeCamera(CameraParam cp)  {
+        mCameraParam = cp;
+        mCameraParam.mSessionHandler = mBackgroundCameraHandler;
+    }
+
+    /**
+     * 拍照
+     * @param para  拍照参数
+     */
+    public void TakePhoto(TakePhotoParam para)  {
+        TakePhotoRunner tr = new TakePhotoRunner(para);
+        mBackgroundHandler.post(tr);
+    }
+
+    /**
+     * 启动后台线程
+     */
     private void startBackgroundThread()    {
-        mBackgroundThread = new HandlerThread("SilentCameraBackground");
+        mBackgroundThread = new HandlerThread("Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
 
-        mBackgroundThreadCamera = new HandlerThread("SilentCameraBackground");
-        mBackgroundThreadCamera.start();
-        mBackgroundHandlerCamera = new Handler(mBackgroundThreadCamera.getLooper());
+        mBackgroundCameraThread = new HandlerThread("SilentCameraBackground");
+        mBackgroundCameraThread.start();
+        mBackgroundCameraHandler = new Handler(mBackgroundCameraThread.getLooper());
     }
 
+    /**
+     * 关闭后台线程
+     */
     private void stopBackgroundThread() {
-        mBackgroundThreadCamera.quitSafely();
+        mBackgroundCameraThread.quitSafely();
         try {
-            mBackgroundThreadCamera.join();
-            mBackgroundThreadCamera = null;
-            mBackgroundHandlerCamera = null;
+            mBackgroundCameraThread.join();
+            mBackgroundCameraThread = null;
+            mBackgroundCameraHandler = null;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -150,21 +113,19 @@ public class SilentCameraHelper {
         }
     }
 
-
-    public class TakePhotoRunner implements Runnable {
+    /**
+     * 执行拍照任务
+     */
+    private class TakePhotoRunner implements Runnable {
         private SilentCamera        mSCCamera;
         private TakePhotoParam      mSelfTPTakePhoto;
-        public boolean              mRunResult;
-        public int                  mRunStat;
-        public static final int     RUN_INIT = 0;
-        public static final int     RUN_START = 1;
-        public static final int     RUN_END = 2;
 
         private SilentCamera.SilentCameraOpenCameraCallBack mOCCOpen    =
                 new SilentCamera.SilentCameraOpenCameraCallBack() {
                     @Override
                     public void onOpenSuccess(CameraParam cp) {
                         mSCCamera.setOpenCameraCallBack(null);
+                        mSCCamera.setTakePhotoCallBack(mTPCTake);
                         mSCCamera.takePhoto(mSelfTPTakePhoto);
                     }
 
@@ -174,9 +135,6 @@ public class SilentCameraHelper {
                         mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
                         mCameraLock.release();
-
-                        mRunResult = false;
-                        mRunStat = RUN_END;
                     }
                 };
 
@@ -187,9 +145,6 @@ public class SilentCameraHelper {
                         mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
                         mCameraLock.release();
-
-                        mRunResult = true;
-                        mRunStat = RUN_END;
 
                         //send msg
                         Message m = Message.obtain(GlobalContext.getMsgHandlder(),
@@ -207,9 +162,6 @@ public class SilentCameraHelper {
                         mSCCamera.closeCamera();
                         mCameraLock.release();
 
-                        mRunResult = false;
-                        mRunStat = RUN_END;
-
                         if(null != mTPCBTakePhoto)
                             mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
                     }
@@ -217,53 +169,35 @@ public class SilentCameraHelper {
 
 
 
-        public TakePhotoRunner(TakePhotoParam tp)    {
+        TakePhotoRunner(TakePhotoParam tp)    {
             mSelfTPTakePhoto = tp;
-
-            mRunResult = false;
-            mRunStat = RUN_INIT;
         }
 
         @Override
         public void run() {
-            mRunStat = RUN_START;
-            boolean bt = false;
+            boolean block = false;
             try {
-                int tc = 0;
-                while (!bt && (tc < 10)) {
-                    tc++;
-                    if (mCameraLock.tryAcquire(3, TimeUnit.SECONDS)) {
-                        bt =true;
+                if (mCameraLock.tryAcquire(3, TimeUnit.SECONDS)) {
+                    block = true;
 
-                        if (ContextUtil.useNewCamera())
-                            mSCCamera = new SilentCameraNew();
-                        else
-                            mSCCamera = new SilentCameraOld();
+                    if (ContextUtil.useNewCamera())
+                        mSCCamera = new SilentCameraNew();
+                    else
+                        mSCCamera = new SilentCameraOld();
 
-                        mSCCamera.setupCamera(mCameraParam);
-
-                        mSCCamera.setOpenCameraCallBack(mOCCOpen);
-                        mSCCamera.setTakePhotoCallBack(mTPCTake);
-
-                        mSCCamera.openCamera();
-                    } else  {
-                        Thread.sleep(3000);
-                    }
+                    mSCCamera.setupCamera(mCameraParam);
+                    mSCCamera.setOpenCameraCallBack(mOCCOpen);
+                    mSCCamera.openCamera();
+                } else  {
+                    FileLogger.getLogger().severe(
+                            "camera busy, give up : " + mSelfTPTakePhoto.mFileName);
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
                 FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
 
-                mCameraLock.release();
-            }
-
-            if(!bt) {
-                FileLogger.getLogger().severe(
-                        "camera busy, give up : " + mSelfTPTakePhoto.mFileName);
-            }
-
-            synchronized (mTPList)  {
-                mTPList.remove(mSelfTPTakePhoto);
+                if(block)
+                    mCameraLock.release();
             }
         }
     }

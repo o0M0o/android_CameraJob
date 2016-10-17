@@ -27,20 +27,20 @@
         <activity
             android:name=".ui.test.ActivityTest"
             android:exported="true" />
-        <activity android:name=".ui.activitys.ActivityJob" />
+        <activity android:name=".ui.acinterface.ACJob" />
 
         <service
             android:name=".jobservice.CameraJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <activity android:name=".ui.activitys.ACCameraSetting" />
+        <activity android:name=".ui.acutility.ACCameraSetting" />
         <activity android:name=".ui.test.ActivityTestSilentCamera" />
         <activity
-            android:name=".ui.activitys.ACCameraJobPhotos"
+            android:name=".ui.acinterface.ACCameraJobPhotos"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".ui.activitys.ACNavStart"
+            android:name=".ui.acinterface.ACNavStart"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -49,11 +49,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activitys.ACHelp" />
+        <activity android:name=".ui.acinterface.ACHelp" />
         <activity
-            android:name=".ui.activitys.ACCameraPreview"
+            android:name=".ui.acutility.ACCameraPreview"
             android:exported="true" />
-        <activity android:name=".ui.activitys.ACSetting"></activity>
+        <activity android:name=".ui.acutility.ACSetting"></activity>
     </application>
 
 </manifest>

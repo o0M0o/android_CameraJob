@@ -24,7 +24,7 @@ public class TFSettingDirectory extends TFSettingBase {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.frg_setting_version, container, false);
+        View v = inflater.inflate(R.layout.frg_setting_directory, container, false);
         return v;
     }
 
@@ -33,9 +33,8 @@ public class TFSettingDirectory extends TFSettingBase {
         super.onViewCreated(view, savedInstanceState);
         if (null != view) {
             String s = String.format(Locale.CHINA
-                    ,"当前版本号 : %d\n当前版本名 : %s"
-                    , ContextUtil.getVerCode(getContext())
-                    ,ContextUtil.getVerName(getContext()));
+                    ,"当前APP根目录 : %s"
+                    ,ContextUtil.getInstance().getAppPhotoRootDir());
             TextView tv = UtilFun.cast(view.findViewById(R.id.tv_show));
             if(BuildConfig.DEBUG && null == tv) {
                 throw new AssertionError("获取控件失败");

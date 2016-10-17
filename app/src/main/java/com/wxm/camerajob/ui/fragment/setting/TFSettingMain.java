@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.ui.activitys.ACSetting;
+import com.wxm.camerajob.ui.acutility.ACSetting;
 
 import cn.wxm.andriodutillib.util.UtilFun;
 
@@ -45,7 +45,7 @@ public class TFSettingMain extends TFSettingBase {
             rl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    toPageByIdx(ACSetting.PAGE_IDX_CHECK_VERSION);
+                    toPageByIdx(ACSetting.PAGE_IDX_DIRECTORY);
                 }
             });
 

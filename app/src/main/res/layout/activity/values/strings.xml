@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cn_save">保存</string>
+    <string name="job_name">任务名</string>
+    <string name="job_type">任务类型 :</string>
+    <string name="job_frequency">触发频度 :</string>
 </resources>
