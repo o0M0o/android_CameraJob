@@ -1,8 +1,11 @@
 package com.wxm.camerajob.ui.acutility;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,11 +44,32 @@ public class ACCameraSetting extends AppCompatActivity   {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.meuitem_cameraset_accept : {
-                mTFCamera.updateSetting();
-
                 Intent data = new Intent();
                 setResult(GlobalDef.INTRET_CS_ACCEPT, data);
-                finish();
+
+                if(mTFCamera.isSettingDirty()) {
+                    Dialog alertDialog = new AlertDialog.Builder(this).
+                            setTitle("配置已经更改").
+                            setMessage("是否保存更改的配置?").
+                            setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mTFCamera.updateSetting();
+                                    finish();
+                                }
+                            }).
+                            setNegativeButton("否", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            }).
+                            create();
+                    alertDialog.show();
+                } else {
+                    mTFCamera.updateSetting();
+                    finish();
+                }
             }
             break;
 
