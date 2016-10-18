@@ -1,17 +1,9 @@
 package com.wxm.camerajob.base.db;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
 import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.GlobalDef;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 处理camerajob的数据库类
@@ -67,4 +59,20 @@ public class DBCameraJobHelper {
     public List<CameraJob> GetJobs()    {
         return mHelper.getCamerJobREDao().queryForAll();
     }
+
+    /**
+     * 获取当前激活状态的任务数
+     * @return  目前处于活跃状态的任务数
+     */
+    public int GetActiveJobCount()  {
+        int count = 0;
+        List<CameraJob> lj = GetJobs();
+        for(CameraJob cj : lj)  {
+            if(cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))
+                count++;
+        }
+
+        return count;
+    }
 }
+

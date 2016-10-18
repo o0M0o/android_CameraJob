@@ -2,6 +2,7 @@ package com.wxm.camerajob.ui.fragment.setting;
 
 
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.ImageFormat;
@@ -13,6 +14,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,7 @@ import android.widget.Switch;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraPreview;
@@ -154,9 +157,17 @@ public class TFSettingCamera extends TFSettingBase {
             mBTPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent it = new Intent(getActivity(), ACCameraPreview.class);
-                    it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
-                    startActivityForResult(it, 1);
+                    if(0 < GlobalContext.GetDBManager().mCameraJobHelper.GetActiveJobCount()) {
+                        Dialog alertDialog = new AlertDialog.Builder(getContext()).
+                                setTitle("无法进行预览").
+                                setMessage("有任务在运行中，请删除或暂停任务后进行预览!").
+                                create();
+                        alertDialog.show();
+                    }   else {
+                        Intent it = new Intent(getActivity(), ACCameraPreview.class);
+                        it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
+                        startActivityForResult(it, 1);
+                    }
                 }
             });
         }

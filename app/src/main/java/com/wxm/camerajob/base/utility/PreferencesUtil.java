@@ -107,7 +107,6 @@ public class PreferencesUtil {
     /**
      * 返回是否使用旧相机驱动
      * @return  如果返回{@code true}则强制使用旧相机驱动
-     */
     public static boolean checkUseOldCamera()    {
         Context ct = ContextUtil.getInstance();
         SharedPreferences param = ct.getSharedPreferences(
@@ -115,9 +114,7 @@ public class PreferencesUtil {
                 Context.MODE_PRIVATE);
 
         String fg = param.getString(CAMERA_USEOLD_FLAG, String.valueOf(false));
-        if(fg.equals(String.valueOf(true)))
-            return true;
-        else
-            return false;
+        return fg.equals(String.valueOf(true));
     }
+     */
 }

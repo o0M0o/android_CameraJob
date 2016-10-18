@@ -4,125 +4,166 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey_1"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.wxm.camerajob.ui.acinterface.ACJob">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:id="@+id/til_name"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:background="@color/white">
-
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/acet_job_name"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:hint="@string/job_name"/>
-    </android.support.design.widget.TextInputLayout>
-
     <RelativeLayout
-        android:id="@+id/rl_job_type"
-        android:layout_below="@id/til_name"
-        android:layout_marginTop="1dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
+        android:id="@+id/rl_main"
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_marginStart="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/job_type"
-            android:id="@+id/textView2"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_alignParentStart="true" />
-
-        <Spinner
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:id="@+id/acsp_job_type"
-            android:layout_toEndOf="@id/textView2" />
+            android:paddingTop="16dp"
+            android:paddingBottom="2dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:id="@+id/til_name"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/white">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/acet_job_name"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:hint="@string/job_name"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_line1"
+            android:layout_below="@id/til_name"
+            android:background="@color/grey_1"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_job_type"
+            android:layout_below="@id/iv_line1"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/job_type"
+                android:id="@+id/textView2"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/grey_1"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:id="@+id/acsp_job_type"
+                android:layout_toEndOf="@id/textView2" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/iv_line2"
+            android:layout_below="@id/rl_job_type"
+            android:background="@color/grey_1"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+
+        <RelativeLayout
+            android:id="@+id/rl_job_fre"
+            android:layout_below="@id/iv_line2"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/job_frequency"
+                android:id="@+id/textView3"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_alignParentStart="true" />
+
+            <Spinner
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/grey_1"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:id="@+id/acsp_job_point"
+                android:layout_toEndOf="@id/textView3" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/rl_job_fre"
-        android:layout_below="@id/rl_job_type"
-        android:layout_marginTop="1dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
+        android:layout_below="@id/rl_main"
+        android:layout_marginTop="16dp"
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_marginStart="12dp"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/job_frequency"
-            android:id="@+id/textView3"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_alignParentStart="true" />
+            android:paddingTop="6dp"
+            android:paddingBottom="2dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:id="@+id/til_start_date"
+            android:background="@color/white">
 
-        <Spinner
-            android:layout_width="fill_parent"
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/acet_job_startdate"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:hint="@string/cnhint_camerajob_starttime"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_line"
+            android:layout_below="@id/til_start_date"
+            android:background="@color/grey_1"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:id="@+id/acsp_job_point"
-            android:layout_toEndOf="@id/textView3" />
+            android:paddingTop="6dp"
+            android:paddingBottom="2dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_below="@id/iv_line"
+            android:id="@+id/til_end_date"
+            android:background="@color/white">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/acet_job_enddate"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:hint="@string/cnhint_camerajob_endtime"/>
+        </android.support.design.widget.TextInputLayout>
     </RelativeLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_below="@id/rl_job_fre"
-        android:layout_marginTop="16dp"
-        android:id="@+id/til_start_date"
-        android:background="@color/white">
-
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/acet_job_startdate"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:hint="@string/cnhint_camerajob_starttime"/>
-    </android.support.design.widget.TextInputLayout>
-
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_below="@id/til_start_date"
-        android:layout_marginTop="1dp"
-        android:id="@+id/til_end_date"
-        android:background="@color/white">
-
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/acet_job_enddate"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:hint="@string/cnhint_camerajob_endtime"/>
-    </android.support.design.widget.TextInputLayout>
 </RelativeLayout>

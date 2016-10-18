@@ -71,6 +71,8 @@
 
     <RelativeLayout
         android:id="@+id/rl_other"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         android:layout_below="@id/rl_dpi"
         android:layout_marginTop="1dp"
         android:background="@color/white"
@@ -83,7 +85,6 @@
             android:text="@string/cn_autofocus"
             android:id="@+id/acsw_cs_autofocus"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="128dp"
             android:textSize="22sp" />
@@ -94,8 +95,8 @@
             android:text="@string/cn_autoflash"
             android:id="@+id/acsw_cs_autoflash"
             android:layout_below="@+id/acsw_cs_autofocus"
+            android:layout_marginTop="8dp"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="128dp"
             android:textSize="22sp"/>
@@ -103,6 +104,8 @@
 
     <RelativeLayout
         android:id="@+id/rl_preview"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         android:layout_below="@id/rl_other"
         android:layout_marginTop="1dp"
         android:background="@color/white"

@@ -43,7 +43,7 @@ public class GlobalContext {
         return getInstance().mJobProcessor;
     }
 
-    private static DBManager GetDBManager() {
+    public static DBManager GetDBManager() {
         return getInstance().mDBManager;
     }
 
