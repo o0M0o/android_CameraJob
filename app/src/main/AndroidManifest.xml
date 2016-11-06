@@ -16,7 +16,7 @@
         android:name=".base.utility.ContextUtil"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_camera"
+        android:icon="@drawable/ic_camera_lable"
         android:label="@string/cn_app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -27,7 +27,8 @@
         <activity
             android:name=".ui.test.ActivityTest"
             android:exported="true" />
-        <activity android:name=".ui.acinterface.ACJob" />
+        <activity android:name=".ui.acinterface.ACJob"
+            android:label="@string/job_create"/>
 
         <service
             android:name=".jobservice.CameraJobService"
@@ -53,7 +54,7 @@
         <activity
             android:name=".ui.acutility.ACCameraPreview"
             android:exported="true" />
-        <activity android:name=".ui.acutility.ACSetting"></activity>
+        <activity android:name=".ui.acutility.ACSetting" />
     </application>
 
 </manifest>

@@ -40,4 +40,7 @@
     <string name="setting_directory">目录设置</string>
     <string name="setting_version">检查版本</string>
     <string name="cn_preview">预览</string>
+
+    <string name="job_create">新建任务</string>
+    <string name="job_edit">编辑任务</string>
 </resources>

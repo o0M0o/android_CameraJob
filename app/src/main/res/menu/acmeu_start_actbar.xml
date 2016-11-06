@@ -4,6 +4,7 @@
     <item
         android:orderInCategory="9000"
         android:id="@+id/meuitem_camerajob_add"
+        android:icon="@drawable/ic_add"
         app:showAsAction="ifRoom|withText"
         android:title="@string/cn_camerajob_add"/>
 
