@@ -9,11 +9,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
-import android.support.design.BuildConfig;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
 
+import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
@@ -301,7 +301,7 @@ public class ContextUtil extends Application    {
      * @param bThrow    若true则抛出异常
      */
     public static void throwExIf(boolean bThrow) throws AssertionError {
-        if(BuildConfig.DEBUG && bThrow)     {
+        if(BuildConfig.ThrowDebugException && bThrow)     {
             throw new AssertionError("测试版本出现异常");
         }
     }

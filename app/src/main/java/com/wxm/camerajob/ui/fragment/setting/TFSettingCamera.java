@@ -21,9 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 
@@ -67,8 +67,6 @@ public class TFSettingCamera extends TFSettingBase {
     private CameraParam         mCPBack;
     private CameraParam         mCPFront;
 
-    private Button mBTPreview;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -90,12 +88,11 @@ public class TFSettingCamera extends TFSettingBase {
             mCPBack = new CameraParam(null);
             mCPFront = new CameraParam(null);
 
-            mRBBackCamera = UtilFun.cast(view.findViewById(R.id.acrb_cs_backcamera));
-            mRBFrontCamera = UtilFun.cast(view.findViewById(R.id.acrb_cs_frontcamera));
+            mRBBackCamera = UtilFun.cast_t(view.findViewById(R.id.acrb_cs_backcamera));
+            mRBFrontCamera = UtilFun.cast_t(view.findViewById(R.id.acrb_cs_frontcamera));
 
-            mSWAutoFocus = UtilFun.cast(view.findViewById(R.id.acsw_cs_autofocus));
-            mSWAutoFlash = UtilFun.cast(view.findViewById(R.id.acsw_cs_autoflash));
-            ContextUtil.throwExIf(null == mSWAutoFlash || null == mSWAutoFocus);
+            mSWAutoFocus = UtilFun.cast_t(view.findViewById(R.id.acsw_cs_autofocus));
+            mSWAutoFlash = UtilFun.cast_t(view.findViewById(R.id.acsw_cs_autoflash));
             mSWAutoFlash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -110,8 +107,7 @@ public class TFSettingCamera extends TFSettingBase {
                 }
             });
 
-            mSPPhotoSize = UtilFun.cast(view.findViewById(R.id.acsp_cs_dpi));
-            ContextUtil.throwExIf(null == mAAPhotoSize);
+            mSPPhotoSize = UtilFun.cast_t(view.findViewById(R.id.acsp_cs_dpi));
             mAAPhotoSize = new ArrayAdapter<>(getContext(),
                                 R.layout.listitem_photosize, R.id.ItemPhotoSize);
             mSPPhotoSize.setAdapter(mAAPhotoSize);
@@ -153,8 +149,8 @@ public class TFSettingCamera extends TFSettingBase {
             });
 
             // for camera preview
-            mBTPreview = UtilFun.cast(view.findViewById(R.id.bt_preview));
-            mBTPreview.setOnClickListener(new View.OnClickListener() {
+            RelativeLayout rl = UtilFun.cast_t(view.findViewById(R.id.rl_switch));
+            rl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(0 < GlobalContext.GetDBManager().mCameraJobHelper.GetActiveJobCount()) {

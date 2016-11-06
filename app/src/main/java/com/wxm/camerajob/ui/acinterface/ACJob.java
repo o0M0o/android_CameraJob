@@ -22,12 +22,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
@@ -40,21 +44,34 @@ import cn.wxm.andriodutillib.util.UtilFun;
 
 public class ACJob
         extends AppCompatActivity
-        implements View.OnClickListener, View.OnTouchListener {
+        implements  View.OnTouchListener {
     private final static String TAG = "ACJob";
     private final static String JOB_ENDTIME     = "Endtime";
     private final static String JOB_STARTTIME   = "Starttime";
 
-//    private Button              mBtSave;
-//    private Button              mBtGiveup;
     private EditText            mEtJobName;
     private EditText            mEtJobEndDate;
     private EditText            mEtJobStartDate;
+    private TextView            mTVCameraFace;
+    private TextView            mTVCameraDpi;
+    private TextView            mTVCameraFlash;
+    private TextView            mTVCameraFocus;
 
     private ArrayAdapter<CharSequence> mAPJobType;
     private ArrayAdapter<CharSequence>  mAPJobPoint;
     private Spinner                     mSPJobType;
     private Spinner                     mSPJobPoint;
+
+    private IPreferenceChangeNotice  mIPCNCamera = new IPreferenceChangeNotice() {
+        @Override
+        public void onPreferenceChanged(String PreferenceName) {
+            if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(PreferenceName))  {
+                load_camera_setting();
+            }
+        }
+    };
+
+
 
 
     @Override
@@ -82,17 +99,21 @@ public class ACJob
             Dialog dialog = builder.create();
             dialog.show();
         }
+
+        PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
+    }
+
+
+    @Override
+    protected void onDestroy()  {
+        PreferencesUtil.getInstance().removeChangeNotice(mIPCNCamera);
     }
 
     private void initActivity() {
         // init
-//        mBtSave = (Button)findViewById(R.id.acbt_job_save);
-//        mBtGiveup = (Button)findViewById(R.id.acbt_job_giveup);
         mEtJobName = (EditText)findViewById(R.id.acet_job_name);
         mEtJobEndDate = (EditText)findViewById(R.id.acet_job_enddate);
         mEtJobStartDate = (EditText)findViewById(R.id.acet_job_startdate);
-//        mBtSave.setOnClickListener(this);
-//        mBtGiveup.setOnClickListener(this);
 
         // 任务默认开始时间是“当前时间"
         // 任务默认结束时间是“一周”
@@ -169,6 +190,36 @@ public class ACJob
 
             }
         });
+
+        // for camera setting
+        mTVCameraFace = UtilFun.cast_t(findViewById(R.id.tv_camera_face));
+        mTVCameraDpi = UtilFun.cast_t(findViewById(R.id.tv_camera_dpi));
+        mTVCameraFlash = UtilFun.cast_t(findViewById(R.id.tv_camera_flash));
+        mTVCameraFocus = UtilFun.cast_t(findViewById(R.id.tv_camera_focus));
+
+        final Activity  ac = this;
+        ImageView iv = UtilFun.cast_t(findViewById(R.id.iv_setting));
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent data = new Intent(ac, ACCameraSetting.class);
+                ac.startActivityForResult(data, 1);
+            }
+        });
+
+        load_camera_setting();
+    }
+
+    private void load_camera_setting() {
+        CameraParam cp = PreferencesUtil.loadCameraParam();
+        mTVCameraFace.setText(getString(CameraParam.LENS_FACING_BACK == cp.mFace ?
+                                    R.string.cn_backcamera : R.string.cn_frontcamera));
+
+        mTVCameraDpi.setText(cp.mPhotoSize.toString());
+        mTVCameraFlash.setText(getString(cp.mAutoFlash ?
+                                    R.string.cn_autoflash : R.string.cn_flash_no));
+        mTVCameraFocus.setText(getString(cp.mAutoFocus?
+                                    R.string.cn_autofocus : R.string.cn_focus_no));
     }
 
 
@@ -180,24 +231,6 @@ public class ACJob
         return true;
     }
 
-
-    @Override
-    public void onClick(View v)    {
-        /*
-        int vid = v.getId();
-        switch (vid)    {
-            case R.id.acbt_job_save :
-                if(do_save())
-                    finish();
-                break;
-
-            case R.id.acbt_job_giveup:
-                do_giveup();
-                finish();
-                break;
-        }
-        */
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

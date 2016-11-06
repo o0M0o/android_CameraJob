@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="job_type">
-        <item>每分钟</item>
-        <item>每小时</item>
-        <item>每天</item>
+        <item>每分钟循环</item>
+        <item>每小时循环</item>
+        <item>每天循环</item>
     </string-array>
     <string-array name="minutely_invoke">
         <item>每10秒</item>

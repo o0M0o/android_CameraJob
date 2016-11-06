@@ -9,9 +9,9 @@ public class GlobalDef {
     public final static String STR_LOAD_CAMERASETTING   = "load_camerasetting";
     public final static String STR_LOAD_PHOTODIR        = "load_photodir";
 
-    public final static String CNSTR_JOBTYPE_MINUTELY  = "每分钟";
-    public final static String CNSTR_JOBTYPE_HOURLY    = "每小时";
-    public final static String CNSTR_JOBTYPE_DAILY     = "每天";
+    public final static String CNSTR_JOBTYPE_MINUTELY  = "每分钟循环";
+    public final static String CNSTR_JOBTYPE_HOURLY    = "每小时循环";
+    public final static String CNSTR_JOBTYPE_DAILY     = "每天循环";
 
     public final static int MSGWHAT_JOB_ADD                     = 1000;
     public final static int MSGWHAT_JOB_ADD_GLOBAL              = 1001;

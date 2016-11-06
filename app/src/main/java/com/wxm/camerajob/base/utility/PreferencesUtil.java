@@ -2,10 +2,15 @@ package com.wxm.camerajob.base.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.hardware.Camera;
 import android.hardware.camera2.CameraCharacteristics;
+import android.os.Build;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
+
+import java.util.LinkedList;
 
 import cn.wxm.andriodutillib.type.MySize;
 import cn.wxm.andriodutillib.util.UtilFun;
@@ -20,8 +25,36 @@ public class PreferencesUtil {
     private static final String CAMERA_SET_FLAG_ISSET = "camera_isset";
     private static final String CAMERA_SET_FLAG_NOSET = "camera_noset";
 
-    private static final String CAMERA_USEOLD = "camera_useold";
-    private static final String CAMERA_USEOLD_FLAG = "camera_useold_flag";
+    private LinkedList<IPreferenceChangeNotice> mLLNotices;
+
+    private static PreferencesUtil instance = new PreferencesUtil();
+    public static PreferencesUtil getInstance() {
+        return instance;
+    }
+
+    private PreferencesUtil()   {
+        mLLNotices = new LinkedList<>();
+    }
+
+
+    /**
+     * 添加数据变化监听
+     * @param inc  新监听器
+     */
+    public void addChangeNotice(IPreferenceChangeNotice inc)  {
+        if(!mLLNotices.contains(inc))
+            mLLNotices.add(inc);
+    }
+
+    /**
+     * 移除数据变化监听
+     * @param inc  待移除监听器
+     */
+    public void removeChangeNotice(IPreferenceChangeNotice inc)   {
+        mLLNotices.remove(inc);
+    }
+
+
 
     /**
      * 加载相机参数配置
@@ -35,8 +68,13 @@ public class PreferencesUtil {
                 GlobalDef.STR_CAMERAPROPERTIES_NAME,
                 Context.MODE_PRIVATE);
 
-        cp.mFace = param.getInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
-                CameraCharacteristics.LENS_FACING_BACK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cp.mFace = param.getInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
+                    CameraCharacteristics.LENS_FACING_BACK);
+        } else {
+            cp.mFace = param.getInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
+                    Camera.CameraInfo.CAMERA_FACING_BACK);
+        }
 
         String sz_str = param.getString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
                                 new MySize(1280, 960).toString());
@@ -68,6 +106,10 @@ public class PreferencesUtil {
                     cp.mAutoFlash).apply();
 
         setCameraSetFlag(true);
+
+        for(IPreferenceChangeNotice ipcn : getInstance().mLLNotices)    {
+            ipcn.onPreferenceChanged(GlobalDef.STR_CAMERAPROPERTIES_NAME);
+        }
     }
 
 
@@ -93,7 +135,7 @@ public class PreferencesUtil {
      * 设置相机“设置标志"
      * @param bisset 相机设置过否标志
      */
-    public static void setCameraSetFlag(boolean bisset) {
+    private static void setCameraSetFlag(boolean bisset) {
         Context ct = ContextUtil.getInstance();
         SharedPreferences param = ct.getSharedPreferences(
                 CAMERA_SET,
@@ -102,19 +144,4 @@ public class PreferencesUtil {
         param.edit().putString(CAMERA_SET_FLAG,
                 bisset ? CAMERA_SET_FLAG_ISSET : CAMERA_SET_FLAG_NOSET).apply();
     }
-
-
-    /**
-     * 返回是否使用旧相机驱动
-     * @return  如果返回{@code true}则强制使用旧相机驱动
-    public static boolean checkUseOldCamera()    {
-        Context ct = ContextUtil.getInstance();
-        SharedPreferences param = ct.getSharedPreferences(
-                CAMERA_USEOLD,
-                Context.MODE_PRIVATE);
-
-        String fg = param.getString(CAMERA_USEOLD_FLAG, String.valueOf(false));
-        return fg.equals(String.valueOf(true));
-    }
-     */
 }

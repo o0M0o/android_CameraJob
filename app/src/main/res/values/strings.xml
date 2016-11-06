@@ -32,7 +32,9 @@
     <string name="cn_backcamera">后摄像头</string>
     <string name="cn_cameradpi">图像大小</string>
     <string name="cn_autofocus">自动对焦</string>
+    <string name="cn_focus_no">不自动对焦</string>
     <string name="cn_autoflash">自动闪光灯</string>
+    <string name="cn_flash_no">不使用闪光灯</string>
     <string name="camera_preview">相机预览</string>
     <string name="setting_camera">相机设定</string>
     <string name="setting_directory">目录设置</string>

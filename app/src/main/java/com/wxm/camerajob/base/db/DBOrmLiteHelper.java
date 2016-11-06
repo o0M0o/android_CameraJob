@@ -10,8 +10,11 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
+import com.wxm.camerajob.base.utility.FileLogger;
 
 import java.sql.SQLException;
+
+import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
  * APP的sqlite helper
@@ -20,7 +23,7 @@ import java.sql.SQLException;
 public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
     private static final String     TAG                 = "DBOrmLiteHelper";
     private static final String     DATABASE_NAME       = "AppLocal.db";
-    private static final int        DATABASE_VERSION    = 5;
+    private static final int        DATABASE_VERSION    = 6;
 
 
     private RuntimeExceptionDao<CameraJob, Integer> mRDAOCameraJob = null;
@@ -40,8 +43,24 @@ public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database,
                           ConnectionSource connectionSource, int oldVersion, int newVersion) {
-        if(5 == newVersion) {
-            CreateAndInitTable();
+        switch (newVersion) {
+            case 5 :    {
+                CreateAndInitTable();
+            }
+            break;
+
+            case 6 :    {
+                try {
+                    TableUtils.dropTable(connectionSource, CameraJob.class, false);
+                    TableUtils.dropTable(connectionSource, CameraJobStatus.class, false);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    FileLogger.getLogger().severe(
+                            "dropTable failure, ex = " + UtilFun.ExceptionToString(e));
+                }
+                CreateAndInitTable();
+            }
+            break;
         }
     }
 
@@ -52,7 +71,7 @@ public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
         mRDAOCameraJobStatus = null;
     }
 
-    public RuntimeExceptionDao<CameraJob, Integer> getCamerJobREDao()   {
+    RuntimeExceptionDao<CameraJob, Integer> getCamerJobREDao()   {
         if(!isOpen())
             return null;
 
@@ -62,7 +81,7 @@ public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
         return mRDAOCameraJob;
     }
 
-    public RuntimeExceptionDao<CameraJobStatus, Integer> getCamerJobStatusREDao()   {
+    RuntimeExceptionDao<CameraJobStatus, Integer> getCamerJobStatusREDao()   {
         if(!isOpen())
             return null;
 
