@@ -124,10 +124,7 @@ public class PreferencesUtil {
                 Context.MODE_PRIVATE);
 
         String fg = param.getString(CAMERA_SET_FLAG, CAMERA_SET_FLAG_NOSET);
-        if(fg.equals(CAMERA_SET_FLAG_ISSET))
-            return true;
-        else
-            return false;
+        return fg.equals(CAMERA_SET_FLAG_ISSET);
     }
 
 

@@ -67,7 +67,6 @@ public class ACCameraSetting extends AppCompatActivity   {
                             create();
                     alertDialog.show();
                 } else {
-                    mTFCamera.updateSetting();
                     finish();
                 }
             }

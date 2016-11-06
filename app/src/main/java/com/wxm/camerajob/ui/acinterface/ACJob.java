@@ -22,7 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -35,6 +35,7 @@ import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
+import com.wxm.camerajob.ui.acutility.ACCameraPreview;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 
 import java.sql.Timestamp;
@@ -72,15 +73,13 @@ public class ACJob
     };
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_job);
         ContextUtil.getInstance().addActivity(this);
-        initActivity();
 
+        // check camera setting
         final ACJob home = this;
         if(!PreferencesUtil.checkCameraIsSet())     {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -89,9 +88,6 @@ public class ACJob
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent data = new Intent(home, ACCameraSetting.class);
-                    data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
-                            PreferencesUtil.loadCameraParam());
-
                     startActivityForResult(data, 1);
                 }
             });
@@ -100,12 +96,14 @@ public class ACJob
             dialog.show();
         }
 
+        initActivity();
         PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
     }
 
 
     @Override
     protected void onDestroy()  {
+        super.onDestroy();
         PreferencesUtil.getInstance().removeChangeNotice(mIPCNCamera);
     }
 
@@ -198,12 +196,22 @@ public class ACJob
         mTVCameraFocus = UtilFun.cast_t(findViewById(R.id.tv_camera_focus));
 
         final Activity  ac = this;
-        ImageView iv = UtilFun.cast_t(findViewById(R.id.iv_setting));
-        iv.setOnClickListener(new View.OnClickListener() {
+        RelativeLayout rl = UtilFun.cast_t(findViewById(R.id.rl_setting));
+        rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent data = new Intent(ac, ACCameraSetting.class);
                 ac.startActivityForResult(data, 1);
+            }
+        });
+
+        rl = UtilFun.cast_t(findViewById(R.id.rl_preview));
+        rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(ac, ACCameraPreview.class);
+                it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, PreferencesUtil.loadCameraParam());
+                ac.startActivityForResult(it, 1);
             }
         });
 
@@ -245,25 +253,11 @@ public class ACJob
             }
             break;
 
+            /*
             case GlobalDef.INTRET_CS_GIVEUP :   {
-                final ACJob home = this;
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("相机未设置，需要先设置相机");
-                builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent data = new Intent(home, ACCameraSetting.class);
-                        data.putExtra(GlobalDef.STR_LOAD_CAMERASETTING,
-                                PreferencesUtil.loadCameraParam());
-
-                        startActivityForResult(data, 1);
-                    }
-                });
-
-                Dialog dialog = builder.create();
-                dialog.show();
             }
+            break;
+            */
 
             default:    {
                 Log.i(TAG, "不处理的 resultCode = " + resultCode);
