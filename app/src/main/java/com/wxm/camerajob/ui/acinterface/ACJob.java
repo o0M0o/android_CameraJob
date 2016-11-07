@@ -1,9 +1,9 @@
 package com.wxm.camerajob.ui.acinterface;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -51,7 +51,7 @@ public class ACJob
         */
 
         if(null == savedInstanceState)  {
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fl_job_creater, mFRGJobCreater);
             transaction.commit();
         }

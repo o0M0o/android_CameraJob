@@ -2,12 +2,13 @@ package com.wxm.camerajob.ui.fragment.utility;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -26,12 +29,15 @@ import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
+import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraPreview;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 
 import java.sql.Timestamp;
 
+import cn.wxm.andriodutillib.Dialog.DlgDatePicker;
+import cn.wxm.andriodutillib.Dialog.DlgOKOrNOBase;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
@@ -140,19 +146,6 @@ public class FrgJobCreate extends Fragment {
             return null;
         }
 
-        /*
-        // 任务默认开始时间是“当前时间"
-        // 任务默认结束时间是“一周”
-        if(Starttime.isEmpty()) {
-            Starttime = UtilFun.MilliSecsToString(System.currentTimeMillis());
-        }
-
-        if(Endtime.isEmpty())   {
-            Endtime = UtilFun.MilliSecsToString(System.currentTimeMillis()
-                                + 1000 * 3600 * 24 * 7);
-        }
-        */
-
         Timestamp st = UtilFun.StringToTimestamp(job_starttime);
         Timestamp et = UtilFun.StringToTimestamp(job_endtime);
         if(0 <= st.compareTo(et))   {
@@ -178,11 +171,18 @@ public class FrgJobCreate extends Fragment {
     }
 
     /// BEGIN PRIVATE
+
+    /**
+     * 初始化UI
+     */
     private void init_ui() {
         init_job_setting();
         init_camera_setting();
     }
 
+    /**
+     * 初始化任务设置
+     */
     private void init_job_setting() {
         mETJobName = UtilFun.cast_t(mVWSelf.findViewById(R.id.acet_job_name));
         mTVJobStartDate = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_date_start));
@@ -191,9 +191,9 @@ public class FrgJobCreate extends Fragment {
         // 任务默认开始时间是“当前时间"
         // 任务默认结束时间是“一周”
         mTVJobStartDate.setText(UtilFun.MilliSecsToString(
-                System.currentTimeMillis()).substring(0, 17));
+                System.currentTimeMillis()).substring(0, 16));
         mTVJobEndDate.setText(UtilFun.MilliSecsToString(System.currentTimeMillis()
-                + 1000 * 3600 * 24 * 7).substring(0, 17));
+                + 1000 * 3600 * 24 * 7).substring(0, 16));
 
         mSPJobType = UtilFun.cast_t(mVWSelf.findViewById(R.id.acsp_job_type));
         mSPJobPoint = UtilFun.cast_t(mVWSelf.findViewById(R.id.acsp_job_point));
@@ -254,8 +254,65 @@ public class FrgJobCreate extends Fragment {
 
             }
         });
+
+        // for start and end time
+        View.OnClickListener cl = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int vid = v.getId();
+                if(R.id.iv_clock_start == vid || R.id.iv_clock_end == vid)  {
+                    final TextView hot_tv = R.id.iv_clock_start == vid ? mTVJobStartDate : mTVJobEndDate;
+
+                    DlgDatePicker dp = new DlgDatePicker();
+                    dp.setInitDate(hot_tv.getText().toString() + ":00");
+                    dp.setDialogListener(new DlgOKOrNOBase.DialogResultListener() {
+                        @Override
+                        public void onDialogPositiveResult(DialogFragment dialog) {
+                            DlgDatePicker cur_dp = UtilFun.cast_t(dialog);
+                            String cur_date = cur_dp.getCurDate();
+
+                            if(!UtilFun.StringIsNullOrEmpty(cur_date))
+                                hot_tv.setText(cur_date.substring(0, 16));
+
+                            hot_tv.requestFocus();
+                        }
+
+                        @Override
+                        public void onDialogNegativeResult(DialogFragment dialog) {
+                            hot_tv.requestFocus();
+                        }
+                    });
+
+                    dp.show(getFragmentManager(),
+                            R.id.iv_clock_start == vid ? "选择任务启动时间" : "选择任务结束时间");
+                }
+            }
+        };
+
+        ImageView iv = UtilFun.cast_t(mVWSelf.findViewById(R.id.iv_clock_start));
+        iv.setOnClickListener(cl);
+
+        iv = UtilFun.cast_t(mVWSelf.findViewById(R.id.iv_clock_end));
+        iv.setOnClickListener(cl);
+
+        // for send pic
+        final Switch sw = UtilFun.cast_t(mVWSelf.findViewById(R.id.sw_send_pic));
+        final RelativeLayout pic_rl = UtilFun.cast_t(mVWSelf.findViewById(R.id.rl_detail));
+        final RelativeLayout email_rl = UtilFun.cast_t(mVWSelf.findViewById(R.id.rl_email));
+        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ContextUtil.setViewGroupVisible(pic_rl, isChecked ? View.VISIBLE : View.INVISIBLE);
+            }
+        });
+
+        sw.setChecked(false);
+        //ContextUtil.setViewGroupVisible(pic_rl, View.INVISIBLE);
     }
 
+    /**
+     * 初始化摄像头设置
+     */
     private void init_camera_setting() {
         // for camera setting
         mTVCameraFace = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_camera_face));
@@ -286,6 +343,9 @@ public class FrgJobCreate extends Fragment {
         load_camera_setting();
     }
 
+    /**
+     * 加载配置信息中的摄像头设置并显示
+     */
     private void load_camera_setting() {
         CameraParam cp = PreferencesUtil.loadCameraParam();
         mTVCameraFace.setText(getString(CameraParam.LENS_FACING_BACK == cp.mFace ?
