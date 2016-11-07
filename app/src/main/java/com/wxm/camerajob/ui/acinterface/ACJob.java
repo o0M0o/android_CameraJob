@@ -1,76 +1,27 @@
 package com.wxm.camerajob.ui.acinterface;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
-import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
-import com.wxm.camerajob.ui.acutility.ACCameraPreview;
-import com.wxm.camerajob.ui.acutility.ACCameraSetting;
-
-import java.sql.Timestamp;
-import java.util.Calendar;
-
-import cn.wxm.andriodutillib.util.UtilFun;
+import com.wxm.camerajob.ui.fragment.utility.FrgJobCreate;
 
 public class ACJob
-        extends AppCompatActivity
-        implements  View.OnTouchListener {
+        extends AppCompatActivity   {
     private final static String TAG = "ACJob";
-    private final static String JOB_ENDTIME     = "Endtime";
-    private final static String JOB_STARTTIME   = "Starttime";
-
-    private EditText            mEtJobName;
-    private EditText            mEtJobEndDate;
-    private EditText            mEtJobStartDate;
-    private TextView            mTVCameraFace;
-    private TextView            mTVCameraDpi;
-    private TextView            mTVCameraFlash;
-    private TextView            mTVCameraFocus;
-
-    private ArrayAdapter<CharSequence> mAPJobType;
-    private ArrayAdapter<CharSequence>  mAPJobPoint;
-    private Spinner                     mSPJobType;
-    private Spinner                     mSPJobPoint;
-
-    private IPreferenceChangeNotice  mIPCNCamera = new IPreferenceChangeNotice() {
-        @Override
-        public void onPreferenceChanged(String PreferenceName) {
-            if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(PreferenceName))  {
-                load_camera_setting();
-            }
-        }
-    };
+    private final FrgJobCreate mFRGJobCreater = FrgJobCreate.newInstance();
 
 
     @Override
@@ -79,9 +30,11 @@ public class ACJob
         setContentView(R.layout.ac_job);
         ContextUtil.getInstance().addActivity(this);
 
+        /*
         // check camera setting
+        // 必须设置相机后才可以继续后面的操作
         final ACJob home = this;
-        if(!PreferencesUtil.checkCameraIsSet())     {
+        while(!PreferencesUtil.checkCameraIsSet())     {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("相机未设置，需要先设置相机");
             builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
@@ -95,139 +48,13 @@ public class ACJob
             Dialog dialog = builder.create();
             dialog.show();
         }
+        */
 
-        initActivity();
-        PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
-    }
-
-
-    @Override
-    protected void onDestroy()  {
-        super.onDestroy();
-        PreferencesUtil.getInstance().removeChangeNotice(mIPCNCamera);
-    }
-
-    private void initActivity() {
-        // init
-        mEtJobName = (EditText)findViewById(R.id.acet_job_name);
-        mEtJobEndDate = (EditText)findViewById(R.id.acet_job_enddate);
-        mEtJobStartDate = (EditText)findViewById(R.id.acet_job_startdate);
-
-        // 任务默认开始时间是“当前时间"
-        // 任务默认结束时间是“一周”
-        mEtJobStartDate.setText(UtilFun.MilliSecsToString(System.currentTimeMillis()));
-        mEtJobEndDate.setText(UtilFun.MilliSecsToString(System.currentTimeMillis()
-                                    + 1000 * 3600 * 24 * 7));
-
-        mEtJobEndDate.setOnTouchListener(this);
-        mEtJobStartDate.setOnTouchListener(this);
-
-        mSPJobType = (Spinner)findViewById(R.id.acsp_job_type);
-        mSPJobPoint = (Spinner)findViewById(R.id.acsp_job_point);
-
-        mAPJobType = ArrayAdapter.createFromResource(this,
-                R.array.job_type, R.layout.spinner_jobtype);
-        mAPJobType.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSPJobType.setAdapter(mAPJobType);
-        mSPJobType.setSelection(0);    // '每分钟'
-
-        mAPJobPoint = ArrayAdapter.createFromResource(this,
-                R.array.minutely_invoke, R.layout.spinner_jobpoint);
-        mAPJobPoint.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSPJobPoint.setAdapter(mAPJobPoint);
-
-        mAPJobPoint = ArrayAdapter.createFromResource(this,
-                R.array.hourly_invoke, R.layout.spinner_jobpoint);
-        mAPJobPoint.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSPJobPoint.setAdapter(mAPJobPoint);
-
-        final Activity home = this;
-        mSPJobType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selitem = mAPJobType.getItem(position).toString();
-
-                try {
-                    boolean modify = false;
-                    switch (selitem) {
-                        case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                            mAPJobPoint = ArrayAdapter.createFromResource(home,
-                                    R.array.minutely_invoke, R.layout.spinner_jobpoint);
-                            modify = true;
-                        }
-                        break;
-
-                        case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                            mAPJobPoint = ArrayAdapter.createFromResource(home,
-                                    R.array.hourly_invoke, R.layout.spinner_jobpoint);
-                            modify = true;
-                        }
-                        break;
-
-                        case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                            mAPJobPoint = ArrayAdapter.createFromResource(home,
-                                    R.array.daily_invoke, R.layout.spinner_jobpoint);
-                            modify = true;
-                        }
-                        break;
-                    }
-
-                    if(modify) {
-                        mSPJobPoint.setAdapter(mAPJobPoint);
-                        mAPJobPoint.notifyDataSetChanged();
-                    }
-                }
-                catch (Resources.NotFoundException e)   {
-                    Log.e(TAG, "Not find string array for '" + selitem + "'");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        // for camera setting
-        mTVCameraFace = UtilFun.cast_t(findViewById(R.id.tv_camera_face));
-        mTVCameraDpi = UtilFun.cast_t(findViewById(R.id.tv_camera_dpi));
-        mTVCameraFlash = UtilFun.cast_t(findViewById(R.id.tv_camera_flash));
-        mTVCameraFocus = UtilFun.cast_t(findViewById(R.id.tv_camera_focus));
-
-        final Activity  ac = this;
-        RelativeLayout rl = UtilFun.cast_t(findViewById(R.id.rl_setting));
-        rl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent data = new Intent(ac, ACCameraSetting.class);
-                ac.startActivityForResult(data, 1);
-            }
-        });
-
-        rl = UtilFun.cast_t(findViewById(R.id.rl_preview));
-        rl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent it = new Intent(ac, ACCameraPreview.class);
-                it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, PreferencesUtil.loadCameraParam());
-                ac.startActivityForResult(it, 1);
-            }
-        });
-
-        load_camera_setting();
-    }
-
-    private void load_camera_setting() {
-        CameraParam cp = PreferencesUtil.loadCameraParam();
-        mTVCameraFace.setText(getString(CameraParam.LENS_FACING_BACK == cp.mFace ?
-                                    R.string.cn_backcamera : R.string.cn_frontcamera));
-
-        mTVCameraDpi.setText(cp.mPhotoSize.toString());
-        mTVCameraFlash.setText(getString(cp.mAutoFlash ?
-                                    R.string.cn_autoflash : R.string.cn_flash_no));
-        mTVCameraFocus.setText(getString(cp.mAutoFocus?
-                                    R.string.cn_autofocus : R.string.cn_focus_no));
+        if(null == savedInstanceState)  {
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fl_job_creater, mFRGJobCreater);
+            transaction.commit();
+        }
     }
 
 
@@ -271,13 +98,19 @@ public class ACJob
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.meuitem_camerajob_accept: {
-                if(do_save())
+                CameraJob cj = mFRGJobCreater.onAccept();
+                if(null != cj) {
+                    Intent data = new Intent();
+                    data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
+                    setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);
                     finish();
+                }
             }
             break;
 
             case R.id.meuitem_camerajob_giveup  : {
-                do_giveup();
+                Intent data = new Intent();
+                setResult(GlobalDef.INTRET_CAMERAJOB_GIVEUP, data);
                 finish();
             }
             break;
@@ -289,187 +122,6 @@ public class ACJob
 
         return true;
     }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN)    {
-            switch(v.getId())   {
-                case R.id.acet_job_enddate :    {
-                    onTouchDate(event, JOB_ENDTIME);
-                }
-                break;
-
-                case R.id.acet_job_startdate  :    {
-                    onTouchDate(event, JOB_STARTTIME);
-                }
-                break;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 生成日期选择dialog
-     * @param event     事件
-     * @param timetype  日期类型
-     */
-    private void onTouchDate(MotionEvent event, String timetype) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = View.inflate(this, R.layout.dlg_datetime, null);
-        final DatePicker datePicker = (DatePicker) view.findViewById(R.id.dldt_date);
-        final TimePicker timePicker = (TimePicker) view.findViewById(R.id.dldt_time);
-        builder.setView(view);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(System.currentTimeMillis());
-        datePicker.init(cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
-
-        final int inType = mEtJobEndDate.getInputType();
-        mEtJobEndDate.setInputType(InputType.TYPE_NULL);
-        mEtJobEndDate.onTouchEvent(event);
-        mEtJobEndDate.setInputType(inType);
-        mEtJobEndDate.setSelection(mEtJobEndDate.getText().length());
-
-        final int inType1 = mEtJobStartDate.getInputType();
-        mEtJobStartDate.setInputType(InputType.TYPE_NULL);
-        mEtJobStartDate.onTouchEvent(event);
-        mEtJobStartDate.setInputType(inType1);
-        mEtJobStartDate.setSelection(mEtJobStartDate.getText().length());
-
-        final String tt = timetype;
-        if(JOB_ENDTIME.equals(tt))
-            builder.setTitle("选择任务结束时间");
-        else
-            builder.setTitle("选择任务开始时间");
-
-        builder.setPositiveButton("确  定", new DialogInterface.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.M)
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                StringBuffer sb = new StringBuffer();
-                sb.append(
-                        String.format("%d-%02d-%02d %02d:%02d:00",
-                                datePicker.getYear(),
-                                datePicker.getMonth() + 1,
-                                datePicker.getDayOfMonth(),
-                                (Build.VERSION.SDK_INT >= 23 ?
-                                        timePicker.getHour() : timePicker.getCurrentHour()),
-                                (Build.VERSION.SDK_INT >= 23 ?
-                                        timePicker.getMinute() : timePicker.getCurrentMinute())));
-
-                if(JOB_ENDTIME.equals(tt)) {
-                    mEtJobEndDate.setText(sb);
-                    mEtJobEndDate.requestFocus();
-                }
-                else    {
-                    mEtJobStartDate.setText(sb);
-                    mEtJobStartDate.requestFocus();
-                }
-
-                dialog.cancel();
-            }
-        });
-
-        Dialog dialog = builder.create();
-        dialog.show();
-    }
-
-    /**
-     * 保存任务并返回前activity
-     * @return 如果成功返回true,否则返回false
-     */
-    private boolean do_save()  {
-        String job_name  = mEtJobName.getText().toString();
-        String job_type  = mSPJobType.getSelectedItem().toString();
-        String job_point = mSPJobPoint.getSelectedItem().toString();
-        String job_starttime = mEtJobStartDate.getText().toString();
-        String job_endtime = mEtJobEndDate.getText().toString();
-
-        if(job_name.isEmpty())  {
-            Log.i(TAG, "job name为空");
-            mEtJobName.requestFocus();
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("请输入任务名!").setTitle("警告");
-            AlertDialog dlg = builder.create();
-            dlg.show();
-            return false;
-        }
-
-        if(job_type.isEmpty())  {
-            Log.i(TAG, "job type为空");
-            mSPJobType.requestFocus();
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("请选择任务类型!").setTitle("警告");
-            AlertDialog dlg = builder.create();
-            dlg.show();
-            return false;
-        }
-
-        if(job_point.isEmpty())  {
-            Log.i(TAG, "job point为空");
-            mSPJobPoint.requestFocus();
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("请选择任务激活方式!").setTitle("警告");
-            AlertDialog dlg = builder.create();
-            dlg.show();
-            return false;
-        }
-
-        /*
-        // 任务默认开始时间是“当前时间"
-        // 任务默认结束时间是“一周”
-        if(Starttime.isEmpty()) {
-            Starttime = UtilFun.MilliSecsToString(System.currentTimeMillis());
-        }
-
-        if(Endtime.isEmpty())   {
-            Endtime = UtilFun.MilliSecsToString(System.currentTimeMillis()
-                                + 1000 * 3600 * 24 * 7);
-        }
-        */
-
-        Timestamp st = UtilFun.StringToTimestamp(job_starttime);
-        Timestamp et = UtilFun.StringToTimestamp(job_endtime);
-        if(0 <= st.compareTo(et))   {
-            String show = String.format("任务开始时间(%s)比结束时间(%s)晚", job_starttime, job_endtime);
-            Log.w(TAG, show);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(show).setTitle("警告");
-            AlertDialog dlg = builder.create();
-            dlg.show();
-            return false;
-        }
-
-        Intent data = new Intent();
-        CameraJob cj = new CameraJob();
-        cj.setName(job_name);
-        cj.setType(job_type);
-        cj.setPoint(job_point);
-        cj.setStarttime(st);
-        cj.setEndtime(et);
-        cj.getTs().setTime(System.currentTimeMillis());
-        cj.getStatus().setJob_status(GlobalDef.STR_CAMERAJOB_RUN);
-
-        data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
-        setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);
-        return true;
-    }
-
-    /**
-     * 放弃当前任务
-     */
-    private void do_giveup()  {
-        Intent data = new Intent();
-        setResult(GlobalDef.INTRET_CAMERAJOB_GIVEUP, data);
-    }
-
-
 }
 
 

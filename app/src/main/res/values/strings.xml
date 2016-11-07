@@ -19,8 +19,8 @@
     <string name="cn_unknown_photofile">未知照片</string>
 
     <string name="cnhint_camerajob_name">任务名称(英文/数字)</string>
-    <string name="cnhint_camerajob_starttime">任务开始时间</string>
-    <string name="cnhint_camerajob_endtime">任务结束时间</string>
+    <string name="hint_job_time_start">任务开始时间</string>
+    <string name="hint_job_time_finish">任务完成时间</string>
 
     <string name="contact_email">fly_in_wind@qq.com</string>
     <string name="contact_studio">oko studio</string>
@@ -43,4 +43,7 @@
 
     <string name="job_create">新建任务</string>
     <string name="job_edit">编辑任务</string>
+    <string name="hint_sender_email_address">发送邮箱地址</string>
+    <string name="hint_sender_email_usr_name">发送邮件用户名</string>
+    <string name="hint_use_email_send">开启邮件推送照片</string>
 </resources>

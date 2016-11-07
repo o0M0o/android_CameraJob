@@ -13,12 +13,12 @@ import android.view.MenuItem;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.ui.fragment.utility.CameraPreview;
+import com.wxm.camerajob.ui.fragment.utility.FrgCameraPreview;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ACCameraPreview extends AppCompatActivity {
     private final static String     TAG = "ACCameraPreview";
-    private final CameraPreview     mCameraFrag = CameraPreview.newInstance();
+    private final FrgCameraPreview mCameraFrag = FrgCameraPreview.newInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

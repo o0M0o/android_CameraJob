@@ -61,7 +61,7 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * Created by 123 on 2016/10/14.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class CameraPreview extends Fragment {
+public class FrgCameraPreview extends Fragment {
     private final static String     TAG = "ACCameraPreview";
     private static final String     FRAGMENT_DIALOG = "dialog";
 
@@ -97,13 +97,13 @@ public class CameraPreview extends Fragment {
 
     private CameraParam     mCPParam;
 
-    public static CameraPreview newInstance() {
-        return new CameraPreview();
+    public static FrgCameraPreview newInstance() {
+        return new FrgCameraPreview();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.frag_camera, null);
+        View v = inflater.inflate(R.layout.frg_camera, null);
 
         Intent it = getActivity().getIntent();
         mCPParam = it.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
