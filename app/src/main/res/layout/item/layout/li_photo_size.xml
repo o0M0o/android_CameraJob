@@ -6,8 +6,8 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:id="@+id/ItemPhotoSize"
-        android:textSize="20sp"
-        android:textColor="@color/abc_input_method_navigation_guard"
+        android:textSize="16sp"
+        android:textColor="@color/black"
         android:text="photosize">
     </TextView>
 

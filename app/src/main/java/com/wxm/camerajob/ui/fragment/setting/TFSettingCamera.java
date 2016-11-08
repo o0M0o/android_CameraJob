@@ -109,7 +109,7 @@ public class TFSettingCamera extends TFSettingBase {
 
             mSPPhotoSize = UtilFun.cast_t(view.findViewById(R.id.acsp_cs_dpi));
             mAAPhotoSize = new ArrayAdapter<>(getContext(),
-                                R.layout.listitem_photosize, R.id.ItemPhotoSize);
+                                R.layout.li_photo_size, R.id.ItemPhotoSize);
             mSPPhotoSize.setAdapter(mAAPhotoSize);
             mSPPhotoSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override

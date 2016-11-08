@@ -1,5 +1,6 @@
 package com.wxm.camerajob.ui.acutility;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -12,7 +13,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.wxm.camerajob.base.utility.UILImageLoader;
-import com.wxm.camerajob.ui.acinterface.ACNavStart;
 import com.wxm.camerajob.ui.listener.UILPauseOnScrollListener;
 
 import org.xutils.x;
@@ -34,7 +34,7 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
 public class ACJobGallery {
     private final String TAG = "ACJobGallery";
     private final int REQUEST_CODE_GALLERY = 1001;
-    private ACNavStart mAC;
+    private Activity mAC;
 
     private GalleryFinal.OnHanlderResultCallback mOnHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
         @Override
@@ -59,7 +59,7 @@ public class ACJobGallery {
      * @param ac        相关activity
      * @param photodir  相册路径
      */
-    public void OpenGallery(ACNavStart ac, String photodir)   {
+    public void OpenGallery(Activity ac, String photodir)   {
         mAC = ac;
 
         ThemeConfig themeConfig = null;

@@ -7,10 +7,12 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,8 +24,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ListView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
@@ -33,21 +33,15 @@ import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
-import com.wxm.camerajob.ui.acutility.ACJobGallery;
 import com.wxm.camerajob.ui.acutility.ACSetting;
-import com.wxm.camerajob.ui.helper.ACNavStartAdapter;
-import com.wxm.camerajob.ui.helper.ACNavStartMsgHandler;
+import com.wxm.camerajob.ui.fragment.utility.FrgJobShow;
 import com.wxm.camerajob.ui.test.ActivityTest;
 import com.wxm.camerajob.ui.test.ActivityTestSilentCamera;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import butterknife.ButterKnife;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 import static android.Manifest.permission.CAMERA;
@@ -57,37 +51,29 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class ACNavStart
         extends AppCompatActivity
-        implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+        implements  NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "ACNavStart";
-    public final static String ALIVE_JOB   = "alive";
-    public final static String DIED_JOB    = "died";
 
-    public final static String  STR_ITEM_TITLE      = "ITEM_TITLE";
-    public final static String  STR_ITEM_TYPE       = "ITEM_TYPE";
-    public final static String  STR_ITEM_TEXT       = "ITEM_TEXT";
-    public final static String  STR_ITEM_ID         = "ITEM_ID";
-    public final static String  STR_ITEM_STATUS     = "ITEM_STATUS";
-    public final static String  STR_ITEM_JOBNAME    = "ITEM_JOBNAME";
-    public final static String  STR_ITEM_PHOTOSIZE  = "ITEM_PHOTOSIZE";
+    private final FrgJobShow mFRGJobShow = FrgJobShow.newInstance();
 
-    private static final int REQUEST_ALL                    = 99;
-
-    private ACNavStartMsgHandler mSelfHandler;
-
-    private ListView                            mLVJobs;
-    private ACNavStartAdapter                   mLVAdapter;
-    private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
+    private static final int REQUEST_ALL  = 99;
+    private ACNavStartMsgHandler    mSelfHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_nav_start);
-        ButterKnife.bind(this);
-
         ContextUtil.getInstance().addActivity(this);
 
+        mSelfHandler = new ACNavStartMsgHandler(this);
         if(mayRequestPermission()) {
             initActivity();
+        }
+
+        if(null == savedInstanceState)  {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fl_job_show, mFRGJobShow);
+            transaction.commit();
         }
     }
 
@@ -113,46 +99,13 @@ public class ACNavStart
         catch (NullPointerException e) {
             FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
         }
-
-        // init list view
-        mLVJobs = (ListView) findViewById(R.id.aclv_start_jobs);
-        mLVAdapter= new ACNavStartAdapter(this,
-                ContextUtil.getInstance(),
-                mLVList,
-                new String[]{STR_ITEM_TITLE, STR_ITEM_TEXT},
-                new int[]{R.id.ItemTitle, R.id.ItemText});
-
-        mLVJobs.setAdapter(mLVAdapter);
-        mSelfHandler = new ACNavStartMsgHandler(this);
-
-        // set timer
-        Timer mTimer = new Timer();
-        TimerTask mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                updateJobs();
-            }
-        };
-
-        mTimer.schedule(mTimerTask, 5000, 5000);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig);
-        mLVAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * 更新数据
-     * @param lsdata 新数据
-     */
-    public void updateData(List<HashMap<String, String>> lsdata) {
-        mLVList.clear();
-        mLVList.addAll(lsdata);
-
-        mLVAdapter.notifyDataSetChanged();
+        mFRGJobShow.refreshFrg();
     }
 
     private boolean mayRequestPermission() {
@@ -232,13 +185,6 @@ public class ACNavStart
     }
 
 
-    /**
-     * 加载并显示数据
-     */
-    private void updateJobs()  {
-        mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -279,61 +225,6 @@ public class ACNavStart
         return true;
     }
 
-    @Override
-    public void onClick(View v) {
-        int pos = mLVJobs.getPositionForView(v);
-        HashMap<String, String> map = mLVList.get(pos);
-
-        switch (v.getId())  {
-            case R.id.liib_jobstatus_stop : {
-                String type = map.get(STR_ITEM_TYPE);
-                Message m;
-                if(type.equals(ALIVE_JOB)) {
-                    m = Message.obtain(GlobalContext.getMsgHandlder(),
-                            GlobalDef.MSGWHAT_CAMERAJOB_REMOVE);
-                }
-                else    {
-                    m = Message.obtain(GlobalContext.getMsgHandlder(),
-                            GlobalDef.MSGWHAT_CAMERAJOB_DELETE);
-                }
-
-                int id = Integer.parseInt(map.get(STR_ITEM_ID));
-                m.obj = new Object[]{mSelfHandler, id};
-                m.sendToTarget();
-            }
-            break;
-
-            case R.id.liib_jobstatus_run_pause :    {
-                //ImageButton ib = (ImageButton)v;
-                //ib.setClickable(false);
-                int id = Integer.parseInt(map.get(STR_ITEM_ID));
-                Message m;
-                m = Message.obtain(GlobalContext.getMsgHandlder(),
-                        GlobalDef.MSGWHAT_CAMERAJOB_RUNPAUSESWITCH);
-                m.obj = new Object[] {mSelfHandler, id};
-                m.sendToTarget();
-            }
-            break;
-
-            case R.id.liib_jobstatus_look :    {
-                String pp = ContextUtil.getInstance()
-                                .getCameraJobPhotoDir(
-                                        Integer.parseInt(map.get(STR_ITEM_ID)));
-
-                ACJobGallery jg = new ACJobGallery();
-                jg.OpenGallery(this, pp);
-                /*
-                Intent intent = new Intent(this, ACCameraJobPhotos.class);
-                intent.putExtra(GlobalDef.STR_LOAD_PHOTODIR,
-                        ContextUtil.getInstance()
-                                .getCameraJobPhotoDir(
-                                        Integer.parseInt(map.get(STR_ITEM_ID))));
-                startActivityForResult(intent, 1);
-                */
-            }
-            break;
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -413,5 +304,35 @@ public class ACNavStart
         //data.putExtra(Intent.EXTRA_SUBJECT, "这是标题");
         //data.putExtra(Intent.EXTRA_TEXT, "这是内容");
         startActivity(data);
+    }
+
+
+    public static class ACNavStartMsgHandler extends Handler {
+        private static final String TAG = "FrgJobShowMsgHandler";
+        private ACNavStart mActivity;
+        private ArrayList<HashMap<String, String>> mLVList = new ArrayList<>();
+
+        ACNavStartMsgHandler(ACNavStart acstart) {
+            super();
+            mActivity = acstart;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
+                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS : {
+                    Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                            GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
+                    m.obj = this;
+                    m.sendToTarget();
+                }
+                break;
+
+                default:
+                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
+                    break;
+            }
+        }
     }
 }

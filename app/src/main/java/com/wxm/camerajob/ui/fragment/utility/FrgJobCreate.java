@@ -208,13 +208,13 @@ public class FrgJobCreate extends Fragment {
 
         // 默认选择'每分钟'
         final ArrayAdapter mAPJobType = ArrayAdapter.createFromResource(mVWSelf.getContext(),
-                                R.array.job_type, R.layout.spinner_jobtype);
+                                R.array.job_type, R.layout.sp_jobtype);
         mAPJobType.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         mSPJobType.setAdapter(mAPJobType);
         mSPJobType.setSelection(0);
 
         final ArrayAdapter mAPJobPoint = ArrayAdapter.createFromResource(mVWSelf.getContext(),
-                                R.array.minutely_invoke, R.layout.spinner_jobpoint);
+                                R.array.minutely_invoke, R.layout.sp_jobpoint);
         mAPJobPoint.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         mSPJobPoint.setAdapter(mAPJobPoint);
 
@@ -229,19 +229,19 @@ public class FrgJobCreate extends Fragment {
                     switch (selitem) {
                         case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
                             APJobPoint = ArrayAdapter.createFromResource(home,
-                                        R.array.minutely_invoke, R.layout.spinner_jobpoint);
+                                        R.array.minutely_invoke, R.layout.sp_jobpoint);
                         }
                         break;
 
                         case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
                             APJobPoint = ArrayAdapter.createFromResource(home,
-                                        R.array.hourly_invoke, R.layout.spinner_jobpoint);
+                                        R.array.hourly_invoke, R.layout.sp_jobpoint);
                         }
                         break;
 
                         case GlobalDef.CNSTR_JOBTYPE_DAILY: {
                             APJobPoint = ArrayAdapter.createFromResource(home,
-                                        R.array.daily_invoke, R.layout.spinner_jobpoint);
+                                        R.array.daily_invoke, R.layout.sp_jobpoint);
                         }
                         break;
                     }
