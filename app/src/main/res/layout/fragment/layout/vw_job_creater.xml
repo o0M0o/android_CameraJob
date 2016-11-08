@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/grey_1"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/rl_main"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="2dp"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="2dp">
 
+        <include layout="@layout/frg_job_info" />
+        <!--
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,19 +82,21 @@
                 android:layout_height="wrap_content"
                 android:layout_width="116dp" />
         </RelativeLayout>
+        -->
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rl_camera"
-        android:layout_marginTop="8dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
-        <include  layout="@layout/frg_camera_info"/>
+        android:layout_marginTop="8dp"
+        android:background="@color/white"
+        android:paddingBottom="4dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp">
+
+        <include layout="@layout/frg_camera_info" />
     </RelativeLayout>
 
 
@@ -105,20 +110,51 @@
         android:paddingEnd="12dp"
         android:paddingStart="12dp"
         android:paddingTop="2dp">
-        <include  layout="@layout/frg_calender_date"/>
+
+        <include layout="@layout/frg_calender_date" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rl_email"
-        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:paddingTop="2dp"
+        android:background="@color/white"
         android:paddingBottom="2dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <include  layout="@layout/frg_email_info"/>
+        android:paddingTop="2dp">
+
+        <RelativeLayout
+            android:id="@+id/rl_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/linen"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp">
+
+            <Switch
+                android:id="@+id/sw_send_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hint_use_email_send" />
+        </RelativeLayout>
+
+        <ViewSwitcher
+            android:id="@+id/vs_email_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_button">
+
+            <include
+                layout="@layout/frg_email_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+        </ViewSwitcher>
     </RelativeLayout>
 
 </LinearLayout>

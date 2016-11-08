@@ -44,9 +44,7 @@ public class ACCameraSetting extends AppCompatActivity   {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.meuitem_cameraset_accept : {
-                Intent data = new Intent();
-                setResult(GlobalDef.INTRET_CS_ACCEPT, data);
-
+                final Intent data = new Intent();
                 if(mTFCamera.isSettingDirty()) {
                     Dialog alertDialog = new AlertDialog.Builder(this).
                             setTitle("配置已经更改").
@@ -55,16 +53,17 @@ public class ACCameraSetting extends AppCompatActivity   {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mTFCamera.updateSetting();
+                                    setResult(GlobalDef.INTRET_CS_ACCEPT, data);
                                     finish();
                                 }
                             }).
                             setNegativeButton("否", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    setResult(GlobalDef.INTRET_CS_GIVEUP, data);
                                     finish();
                                 }
-                            }).
-                            create();
+                            }).create();
                     alertDialog.show();
                 } else {
                     finish();

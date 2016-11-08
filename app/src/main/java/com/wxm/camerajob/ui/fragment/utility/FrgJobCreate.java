@@ -23,13 +23,13 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
-import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraPreview;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
@@ -47,6 +47,7 @@ import cn.wxm.andriodutillib.util.UtilFun;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class FrgJobCreate extends Fragment {
     private final static String     TAG = "FrgJobCreate";
+
     private View        mVWSelf;
 
     // for job setting
@@ -63,7 +64,13 @@ public class FrgJobCreate extends Fragment {
     private TextView    mTVCameraFlash;
     private TextView    mTVCameraFocus;
 
-    //
+    // for send pic
+    private TextView mTVEmailSender;
+    private TextView mTVEmailSendServerType;
+    private TextView mTVEmailSendType;
+    private TextView mTVEmailReceiver;
+
+    // for camera setting change listener
     private IPreferenceChangeNotice  mIPCNCamera = new IPreferenceChangeNotice() {
         @Override
         public void onPreferenceChanged(String PreferenceName) {
@@ -92,6 +99,8 @@ public class FrgJobCreate extends Fragment {
             PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
         }
     }
+
+
 
 
     @Override
@@ -171,7 +180,6 @@ public class FrgJobCreate extends Fragment {
     }
 
     /// BEGIN PRIVATE
-
     /**
      * 初始化UI
      */
@@ -297,17 +305,23 @@ public class FrgJobCreate extends Fragment {
 
         // for send pic
         final Switch sw = UtilFun.cast_t(mVWSelf.findViewById(R.id.sw_send_pic));
-        final RelativeLayout pic_rl = UtilFun.cast_t(mVWSelf.findViewById(R.id.rl_detail));
-        final RelativeLayout email_rl = UtilFun.cast_t(mVWSelf.findViewById(R.id.rl_email));
+        final ViewSwitcher vs = UtilFun.cast_t(mVWSelf.findViewById(R.id.vs_email_detail));
         sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ContextUtil.setViewGroupVisible(pic_rl, isChecked ? View.VISIBLE : View.INVISIBLE);
+                vs.setDisplayedChild(isChecked ? 0 : 1);
             }
         });
 
         sw.setChecked(false);
-        //ContextUtil.setViewGroupVisible(pic_rl, View.INVISIBLE);
+        vs.setDisplayedChild(1);
+
+        mTVEmailSender = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_sender));
+        mTVEmailSendServerType = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_server_type));
+        mTVEmailSendType = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_send_type));
+        mTVEmailReceiver = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_recv_address));
+        mTVEmailSender.setText("请设置邮件发送者");
+        mTVEmailReceiver.setText("请设置邮件接收者");
     }
 
     /**
