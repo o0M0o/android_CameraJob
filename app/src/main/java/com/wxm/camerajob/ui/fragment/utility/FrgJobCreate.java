@@ -118,8 +118,8 @@ public class FrgJobCreate extends Fragment {
         String job_name  = mETJobName.getText().toString();
         String job_type  = mSPJobType.getSelectedItem().toString();
         String job_point = mSPJobPoint.getSelectedItem().toString();
-        String job_starttime = mTVJobStartDate.getText().toString();
-        String job_endtime = mTVJobEndDate.getText().toString();
+        String job_starttime = mTVJobStartDate.getText().toString() + ":00";
+        String job_endtime = mTVJobEndDate.getText().toString() + ":00";
 
         Context ct = mVWSelf.getContext();
         if(job_name.isEmpty())  {
@@ -161,7 +161,7 @@ public class FrgJobCreate extends Fragment {
             String show = String.format("任务开始时间(%s)比结束时间(%s)晚", job_starttime, job_endtime);
             Log.w(TAG, show);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ct);
             builder.setMessage(show).setTitle("警告");
             AlertDialog dlg = builder.create();
             dlg.show();
