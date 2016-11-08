@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -42,15 +41,15 @@ public class FrgJobShow extends Fragment {
     private final static String TAG = "FrgJobShow";
     private View mVWSelf;
 
-    public final static String ALIVE_JOB = "alive";
-    public final static String DIED_JOB = "died";
+    public final static String ALIVE_JOB    = "alive";
+    public final static String DIED_JOB     = "died";
 
-    public final static String STR_ITEM_JOB_NAME    = "job_name";
-    public final static String STR_ITEM_JOB_DETAIL  = "job_detail";
-    public final static String STR_ITEM_JOB_ACTIVE  = "job_active";
-    public final static String STR_ITEM_STATUS      = "ITEM_STATUS";
-    public final static String STR_ITEM_TYPE        = "ITEM_TYPE";
-    public final static String STR_ITEM_ID          = "ITEM_ID";
+    public final static String KEY_JOB_NAME     = "job_name";
+    public final static String KEY_JOB_DETAIL   = "job_detail";
+    public final static String KEY_JOB_ACTIVE   = "job_active";
+    public final static String KEY_STATUS       = "key_status";
+    public final static String KEY_TYPE         = "key_type";
+    public final static String KEY_ID           = "key_id";
 
     private FrgJobShowMsgHandler mSelfHandler;
 
@@ -125,7 +124,7 @@ public class FrgJobShow extends Fragment {
         mLVJobs = UtilFun.cast_t(mVWSelf.findViewById(R.id.aclv_start_jobs));
         mLVAdapter= new LVJobShowAdapter(getContext(),
                 mLVList,
-                new String[]{STR_ITEM_JOB_NAME, STR_ITEM_JOB_DETAIL},
+                new String[]{KEY_JOB_NAME, KEY_JOB_DETAIL},
                 new int[]{R.id.tv_job_name, R.id.tv_job_detail});
 
         mLVJobs.setAdapter(mLVAdapter);
@@ -153,19 +152,23 @@ public class FrgJobShow extends Fragment {
                 HashMap<String, String> map = mLVList.get(position);
 
                 // for dead job
-                if(DIED_JOB.equals(map.get(STR_ITEM_TYPE)))     {
+                TextView tv = UtilFun.cast_t(v.findViewById(R.id.tv_job_active));
+                tv.setText(map.get(KEY_JOB_ACTIVE));
+                /*
+                if(DIED_JOB.equals(map.get(KEY_TYPE)))     {
                     RelativeLayout rl = UtilFun.cast_t(v.findViewById(R.id.rl_job_info_active));
                     ContextUtil.setViewGroupVisible(rl, View.INVISIBLE);
                 } else  {
                     TextView tv = UtilFun.cast_t(v.findViewById(R.id.tv_job_active));
-                    tv.setText(map.get(STR_ITEM_JOB_ACTIVE));
+                    tv.setText(map.get(KEY_JOB_ACTIVE));
                 }
+                */
 
                 // other ui
                 ImageButton ib_play = (ImageButton)v.findViewById(R.id.ib_job_run_or_pause);
                 ImageButton ib_delete = (ImageButton)v.findViewById(R.id.ib_job_stop);
 
-                String status = map.get(STR_ITEM_STATUS);
+                String status = map.get(KEY_STATUS);
                 switch (status) {
                     case GlobalDef.STR_CAMERAJOB_RUN:
                         ib_play.setVisibility(View.VISIBLE);
@@ -191,7 +194,7 @@ public class FrgJobShow extends Fragment {
 
                 ImageButton ib_look = (ImageButton)v.findViewById(R.id.ib_job_look);
                 String pp = ContextUtil.getInstance().getCameraJobPhotoDir(
-                        Integer.parseInt(map.get(STR_ITEM_ID)));
+                        Integer.parseInt(map.get(KEY_ID)));
                 if(0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
                     ib_look.setVisibility(View.INVISIBLE);
                 }
@@ -211,20 +214,20 @@ public class FrgJobShow extends Fragment {
 
             switch (v.getId())  {
                 case R.id.ib_job_stop: {
-                    String type = map.get(STR_ITEM_TYPE);
+                    String type = map.get(KEY_TYPE);
                     Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                                         type.equals(ALIVE_JOB) ?
                                                 GlobalDef.MSGWHAT_CAMERAJOB_REMOVE
                                                 : GlobalDef.MSGWHAT_CAMERAJOB_DELETE);
 
-                    int id = Integer.parseInt(map.get(STR_ITEM_ID));
+                    int id = Integer.parseInt(map.get(KEY_ID));
                     m.obj = new Object[]{mSelfHandler, id};
                     m.sendToTarget();
                 }
                 break;
 
                 case R.id.ib_job_run_or_pause:    {
-                    int id = Integer.parseInt(map.get(STR_ITEM_ID));
+                    int id = Integer.parseInt(map.get(KEY_ID));
                     Message m;
                     m = Message.obtain(GlobalContext.getMsgHandlder(),
                             GlobalDef.MSGWHAT_CAMERAJOB_RUNPAUSESWITCH);
@@ -236,7 +239,7 @@ public class FrgJobShow extends Fragment {
                 case R.id.ib_job_look:    {
                     String pp = ContextUtil.getInstance()
                             .getCameraJobPhotoDir(
-                                    Integer.parseInt(map.get(STR_ITEM_ID)));
+                                    Integer.parseInt(map.get(KEY_ID)));
 
                     ACJobGallery jg = new ACJobGallery();
                     jg.OpenGallery(getActivity(), pp);
@@ -318,20 +321,21 @@ public class FrgJobShow extends Fragment {
             String show  = "可查看已拍摄图片\n可移除本任务文件";
 
             HashMap<String, String> map = new HashMap<>();
-            map.put(STR_ITEM_JOB_NAME, jobname);
-            map.put(STR_ITEM_JOB_DETAIL, show);
-            map.put(STR_ITEM_ID,  Integer.toString(cj.get_id()));
-            map.put(STR_ITEM_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
-            map.put(STR_ITEM_TYPE, DIED_JOB);
+            map.put(KEY_JOB_NAME, jobname);
+            map.put(KEY_JOB_ACTIVE, "");
+            map.put(KEY_JOB_DETAIL, show);
+            map.put(KEY_ID,  Integer.toString(cj.get_id()));
+            map.put(KEY_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
+            map.put(KEY_TYPE, DIED_JOB);
             mSelfList.add(map);
         }
 
         private void alive_camerjob(CameraJob cj)     {
             String at = String.format(Locale.CHINA
-                    , "%s/%s\n启动 : %s\n结束 : %s"
+                    , "%s/%s\n%s -\n%s"
                     , cj.getType(), cj.getPoint()
-                    , UtilFun.TimestampToString(cj.getStarttime())
-                    , UtilFun.TimestampToString(cj.getEndtime()));
+                    , UtilFun.TimestampToString(cj.getStarttime()).substring(0, 16)
+                    , UtilFun.TimestampToString(cj.getEndtime()).substring(0, 16));
 
             String jobname = cj.getName();
             String status = cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN) ?
@@ -350,12 +354,12 @@ public class FrgJobShow extends Fragment {
             }
 
             HashMap<String, String> map = new HashMap<>();
-            map.put(STR_ITEM_JOB_NAME, jobname);
-            map.put(STR_ITEM_JOB_ACTIVE, at);
-            map.put(STR_ITEM_JOB_DETAIL, detail);
-            map.put(STR_ITEM_ID,  Integer.toString(cj.get_id()));
-            map.put(STR_ITEM_STATUS, cj.getStatus().getJob_status());
-            map.put(STR_ITEM_TYPE, ALIVE_JOB);
+            map.put(KEY_JOB_NAME, jobname);
+            map.put(KEY_JOB_ACTIVE, at);
+            map.put(KEY_JOB_DETAIL, detail);
+            map.put(KEY_ID,  Integer.toString(cj.get_id()));
+            map.put(KEY_STATUS, cj.getStatus().getJob_status());
+            map.put(KEY_TYPE, ALIVE_JOB);
             mSelfList.add(map);
         }
     }
