@@ -81,7 +81,7 @@ public class FrgJobSlide extends Fragment {
                 public void run() {
                     mSelfHandler.sendEmptyMessage(MSG_TYPE_TO_NEXT_PHOTO);
                 }
-            }, 1000, 1000);
+            }, 300, 2000);
         }
     }
 
@@ -152,7 +152,6 @@ public class FrgJobSlide extends Fragment {
                 toPostion(position);
             }
         });
-
     }
 
     public void toPostion(int position) {

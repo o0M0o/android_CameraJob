@@ -2,168 +2,68 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="4dp"
+    android:paddingBottom="6dp"
     android:paddingEnd="12dp"
     android:paddingStart="12dp"
     android:paddingTop="4dp">
 
-        <RelativeLayout
-            android:id="@+id/rl_job_info_head"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true">
+    <include
+        layout="@layout/frg_job_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-            <ImageView
-                android:id="@+id/iv_job"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_job" />
+    <ImageView
+        android:id="@+id/iv_line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/rl_job_info_head"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/linen" />
 
-            <TextView
-                android:id="@+id/tv_job_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="32dp"
-                android:text="job 1"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
-        </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/iv_line2"
-            android:layout_below="@id/rl_job_info_head"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:background="@color/linen" />
-
-        <LinearLayout
-            android:id="@+id/ll_job_body"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/iv_line2"
-            android:orientation="horizontal">
-
-            <RelativeLayout
-                android:id="@+id/rl_job_info_active"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/iv_active"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_active" />
-
-                <TextView
-                    android:id="@+id/tv_job_active"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="32dp"
-                    android:text="每小时\\每5分钟\n启动 : 2017-11-08 12:35\n结束 : 2017-12-08 12:00"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </RelativeLayout>
-
-            <ImageView
-                android:id="@+id/iv_line"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/linen" />
-
-            <RelativeLayout
-                android:id="@+id/rl_job_info_detail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:id="@+id/iv_detail"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_detail" />
-
-                <TextView
-                    android:id="@+id/tv_job_detail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="32dp"
-                    android:text="已拍摄 : 10\n2017-11-08 12:30:30"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </RelativeLayout>
-        </LinearLayout>
+    <include
+        layout="@layout/frg_job_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_line2" />
 
     <ImageView
         android:id="@+id/iv_line1"
-        android:layout_below="@id/ll_job_body"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="4dp"
+        android:layout_below="@id/ll_job_body"
         android:layout_marginBottom="4dp"
-        android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
         android:background="@color/linen" />
 
-    <RelativeLayout
-        android:id="@+id/ll_button"
+    <include
+        layout="@layout/frg_camera_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/iv_line1"
-        android:orientation="horizontal"
-        android:paddingBottom="6dp"
-        android:paddingTop="6dp">
+        android:paddingTop="6dp" />
 
-        <ImageButton
-            android:id="@+id/ib_job_slide_look"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_marginEnd="24dp"
-            android:layout_toStartOf="@+id/ib_job_look"
-            android:background="@drawable/ic_slide" />
+    <ImageView
+        android:id="@+id/iv_line3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/rl_camera_info"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/linen" />
 
-        <ImageButton
-            android:id="@+id/ib_job_look"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="24dp"
-            android:layout_toStartOf="@+id/ib_job_run_or_pause"
-            android:background="@drawable/ic_pic" />
 
-        <ImageButton
-            android:id="@+id/ib_job_run_or_pause"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="24dp"
-            android:layout_toStartOf="@+id/ib_job_stop"
-            android:background="@drawable/ic_pause" />
-
-        <ImageButton
-            android:id="@+id/ib_job_stop"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/ic_stop" />
-    </RelativeLayout>
+    <include
+        layout="@layout/frg_job_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_line3"
+        android:paddingTop="6dp" />
 
 </RelativeLayout>

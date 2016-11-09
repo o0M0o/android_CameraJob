@@ -12,12 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.base.db.IDataChangeNotice;
 import com.wxm.camerajob.base.utility.CameraJobUtility;
 import com.wxm.camerajob.base.utility.ContextUtil;
@@ -91,6 +94,17 @@ public class FrgJobShow extends Fragment {
     };
 
 
+    // for camera setting change listener
+    private IPreferenceChangeNotice mIPCNCamera = new IPreferenceChangeNotice() {
+        @Override
+        public void onPreferenceChanged(String PreferenceName) {
+            if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(PreferenceName))  {
+                mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+            }
+        }
+    };
+
+
     public static FrgJobShow newInstance() {
         return new FrgJobShow();
     }
@@ -110,6 +124,7 @@ public class FrgJobShow extends Fragment {
             // for notice
             GetDBManager().getCameraJobUtility().addDataChangeNotice(mIDCJobNotice);
             GetDBManager().getCameraJobStatusUtility().addDataChangeNotice(mIDCJobNotice);
+            PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
 
             // set timer
             // 使用定时器定时全面刷新显示
@@ -127,10 +142,10 @@ public class FrgJobShow extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
+        mTimer.cancel();
+        PreferencesUtil.getInstance().removeChangeNotice(mIPCNCamera);
         GetDBManager().getCameraJobUtility().removeDataChangeNotice(mIDCJobNotice);
         GetDBManager().getCameraJobStatusUtility().removeDataChangeNotice(mIDCJobNotice);
-
-        mTimer.cancel();
     }
 
 
@@ -179,65 +194,90 @@ public class FrgJobShow extends Fragment {
      */
     public class LVJobShowAdapter extends SimpleAdapter
             implements View.OnClickListener {
-
+        private RelativeLayout[]  mRLCameraInfo;
         LVJobShowAdapter(Context context, List<? extends Map<String, ?>> data,
                          String[] from, int[] to) {
             super(context, data, R.layout.li_job_show, from, to);
+            mRLCameraInfo = new RelativeLayout[data.size()];
+        }
+
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            mRLCameraInfo = new RelativeLayout[getCount()];
         }
 
         @Override
         public View getView(final int position, View view, ViewGroup arg2) {
             View v = super.getView(position, view, arg2);
             if(null != v)   {
-                HashMap<String, String> map = mLVList.get(position);
+                init_ui(v, position);
 
-                // for imagebutton
-                ImageButton ib_play = (ImageButton)v.findViewById(R.id.ib_job_run_or_pause);
-                ImageButton ib_delete = (ImageButton)v.findViewById(R.id.ib_job_stop);
-
-                String status = map.get(KEY_STATUS);
-                switch (status) {
-                    case GlobalDef.STR_CAMERAJOB_RUN:
-                        ib_play.setVisibility(View.VISIBLE);
-
-                        ib_play.setBackgroundResource(R.drawable.ic_pause);
-                        ib_play.setClickable(true);
-                        ib_play.setOnClickListener(this);
-                        break;
-                    case GlobalDef.STR_CAMERAJOB_PAUSE:
-                        ib_play.setVisibility(View.VISIBLE);
-
-                        ib_play.setBackgroundResource(R.drawable.ic_start);
-                        ib_play.setClickable(true);
-                        ib_play.setOnClickListener(this);
-                        break;
-                    default:
-                        ib_play.setVisibility(View.INVISIBLE);
-                        ib_play.setClickable(false);
-                        break;
-                }
-
-                ib_delete.setOnClickListener(this);
-
-                ImageButton ib_look = (ImageButton)v.findViewById(R.id.ib_job_look);
-                ImageButton ib_slide = UtilFun.cast_t(v.findViewById(R.id.ib_job_slide_look));
-                String pp = ContextUtil.getInstance().getCameraJobPhotoDir(
-                        Integer.parseInt(map.get(KEY_ID)));
-                if(0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
-                    ib_look.setVisibility(View.INVISIBLE);
-
-                    ib_slide.setVisibility(View.INVISIBLE);
-                }
-                else    {
-                    ib_look.setVisibility(View.VISIBLE);
-                    ib_look.setOnClickListener(this);
-
-                    ib_slide.setVisibility(View.VISIBLE);
-                    ib_slide.setOnClickListener(this);
-                }
+                mRLCameraInfo[position] = UtilFun.cast_t(v.findViewById(R.id.rl_camera_info));
+                fill_camera_info(position);
             }
 
             return v;
+        }
+
+        void init_ui(View v, int position) {
+            HashMap<String, String> map = mLVList.get(position);
+
+            // for imagebutton
+            ImageButton ib_play = (ImageButton)v.findViewById(R.id.ib_job_run_or_pause);
+            ImageButton ib_delete = (ImageButton)v.findViewById(R.id.ib_job_stop);
+
+            String status = map.get(KEY_STATUS);
+            switch (status) {
+                case GlobalDef.STR_CAMERAJOB_RUN:
+                    ib_play.setVisibility(View.VISIBLE);
+
+                    ib_play.setBackgroundResource(R.drawable.ic_pause);
+                    ib_play.setClickable(true);
+                    ib_play.setOnClickListener(this);
+                    break;
+                case GlobalDef.STR_CAMERAJOB_PAUSE:
+                    ib_play.setVisibility(View.VISIBLE);
+
+                    ib_play.setBackgroundResource(R.drawable.ic_start);
+                    ib_play.setClickable(true);
+                    ib_play.setOnClickListener(this);
+                    break;
+                default:
+                    ib_play.setVisibility(View.INVISIBLE);
+                    ib_play.setClickable(false);
+                    break;
+            }
+
+            ib_delete.setOnClickListener(this);
+
+            ImageButton ib_look = (ImageButton)v.findViewById(R.id.ib_job_look);
+            ImageButton ib_slide = UtilFun.cast_t(v.findViewById(R.id.ib_job_slide_look));
+            String pp = ContextUtil.getInstance().getCameraJobPhotoDir(
+                    Integer.parseInt(map.get(KEY_ID)));
+            if(0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
+                ib_look.setVisibility(View.INVISIBLE);
+
+                ib_slide.setVisibility(View.INVISIBLE);
+            }
+            else    {
+                ib_look.setVisibility(View.VISIBLE);
+                ib_look.setOnClickListener(this);
+
+                ib_slide.setVisibility(View.VISIBLE);
+                ib_slide.setOnClickListener(this);
+            }
+        }
+
+        void fill_camera_info(int pos) {
+            RelativeLayout rl_hot = mRLCameraInfo[pos];
+            RelativeLayout rl = UtilFun.cast_t(rl_hot.findViewById(R.id.rl_preview));
+            rl.setVisibility(View.INVISIBLE);
+            rl = UtilFun.cast_t(rl_hot.findViewById(R.id.rl_setting));
+            rl.setVisibility(View.INVISIBLE);
+
+            FrgCamerInfoHelper.refillLayout(rl_hot, PreferencesUtil.loadCameraParam());
         }
 
         @Override
