@@ -66,7 +66,7 @@ public class CameraJobService extends JobService {
 
         //Log.i(TAG, "on start job");
         Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                                GlobalDef.MSGWHAT_WAKEUP);
+                                GlobalDef.MSG_TYPE_WAKEUP);
         m.sendToTarget();
         return false;
     }

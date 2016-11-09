@@ -2,6 +2,7 @@ package com.wxm.camerajob.base.utility;
 
 import com.wxm.camerajob.base.data.CameraJob;
 
+import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 import static com.wxm.camerajob.base.handler.GlobalContext.GetDBManager;
@@ -29,4 +30,21 @@ public class CameraJobUtility {
     }
 
 
+    /**
+     * 在数据库中移除指定的拍照任务
+     * @param cj_id   待移除任务id
+     */
+    public static void removeCamerJob(int cj_id) {
+        GetDBManager().getCameraJobUtility().RemoveJob(cj_id);
+    }
+
+    /**
+     * 删除指定的拍照任务所占用的磁盘空间
+     * @param cj_id   待移除任务id
+     */
+    public static void deleteCamerJob(int cj_id) {
+        GetDBManager().getCameraJobUtility().RemoveJob(cj_id);
+        String path = ContextUtil.getInstance().getCameraJobPhotoDir(cj_id);
+        FileUtil.DeleteDirectory(path);
+    }
 }

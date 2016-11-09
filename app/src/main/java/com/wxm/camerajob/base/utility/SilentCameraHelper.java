@@ -148,7 +148,7 @@ public class SilentCameraHelper {
 
                         //send msg
                         Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                                GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+                                GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
                         m.obj = new Object[] {Integer.parseInt(mSelfTPTakePhoto.mTag), 1};
                         m.sendToTarget();
 

@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -40,7 +39,6 @@ import com.wxm.camerajob.ui.test.ActivityTest;
 import com.wxm.camerajob.ui.test.ActivityTestSilentCamera;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 import cn.wxm.andriodutillib.util.UtilFun;
@@ -58,7 +56,6 @@ public class ACNavStart
     private final FrgJobShow mFRGJobShow = FrgJobShow.newInstance();
 
     private static final int REQUEST_ALL  = 99;
-    private ACNavStartMsgHandler    mSelfHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +63,6 @@ public class ACNavStart
         setContentView(R.layout.ac_nav_start);
         ContextUtil.getInstance().addActivity(this);
 
-        mSelfHandler = new ACNavStartMsgHandler(this);
         if(mayRequestPermission()) {
             initActivity();
         }
@@ -242,7 +238,7 @@ public class ACNavStart
 
             case GlobalDef.INTRET_CS_ACCEPT:    {
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                        GlobalDef.MSGWHAT_CS_CHANGECAMERA);
+                        GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                 m.obj = PreferencesUtil.loadCameraParam();
                 m.sendToTarget();
             }
@@ -304,35 +300,5 @@ public class ACNavStart
         //data.putExtra(Intent.EXTRA_SUBJECT, "这是标题");
         //data.putExtra(Intent.EXTRA_TEXT, "这是内容");
         startActivity(data);
-    }
-
-
-    public static class ACNavStartMsgHandler extends Handler {
-        private static final String TAG = "FrgJobShowMsgHandler";
-        private ACNavStart mActivity;
-        private ArrayList<HashMap<String, String>> mLVList = new ArrayList<>();
-
-        ACNavStartMsgHandler(ACNavStart acstart) {
-            super();
-            mActivity = acstart;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
-                case GlobalDef.MSGWHAT_JOBSHOW_UPDATE: {
-                    Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                            GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
-                    m.obj = this;
-                    m.sendToTarget();
-                }
-                break;
-
-                default:
-                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-                    break;
-            }
-        }
     }
 }

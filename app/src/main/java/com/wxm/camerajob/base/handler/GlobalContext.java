@@ -69,10 +69,10 @@ public class GlobalContext {
      * 全局handler
      * Created by wxm on 2016/6/10.
      */
-    public static class GlobalMsgHandler extends Handler {
+    private static class GlobalMsgHandler extends Handler {
         private static final String TAG = "GlobalMsgHandler";
 
-        public GlobalMsgHandler()   {
+        GlobalMsgHandler()   {
             super();
         }
 
@@ -84,108 +84,25 @@ public class GlobalContext {
             }
 
             switch (msg.what)   {
-                case GlobalDef.MSGWHAT_JOB_ADD:
-                    processor_addjob(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_JOB_ADD_GLOBAL:
-                    processor_addjob_global(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_WAKEUP :
+                case GlobalDef.MSG_TYPE_WAKEUP:
                     processor_wakeup();
                     break;
 
-                case GlobalDef.MSGWHAT_CAMERAJOB_ADD :
-                    processor_camerajob_add(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_CAMERAJOB_ASKALL:
+                case GlobalDef.MSG_TYPE_CAMERAJOB_QUERY:
                     processor_ask_cameraJob(msg);
                     break;
 
-                case GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO :
+                case GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO:
                     processor_camerajob_takephoto(msg);
                     break;
 
-                case GlobalDef.MSGWHAT_CS_CHANGECAMERA :
+                case GlobalDef.MSG_TYPE_CAMERA_MODIFY:
                     processor_changecamera(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_CAMERAJOB_TORUN :
-                    processor_camerajob_torun(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_CAMERAJOB_RUNPAUSESWITCH :
-                    processor_camerajob_runpauseswitch(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_CAMERAJOB_TOPAUSE :
-                    processor_camerajob_topause(msg);
                     break;
 
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
                     break;
-            }
-        }
-
-        /**
-         * 运行指定camerajob
-         * @param msg 消息
-         */
-        private void processor_camerajob_torun(Message msg) {
-            Object[] obj_arr = UtilFun.cast(msg.obj);
-            Handler h = UtilFun.cast(obj_arr[0]);
-            int _id = UtilFun.cast(obj_arr[1]);
-
-            CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(_id);
-            if(null != cj) {
-                CameraJobStatus cjs = cj.getStatus();
-                cjs.setJob_status(GlobalDef.STR_CAMERAJOB_RUN);
-
-                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
-            }
-
-            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-            reply.sendToTarget();
-        }
-
-        /**
-         * 暂停指定camerajob
-         * @param msg 消息
-         */
-        private void processor_camerajob_topause(Message msg) {
-            Object[] obj_arr = UtilFun.cast(msg.obj);
-            Handler h = UtilFun.cast(obj_arr[0]);
-            int _id = UtilFun.cast(obj_arr[1]);
-
-            CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(_id);
-            if(null != cj) {
-                CameraJobStatus cjs = cj.getStatus();
-                cjs.setJob_status(GlobalDef.STR_CAMERAJOB_PAUSE);
-
-                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
-            }
-
-            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-            reply.sendToTarget();
-        }
-
-        private void processor_camerajob_runpauseswitch(Message msg)    {
-            Object[] obj_arr = UtilFun.cast(msg.obj);
-            Handler h = UtilFun.cast(obj_arr[0]);
-            int _id = UtilFun.cast(obj_arr[1]);
-
-            CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(_id);
-            if(null != cj) {
-                CameraJobStatus cjs = cj.getStatus();
-                cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
-                        GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
-                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
-
-                Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-                reply.sendToTarget();
             }
         }
 
@@ -218,7 +135,6 @@ public class GlobalContext {
                 curjs.getTs().setTime(Calendar.getInstance().getTimeInMillis());
 
                 GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(curjs);
-                //Log.i(TAG, "CameraJobStatus : " + curjs.toString());
             }
         }
 
@@ -234,40 +150,12 @@ public class GlobalContext {
             if(null == lsret)
                 Log.e(TAG, "get camerajob failed!");
 
-            Message answer = Message.obtain(h, GlobalDef.MSGWHAT_REPLAY);
-            answer.arg1 = GlobalDef.MSGWHAT_CAMERAJOB_ASKALL;
+            Message answer = Message.obtain(h, GlobalDef.MSG_TYPE_REPLAY);
+            answer.arg1 = GlobalDef.MSG_TYPE_CAMERAJOB_QUERY;
             answer.obj = lsret;
             answer.sendToTarget();
         }
 
-        /**
-         * 添加job
-         * @param msg  输入消息
-         */
-        private void processor_addjob(Message msg)    {
-            /*
-            JobInfo ji = (JobInfo)msg.obj;
-            getInstance().mJobService.scheduleJob(ji);
-            */
-        }
-
-        /**
-         * 添加全局job
-         * @param msg  输入消息
-         */
-        private void processor_addjob_global(Message msg)    {
-            /*
-            mServiceComponent = new ComponentName((Context)msg.obj,
-                                    CameraJobService.class);
-
-            JobInfo.Builder builder = new JobInfo.Builder(kJobId++, mServiceComponent);
-            //builder.setMinimumLatency(2000);
-            builder.setPeriodic(GlobalDef.INT_GLOBALJOB_PERIOD);
-            builder.setPersisted(true);
-
-            GetJobService().scheduleJob(builder.build());
-            */
-        }
 
         /**
          * 处理唤醒消息
@@ -276,25 +164,6 @@ public class GlobalContext {
             List<CameraJob> ls = GetDBManager().getCameraJobUtility().GetJobs();
             if((null != ls) && (1 <= ls.size()))
                 GetJobProcess().processorWakeup(ls);
-        }
-
-        /**
-         * 添加拍照任务
-         * @param msg  消息
-         */
-        private void processor_camerajob_add(Message msg)  {
-            Object[] obj_arr = UtilFun.cast(msg.obj);
-            Handler h = UtilFun.cast(obj_arr[0]);
-            CameraJob cj = UtilFun.cast(obj_arr[1]);
-
-            //create prjdir
-            if(GetDBManager().getCameraJobUtility().AddJob(cj))  {
-                if(!UtilFun.StringIsNullOrEmpty(
-                        ContextUtil.getInstance().createCameraJobPhotoDir(cj))) {
-                    Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-                    reply.sendToTarget();
-                }
-            }
         }
     }
 }

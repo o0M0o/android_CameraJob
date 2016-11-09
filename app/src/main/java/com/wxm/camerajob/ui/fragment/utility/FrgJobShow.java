@@ -18,6 +18,7 @@ import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.IDataChangeNotice;
+import com.wxm.camerajob.base.utility.CameraJobUtility;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.acutility.ACJobGallery;
 
@@ -83,7 +84,7 @@ public class FrgJobShow extends Fragment {
         }
 
         private void reLoadFrg(long delayMs)    {
-            mSelfHandler.sendEmptyMessageDelayed(GlobalDef.MSGWHAT_JOBSHOW_UPDATE, delayMs);
+            mSelfHandler.sendEmptyMessageDelayed(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE, delayMs);
         }
     };
 
@@ -114,7 +115,7 @@ public class FrgJobShow extends Fragment {
             mTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_JOBSHOW_UPDATE);
+                    mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
                 }
             }, 5000, 10000);
         }
@@ -147,7 +148,7 @@ public class FrgJobShow extends Fragment {
      * 用现有数据重新绘制
      */
     public void refreshFrg()    {
-        mSelfHandler.refreshCameraJobs();
+        mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
     }
 
 
@@ -241,11 +242,9 @@ public class FrgJobShow extends Fragment {
                     int id = Integer.parseInt(map.get(KEY_ID));
                     String type = map.get(KEY_TYPE);
                     if(ALIVE_JOB.equals(type))  {
-                        GetDBManager().getCameraJobUtility().RemoveJob(id);
+                        CameraJobUtility.removeCamerJob(id);
                     } else  {
-                        String path = ContextUtil.getInstance().getCameraJobPhotoDir(id);
-                        FileUtil.DeleteDirectory(path);
-
+                        CameraJobUtility.deleteCamerJob(id);
                         mSelfHandler.refreshCameraJobs();
                     }
                 }
@@ -296,7 +295,7 @@ public class FrgJobShow extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case GlobalDef.MSGWHAT_JOBSHOW_UPDATE: {
+                case GlobalDef.MSG_TYPE_JOBSHOW_UPDATE: {
                     refreshCameraJobs();
                 }
                 break;

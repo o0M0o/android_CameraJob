@@ -31,7 +31,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         try {
             Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                    GlobalDef.MSGWHAT_WAKEUP);
+                    GlobalDef.MSG_TYPE_WAKEUP);
             m.sendToTarget();
 
             // 设置闹钟

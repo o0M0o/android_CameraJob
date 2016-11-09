@@ -13,21 +13,12 @@ public class GlobalDef {
     public final static String CNSTR_JOBTYPE_HOURLY    = "每小时";
     public final static String CNSTR_JOBTYPE_DAILY     = "每天";
 
-    public final static int MSGWHAT_JOB_ADD                     = 1000;
-    public final static int MSGWHAT_JOB_ADD_GLOBAL              = 1001;
-    public final static int MSGWHAT_WAKEUP                      = 1002;
-    public final static int MSGWHAT_CAMERAJOB_ADD               = 1100;
-    public final static int MSGWHAT_CAMERAJOB_UPDATE            = 1101;
-    public final static int MSGWHAT_CAMERAJOB_ASKALL            = 1102;
-    public final static int MSGWHAT_CAMERAJOB_TAKEPHOTO         = 1104;
-    public final static int MSGWHAT_CAMERAJOB_REMOVE            = 1105;
-    public final static int MSGWHAT_CAMERAJOB_DELETE            = 1106;
-    public final static int MSGWHAT_CAMERAJOB_TORUN             = 1107;
-    public final static int MSGWHAT_CAMERAJOB_TOPAUSE           = 1108;
-    public final static int MSGWHAT_CAMERAJOB_RUNPAUSESWITCH    = 1109;
-    public final static int MSGWHAT_JOBSHOW_UPDATE              = 1200;
-    public final static int MSGWHAT_CS_CHANGECAMERA             = 1300;
-    public final static int MSGWHAT_REPLAY                      = 9000;
+    public final static int MSG_TYPE_WAKEUP                 = 1000;
+    public final static int MSG_TYPE_CAMERAJOB_QUERY        = 1102;
+    public final static int MSG_TYPE_CAMERAJOB_TAKEPHOTO    = 1104;
+    public final static int MSG_TYPE_JOBSHOW_UPDATE         = 1200;
+    public final static int MSG_TYPE_CAMERA_MODIFY          = 1300;
+    public final static int MSG_TYPE_REPLAY                 = 9000;
 
     public final static int INTRET_CAMERAJOB_ACCEPT     = 2000;
     public final static int INTRET_CAMERAJOB_GIVEUP     = 2001;

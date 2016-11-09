@@ -390,7 +390,7 @@ public class SilentCameraNew extends SilentCamera {
                 getLogger().info(l);
 
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                        GlobalDef.MSGWHAT_CAMERAJOB_TAKEPHOTO);
+                        GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
                 m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
                 m.sendToTarget();
             }

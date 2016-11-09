@@ -62,7 +62,7 @@ public class ACJobCreate
             case GlobalDef.INTRET_CS_ACCEPT:    {
                 if(REQUEST_SET_CAMERA == requestCode) {
                     Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                            GlobalDef.MSGWHAT_CS_CHANGECAMERA);
+                            GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                     m.obj = PreferencesUtil.loadCameraParam();
                     m.sendToTarget();
                 }
