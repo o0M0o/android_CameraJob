@@ -1,6 +1,7 @@
 package com.wxm.camerajob.ui.fragment.utility;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +22,7 @@ import com.wxm.camerajob.base.db.IDataChangeNotice;
 import com.wxm.camerajob.base.utility.CameraJobUtility;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.acutility.ACJobGallery;
+import com.wxm.camerajob.ui.acutility.ACJobSlide;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +41,7 @@ import cn.wxm.andriodutillib.util.UtilFun;
 import static com.wxm.camerajob.base.handler.GlobalContext.GetDBManager;
 
 /**
- * 相机预览fragment
+ * 任务展示fragment
  * Created by 123 on 2016/10/14.
  */
 public class FrgJobShow extends Fragment {
@@ -218,14 +220,20 @@ public class FrgJobShow extends Fragment {
                 ib_delete.setOnClickListener(this);
 
                 ImageButton ib_look = (ImageButton)v.findViewById(R.id.ib_job_look);
+                ImageButton ib_slide = UtilFun.cast_t(v.findViewById(R.id.ib_job_slide_look));
                 String pp = ContextUtil.getInstance().getCameraJobPhotoDir(
                         Integer.parseInt(map.get(KEY_ID)));
                 if(0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
                     ib_look.setVisibility(View.INVISIBLE);
+
+                    ib_slide.setVisibility(View.INVISIBLE);
                 }
                 else    {
                     ib_look.setVisibility(View.VISIBLE);
                     ib_look.setOnClickListener(this);
+
+                    ib_slide.setVisibility(View.VISIBLE);
+                    ib_slide.setOnClickListener(this);
                 }
             }
 
@@ -273,6 +281,16 @@ public class FrgJobShow extends Fragment {
                     jg.OpenGallery(getActivity(), pp);
                 }
                 break;
+
+                case R.id.ib_job_slide_look :   {
+                    String pp = ContextUtil.getInstance()
+                            .getCameraJobPhotoDir(
+                                    Integer.parseInt(map.get(KEY_ID)));
+
+                    Intent it = new Intent(getActivity(), ACJobSlide.class);
+                    it.putExtra(GlobalDef.STR_LOAD_PHOTODIR, pp);
+                    startActivityForResult(it, 1);
+                }
             }
         }
     }

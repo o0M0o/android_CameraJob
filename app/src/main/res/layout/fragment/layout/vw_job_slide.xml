@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:gravity="center_horizontal"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageSwitcher
+        android:id="@+id/is_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="3"
+        android:paddingTop="24dip" />
+
+    <!--
+         android:layout_weight  详细解释:按比例显示LinearLayout内各个子控件，
+                                需设置android:layout_width="0dp"，
+                                如果为竖直方向的设置android:layout_height="0dp"。
+                                在这种情况下某子个控件占用LinearLayout的比例为：
+                                本控件weight值 / LinearLayout内所有控件的weight值的和。
+
+         android:spacing 设置图片的间距
+         android:unselectedAlpha 设置为选中条目的透明度
+    -->
+    <Gallery
+        android:id="@+id/gy_photos"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:spacing="5dip"
+        android:unselectedAlpha="0.6" />
+
+</LinearLayout>
