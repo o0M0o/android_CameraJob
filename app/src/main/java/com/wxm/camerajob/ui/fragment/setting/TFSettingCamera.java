@@ -32,7 +32,7 @@ import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.PreferencesUtil;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraPreview;
 
 import java.util.ArrayList;
@@ -153,7 +153,7 @@ public class TFSettingCamera extends TFSettingBase {
             rl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(0 < GlobalContext.GetDBManager().mCameraJobHelper.GetActiveJobCount()) {
+                    if(0 < GlobalContext.GetDBManager().getCameraJobUtility().GetActiveJobCount()) {
                         Dialog alertDialog = new AlertDialog.Builder(getContext()).
                                 setTitle("无法进行预览").
                                 setMessage("有任务在运行中，请删除或暂停任务后进行预览!").

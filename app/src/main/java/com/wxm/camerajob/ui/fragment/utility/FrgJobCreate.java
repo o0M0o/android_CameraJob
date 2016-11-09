@@ -30,7 +30,7 @@ import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
-import com.wxm.camerajob.base.utility.PreferencesUtil;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraPreview;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 

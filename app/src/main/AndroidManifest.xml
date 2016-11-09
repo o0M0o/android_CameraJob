@@ -27,7 +27,7 @@
         <activity
             android:name=".ui.test.ActivityTest"
             android:exported="true" />
-        <activity android:name=".ui.acinterface.ACJob"
+        <activity android:name=".ui.acinterface.ACJobCreate"
             android:label="@string/job_create"/>
 
         <service

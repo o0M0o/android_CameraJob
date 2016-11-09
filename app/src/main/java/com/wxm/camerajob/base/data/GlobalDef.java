@@ -25,7 +25,7 @@ public class GlobalDef {
     public final static int MSGWHAT_CAMERAJOB_TORUN             = 1107;
     public final static int MSGWHAT_CAMERAJOB_TOPAUSE           = 1108;
     public final static int MSGWHAT_CAMERAJOB_RUNPAUSESWITCH    = 1109;
-    public final static int MSGWHAT_ACSTART_UPDATEJOBS          = 1200;
+    public final static int MSGWHAT_JOBSHOW_UPDATE              = 1200;
     public final static int MSGWHAT_CS_CHANGECAMERA             = 1300;
     public final static int MSGWHAT_REPLAY                      = 9000;
 

@@ -9,10 +9,10 @@ import java.util.List;
  * 处理camerajob的数据库类
  * Created by 123 on 2016/6/16.
  */
-public class DBCameraJobHelper {
+public class CameraJobDBUtility extends DBUtilityBase {
     private DBOrmLiteHelper mHelper;
 
-    public DBCameraJobHelper(DBOrmLiteHelper helper)  {
+    public CameraJobDBUtility(DBOrmLiteHelper helper)  {
         mHelper = helper;
     }
 
@@ -22,7 +22,11 @@ public class DBCameraJobHelper {
      * @return 如果添加成功返回true, 否则返回false
      */
     public boolean AddJob(CameraJob cj) {
-        return 1 == mHelper.getCamerJobREDao().create(cj);
+        boolean ret = 1 == mHelper.getCamerJobREDao().create(cj);
+        if(ret)
+            onDataCreate();
+
+        return ret;
     }
 
     /**
@@ -40,7 +44,11 @@ public class DBCameraJobHelper {
      * @return 如果添加成功返回true, 否则返回false
      */
     public boolean RemoveJob(int jobid)  {
-        return  1 == mHelper.getCamerJobREDao().deleteById(jobid);
+        boolean ret =  1 == mHelper.getCamerJobREDao().deleteById(jobid);
+        if(ret)
+            onDataDelete();
+
+        return ret;
     }
 
     /**
@@ -49,7 +57,11 @@ public class DBCameraJobHelper {
      * @return  修改成功返回true, 否则返回false
      */
     public boolean ModifyJob(CameraJob cj)  {
-        return 1 == mHelper.getCamerJobREDao().update(cj);
+        boolean ret = 1 == mHelper.getCamerJobREDao().update(cj);
+        if(ret)
+            onDataModify();
+
+        return ret;
     }
 
     /**

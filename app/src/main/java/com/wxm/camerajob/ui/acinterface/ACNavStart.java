@@ -28,10 +28,11 @@ import android.view.MenuItem;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.base.handler.GlobalContext;
+import com.wxm.camerajob.base.utility.CameraJobUtility;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
-import com.wxm.camerajob.base.utility.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 import com.wxm.camerajob.ui.acutility.ACSetting;
 import com.wxm.camerajob.ui.fragment.utility.FrgJobShow;
@@ -189,7 +190,7 @@ public class ACNavStart
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.meuitem_camerajob_add : {
-                Intent intent = new Intent(this, ACJob.class);
+                Intent intent = new Intent(this, ACJobCreate.class);
                 startActivityForResult(intent, 1);
             }
             break;
@@ -235,10 +236,7 @@ public class ACNavStart
                 CameraJob cj = data.getParcelableExtra(GlobalDef.STR_LOAD_JOB);
                 Log.i(TAG, "camerajob : " + cj.toString());
 
-                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                        GlobalDef.MSGWHAT_CAMERAJOB_ADD);
-                m.obj = new Object[] {mSelfHandler, cj};
-                m.sendToTarget();
+                CameraJobUtility.createCameraJob(cj);
             }
             break;
 
@@ -256,6 +254,8 @@ public class ACNavStart
             break;
         }
     }
+
+
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -321,7 +321,7 @@ public class ACNavStart
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
-                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS : {
+                case GlobalDef.MSGWHAT_JOBSHOW_UPDATE: {
                     Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                             GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
                     m.obj = this;

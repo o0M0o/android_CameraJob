@@ -12,16 +12,18 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
+import com.wxm.camerajob.base.data.CameraJobStatus;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.handler.GlobalContext;
+import com.wxm.camerajob.base.db.IDataChangeNotice;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.acutility.ACJobGallery;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +34,8 @@ import java.util.TimerTask;
 
 import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
+
+import static com.wxm.camerajob.base.handler.GlobalContext.GetDBManager;
 
 /**
  * 相机预览fragment
@@ -59,6 +63,30 @@ public class FrgJobShow extends Fragment {
     private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
     private Timer                               mTimer;
 
+    /**
+     *  任务数据变化回调类
+     */
+    private IDataChangeNotice mIDCJobNotice = new IDataChangeNotice() {
+        @Override
+        public void DataModifyNotice() {
+            reLoadFrg(0);
+        }
+
+        @Override
+        public void DataCreateNotice() {
+            reLoadFrg(1500);
+        }
+
+        @Override
+        public void DataDeleteNotice() {
+            reLoadFrg(0);
+        }
+
+        private void reLoadFrg(long delayMs)    {
+            mSelfHandler.sendEmptyMessageDelayed(GlobalDef.MSGWHAT_JOBSHOW_UPDATE, delayMs);
+        }
+    };
+
 
     public static FrgJobShow newInstance() {
         return new FrgJobShow();
@@ -76,20 +104,29 @@ public class FrgJobShow extends Fragment {
             mVWSelf = view;
             init_ui();
 
+            // for notice
+            GetDBManager().getCameraJobUtility().addDataChangeNotice(mIDCJobNotice);
+            GetDBManager().getCameraJobStatusUtility().addDataChangeNotice(mIDCJobNotice);
+
             // set timer
+            // 使用定时器定时全面刷新显示
             mTimer = new Timer();
             mTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS);
+                    mSelfHandler.sendEmptyMessage(GlobalDef.MSGWHAT_JOBSHOW_UPDATE);
                 }
-            }, 5000, 5000);
+            }, 5000, 10000);
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        GetDBManager().getCameraJobUtility().removeDataChangeNotice(mIDCJobNotice);
+        GetDBManager().getCameraJobStatusUtility().removeDataChangeNotice(mIDCJobNotice);
+
         mTimer.cancel();
     }
 
@@ -110,7 +147,7 @@ public class FrgJobShow extends Fragment {
      * 用现有数据重新绘制
      */
     public void refreshFrg()    {
-        //mLVAdapter.notifyDataSetChanged();
+        mSelfHandler.refreshCameraJobs();
     }
 
 
@@ -124,8 +161,8 @@ public class FrgJobShow extends Fragment {
         mLVJobs = UtilFun.cast_t(mVWSelf.findViewById(R.id.aclv_start_jobs));
         mLVAdapter= new LVJobShowAdapter(getContext(),
                 mLVList,
-                new String[]{KEY_JOB_NAME, KEY_JOB_DETAIL},
-                new int[]{R.id.tv_job_name, R.id.tv_job_detail});
+                new String[]{KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL},
+                new int[]{R.id.tv_job_name, R.id.tv_job_active,  R.id.tv_job_detail});
 
         mLVJobs.setAdapter(mLVAdapter);
         mSelfHandler = new FrgJobShowMsgHandler(this);
@@ -151,20 +188,7 @@ public class FrgJobShow extends Fragment {
             if(null != v)   {
                 HashMap<String, String> map = mLVList.get(position);
 
-                // for dead job
-                TextView tv = UtilFun.cast_t(v.findViewById(R.id.tv_job_active));
-                tv.setText(map.get(KEY_JOB_ACTIVE));
-                /*
-                if(DIED_JOB.equals(map.get(KEY_TYPE)))     {
-                    RelativeLayout rl = UtilFun.cast_t(v.findViewById(R.id.rl_job_info_active));
-                    ContextUtil.setViewGroupVisible(rl, View.INVISIBLE);
-                } else  {
-                    TextView tv = UtilFun.cast_t(v.findViewById(R.id.tv_job_active));
-                    tv.setText(map.get(KEY_JOB_ACTIVE));
-                }
-                */
-
-                // other ui
+                // for imagebutton
                 ImageButton ib_play = (ImageButton)v.findViewById(R.id.ib_job_run_or_pause);
                 ImageButton ib_delete = (ImageButton)v.findViewById(R.id.ib_job_stop);
 
@@ -214,25 +238,30 @@ public class FrgJobShow extends Fragment {
 
             switch (v.getId())  {
                 case R.id.ib_job_stop: {
-                    String type = map.get(KEY_TYPE);
-                    Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                                        type.equals(ALIVE_JOB) ?
-                                                GlobalDef.MSGWHAT_CAMERAJOB_REMOVE
-                                                : GlobalDef.MSGWHAT_CAMERAJOB_DELETE);
-
                     int id = Integer.parseInt(map.get(KEY_ID));
-                    m.obj = new Object[]{mSelfHandler, id};
-                    m.sendToTarget();
+                    String type = map.get(KEY_TYPE);
+                    if(ALIVE_JOB.equals(type))  {
+                        GetDBManager().getCameraJobUtility().RemoveJob(id);
+                    } else  {
+                        String path = ContextUtil.getInstance().getCameraJobPhotoDir(id);
+                        FileUtil.DeleteDirectory(path);
+
+                        mSelfHandler.refreshCameraJobs();
+                    }
                 }
                 break;
 
                 case R.id.ib_job_run_or_pause:    {
                     int id = Integer.parseInt(map.get(KEY_ID));
-                    Message m;
-                    m = Message.obtain(GlobalContext.getMsgHandlder(),
-                            GlobalDef.MSGWHAT_CAMERAJOB_RUNPAUSESWITCH);
-                    m.obj = new Object[] {mSelfHandler, id};
-                    m.sendToTarget();
+                    CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(id);
+                    if(null != cj) {
+                        CameraJobStatus cjs = cj.getStatus();
+                        cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
+                                GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
+                        GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
+
+                        mSelfHandler.refreshCameraJobs();
+                    }
                 }
                 break;
 
@@ -267,19 +296,8 @@ public class FrgJobShow extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case GlobalDef.MSGWHAT_CAMERAJOB_UPDATE :
-                case GlobalDef.MSGWHAT_ACSTART_UPDATEJOBS : {
-                    Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                            GlobalDef.MSGWHAT_CAMERAJOB_ASKALL);
-                    m.obj = this;
-                    m.sendToTarget();
-                }
-                break;
-
-                case GlobalDef.MSGWHAT_REPLAY :     {
-                    if(GlobalDef.MSGWHAT_CAMERAJOB_ASKALL == msg.arg1) {
-                        load_camerajobs(msg);
-                    }
+                case GlobalDef.MSGWHAT_JOBSHOW_UPDATE: {
+                    refreshCameraJobs();
                 }
                 break;
 
@@ -289,24 +307,40 @@ public class FrgJobShow extends Fragment {
             }
         }
 
-        private void load_camerajobs(Message msg) {
+        /**
+         * 更新任务数据
+         */
+        void refreshCameraJobs() {
+            mSelfList.clear();
             LinkedList<String> dirs = FileUtil.getDirDirs(
-                    ContextUtil.getInstance().getAppPhotoRootDir(),
-                    false);
-            List<CameraJob> lsjob = UtilFun.cast(msg.obj);
-            if(null != lsjob) {
-                mSelfList.clear();
+                                ContextUtil.getInstance().getAppPhotoRootDir(), false);
+            List<CameraJob> lsjob = GetDBManager().getCameraJobUtility().GetJobs();
+            if(!UtilFun.ListIsNullOrEmpty(lsjob))   {
+                Collections.sort(lsjob, new Comparator<CameraJob>() {
+                    @Override
+                    public int compare(CameraJob lhs, CameraJob rhs) {
+                        return lhs.get_id() - rhs.get_id();
+                    }
+                });
                 for (CameraJob cj : lsjob) {
                     alive_camerjob(cj);
 
                     String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
-                    if (!UtilFun.StringIsNullOrEmpty(dir))
-                        dirs.remove(dir);
+                    dirs.remove(dir);
                 }
             }
 
-            for(String dir : dirs)  {
-                died_camerajob(dir);
+            if(!UtilFun.ListIsNullOrEmpty(dirs)) {
+                Collections.sort(dirs, new Comparator<String>() {
+                    @Override
+                    public int compare(String lhs, String rhs) {
+                        return lhs.compareTo(rhs);
+                    }
+                });
+
+                for (String dir : dirs) {
+                    died_camerajob(dir);
+                }
             }
 
             mFrgHome.updateData(mSelfList);

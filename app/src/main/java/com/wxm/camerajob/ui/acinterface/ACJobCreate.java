@@ -19,13 +19,13 @@ import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.PreferencesUtil;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 import com.wxm.camerajob.ui.fragment.utility.FrgJobCreate;
 
-public class ACJob
+public class ACJobCreate
         extends AppCompatActivity   {
-    private final static String TAG = "ACJob";
+    private final static String TAG = "ACJobCreate";
     private final static int        REQUEST_SET_CAMERA = 123;
 
     private final FrgJobCreate mFRGJobCreater = FrgJobCreate.newInstance();

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.receiver.AlarmReceiver;
 

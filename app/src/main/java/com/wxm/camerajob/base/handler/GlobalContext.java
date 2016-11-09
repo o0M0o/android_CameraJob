@@ -15,7 +15,6 @@ import com.wxm.camerajob.base.utility.SilentCameraHelper;
 import java.util.Calendar;
 import java.util.List;
 
-import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
@@ -101,14 +100,6 @@ public class GlobalContext {
                     processor_camerajob_add(msg);
                     break;
 
-                case GlobalDef.MSGWHAT_CAMERAJOB_REMOVE :
-                    processor_camerajob_remove(msg);
-                    break;
-
-                case GlobalDef.MSGWHAT_CAMERAJOB_DELETE :
-                    processor_camerajob_delete(msg);
-                    break;
-
                 case GlobalDef.MSGWHAT_CAMERAJOB_ASKALL:
                     processor_ask_cameraJob(msg);
                     break;
@@ -148,12 +139,12 @@ public class GlobalContext {
             Handler h = UtilFun.cast(obj_arr[0]);
             int _id = UtilFun.cast(obj_arr[1]);
 
-            CameraJob cj = GetDBManager().mCameraJobHelper.GetJob(_id);
+            CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(_id);
             if(null != cj) {
                 CameraJobStatus cjs = cj.getStatus();
                 cjs.setJob_status(GlobalDef.STR_CAMERAJOB_RUN);
 
-                GetDBManager().mCameraJobStatusHelper.ModifyJobStatus(cjs);
+                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
             }
 
             Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
@@ -169,12 +160,12 @@ public class GlobalContext {
             Handler h = UtilFun.cast(obj_arr[0]);
             int _id = UtilFun.cast(obj_arr[1]);
 
-            CameraJob cj = GetDBManager().mCameraJobHelper.GetJob(_id);
+            CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(_id);
             if(null != cj) {
                 CameraJobStatus cjs = cj.getStatus();
                 cjs.setJob_status(GlobalDef.STR_CAMERAJOB_PAUSE);
 
-                GetDBManager().mCameraJobStatusHelper.ModifyJobStatus(cjs);
+                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
             }
 
             Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
@@ -186,33 +177,16 @@ public class GlobalContext {
             Handler h = UtilFun.cast(obj_arr[0]);
             int _id = UtilFun.cast(obj_arr[1]);
 
-            CameraJob cj = GetDBManager().mCameraJobHelper.GetJob(_id);
+            CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(_id);
             if(null != cj) {
                 CameraJobStatus cjs = cj.getStatus();
                 cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
                         GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
-                GetDBManager().mCameraJobStatusHelper.ModifyJobStatus(cjs);
+                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
 
                 Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
                 reply.sendToTarget();
             }
-        }
-
-        /**
-         * 删除camerajob任务目录
-         * @param msg 消息
-         */
-        private void processor_camerajob_delete(Message msg) {
-            Object[] obj_arr = UtilFun.cast(msg.obj);
-            Handler h = UtilFun.cast(obj_arr[0]);
-            int _id = UtilFun.cast(obj_arr[1]);
-
-            String path = ContextUtil.getInstance()
-                    .getCameraJobPhotoDir(_id);
-            FileUtil.DeleteDirectory(path);
-
-            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-            reply.sendToTarget();
         }
 
         /**
@@ -237,31 +211,17 @@ public class GlobalContext {
             int camerajob_id = UtilFun.cast(obj_arr[0]);
             int photo_count = UtilFun.cast(obj_arr[1]);
 
-            CameraJob js = GetDBManager().mCameraJobHelper.GetJob(camerajob_id);
+            CameraJob js = GetDBManager().getCameraJobUtility().GetJob(camerajob_id);
             if(null != js)   {
                 CameraJobStatus curjs = js.getStatus();
                 curjs.setJob_photo_count(curjs.getJob_photo_count() + photo_count);
                 curjs.getTs().setTime(Calendar.getInstance().getTimeInMillis());
 
-                GetDBManager().mCameraJobStatusHelper.ModifyJobStatus(curjs);
+                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(curjs);
                 //Log.i(TAG, "CameraJobStatus : " + curjs.toString());
             }
         }
 
-
-        /**
-         * 移除cameraJob
-         * @param msg  消息
-         */
-        private void processor_camerajob_remove(Message msg) {
-            Object[] obj_arr = UtilFun.cast(msg.obj);
-            Handler h = UtilFun.cast(obj_arr[0]);
-            int _id = UtilFun.cast(obj_arr[1]);
-
-            GetDBManager().mCameraJobHelper.RemoveJob(_id);
-            Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);
-            reply.sendToTarget();
-        }
 
         /**
          * 查询cameraJob
@@ -270,7 +230,7 @@ public class GlobalContext {
         private void processor_ask_cameraJob(Message msg)    {
             Handler h = (Handler)msg.obj;
 
-            List<CameraJob> lsret = GetDBManager().mCameraJobHelper.GetJobs();
+            List<CameraJob> lsret = GetDBManager().getCameraJobUtility().GetJobs();
             if(null == lsret)
                 Log.e(TAG, "get camerajob failed!");
 
@@ -313,7 +273,7 @@ public class GlobalContext {
          * 处理唤醒消息
          */
         private void processor_wakeup() {
-            List<CameraJob> ls = GetDBManager().mCameraJobHelper.GetJobs();
+            List<CameraJob> ls = GetDBManager().getCameraJobUtility().GetJobs();
             if((null != ls) && (1 <= ls.size()))
                 GetJobProcess().processorWakeup(ls);
         }
@@ -328,7 +288,7 @@ public class GlobalContext {
             CameraJob cj = UtilFun.cast(obj_arr[1]);
 
             //create prjdir
-            if(GetDBManager().mCameraJobHelper.AddJob(cj))  {
+            if(GetDBManager().getCameraJobUtility().AddJob(cj))  {
                 if(!UtilFun.StringIsNullOrEmpty(
                         ContextUtil.getInstance().createCameraJobPhotoDir(cj))) {
                     Message reply = Message.obtain(h, GlobalDef.MSGWHAT_CAMERAJOB_UPDATE);

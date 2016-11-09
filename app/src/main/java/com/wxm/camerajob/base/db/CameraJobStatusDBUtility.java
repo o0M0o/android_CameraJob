@@ -1,27 +1,18 @@
 package com.wxm.camerajob.base.db;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
 import com.wxm.camerajob.base.data.CameraJobStatus;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 辅助处理camerajob的状态
  * Created by 123 on 2016/6/16.
  */
-public class DBCameraJobStatusHelper {
+public class CameraJobStatusDBUtility extends DBUtilityBase {
     private DBOrmLiteHelper mHelper;
 
 
-    public DBCameraJobStatusHelper(DBOrmLiteHelper helper)  {
+    public CameraJobStatusDBUtility(DBOrmLiteHelper helper)  {
         mHelper = helper;
     }
 
@@ -31,7 +22,11 @@ public class DBCameraJobStatusHelper {
      * @return 如果添加成功返回true, 否则返回false
      */
     public boolean AddJobStatus(CameraJobStatus cjs) {
-        return 1 == mHelper.getCamerJobStatusREDao().create(cjs);
+        boolean ret = 1 == mHelper.getCamerJobStatusREDao().create(cjs);
+        if(ret)
+            onDataCreate();
+
+        return ret;
     }
 
 
@@ -42,7 +37,11 @@ public class DBCameraJobStatusHelper {
      */
     public boolean RemoveJobStatus(String jobstatusid)  {
         int id = Integer.parseInt(jobstatusid);
-        return 1 == mHelper.getCamerJobStatusREDao().deleteById(id);
+        boolean ret =  1 == mHelper.getCamerJobStatusREDao().deleteById(id);
+        if(ret)
+            onDataDelete();
+
+        return ret;
     }
 
     /**
@@ -51,7 +50,11 @@ public class DBCameraJobStatusHelper {
      * @return  修改成功返回true, 否则返回false
      */
     public boolean ModifyJobStatus(CameraJobStatus cj)  {
-        return 1 == mHelper.getCamerJobStatusREDao().update(cj);
+        boolean ret = 1 == mHelper.getCamerJobStatusREDao().update(cj);
+        if(ret)
+            onDataModify();
+
+        return ret;
     }
 
     /**

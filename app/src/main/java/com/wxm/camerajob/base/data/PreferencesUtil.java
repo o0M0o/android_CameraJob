@@ -1,4 +1,4 @@
-package com.wxm.camerajob.base.utility;
+package com.wxm.camerajob.base.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,9 +6,7 @@ import android.hardware.Camera;
 import android.hardware.camera2.CameraCharacteristics;
 import android.os.Build;
 
-import com.wxm.camerajob.base.data.CameraParam;
-import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
+import com.wxm.camerajob.base.utility.ContextUtil;
 
 import java.util.LinkedList;
 
