@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:gravity="center_horizontal"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
-    <ImageSwitcher
-        android:id="@+id/is_photo"
-        android:layout_width="wrap_content"
-        android:layout_height="0dip"
-        android:layout_weight="3"
-        android:paddingTop="24dip" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:background="@color/grey_1"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
+
+        <ImageSwitcher
+            android:id="@+id/is_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/tv_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="7/14" />
+    </RelativeLayout>
 
     <!--
          android:layout_weight  详细解释:按比例显示LinearLayout内各个子控件，
@@ -25,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
-        android:spacing="5dip"
+        android:spacing="3dip"
         android:unselectedAlpha="0.6" />
 
 </LinearLayout>

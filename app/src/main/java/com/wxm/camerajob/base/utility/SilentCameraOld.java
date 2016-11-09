@@ -1,13 +1,10 @@
 package com.wxm.camerajob.base.utility;
 
 import android.hardware.Camera;
-import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraParam;
-import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
-import com.wxm.camerajob.base.handler.GlobalContext;
 
 import java.util.concurrent.TimeUnit;
 
@@ -198,11 +195,6 @@ public class SilentCameraOld extends SilentCamera {
                 String l = "save photo to : " + mTPParam.mFileName;
                 Log.i(TAG, l);
                 getLogger().info(l);
-
-                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                        GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
-                m.obj = new Object[] {Integer.parseInt(mTPParam.mTag), 1};
-                m.sendToTarget();
             }
 
             mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
