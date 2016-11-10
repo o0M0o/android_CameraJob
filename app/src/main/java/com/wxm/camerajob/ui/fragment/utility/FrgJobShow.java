@@ -26,6 +26,7 @@ import com.wxm.camerajob.base.utility.CameraJobUtility;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.acutility.ACJobGallery;
 import com.wxm.camerajob.ui.acutility.ACJobSlide;
+import com.wxm.camerajob.ui.helper.FrgCamerInfoHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.fragment.utility;
+package com.wxm.camerajob.ui.helper;
 
 import android.content.Context;
 import android.widget.RelativeLayout;

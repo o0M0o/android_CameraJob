@@ -86,4 +86,11 @@ dependencies {
     compile 'cn.finalteam:toolsfinal:1.1.4'
     apt 'com.jakewharton:butterknife-compiler:8.0.1'
     compile project(':AndriodUtillib')
+    compile files('libs/extend_libs/javamail/mail.jar')
+    compile files('libs/extend_libs/javamail/lib/dsn.jar')
+    compile files('libs/extend_libs/javamail/lib/gimap.jar')
+    compile files('libs/extend_libs/javamail/lib/imap.jar')
+    compile files('libs/extend_libs/javamail/lib/mailapi.jar')
+    compile files('libs/extend_libs/javamail/lib/pop3.jar')
+    compile files('libs/extend_libs/javamail/lib/smtp.jar')
 }

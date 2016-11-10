@@ -56,7 +56,10 @@
             android:name=".ui.acutility.ACCameraPreview"
             android:exported="true" />
         <activity android:name=".ui.acutility.ACSetting" />
-        <activity android:name=".ui.acutility.ACJobSlide"></activity>
+        <activity android:name=".ui.acutility.ACJobSlide" />
+        <activity android:name=".ui.acutility.ACEmailTest"
+            android:label="测试邮箱"
+            android:exported="true"/>
     </application>
 
 </manifest>
