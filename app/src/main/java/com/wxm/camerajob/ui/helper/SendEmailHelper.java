@@ -3,9 +3,7 @@ package com.wxm.camerajob.ui.helper;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import java.util.Date;
 import javax.activation.*;
-import java.io.*;
 
 /**
  * 发送邮件的辅助类
@@ -19,28 +17,28 @@ public class SendEmailHelper {
 }
 
 
-public class Mail {
-    private MimeMessage mimeMsg; // MIME邮件对象
-    private Session session; // 邮件会话对象
-    private Properties props; // 系统属性
-    private boolean needAuth = false; // smtp是否需要认证
-    private String username = ""; // smtp认证用户名和密码
+public class SMTPMail {
+    private MimeMessage mimeMsg;
+    private Session session;
+    private Properties props;
+    private boolean needAuth = false;
+    private String username = "";
     private String password = "";
-    private Multipart mp; // Multipart对象,邮件内容,标题,附件等内容均添加到其中后再生成//MimeMessage对象
+    private Multipart mp;
 
-    public Mail(String smtp) {
+    public SMTPMail(String smtp) {
         setSmtpHost(smtp);
         createMimeMessage();
     }
 
     /**
+     * 设置系统属性
      * @param hostName String
      */
     public void setSmtpHost(String hostName) {
-        System.out.println("设置系统属性：mail.smtp.host = " + hostName);
         if (props == null)
-            props = System.getProperties(); // 获得系统属性对象
-        props.put("mail.smtp.host", hostName); // 设置SMTP主机
+            props = System.getProperties();
+        props.put("mail.smtp.host", hostName);
     }
 
     /**
@@ -48,17 +46,11 @@ public class Mail {
      */
     public boolean createMimeMessage() {
         try {
-            session = Session.getDefaultInstance(props, null); // 获得邮件会话对象
-        } catch (Exception e) {
-            return false;
-        }
-
-        try {
-            mimeMsg = new MimeMessage(session); // 创建MIME邮件对象
-            mp = new MimeMultipart(); // mp 一个multipart对象
+            session = Session.getDefaultInstance(props, null);
+            mimeMsg = new MimeMessage(session);
+            mp = new MimeMultipart();
             return true;
         } catch (Exception e) {
-            System.err.println("创建MIME邮件对象失败！" + e);
             return false;
         }
     }
@@ -151,7 +143,6 @@ public class Mail {
 
     /**
      * @param to String
-     * @param pass String
      */
     public boolean setTo(String to) {
         System.out.println("设置收信人");
@@ -167,8 +158,7 @@ public class Mail {
     }
 
     /**
-     * @param name String
-     * @param pass String
+     * @param copyto String
      */
     public boolean setCopyTo(String copyto) {
         System.out.println("发送附件到");
@@ -184,27 +174,33 @@ public class Mail {
     }
 
     /**
-     * @param name String
-     * @param pass String
+     * 发送邮件
+     *
+     * @return 发送成功返回true
      */
     public boolean sendout() {
+        Transport transport = null;
         try {
             mimeMsg.setContent(mp);
             mimeMsg.saveChanges();
-            System.out.println("正在发送邮件....");
+
             Session mailSession = Session.getInstance(props, null);
-            Transport transport = mailSession.getTransport("smtp"); // ？？？
-            transport.connect((String) props.get("mail.smtp.host"), username,
-                    password);
-            transport.sendMessage(mimeMsg, mimeMsg
-                    .getRecipients(Message.RecipientType.TO));
-// transport.send(mimeMsg);
-            System.out.println("发送邮件成功！");
-            transport.close();
+            transport = mailSession.getTransport("smtp");
+            transport.connect((String) props.get("mail.smtp.host"), username, password);
+            transport.sendMessage(mimeMsg, mimeMsg.getRecipients(Message.RecipientType.TO));
+            Transport.send(mimeMsg);
+
             return true;
         } catch (Exception e) {
-            System.err.println("邮件发送失败！" + e);
             return false;
+        } finally {
+
+            if (null != transport)
+                try {
+                    transport.close();
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
@@ -213,7 +209,7 @@ public class Mail {
      */
     public static void main(String[] args) {
         String mailbody = "http://www.laabc.com 用户邮件注册测试 <font color=red>欢迎光临</font> <a href=\"http://www.laabc.com\">啦ABC</a>";
-        Mail themail = new Mail("smtp.126.com");
+        SMTPMail themail = new SMTPMail("smtp.126.com");
         themail.setNeedAuth(true);
         if (themail.setSubject("laabc.com邮件测试") == false)
             return;
