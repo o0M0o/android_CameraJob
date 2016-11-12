@@ -50,7 +50,7 @@ public class ACSetting extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acm_save_giveup, menu);
+        inflater.inflate(R.menu.acm_leave_save_giveup, menu);
 
         mMISave = menu.findItem(R.id.mi_save);
         mMIGiveUp = menu.findItem(R.id.mi_giveup);

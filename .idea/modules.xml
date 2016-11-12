@@ -3,10 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndriodUtillib/AndriodUtillib.iml" filepath="$PROJECT_DIR$/AndriodUtillib/AndriodUtillib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AndriodUtillib/AndriodUtillib.iml" filepath="$PROJECT_DIR$/AndriodUtillib/AndriodUtillib.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/camerajob.iml" filepath="$PROJECT_DIR$/camerajob.iml" />
-      <module fileurl="file://$PROJECT_DIR$/galleryfinal/galleryfinal.iml" filepath="$PROJECT_DIR$/galleryfinal/galleryfinal.iml" />
       <module fileurl="file://$PROJECT_DIR$/galleryfinal/galleryfinal.iml" filepath="$PROJECT_DIR$/galleryfinal/galleryfinal.iml" />
     </modules>
   </component>

@@ -36,14 +36,14 @@ public class ACCameraSetting extends AppCompatActivity   {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acmeu_cameraset_actbar, menu);
+        inflater.inflate(R.menu.acm_accpet_giveup, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.meuitem_cameraset_accept : {
+            case R.id.mi_accept: {
                 final Intent data = new Intent();
                 if(mTFCamera.isSettingDirty()) {
                     Dialog alertDialog = new AlertDialog.Builder(this).
@@ -71,7 +71,7 @@ public class ACCameraSetting extends AppCompatActivity   {
             }
             break;
 
-            case R.id.meuitem_cameraset_giveup : {
+            case R.id.mi_giveup: {
                 Intent data = new Intent();
                 setResult(GlobalDef.INTRET_CS_GIVEUP, data);
                 finish();

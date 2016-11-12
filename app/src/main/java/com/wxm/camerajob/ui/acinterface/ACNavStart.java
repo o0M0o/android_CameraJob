@@ -177,7 +177,7 @@ public class ACNavStart
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acmeu_start_actbar, menu);
+        inflater.inflate(R.menu.acm_start_actbar, menu);
         return true;
     }
 
@@ -185,19 +185,19 @@ public class ACNavStart
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.meuitem_camerajob_add : {
+            case R.id.mi_job_add: {
                 Intent intent = new Intent(this, ACJobCreate.class);
                 startActivityForResult(intent, 1);
             }
             break;
 
-            case R.id.meuitem_setting :  {
+            case R.id.mi_setting:  {
                 Intent data = new Intent(this, ACSetting.class);
                 startActivityForResult(data, 1);
             }
             break;
 
-            case R.id.meuitem_camera_setting :  {
+            case R.id.mi_camera_setting:  {
                 Intent data = new Intent(this, ACCameraSetting.class);
                 startActivityForResult(data, 1);
             }

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -18,8 +19,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -35,6 +38,10 @@ import com.wxm.camerajob.ui.acutility.ACCameraPreview;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import cn.wxm.andriodutillib.Dialog.DlgDatePicker;
 import cn.wxm.andriodutillib.Dialog.DlgOKOrNOBase;
@@ -48,14 +55,17 @@ import cn.wxm.andriodutillib.util.UtilFun;
 public class FrgJobCreate extends Fragment {
     private final static String     TAG = "FrgJobCreate";
 
+    private final static String     KEY_JOB_TYPE    = "job_type";
+    private final static String     KEY_JOB_POINT   = "job_point";
+
     private View        mVWSelf;
 
     // for job setting
     private EditText    mETJobName;
     private TextView    mTVJobStartDate;
     private TextView    mTVJobEndDate;
-    private Spinner     mSPJobType;
-    private Spinner     mSPJobPoint;
+    private GridView    mGVJobType;
+    private GridView    mGVJobPoint;
     private Switch      mSWSendPicByEmail;
 
     // for camera setting
@@ -100,9 +110,6 @@ public class FrgJobCreate extends Fragment {
         }
     }
 
-
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -116,8 +123,8 @@ public class FrgJobCreate extends Fragment {
      */
     public CameraJob onAccept()   {
         String job_name  = mETJobName.getText().toString();
-        String job_type  = mSPJobType.getSelectedItem().toString();
-        String job_point = mSPJobPoint.getSelectedItem().toString();
+        String job_type  = ((GVJobTypeAdapter)mGVJobType.getAdapter()).getSelectJobType();
+        String job_point = ((GVJobPointAdapter)mGVJobPoint.getAdapter()).getSelectJobPoint();
         String job_starttime = mTVJobStartDate.getText().toString() + ":00";
         String job_endtime = mTVJobEndDate.getText().toString() + ":00";
 
@@ -135,7 +142,7 @@ public class FrgJobCreate extends Fragment {
 
         if(job_type.isEmpty())  {
             Log.i(TAG, "job type为空");
-            mSPJobType.requestFocus();
+            mGVJobType.requestFocus();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ct);
             builder.setMessage("请选择任务类型!").setTitle("警告");
@@ -146,7 +153,7 @@ public class FrgJobCreate extends Fragment {
 
         if(job_point.isEmpty())  {
             Log.i(TAG, "job point为空");
-            mSPJobPoint.requestFocus();
+            mGVJobPoint.requestFocus();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ct);
             builder.setMessage("请选择任务激活方式!").setTitle("警告");
@@ -203,65 +210,23 @@ public class FrgJobCreate extends Fragment {
         mTVJobEndDate.setText(UtilFun.MilliSecsToString(System.currentTimeMillis()
                 + 1000 * 3600 * 24 * 7).substring(0, 16));
 
-        mSPJobType = UtilFun.cast_t(mVWSelf.findViewById(R.id.acsp_job_type));
-        mSPJobPoint = UtilFun.cast_t(mVWSelf.findViewById(R.id.acsp_job_point));
+        // for job type & job point
+        mGVJobType = UtilFun.cast_t(mVWSelf.findViewById(R.id.gv_job_type));
+        mGVJobPoint = UtilFun.cast_t(mVWSelf.findViewById(R.id.gv_job_point));
 
-        // 默认选择'每分钟'
-        final ArrayAdapter mAPJobType = ArrayAdapter.createFromResource(mVWSelf.getContext(),
-                                R.array.job_type, R.layout.sp_jobtype);
-        mAPJobType.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSPJobType.setAdapter(mAPJobType);
-        mSPJobType.setSelection(0);
+        String[] str_arr = getResources().getStringArray(R.array.job_type);
+        ArrayList<HashMap<String, String>> al_hm = new ArrayList<>();
+        for(String i : str_arr) {
+            HashMap<String, String> hm = new HashMap<>();
+            hm.put(KEY_JOB_TYPE, i);
 
-        final ArrayAdapter mAPJobPoint = ArrayAdapter.createFromResource(mVWSelf.getContext(),
-                                R.array.minutely_invoke, R.layout.sp_jobpoint);
-        mAPJobPoint.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        mSPJobPoint.setAdapter(mAPJobPoint);
+            al_hm.add(hm);
+        }
 
-        final Activity home = getActivity();
-        mSPJobType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selitem = mAPJobType.getItem(position).toString();
-
-                try {
-                    ArrayAdapter APJobPoint = null;
-                    switch (selitem) {
-                        case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                            APJobPoint = ArrayAdapter.createFromResource(home,
-                                        R.array.minutely_invoke, R.layout.sp_jobpoint);
-                        }
-                        break;
-
-                        case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                            APJobPoint = ArrayAdapter.createFromResource(home,
-                                        R.array.hourly_invoke, R.layout.sp_jobpoint);
-                        }
-                        break;
-
-                        case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                            APJobPoint = ArrayAdapter.createFromResource(home,
-                                        R.array.daily_invoke, R.layout.sp_jobpoint);
-                        }
-                        break;
-                    }
-
-                    if(null != APJobPoint) {
-                        mSPJobPoint.setAdapter(APJobPoint);
-                        APJobPoint.notifyDataSetChanged();
-                    }
-                }
-                catch (Resources.NotFoundException e)   {
-                    Log.e(TAG, "Not find string array for '" + selitem + "'");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        GVJobTypeAdapter ga = new GVJobTypeAdapter(getContext(), al_hm,
+                                    new String[]{KEY_JOB_TYPE}, new int[]{R.id.tv_job_type});
+        mGVJobType.setAdapter(ga);
+        ga.notifyDataSetChanged();
 
         // for start and end time
         View.OnClickListener cl = new View.OnClickListener() {
@@ -371,73 +336,182 @@ public class FrgJobCreate extends Fragment {
         mTVCameraFocus.setText(getString(cp.mAutoFocus?
                 R.string.cn_autofocus : R.string.cn_focus_no));
     }
+    /// END PRIVATE
 
 
     /**
-     * 生成日期选择dialog
-     * @param event     事件
-     * @param timetype  日期类型
-    private void onTouchDate(MotionEvent event, String timetype) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = View.inflate(this, R.layout.dlg_datetime, null);
-        final DatePicker datePicker = (DatePicker) view.findViewById(R.id.dldt_date);
-        final TimePicker timePicker = (TimePicker) view.findViewById(R.id.dldt_time);
-        builder.setView(view);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(System.currentTimeMillis());
-        datePicker.init(cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null);
-
-        final int inType = mEtJobEndDate.getInputType();
-        mEtJobEndDate.setInputType(InputType.TYPE_NULL);
-        mEtJobEndDate.onTouchEvent(event);
-        mEtJobEndDate.setInputType(inType);
-        mEtJobEndDate.setSelection(mEtJobEndDate.getText().length());
-
-        final int inType1 = mEtJobStartDate.getInputType();
-        mEtJobStartDate.setInputType(InputType.TYPE_NULL);
-        mEtJobStartDate.onTouchEvent(event);
-        mEtJobStartDate.setInputType(inType1);
-        mEtJobStartDate.setSelection(mEtJobStartDate.getText().length());
-
-        final String tt = timetype;
-        if(JOB_ENDTIME.equals(tt))
-            builder.setTitle("选择任务结束时间");
-        else
-            builder.setTitle("选择任务开始时间");
-
-        builder.setPositiveButton("确  定", new DialogInterface.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.M)
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                StringBuffer sb = new StringBuffer();
-                sb.append(
-                        String.format("%d-%02d-%02d %02d:%02d:00",
-                                datePicker.getYear(),
-                                datePicker.getMonth() + 1,
-                                datePicker.getDayOfMonth(),
-                                (Build.VERSION.SDK_INT >= 23 ?
-                                        timePicker.getHour() : timePicker.getCurrentHour()),
-                                (Build.VERSION.SDK_INT >= 23 ?
-                                        timePicker.getMinute() : timePicker.getCurrentMinute())));
-
-                if(JOB_ENDTIME.equals(tt)) {
-                    mEtJobEndDate.setText(sb);
-                    mEtJobEndDate.requestFocus();
-                }
-                else    {
-                    mEtJobStartDate.setText(sb);
-                    mEtJobStartDate.requestFocus();
-                }
-
-                dialog.cancel();
-            }
-        });
-
-        Dialog dialog = builder.create();
-        dialog.show();
-    }
+     * gridview适配器类
      */
-    /// END PRIVATE
+    public class GVJobTypeAdapter
+            extends SimpleAdapter
+            implements View.OnClickListener {
+        private int  mCLSelected;
+        private int  mCLNotSelected;
+        private int  mLastSelected;
+
+        public GVJobTypeAdapter(Context context, List<? extends Map<String, ?>> data,
+                                String[] from, int[] to) {
+            super(context, data, R.layout.gi_job_type, from, to);
+
+            mCLSelected = getResources().getColor(R.color.trans_half);
+            mCLNotSelected = getResources().getColor(R.color.trans_full);
+
+            mLastSelected = GlobalDef.INT_INVALID_ID;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            int org_ct = getCount();
+            return org_ct < 1 ? 1 : org_ct;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View view, ViewGroup arg2) {
+            View v = super.getView(position, view, arg2);
+            if (null != v) {
+                v.setOnClickListener(this);
+            }
+
+            return v;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int pos = mGVJobType.getPositionForView(v);
+            if(mLastSelected == pos)
+                return;
+
+            int sz = mGVJobType.getCount();
+            for(int i = 0; i < sz; ++i) {
+                View cur = mGVJobType.getChildAt(i);
+                cur.setBackgroundColor(pos == i ? mCLSelected : mCLNotSelected);
+            }
+
+            invoke_job_point(pos);
+            mLastSelected = pos;
+        }
+
+        public String getSelectJobType()    {
+            if(GlobalDef.INT_INVALID_ID == mLastSelected)
+                return "";
+
+            HashMap<String, Object> hmd = UtilFun.cast(getItem(mLastSelected));
+            return UtilFun.cast_t(hmd.get(KEY_JOB_TYPE));
+        }
+
+        private void invoke_job_point(int pos)  {
+            HashMap<String, Object> hmd = UtilFun.cast(getItem(pos));
+            String hv = UtilFun.cast_t(hmd.get(KEY_JOB_TYPE));
+            try {
+                String[] str_arr = null;
+                Activity home = getActivity();
+                switch (hv) {
+                    case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
+                        str_arr = getResources().getStringArray(R.array.minutely_invoke);
+                    }
+                    break;
+
+                    case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
+                        str_arr = getResources().getStringArray(R.array.hourly_invoke);
+                    }
+                    break;
+
+                    case GlobalDef.CNSTR_JOBTYPE_DAILY: {
+                        str_arr = getResources().getStringArray(R.array.daily_invoke);
+                    }
+                    break;
+                }
+
+                if(null != str_arr) {
+                    ArrayList<HashMap<String, String>> al_hm = new ArrayList<>();
+                    for(String i : str_arr) {
+                        HashMap<String, String> hm = new HashMap<>();
+                        hm.put(KEY_JOB_POINT, i);
+
+                        al_hm.add(hm);
+                    }
+
+                    GVJobPointAdapter ga = new GVJobPointAdapter(getContext(), al_hm,
+                            new String[]{KEY_JOB_POINT}, new int[]{R.id.tv_job_point});
+                    mGVJobPoint.setAdapter(ga);
+                    ga.notifyDataSetChanged();
+                }
+            }
+            catch (Resources.NotFoundException e)   {
+                Log.e(TAG, "Not find string array for '" + hv + "'");
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
+     * gridview适配器类
+     */
+    public class GVJobPointAdapter
+            extends SimpleAdapter
+            implements View.OnClickListener {
+        private int  mCLSelected;
+        private int  mCLNotSelected;
+        private int  mLastSelected;
+
+        public GVJobPointAdapter(Context context, List<? extends Map<String, ?>> data,
+                                String[] from, int[] to) {
+            super(context, data, R.layout.gi_job_point, from, to);
+
+            mCLSelected = getResources().getColor(R.color.trans_half);
+            mCLNotSelected = getResources().getColor(R.color.trans_full);
+
+            mLastSelected = GlobalDef.INT_INVALID_ID;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            int org_ct = getCount();
+            return org_ct < 1 ? 1 : org_ct;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View view, ViewGroup arg2) {
+            View v = super.getView(position, view, arg2);
+            if (null != v) {
+                v.setOnClickListener(this);
+            }
+
+            return v;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int pos = mGVJobPoint.getPositionForView(v);
+            if(mLastSelected == pos)
+                return;
+
+            int sz = mGVJobPoint.getCount();
+            for(int i = 0; i < sz; ++i) {
+                View cur = mGVJobPoint.getChildAt(i);
+                cur.setBackgroundColor(pos == i ? mCLSelected : mCLNotSelected);
+            }
+
+            mLastSelected = pos;
+        }
+
+        public String getSelectJobPoint()    {
+            if(GlobalDef.INT_INVALID_ID == mLastSelected)
+                return "";
+
+            HashMap<String, Object> hmd = UtilFun.cast(getItem(mLastSelected));
+            return UtilFun.cast_t(hmd.get(KEY_JOB_POINT));
+        }
+    }
 }

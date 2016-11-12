@@ -15,3 +15,34 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-verbose
+
+-dontwarn com.j256.ormlite.**
+-keep class com.j256.ormlite.** {
+*;
+}
+
+-dontwarn com.sun.mail.**
+-keep class com.sun.mail.** {
+*;
+}
+
+-dontwarn org.apache.harmony.**
+-keep class org.apache.harmony.** {
+*;
+}
+
+-dontwarn com.facebook.**
+-keep class com.facebook.** {
+*;
+}
+
+-dontwarn javax.activation.**
+-keep class javax.activation.** {
+*;
+}

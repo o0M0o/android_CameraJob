@@ -10,13 +10,13 @@ android {
         }
     }
     compileSdkVersion 23
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "com.wxm.camerajob"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 6
-        versionName "1.06"
+        versionCode 7
+        versionName "1.07"
         signingConfig signingConfigs.defkey
 
         /*
@@ -27,7 +27,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.defkey
 

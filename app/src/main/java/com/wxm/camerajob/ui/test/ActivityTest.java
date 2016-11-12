@@ -118,14 +118,14 @@ public class ActivityTest extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acm_testcamera_actbar, menu);
+        inflater.inflate(R.menu.acm_leave, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.meuitem_testcamera_leave: {
+            case R.id.mi_leave: {
                 Intent data = new Intent();
                 setResult(GlobalDef.INTRET_CS_GIVEUP, data);
                 finish();

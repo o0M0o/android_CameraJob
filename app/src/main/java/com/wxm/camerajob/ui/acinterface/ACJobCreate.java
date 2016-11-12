@@ -49,7 +49,7 @@ public class ACJobCreate
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acmeu_camerajob_actbar, menu);
+        inflater.inflate(R.menu.acm_accpet_giveup, menu);
         return true;
     }
 
@@ -87,7 +87,7 @@ public class ACJobCreate
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.meuitem_camerajob_accept: {
+            case R.id.mi_accept: {
                 CameraJob cj = mFRGJobCreater.onAccept();
                 if(null != cj) {
                     Intent data = new Intent();
@@ -98,7 +98,7 @@ public class ACJobCreate
             }
             break;
 
-            case R.id.meuitem_camerajob_giveup  : {
+            case R.id.mi_giveup: {
                 Intent data = new Intent();
                 setResult(GlobalDef.INTRET_CAMERAJOB_GIVEUP, data);
                 finish();
