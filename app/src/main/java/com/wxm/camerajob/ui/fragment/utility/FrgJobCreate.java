@@ -68,6 +68,9 @@ public class FrgJobCreate extends Fragment {
     private GridView    mGVJobPoint;
     private Switch      mSWSendPicByEmail;
 
+    private ArrayList<HashMap<String, String>>      mALJobPoint;
+    private GVJobPointAdapter                       mGAJobPoint;
+
     // for camera setting
     private TextView    mTVCameraFace;
     private TextView    mTVCameraDpi;
@@ -124,7 +127,8 @@ public class FrgJobCreate extends Fragment {
     public CameraJob onAccept()   {
         String job_name  = mETJobName.getText().toString();
         String job_type  = ((GVJobTypeAdapter)mGVJobType.getAdapter()).getSelectJobType();
-        String job_point = ((GVJobPointAdapter)mGVJobPoint.getAdapter()).getSelectJobPoint();
+        String job_point = job_type.isEmpty() ? ""
+                            : ((GVJobPointAdapter)mGVJobPoint.getAdapter()).getSelectJobPoint();
         String job_starttime = mTVJobStartDate.getText().toString() + ":00";
         String job_endtime = mTVJobEndDate.getText().toString() + ":00";
 
@@ -227,6 +231,12 @@ public class FrgJobCreate extends Fragment {
                                     new String[]{KEY_JOB_TYPE}, new int[]{R.id.tv_job_type});
         mGVJobType.setAdapter(ga);
         ga.notifyDataSetChanged();
+
+        mALJobPoint = new ArrayList<>();
+        mGAJobPoint = new GVJobPointAdapter(getContext(), mALJobPoint,
+                                    new String[]{KEY_JOB_POINT}, new int[]{R.id.tv_job_point});
+        mGVJobPoint.setAdapter(mGAJobPoint);
+        mGAJobPoint.notifyDataSetChanged();
 
         // for start and end time
         View.OnClickListener cl = new View.OnClickListener() {
@@ -353,8 +363,8 @@ public class FrgJobCreate extends Fragment {
                                 String[] from, int[] to) {
             super(context, data, R.layout.gi_job_type, from, to);
 
-            mCLSelected = getResources().getColor(R.color.trans_half);
-            mCLNotSelected = getResources().getColor(R.color.trans_full);
+            mCLSelected = getResources().getColor(R.color.linen);
+            mCLNotSelected = getResources().getColor(R.color.white);
 
             mLastSelected = GlobalDef.INT_INVALID_ID;
         }
@@ -375,6 +385,7 @@ public class FrgJobCreate extends Fragment {
             View v = super.getView(position, view, arg2);
             if (null != v) {
                 v.setOnClickListener(this);
+                v.setBackgroundColor(mLastSelected == position ? mCLSelected : mCLNotSelected);
             }
 
             return v;
@@ -386,14 +397,9 @@ public class FrgJobCreate extends Fragment {
             if(mLastSelected == pos)
                 return;
 
-            int sz = mGVJobType.getCount();
-            for(int i = 0; i < sz; ++i) {
-                View cur = mGVJobType.getChildAt(i);
-                cur.setBackgroundColor(pos == i ? mCLSelected : mCLNotSelected);
-            }
-
             invoke_job_point(pos);
             mLastSelected = pos;
+            notifyDataSetChanged();
         }
 
         public String getSelectJobType()    {
@@ -409,7 +415,6 @@ public class FrgJobCreate extends Fragment {
             String hv = UtilFun.cast_t(hmd.get(KEY_JOB_TYPE));
             try {
                 String[] str_arr = null;
-                Activity home = getActivity();
                 switch (hv) {
                     case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
                         str_arr = getResources().getStringArray(R.array.minutely_invoke);
@@ -428,18 +433,16 @@ public class FrgJobCreate extends Fragment {
                 }
 
                 if(null != str_arr) {
-                    ArrayList<HashMap<String, String>> al_hm = new ArrayList<>();
+                    mALJobPoint.clear();
                     for(String i : str_arr) {
                         HashMap<String, String> hm = new HashMap<>();
                         hm.put(KEY_JOB_POINT, i);
 
-                        al_hm.add(hm);
+                        mALJobPoint.add(hm);
                     }
 
-                    GVJobPointAdapter ga = new GVJobPointAdapter(getContext(), al_hm,
-                            new String[]{KEY_JOB_POINT}, new int[]{R.id.tv_job_point});
-                    mGVJobPoint.setAdapter(ga);
-                    ga.notifyDataSetChanged();
+                    mGAJobPoint.cleanSelected();
+                    mGAJobPoint.notifyDataSetChanged();
                 }
             }
             catch (Resources.NotFoundException e)   {
@@ -464,8 +467,8 @@ public class FrgJobCreate extends Fragment {
                                 String[] from, int[] to) {
             super(context, data, R.layout.gi_job_point, from, to);
 
-            mCLSelected = getResources().getColor(R.color.trans_half);
-            mCLNotSelected = getResources().getColor(R.color.trans_full);
+            mCLSelected = getResources().getColor(R.color.linen);
+            mCLNotSelected = getResources().getColor(R.color.white);
 
             mLastSelected = GlobalDef.INT_INVALID_ID;
         }
@@ -486,6 +489,7 @@ public class FrgJobCreate extends Fragment {
             View v = super.getView(position, view, arg2);
             if (null != v) {
                 v.setOnClickListener(this);
+                v.setBackgroundColor(mLastSelected == position ? mCLSelected : mCLNotSelected);
             }
 
             return v;
@@ -497,13 +501,8 @@ public class FrgJobCreate extends Fragment {
             if(mLastSelected == pos)
                 return;
 
-            int sz = mGVJobPoint.getCount();
-            for(int i = 0; i < sz; ++i) {
-                View cur = mGVJobPoint.getChildAt(i);
-                cur.setBackgroundColor(pos == i ? mCLSelected : mCLNotSelected);
-            }
-
             mLastSelected = pos;
+            notifyDataSetChanged();
         }
 
         public String getSelectJobPoint()    {
@@ -512,6 +511,10 @@ public class FrgJobCreate extends Fragment {
 
             HashMap<String, Object> hmd = UtilFun.cast(getItem(mLastSelected));
             return UtilFun.cast_t(hmd.get(KEY_JOB_POINT));
+        }
+
+        public void cleanSelected() {
+            mLastSelected = GlobalDef.INT_INVALID_ID;
         }
     }
 }

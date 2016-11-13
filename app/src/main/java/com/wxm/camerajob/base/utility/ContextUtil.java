@@ -42,8 +42,6 @@ public class ContextUtil extends Application    {
 
     private List<Activity> activities = new ArrayList<Activity>();
 
-
-
     private SilentCameraHelper   mSCHHandler;
     @SuppressWarnings("FieldCanBeLocal")
     private String              mAppRootDir;
@@ -166,7 +164,8 @@ public class ContextUtil extends Application    {
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
             //FileLogger.getLogger().severe("App崩溃");
-            FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
+            //FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
+            Log.e(TAG, UtilFun.ThrowableToString(ex));
         }
     };
 

@@ -52,22 +52,21 @@ public class ACNavStart
         extends AppCompatActivity
         implements  NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "ACNavStart";
-
     private final FrgJobShow mFRGJobShow = FrgJobShow.newInstance();
 
-    private static final int REQUEST_ALL  = 99;
-
+    /**
+     * 如果有权限，则直接初始化实例
+     * 如果无权限，则申请权限后，初始化实例
+     * @param savedInstanceState   param
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_nav_start);
         ContextUtil.getInstance().addActivity(this);
 
-        if(mayRequestPermission()) {
-            initActivity();
-        }
-
-        if(null == savedInstanceState)  {
+        initActivity();
+        if(null == savedInstanceState) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fl_job_show, mFRGJobShow);
             transaction.commit();
@@ -75,8 +74,8 @@ public class ACNavStart
     }
 
     private void initActivity() {
+        // set nav view
         try {
-            // set nav view
             Toolbar tb = (Toolbar) findViewById(R.id.ac_navw_toolbar);
             setSupportActionBar(tb);
 
@@ -92,8 +91,7 @@ public class ACNavStart
             NavigationView nv = (NavigationView) findViewById(R.id.start_nav_view);
             assert nv != null;
             nv.setNavigationItemSelectedListener(this);
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
         }
     }
@@ -103,73 +101,6 @@ public class ACNavStart
         // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig);
         mFRGJobShow.refreshFrg();
-    }
-
-    private boolean mayRequestPermission() {
-        ArrayList<String> ls_str = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ls_str.add(WRITE_EXTERNAL_STORAGE);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ls_str.add(CAMERA);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, WAKE_LOCK)
-                != PackageManager.PERMISSION_GRANTED) {
-            ls_str.add(WAKE_LOCK);
-        }
-
-
-        if(ls_str.isEmpty()) {
-            ContextUtil.getInstance().initAppContext();
-            return true;
-        }
-
-        String[] str_arr = ls_str.toArray(new String[ls_str.size()]);
-        ActivityCompat.requestPermissions(this, str_arr, REQUEST_ALL);
-        return false;
-    }
-
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_ALL) {
-            boolean ct = true;
-            for(int pos = 0; pos < grantResults.length; pos++)      {
-                if(grantResults[pos] != PackageManager.PERMISSION_GRANTED)  {
-                    ct = false;
-                    String msg = String.format(Locale.CHINA,
-                                    "由于缺少必须的权限(%s)，本APP无法运行!",
-                                    permissions[pos]);
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(msg)
-                            .setTitle("警告")
-                            .setCancelable(false)
-                            .setPositiveButton("离开应用", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ContextUtil.getInstance().onTerminate();
-                                }
-                            });
-
-                    AlertDialog dlg = builder.create();
-                    dlg.show();
-                }
-            }
-
-            if(ct) {
-                ContextUtil.getInstance().initAppContext();
-                initActivity();
-            }
-        }
     }
 
 

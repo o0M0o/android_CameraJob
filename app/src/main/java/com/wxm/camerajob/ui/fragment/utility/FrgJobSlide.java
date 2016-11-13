@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cn.wxm.andriodutillib.type.MySize;
 import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
@@ -111,8 +112,11 @@ public class FrgJobSlide extends Fragment {
         // get tag
         int position = 0;
         mTVTag = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_tag));
-        mTVTag.setText(String.format(Locale.CHINA, "%d/%d",
-                position + 1, mLLPhotoFN.size()));
+
+        String fn = mLLPhotoFN.get(position);
+        int l_pos = fn.lastIndexOf("/") + 1;
+        mTVTag.setText(String.format(Locale.CHINA, "%d/%d (%s)",
+                    position + 1, mLLPhotoFN.size(), fn.substring(l_pos, fn.length())));
 
         // 获取视图控件对象
         mGYPhotos = UtilFun.cast_t(mVWSelf.findViewById(R.id.gy_photos));
@@ -158,8 +162,10 @@ public class FrgJobSlide extends Fragment {
         Bitmap bp = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), null);
         mISPhoto.setImageDrawable(new BitmapDrawable(getResources(), bp));
 
-        mTVTag.setText(String.format(Locale.CHINA, "%d/%d",
-                position + 1, mLLPhotoFN.size()));
+        String fn = mLLPhotoFN.get(position);
+        int l_pos = fn.lastIndexOf("/") + 1;
+        mTVTag.setText(String.format(Locale.CHINA, "%d/%d (%s)",
+                    position + 1, mLLPhotoFN.size(), fn.substring(l_pos, fn.length())));
     }
     /// END PRIVATE
 
@@ -204,9 +210,12 @@ public class FrgJobSlide extends Fragment {
             //设置ImageView的宽高
             //设置IamgeView显示的图片
             ImageView imageView = new ImageView(getContext());
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            imageView.setLayoutParams(new Gallery.LayoutParams(180, 135));
-            imageView.setImageBitmap(ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), null));
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            //int w = imageView.getWidth();
+            //int h = imageView.getHeight();
+            Bitmap bm = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), new MySize(240, 180));
+            imageView.setImageBitmap(bm);
 
             /**
              * 设置ImageView背景，这里背景使用的是android提供的一种背景风格

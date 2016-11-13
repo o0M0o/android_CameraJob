@@ -33,23 +33,23 @@ public class GlobalDef {
     public final static int INT_GLOBALJOB_PERIOD        = 10000;
     public final static int INT_GLOBALJOB_CHECKPERIOD   = 10;
 
-    public final static String CNSTR_EVERY_TEN_SECOND         = "每10秒";
-    public final static String CNSTR_EVERY_TWENTY_SECOND      = "每20秒";
-    public final static String CNSTR_EVERY_THIRTY_SECOND      = "每30秒";
+    public final static String CNSTR_EVERY_TEN_SECOND         = "10秒";
+    public final static String CNSTR_EVERY_TWENTY_SECOND      = "20秒";
+    public final static String CNSTR_EVERY_THIRTY_SECOND      = "30秒";
 
-    public final static String CNSTR_EVERY_ONE_MINUTE         = "每1分钟";
-    public final static String CNSTR_EVERY_TWO_MINUTE         = "每2分钟";
-    public final static String CNSTR_EVERY_FIVE_MINUTE        = "每5分钟";
-    public final static String CNSTR_EVERY_TEN_MINUTE         = "每10分钟";
-    public final static String CNSTR_EVERY_TWENTY_MINUTE      = "每20分钟";
-    public final static String CNSTR_EVERY_THIRTY_MINUTE      = "每30分钟";
+    public final static String CNSTR_EVERY_ONE_MINUTE         = "1分钟";
+    public final static String CNSTR_EVERY_TWO_MINUTE         = "2分钟";
+    public final static String CNSTR_EVERY_FIVE_MINUTE        = "5分钟";
+    public final static String CNSTR_EVERY_TEN_MINUTE         = "10分钟";
+    public final static String CNSTR_EVERY_TWENTY_MINUTE      = "20分钟";
+    public final static String CNSTR_EVERY_THIRTY_MINUTE      = "30分钟";
 
-    public final static String CNSTR_EVERY_ONE_HOUR           = "每1小时";
-    public final static String CNSTR_EVERY_TWO_HOUR           = "每2小时";
-    public final static String CNSTR_EVERY_FOUR_HOUR          = "每4小时";
-    public final static String CNSTR_EVERY_SIX_HOUR           = "每6小时";
-    public final static String CNSTR_EVERY_EIGHT_HOUR         = "每8小时";
-    public final static String CNSTR_EVERY_TWELVE_HOUR        = "每12小时";
+    public final static String CNSTR_EVERY_ONE_HOUR           = "1小时";
+    public final static String CNSTR_EVERY_TWO_HOUR           = "2小时";
+    public final static String CNSTR_EVERY_FOUR_HOUR          = "4小时";
+    public final static String CNSTR_EVERY_SIX_HOUR           = "6小时";
+    public final static String CNSTR_EVERY_EIGHT_HOUR         = "8小时";
+    public final static String CNSTR_EVERY_TWELVE_HOUR        = "12小时";
 
     static public final String STR_HELP_TYPE            = "HELP_TYPE";
     static public final String STR_HELP_MAIN            = "help_main";

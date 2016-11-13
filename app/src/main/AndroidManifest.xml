@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -44,23 +43,26 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".ui.acinterface.ACNavStart"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.acinterface.ACHelp" />
         <activity
             android:name=".ui.acutility.ACCameraPreview"
             android:exported="true" />
         <activity android:name=".ui.acutility.ACSetting" />
         <activity android:name=".ui.acutility.ACJobSlide" />
-        <activity android:name=".ui.acutility.ACEmailTest"
-            android:label="测试邮箱"
-            android:exported="true"/>
+        <activity
+            android:name=".ui.acutility.ACEmailTest"
+            android:exported="true"
+            android:label="测试邮箱" />
+        <activity android:name=".ui.acinterface.ACLoader"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

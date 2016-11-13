@@ -6,24 +6,24 @@
         <item>每天</item>
     </string-array>
     <string-array name="minutely_invoke">
-        <item>每10秒</item>
-        <item>每20秒</item>
-        <item>每30秒</item>
+        <item>10秒</item>
+        <item>20秒</item>
+        <item>30秒</item>
     </string-array>
     <string-array name="hourly_invoke">
-        <item>每1分钟</item>
-        <item>每2分钟</item>
-        <item>每5分钟</item>
-        <item>每10分钟</item>
-        <item>每20分钟</item>
-        <item>每30分钟</item>
+        <item>1分钟</item>
+        <item>2分钟</item>
+        <item>5分钟</item>
+        <item>10分钟</item>
+        <item>20分钟</item>
+        <item>30分钟</item>
     </string-array>
     <string-array name="daily_invoke">
-        <item>每1小时</item>
-        <item>每2小时</item>
-        <item>每4小时</item>
-        <item>每6小时</item>
-        <item>每8小时</item>
-        <item>每12小时</item>
+        <item>1小时</item>
+        <item>2小时</item>
+        <item>4小时</item>
+        <item>6小时</item>
+        <item>8小时</item>
+        <item>12小时</item>
     </string-array>
 </resources>
