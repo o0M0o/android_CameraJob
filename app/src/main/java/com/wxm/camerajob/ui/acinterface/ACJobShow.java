@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -22,8 +21,6 @@ import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.data.PreferencesUtil;
-import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.utility.CameraJobUtility;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
@@ -165,10 +162,12 @@ public class ACJobShow
             break;
 
             case GlobalDef.INTRET_CS_ACCEPT:    {
+                /*
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                 m.obj = PreferencesUtil.loadCameraParam();
                 m.sendToTarget();
+                */
             }
             break;
 

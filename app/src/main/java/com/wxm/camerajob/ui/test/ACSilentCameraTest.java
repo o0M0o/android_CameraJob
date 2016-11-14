@@ -17,9 +17,10 @@ import android.widget.Toast;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.SilentCameraHelperNew;
+import com.wxm.camerajob.base.utility.SilentCameraHelper;
 
 import java.lang.ref.WeakReference;
 
@@ -79,10 +80,10 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
                 mTPParam = new TakePhotoParam(sp, "tmp.jpg", "1");
 
                 //noinspection ConstantConditions
-                final SilentCameraHelperNew sh = ContextUtil.getCameraHelperNew();
+                final SilentCameraHelper sh = ContextUtil.getCameraHelper();
                 if(null != sh) {
                     sh.setTakePhotoCallBack(
-                            new SilentCameraHelperNew.takePhotoCallBack() {
+                            new SilentCameraHelper.takePhotoCallBack() {
                                 @Override
                                 public void onTakePhotoSuccess(TakePhotoParam tp) {
                                     //noinspection ConstantConditions
@@ -100,7 +101,7 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
                     );
 
                     //noinspection ConstantConditions
-                    sh.TakePhoto(mTPParam);
+                    sh.TakePhoto(PreferencesUtil.loadCameraParam(), mTPParam);
                 }
 
             }

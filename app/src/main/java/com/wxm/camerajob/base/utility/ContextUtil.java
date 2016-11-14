@@ -42,8 +42,7 @@ public class ContextUtil extends Application {
 
     private List<Activity> activities = new ArrayList<Activity>();
 
-    private SilentCameraHelper mSCHHandler;
-    private SilentCameraHelperNew mSCHHandlerNew;
+    private SilentCameraHelper mSCHHandlerNew;
     @SuppressWarnings("FieldCanBeLocal")
     private String mAppRootDir;
     private String mAppPhotoRootDir;
@@ -71,10 +70,8 @@ public class ContextUtil extends Application {
 
     public void initAppContext() {
         if (checkCameraHardware(this)) {
-            mSCHHandler = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
-            mSCHHandlerNew = new SilentCameraHelperNew(PreferencesUtil.loadCameraParam());
+            mSCHHandlerNew = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
         } else {
-            mSCHHandler = null;
             mSCHHandlerNew = null;
         }
 
@@ -133,14 +130,8 @@ public class ContextUtil extends Application {
         System.exit(0);
     }
 
-    public static SilentCameraHelper getCameraHelper() {
-        if (null != instance)
-            return instance.mSCHHandler;
-        else
-            return null;
-    }
 
-    public static SilentCameraHelperNew getCameraHelperNew() {
+    public static SilentCameraHelper getCameraHelper() {
         if (null != instance)
             return instance.mSCHHandlerNew;
         else

@@ -4,11 +4,12 @@ import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.FileLogger;
-import com.wxm.camerajob.base.utility.SilentCameraHelperNew;
+import com.wxm.camerajob.base.utility.SilentCameraHelper;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -261,9 +262,9 @@ public class CameraJobProcess {
         String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
         TakePhotoParam tp = new TakePhotoParam(dirp, fn, Integer.toString(cj.get_id()));
 
-        SilentCameraHelperNew sh = ContextUtil.getCameraHelperNew();
+        SilentCameraHelper sh = ContextUtil.getCameraHelper();
         if(null != sh) {
-            sh.TakePhoto(tp);
+            sh.TakePhoto(PreferencesUtil.loadCameraParam(), tp);
         }
     }
 }

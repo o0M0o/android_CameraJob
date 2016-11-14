@@ -75,7 +75,7 @@ public class PreferencesUtil {
         }
 
         String sz_str = param.getString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
-                                new MySize(1280, 960).toString());
+                                new MySize(640, 480).toString());
         cp.mPhotoSize = UtilFun.StringToSize(sz_str);
         cp.mAutoFocus = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFOCUS, true);
         cp.mAutoFlash = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH, true);

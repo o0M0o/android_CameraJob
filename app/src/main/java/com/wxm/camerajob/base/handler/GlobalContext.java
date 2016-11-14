@@ -6,12 +6,9 @@ import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.CameraJobStatus;
-import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
-import com.wxm.camerajob.base.utility.SilentCameraHelper;
-import com.wxm.camerajob.base.utility.SilentCameraHelperNew;
 
 import java.util.Calendar;
 import java.util.List;
@@ -97,30 +94,10 @@ public class GlobalContext {
                     processor_camerajob_takephoto(msg);
                     break;
 
-                case GlobalDef.MSG_TYPE_CAMERA_MODIFY:
-                    processor_changecamera(msg);
-                    break;
-
                 default:
                     Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
                     break;
             }
-        }
-
-        /**
-         * 拍照后消息
-         * @param msg 消息
-         */
-        private void processor_changecamera(Message msg) {
-            //noinspection ConstantConditions
-            SilentCameraHelper sh = ContextUtil.getCameraHelper();
-            if(null != sh) {
-                sh.ChangeCamera((CameraParam) msg.obj);
-            }
-
-            SilentCameraHelperNew shn = ContextUtil.getCameraHelperNew();
-            if(null != shn)
-                shn.ChangeCamera((CameraParam) msg.obj);
         }
 
 

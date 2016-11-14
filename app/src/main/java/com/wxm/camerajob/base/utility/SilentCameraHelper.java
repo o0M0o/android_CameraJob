@@ -3,6 +3,7 @@ package com.wxm.camerajob.base.utility;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.GlobalDef;
@@ -23,12 +24,9 @@ public class SilentCameraHelper {
 
     private Handler         mBackgroundHandler;
     private HandlerThread   mBackgroundThread;
-    private Handler mBackgroundCameraHandler;
-    private HandlerThread mBackgroundCameraThread;
-    private CameraParam     mCameraParam;
 
-    private Semaphore                   mCameraLock;
-    private takePhotoCallBack           mTPCBTakePhoto;
+    private Semaphore           mCameraLock;
+    private takePhotoCallBack   mTPCBTakePhoto;
 
 
     public interface takePhotoCallBack {
@@ -39,15 +37,13 @@ public class SilentCameraHelper {
     SilentCameraHelper(CameraParam cp)    {
         startBackgroundThread();
 
-        mCameraParam = cp;
-        mCameraParam.mSessionHandler = mBackgroundCameraHandler;
-
         // for camera
         mCameraLock = new Semaphore(1);
     }
 
     protected void finalize() throws Throwable {
         stopBackgroundThread();
+
         super.finalize();
     }
 
@@ -60,21 +56,13 @@ public class SilentCameraHelper {
     }
 
     /**
-     * 更新拍照参数
-     * @param cp  拍照参数
-     */
-    public void ChangeCamera(CameraParam cp)  {
-        mCameraParam = cp;
-        mCameraParam.mSessionHandler = mBackgroundCameraHandler;
-    }
-
-    /**
      * 拍照
+     *
+     * @param cp    相机设置
      * @param para  拍照参数
      */
-    public void TakePhoto(TakePhotoParam para)  {
-        TakePhotoRunner tr = new TakePhotoRunner(para);
-        mBackgroundHandler.post(tr);
+    public void TakePhoto(CameraParam cp, TakePhotoParam para)  {
+        mBackgroundHandler.post(new TakePhotoRunner(cp, para));
     }
 
     /**
@@ -84,25 +72,12 @@ public class SilentCameraHelper {
         mBackgroundThread = new HandlerThread("Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-
-        mBackgroundCameraThread = new HandlerThread("SilentCameraBackground");
-        mBackgroundCameraThread.start();
-        mBackgroundCameraHandler = new Handler(mBackgroundCameraThread.getLooper());
     }
 
     /**
      * 关闭后台线程
      */
     private void stopBackgroundThread() {
-        mBackgroundCameraThread.quitSafely();
-        try {
-            mBackgroundCameraThread.join();
-            mBackgroundCameraThread = null;
-            mBackgroundCameraHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -113,12 +88,15 @@ public class SilentCameraHelper {
         }
     }
 
+
     /**
      * 执行拍照任务
      */
     private class TakePhotoRunner implements Runnable {
         private SilentCamera        mSCCamera;
+
         private TakePhotoParam      mSelfTPTakePhoto;
+        private CameraParam         mSelfCameraParam;
 
         private SilentCamera.SilentCameraOpenCameraCallBack mOCCOpen    =
                 new SilentCamera.SilentCameraOpenCameraCallBack() {
@@ -169,7 +147,8 @@ public class SilentCameraHelper {
 
 
 
-        TakePhotoRunner(TakePhotoParam tp)    {
+        TakePhotoRunner(CameraParam cp, TakePhotoParam tp)    {
+            mSelfCameraParam = cp;
             mSelfTPTakePhoto = tp;
         }
 
@@ -185,17 +164,22 @@ public class SilentCameraHelper {
                     else
                         mSCCamera = new SilentCameraOld();
 
-                    mSCCamera.setupCamera(mCameraParam);
+                    mSelfCameraParam.mSessionHandler =  mBackgroundHandler;
+                    mSCCamera.setupCamera(mSelfCameraParam);
                     mSCCamera.setOpenCameraCallBack(mOCCOpen);
                     mSCCamera.openCamera();
                 } else  {
-                    FileLogger.getLogger().severe(
-                            "camera busy, give up : " + mSelfTPTakePhoto.mFileName);
+                    String l = "camera busy, give up : " + mSelfTPTakePhoto.mFileName;
+                    Log.d(TAG, l);
+                    FileLogger.getLogger().severe(l);
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
-                FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
 
+                String str_e = UtilFun.ThrowableToString(e);
+                Log.d(TAG, str_e);
+                FileLogger.getLogger().severe(str_e);
+            } finally {
                 if(block)
                     mCameraLock.release();
             }

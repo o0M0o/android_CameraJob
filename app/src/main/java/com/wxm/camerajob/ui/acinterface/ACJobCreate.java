@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,9 +16,8 @@ import android.view.MenuItem;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
-import com.wxm.camerajob.base.handler.GlobalContext;
-import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.data.PreferencesUtil;
+import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 import com.wxm.camerajob.ui.fragment.utility.FrgJobCreate;
 
@@ -60,12 +58,14 @@ public class ACJobCreate
 
         switch(resultCode)  {
             case GlobalDef.INTRET_CS_ACCEPT:    {
+                /*
                 if(REQUEST_SET_CAMERA == requestCode) {
                     Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                             GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                     m.obj = PreferencesUtil.loadCameraParam();
                     m.sendToTarget();
                 }
+                */
             }
             break;
 
