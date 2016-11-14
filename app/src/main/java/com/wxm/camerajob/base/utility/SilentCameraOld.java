@@ -177,7 +177,7 @@ public class SilentCameraOld extends SilentCamera {
     private boolean captureStillPicture() {
         mCameraStatus = CAMERA_TAKEPHOTO_START;
         try {
-            mCamera.takePicture(null, mPCRawProcessor, null);
+            mCamera.takePicture(null, null, mPCJpgProcessor);
         } catch (Throwable e) {
             e.printStackTrace();
             Log.e(TAG, UtilFun.ThrowableToString(e));

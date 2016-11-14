@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -43,6 +44,8 @@ public class FrgJobSlide extends Fragment {
     private View mVWSelf;
 
     private final static int  MSG_TYPE_TO_NEXT_PHOTO = 1;
+    private final static MySize    GALLERY_SIZE = new MySize(200, 150);
+    private final static MySize    SHOW_SIZE    = new MySize(1000, 750);
 
     // for ui
     private Gallery         mGYPhotos;
@@ -82,7 +85,7 @@ public class FrgJobSlide extends Fragment {
                 public void run() {
                     mSelfHandler.sendEmptyMessage(MSG_TYPE_TO_NEXT_PHOTO);
                 }
-            }, 300, 2000);
+            }, 300, 1500);
         }
     }
 
@@ -159,8 +162,8 @@ public class FrgJobSlide extends Fragment {
     }
 
     public void toPostion(int position) {
-        Bitmap bp = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), null);
-        mISPhoto.setImageDrawable(new BitmapDrawable(getResources(), bp));
+        Drawable cur_d = UtilFun.cast_t(mGYPhotos.getAdapter().getItem(position));
+        mISPhoto.setImageDrawable(cur_d);
 
         String fn = mLLPhotoFN.get(position);
         int l_pos = fn.lastIndexOf("/") + 1;
@@ -188,7 +191,7 @@ public class FrgJobSlide extends Fragment {
          */
         @Override
         public Object getItem(int position) {
-            Bitmap bp = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), null);
+            Bitmap bp = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), SHOW_SIZE);
             return new BitmapDrawable(getResources(), bp);
         }
 
@@ -210,11 +213,12 @@ public class FrgJobSlide extends Fragment {
             //设置ImageView的宽高
             //设置IamgeView显示的图片
             ImageView imageView = new ImageView(getContext());
+            imageView.setLayoutParams(new Gallery.LayoutParams(400, ViewGroup.LayoutParams.MATCH_PARENT));
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
             //int w = imageView.getWidth();
             //int h = imageView.getHeight();
-            Bitmap bm = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), new MySize(240, 180));
+            Bitmap bm = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), GALLERY_SIZE);
             imageView.setImageBitmap(bm);
 
             /**

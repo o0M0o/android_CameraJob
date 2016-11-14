@@ -10,9 +10,6 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 import com.wxm.camerajob.base.handler.GlobalContext;
 
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
@@ -25,10 +22,11 @@ public class SilentCameraHelper {
     private Handler         mBackgroundHandler;
     private HandlerThread   mBackgroundThread;
 
-    private Semaphore           mCameraLock;
+    //private Semaphore           mCameraLock;
+    private TakePhotoRunner     mTPRRunner = new TakePhotoRunner();
+    private SilentCamera        mSCCamera;
+
     private takePhotoCallBack   mTPCBTakePhoto;
-
-
     public interface takePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
         void onTakePhotoFailed(TakePhotoParam tp);
@@ -38,12 +36,13 @@ public class SilentCameraHelper {
         startBackgroundThread();
 
         // for camera
-        mCameraLock = new Semaphore(1);
+        //mCameraLock = new Semaphore(1);
+        //mSCCamera = ContextUtil.useNewCamera() ? new SilentCameraNew() : new SilentCameraOld();
+        mSCCamera = new SilentCameraOld();
     }
 
     protected void finalize() throws Throwable {
         stopBackgroundThread();
-
         super.finalize();
     }
 
@@ -62,7 +61,8 @@ public class SilentCameraHelper {
      * @param para  拍照参数
      */
     public void TakePhoto(CameraParam cp, TakePhotoParam para)  {
-        mBackgroundHandler.post(new TakePhotoRunner(cp, para));
+        mTPRRunner.setPara(cp, para, mSCCamera);
+        mBackgroundHandler.post(mTPRRunner);
     }
 
     /**
@@ -93,7 +93,7 @@ public class SilentCameraHelper {
      * 执行拍照任务
      */
     private class TakePhotoRunner implements Runnable {
-        private SilentCamera        mSCCamera;
+        private SilentCamera        mSCSelfCamera;
 
         private TakePhotoParam      mSelfTPTakePhoto;
         private CameraParam         mSelfCameraParam;
@@ -112,7 +112,7 @@ public class SilentCameraHelper {
                         mSCCamera.setOpenCameraCallBack(null);
                         mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
-                        mCameraLock.release();
+                        //mCameraLock.release();
                     }
                 };
 
@@ -122,7 +122,7 @@ public class SilentCameraHelper {
                     public void onTakePhotoSuccess(TakePhotoParam tp) {
                         mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
-                        mCameraLock.release();
+                        //mCameraLock.release();
 
                         //send msg
                         Message m = Message.obtain(GlobalContext.getMsgHandlder(),
@@ -138,38 +138,32 @@ public class SilentCameraHelper {
                     public void onTakePhotoFailed(TakePhotoParam tp) {
                         mSCCamera.setTakePhotoCallBack(null);
                         mSCCamera.closeCamera();
-                        mCameraLock.release();
+                        //mCameraLock.release();
 
                         if(null != mTPCBTakePhoto)
                             mTPCBTakePhoto.onTakePhotoFailed(mSelfTPTakePhoto);
                     }
                 };
 
+        TakePhotoRunner()    {
+            super();
+        }
 
-
-        TakePhotoRunner(CameraParam cp, TakePhotoParam tp)    {
+        public void setPara(CameraParam cp, TakePhotoParam tp, SilentCamera sc)  {
             mSelfCameraParam = cp;
             mSelfTPTakePhoto = tp;
+            mSCSelfCamera = sc;
         }
 
         @Override
         public void run() {
-            boolean block = false;
             try {
-                if (mCameraLock.tryAcquire(3, TimeUnit.SECONDS)) {
-                    block = true;
-
-                    if (ContextUtil.useNewCamera())
-                        mSCCamera = new SilentCameraNew();
-                    else
-                        mSCCamera = new SilentCameraOld();
-
-                    mSelfCameraParam.mSessionHandler =  mBackgroundHandler;
-                    mSCCamera.setupCamera(mSelfCameraParam);
-                    mSCCamera.setOpenCameraCallBack(mOCCOpen);
-                    mSCCamera.openCamera();
+                mSelfCameraParam.mSessionHandler =  mBackgroundHandler;
+                if(mSCSelfCamera.setupCamera(mSelfCameraParam)) {
+                    mSCSelfCamera.setOpenCameraCallBack(mOCCOpen);
+                    mSCSelfCamera.openCamera();
                 } else  {
-                    String l = "camera busy, give up : " + mSelfTPTakePhoto.mFileName;
+                    String l = "setup camera failure, give up : " + mSelfTPTakePhoto.mFileName;
                     Log.d(TAG, l);
                     FileLogger.getLogger().severe(l);
                 }
@@ -179,9 +173,6 @@ public class SilentCameraHelper {
                 String str_e = UtilFun.ThrowableToString(e);
                 Log.d(TAG, str_e);
                 FileLogger.getLogger().severe(str_e);
-            } finally {
-                if(block)
-                    mCameraLock.release();
             }
         }
     }

@@ -4,8 +4,6 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -24,17 +22,15 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
-import android.view.Surface;
 import android.view.WindowManager;
 
 import com.wxm.camerajob.base.data.CameraParam;
 import com.wxm.camerajob.base.data.TakePhotoParam;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
@@ -48,6 +44,7 @@ public class SilentCameraNew extends SilentCamera {
     private final static String TAG = "SilentCameraNew";
 
     private ImageReader     mImageReader;
+    private ImageReader     mImageReader1;
 
     private String                  mCameraId;
     private CameraDevice            mCameraDevice = null;
@@ -65,8 +62,6 @@ public class SilentCameraNew extends SilentCamera {
 
     @Override
     public boolean setupCamera(CameraParam cp) {
-        closeCamera();
-
         mCParam = cp;
         mCMCameramanager = (CameraManager) ContextUtil.getInstance()
                                 .getSystemService(Context.CAMERA_SERVICE);
@@ -88,21 +83,10 @@ public class SilentCameraNew extends SilentCamera {
 
     @Override
     public void openCamera() {
-        if(mCameraStatus.equals(CAMERA_TAKEPHOTO_START)
-                || mCameraStatus.equals(CAMERA_TAKEPHOTO_FINISHED))   {
-            Log.w(TAG, "when open camera, status = " + mCameraStatus);
-
-            openCameraCallBack(false);
-            return ;
+        if(UtilFun.StringIsNullOrEmpty(mCameraId)) {
+            Log.w(TAG, "when open camera, mCameraId not setup");
+            return;
         }
-
-        if(mCameraStatus.equals(CAMERA_OPEN_FINISHED)) {
-            openCameraCallBack(true);
-            return ;
-        }
-
-        if(!mCameraStatus.equals(CAMERA_NOT_SETUP))
-            closeCamera();
 
         if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -208,7 +192,7 @@ public class SilentCameraNew extends SilentCamera {
 
                 Integer or = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
                 if(null != or)
-                    mSensorOrientation = or.intValue();
+                    mSensorOrientation = or;
                 else
                     mSensorOrientation = 90;
 
@@ -225,7 +209,7 @@ public class SilentCameraNew extends SilentCamera {
             return false;
         }
 
-        return true;
+        return !mCameraId.equals("");
     }
 
     /**
@@ -286,24 +270,31 @@ public class SilentCameraNew extends SilentCamera {
 
                     mCameraDevice = camera;
                     try {
+                        /*
                         mCaptureBuilder = mCameraDevice
                                 .createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
                         mImageReader = ImageReader.newInstance(
                                 mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
-                                ImageFormat.JPEG, /*maxImages*/2);
+                                ImageFormat.JPEG, 2);
 
-                        Surface mImageReaderSurface = mImageReader.getSurface();
-                        mCaptureBuilder.addTarget(mImageReaderSurface);
+                        mCaptureBuilder.addTarget(mImageReader.getSurface());
                         mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         if (mFlashSupported) {
                             mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
                         }
+                        */
 
+                        mImageReader = ImageReader.newInstance(
+                                mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
+                                ImageFormat.JPEG, 2);
+                        mImageReader1 = ImageReader.newInstance(
+                                mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
+                                ImageFormat.JPEG, 2);
                         mCameraDevice.createCaptureSession(
-                                Collections.singletonList(mImageReaderSurface),
+                                Arrays.asList(mImageReader.getSurface(), mImageReader1.getSurface()),
                                 mSessionStateCallback, null);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
@@ -342,6 +333,35 @@ public class SilentCameraNew extends SilentCamera {
     private CameraCaptureSession.StateCallback mSessionStateCallback =
             new CameraCaptureSession.StateCallback() {
                 private final static String TAG = "SessionSCB";
+                /**
+                 * 保存photo
+                 */
+                private boolean savePhoto(Image ig) {
+                    if (null == ig) {
+                        FileLogger.getLogger().severe("can not get image");
+                        return false;
+                    }
+
+                    ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
+                    byte[] bytes = new byte[buffer.remaining()];
+                    buffer.get(bytes);
+
+                    /*
+                    Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);
+                    boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+                    */
+                    boolean ret = savePhotoToFile(bytes, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+                    if (ret) {
+                        String l = "save photo to : " + mTPParam.mFileName;
+                        Log.i(TAG, l);
+                        getLogger().info(l);
+                    }
+
+                    mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
+                    takePhotoCallBack(true);
+                    return ret;
+                }
 
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
@@ -350,7 +370,35 @@ public class SilentCameraNew extends SilentCamera {
                     mCameraStatus = CAMERA_OPEN_FINISHED;
                     mCameraLock.release();
 
-                    openCameraCallBack(true);
+                    // Auto focus should be continuous for camera preview.
+                    boolean bret = true;
+                    try {
+                        mCaptureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+                        mCaptureBuilder.addTarget(mImageReader1.getSurface());
+                        mCaptureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                                CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+
+                        // Use the same AE and AF modes as the preview.
+                        if(mFlashSupported)
+                            mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+
+                        mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
+                        mImageReader1.setOnImageAvailableListener(
+                                new ImageReader.OnImageAvailableListener() {
+                                    @Override
+                                    public void onImageAvailable(ImageReader reader) {
+                                        savePhoto(reader.acquireLatestImage());
+                                    }
+                                }, mCParam.mSessionHandler);
+
+                        mCaptureSession.setRepeatingRequest(mCaptureBuilder.build(), mCaptureCallback, null);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                        bret = false;
+                    }
+
+                    openCameraCallBack(bret);
                 }
 
                 @Override
@@ -366,65 +414,40 @@ public class SilentCameraNew extends SilentCamera {
 
     private CameraCaptureSession.CaptureCallback  mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
-        //在有的手机上（note5)，需要若干帧后才能调整好对焦和曝光
-        private int     MAX_WAIT_FRAMES = 12;
 
-        /**
-         * 保存photo
-         */
-        private boolean savePhoto()    {
-            Image ig = mImageReader.acquireLatestImage();
-            if(null == ig) {
-                FileLogger.getLogger().severe("can not get image");
-                return false;
+
+        private void process(CaptureResult result) {
+            // CONTROL_AE_STATE can be null on some devices
+            Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+            if (aeState == null
+                    || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
+                    || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED
+                    || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+                //captureStillPicture();
+                // This is the CaptureRequest.Builder that we use to take a picture.
+                /*
+                try {
+                    mCaptureSession.stopRepeating();
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+                */
             }
+        }
 
-            ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-
-            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);
-            boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
-            if(ret) {
-                String l = "save photo to : " + mTPParam.mFileName;
-                Log.i(TAG, l);
-                getLogger().info(l);
-            }
-
-            mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
-            return ret;
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session,
+                                        @NonNull CaptureRequest request,
+                                        @NonNull CaptureResult partialResult) {
+            process(partialResult);
         }
 
         @Override
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                        @NonNull CaptureRequest request,
                                        @NonNull TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
-
-            mCompletedTime += 1;
-            //FileLogger.getLogger().info("onCaptureCompleted");
-            if(CAMERA_TAKEPHOTO_FINISHED.equals(mCameraStatus))
-                return;
-
-            long endms = mStartMSec + mCParam.mWaitMSecs + mTPParam.mWaitMSecs;
-            if(checkCaptureResult(result)) {
-                mCameraStatus = CAMERA_TAKEPHOTO_FINISHED;
-                mCompletedTime = 0;
-
-                takePhotoCallBack(savePhoto());
-            }
-            else if(endms < System.currentTimeMillis()) {
-                takePhotoCallBack(false);
-            }
-            else if(mCompletedTime >= MAX_WAIT_FRAMES)   {
-                takePhotoCallBack(false);
-            }
-            else    {
-                captureStillPicture();
-            }
+            process(result);
         }
-
 
         @Override
         public void onCaptureFailed(@NonNull CameraCaptureSession session,
@@ -437,54 +460,6 @@ public class SilentCameraNew extends SilentCamera {
 
             mCameraStatus = CAMERA_TAKEPHOTO_FAILED;
             takePhotoCallBack(false);
-        }
-
-
-        /**
-         * 检查拍照结果
-         * @param tr 拍照结果
-         * @return  如果拍照结果可接受返回true
-         */
-        private boolean checkCaptureResult(TotalCaptureResult tr)   {
-            // check focus
-            Integer afState = tr.get(CaptureResult.CONTROL_AF_STATE);
-            Integer aeState = tr.get(CaptureResult.CONTROL_AE_STATE);
-            Log.d(TAG, "onCaptureCompleted, " +
-                    "afState = " + (afState == null ? "null" : afState) +
-                    ", aeState = " + (aeState == null ? "null" : aeState) +
-                    ", mCameraStatus = " + mCameraStatus);
-
-
-            // 旧驱动没有检查曝光和对焦功能
-            if((null == afState)||(null == aeState)) {
-                return true;
-            }
-
-            boolean afflag = false;
-            if(mCParam.mAutoFocus
-                    && ( CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-                    CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN == afState ||
-                    CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState ||
-                    CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED == afState))  {
-                afflag = true;
-            }
-            else    {
-                if(!mCParam.mAutoFocus)
-                    afflag = true;
-            }
-
-            if(afflag) {
-                // check ae
-                boolean aeflag = false;
-                if ((CaptureResult.CONTROL_AE_STATE_SEARCHING != aeState)
-                        && (CaptureResult.CONTROL_AE_STATE_INACTIVE != aeState)) {
-                    aeflag = true;
-                }
-
-                return aeflag;
-            }
-
-            return false;
         }
     };
 }
