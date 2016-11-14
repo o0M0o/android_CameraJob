@@ -1,5 +1,6 @@
 package com.wxm.camerajob.base.utility;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -132,6 +133,37 @@ public abstract class SilentCamera {
             output = new FileOutputStream(mf);
             output.write(data);
             ret = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+        } finally {
+            if(null != output)  {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 保存照片到文件
+     * @param bm            位图数据
+     * @param fileDir       文件所在文件夹
+     * @param fileName      文件名
+     * @return   执行成功返回{@code true}
+     */
+    protected boolean saveBitmapToJPGFile(Bitmap bm, String fileDir, String fileName) {
+        boolean ret = false;
+        FileOutputStream output = null;
+        File mf = new File(fileDir, fileName);
+        try {
+            output = new FileOutputStream(mf);
+            ret = bm.compress(Bitmap.CompressFormat.JPEG, 85, output);
         } catch (IOException e) {
             e.printStackTrace();
             FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));

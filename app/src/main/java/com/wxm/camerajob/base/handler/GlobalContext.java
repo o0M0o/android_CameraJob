@@ -11,6 +11,7 @@ import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.db.DBManager;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.base.utility.SilentCameraHelper;
+import com.wxm.camerajob.base.utility.SilentCameraHelperNew;
 
 import java.util.Calendar;
 import java.util.List;
@@ -116,6 +117,10 @@ public class GlobalContext {
             if(null != sh) {
                 sh.ChangeCamera((CameraParam) msg.obj);
             }
+
+            SilentCameraHelperNew shn = ContextUtil.getCameraHelperNew();
+            if(null != shn)
+                shn.ChangeCamera((CameraParam) msg.obj);
         }
 
 

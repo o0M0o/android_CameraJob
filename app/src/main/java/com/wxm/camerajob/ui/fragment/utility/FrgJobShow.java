@@ -81,7 +81,7 @@ public class FrgJobShow extends Fragment {
 
         @Override
         public void DataCreateNotice() {
-            reLoadFrg(1500);
+            reLoadFrg(1200);
         }
 
         @Override
@@ -126,6 +126,8 @@ public class FrgJobShow extends Fragment {
             GetDBManager().getCameraJobUtility().addDataChangeNotice(mIDCJobNotice);
             GetDBManager().getCameraJobStatusUtility().addDataChangeNotice(mIDCJobNotice);
             PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
+
+            mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
 
             // set timer
             // 使用定时器定时全面刷新显示

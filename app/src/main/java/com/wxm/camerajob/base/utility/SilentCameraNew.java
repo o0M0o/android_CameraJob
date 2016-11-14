@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -32,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
@@ -288,7 +291,7 @@ public class SilentCameraNew extends SilentCamera {
 
                         mImageReader = ImageReader.newInstance(
                                 mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
-                                ImageFormat.JPEG, /*maxImages*/5);
+                                ImageFormat.JPEG, /*maxImages*/2);
 
                         Surface mImageReaderSurface = mImageReader.getSurface();
                         mCaptureBuilder.addTarget(mImageReaderSurface);
@@ -380,7 +383,9 @@ public class SilentCameraNew extends SilentCamera {
             byte[] bytes = new byte[buffer.remaining()];
             buffer.get(bytes);
 
-            boolean ret = savePhotoToFile(bytes, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+            Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);
+            boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
             if(ret) {
                 String l = "save photo to : " + mTPParam.mFileName;
                 Log.i(TAG, l);

@@ -6,34 +6,32 @@
         android:icon="@drawable/ic_add_white"
         android:orderInCategory="9000"
         android:title="@string/cn_camerajob_add"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/mi_setting"
         android:icon="@drawable/ic_setting_white"
         android:orderInCategory="9001"
         android:title="@string/cn_setting"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/mi_camera_setting"
         android:icon="@drawable/ic_camera_white"
         android:orderInCategory="9002"
         android:title="@string/cn_camera_setting"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always" />
 
     <item
-        android:id="@+id/meuitem_camera_test"
+        android:id="@+id/mi_camera_test"
         android:orderInCategory="9003"
         android:title="@string/cn_camera_test"
-        android:visible="false"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/meuitem_silentcamera_test"
+        android:id="@+id/mi_silentcamera_test"
         android:orderInCategory="9004"
         android:title="@string/cn_silentcamera_test"
-        android:visible="false"
         app:showAsAction="never" />
 
 </menu>

@@ -35,19 +35,21 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * Created by 123 on 2016/5/7.
  * 获取全局context
  */
-public class ContextUtil extends Application    {
+public class ContextUtil extends Application {
     private static final String TAG = "ContextUtil";
     private static final String INFO_FN = "info.json";
     private static final String SELF_PACKAGE_NAME = "com.wxm.camerajob";
 
     private List<Activity> activities = new ArrayList<Activity>();
 
-    private SilentCameraHelper   mSCHHandler;
+    private SilentCameraHelper mSCHHandler;
+    private SilentCameraHelperNew mSCHHandlerNew;
     @SuppressWarnings("FieldCanBeLocal")
-    private String              mAppRootDir;
-    private String              mAppPhotoRootDir;
+    private String mAppRootDir;
+    private String mAppPhotoRootDir;
 
     private static ContextUtil instance;
+
     public static ContextUtil getInstance() {
         return instance;
     }
@@ -68,16 +70,19 @@ public class ContextUtil extends Application    {
     }
 
     public void initAppContext() {
-        if(checkCameraHardware(this))
+        if (checkCameraHardware(this)) {
             mSCHHandler = new SilentCameraHelper(PreferencesUtil.loadCameraParam());
-        else
+            mSCHHandlerNew = new SilentCameraHelperNew(PreferencesUtil.loadCameraParam());
+        } else {
             mSCHHandler = null;
+            mSCHHandlerNew = null;
+        }
 
         // 初始化context
-        String en= Environment.getExternalStorageState();
-        if(en.equals(Environment.MEDIA_MOUNTED)){
-            File sdcardDir =Environment.getExternalStorageDirectory();
-            String path = sdcardDir.getPath()+"/CamerajobPhotos";
+        String en = Environment.getExternalStorageState();
+        if (en.equals(Environment.MEDIA_MOUNTED)) {
+            File sdcardDir = Environment.getExternalStorageDirectory();
+            String path = sdcardDir.getPath() + "/CamerajobPhotos";
             File path1 = new File(path);
             if (!path1.exists()) {
                 path1.mkdirs();
@@ -85,7 +90,7 @@ public class ContextUtil extends Application    {
 
             mAppRootDir = sdcardDir.getPath();
             mAppPhotoRootDir = path;
-        }else{
+        } else {
             try {
                 File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 File rootPath = ContextUtil.getInstance().getExternalFilesDir(null);
@@ -93,7 +98,7 @@ public class ContextUtil extends Application    {
 
                 mAppRootDir = rootPath.getPath();
                 mAppPhotoRootDir = innerPath.getPath();
-            } catch (NullPointerException e)    {
+            } catch (NullPointerException e) {
                 FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
             }
         }
@@ -104,7 +109,7 @@ public class ContextUtil extends Application    {
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
-        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP,
                 System.currentTimeMillis() + GlobalDef.INT_GLOBALJOB_PERIOD, pendingIntent);
 
@@ -113,7 +118,7 @@ public class ContextUtil extends Application    {
     }
 
     @Override
-    public void onTerminate()  {
+    public void onTerminate() {
         Log.i(TAG, "Application onTerminate");
         FileLogger.getLogger().info("Application Terminate");
 //        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -129,15 +134,24 @@ public class ContextUtil extends Application    {
     }
 
     public static SilentCameraHelper getCameraHelper() {
-        if(null != instance)
+        if (null != instance)
             return instance.mSCHHandler;
         else
             return null;
     }
 
-    /** Check if this device has a camera */
+    public static SilentCameraHelperNew getCameraHelperNew() {
+        if (null != instance)
+            return instance.mSCHHandlerNew;
+        else
+            return null;
+    }
+
+    /**
+     * Check if this device has a camera
+     */
     private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             // this device has a camera
             return true;
         } else {
@@ -149,9 +163,10 @@ public class ContextUtil extends Application    {
 
     /**
      * 是否使用新相机API
+     *
      * @return 如果使用新相机API则返回true
      */
-    public static boolean useNewCamera()   {
+    public static boolean useNewCamera() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
@@ -172,17 +187,18 @@ public class ContextUtil extends Application    {
 
     /**
      * 得到camerajob的图片路径
+     *
      * @param cj 待查camerajob
      * @return 图片文件夹路径
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public String createCameraJobPhotoDir(CameraJob cj)    {
+    public String createCameraJobPhotoDir(CameraJob cj) {
         File p = new File(mAppPhotoRootDir + "/" + cj.get_id());
-        if(!p.exists()) {
+        if (!p.exists()) {
             p.mkdirs();
         }
 
-        if(p.exists())  {
+        if (p.exists()) {
             FileWriter fw = null;
             try {
                 fw = new FileWriter(new File(p.getPath(), INFO_FN));
@@ -193,7 +209,7 @@ public class ContextUtil extends Application    {
                 FileLogger.getLogger().severe("write camerajob("
                         + cj.toString() + ") to file failed");
             } finally {
-                if(null != fw)  {
+                if (null != fw) {
                     try {
                         fw.close();
                     } catch (IOException e) {
@@ -210,13 +226,14 @@ public class ContextUtil extends Application    {
 
     /**
      * 从目录路径得到camerajob数据
-     * @param path  目录路径
-     * @return      此目录对应的camerajob
+     *
+     * @param path 目录路径
+     * @return 此目录对应的camerajob
      */
-    public CameraJob getCameraJobFromPath(String path)  {
+    public CameraJob getCameraJobFromPath(String path) {
         CameraJob ret = null;
         File p = new File(path, INFO_FN);
-        if(p.exists()) {
+        if (p.exists()) {
             FileReader fw = null;
             try {
                 fw = new FileReader(p);
@@ -227,7 +244,7 @@ public class ContextUtil extends Application    {
                 FileLogger.getLogger().severe("read camerajob form '"
                         + path + "' failed");
             } finally {
-                if(null != fw)  {
+                if (null != fw) {
                     try {
                         fw.close();
                     } catch (IOException e) {
@@ -243,12 +260,13 @@ public class ContextUtil extends Application    {
     /**
      * 得到camerajob的图片路径
      * 此路径必须是已经存在的
+     *
      * @param cj_id 待查camerajob的_id
      * @return 图片文件夹路径或者是空字符串
      */
-    public String getCameraJobPhotoDir(int cj_id)    {
+    public String getCameraJobPhotoDir(int cj_id) {
         File p = new File(mAppPhotoRootDir + "/" + cj_id);
-        if(!p.exists()) {
+        if (!p.exists()) {
             return "";
         }
 
@@ -257,18 +275,19 @@ public class ContextUtil extends Application    {
 
     /**
      * 得到app的图片根目录
+     *
      * @return 图片根路径
      */
-    public String getAppPhotoRootDir()  {
+    public String getAppPhotoRootDir() {
         return mAppPhotoRootDir;
     }
 
 
-
     /**
      * 获取包版本号
-     * @param context  包上下文
-     * @return   包版本号
+     *
+     * @param context 包上下文
+     * @return 包版本号
      */
     public static int getVerCode(Context context) {
         int verCode = -1;
@@ -284,8 +303,9 @@ public class ContextUtil extends Application    {
 
     /**
      * 获取包版本名
-     * @param context  包上下文
-     * @return   包版本名
+     *
+     * @param context 包上下文
+     * @return 包版本名
      */
     public static String getVerName(Context context) {
         String verName = "";
@@ -300,10 +320,11 @@ public class ContextUtil extends Application    {
 
     /**
      * 在测试版本满足条件后抛出异常
-     * @param bThrow    若true则抛出异常
+     *
+     * @param bThrow 若true则抛出异常
      */
     public static void throwExIf(boolean bThrow) throws AssertionError {
-        if(BuildConfig.ThrowDebugException && bThrow)     {
+        if (BuildConfig.ThrowDebugException && bThrow) {
             throw new AssertionError("测试版本出现异常");
         }
     }
@@ -311,11 +332,12 @@ public class ContextUtil extends Application    {
     /**
      * 设置layout可见性
      * 仅调整可见性，其它设置保持不变
-     * @param visible  若为 :
-     *                  1. {@code View.INVISIBLE}, 不可见
-     *                  2. {@code View.VISIBLE}, 可见
+     *
+     * @param visible 若为 :
+     *                1. {@code View.INVISIBLE}, 不可见
+     *                2. {@code View.VISIBLE}, 可见
      */
-    public static void setViewGroupVisible(ViewGroup rl, int visible)    {
+    public static void setViewGroupVisible(ViewGroup rl, int visible) {
         ViewGroup.LayoutParams param = rl.getLayoutParams();
         param.width = rl.getWidth();
         param.height = View.INVISIBLE != visible ? ViewGroup.LayoutParams.WRAP_CONTENT : 0;

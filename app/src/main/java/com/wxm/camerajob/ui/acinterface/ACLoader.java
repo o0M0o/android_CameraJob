@@ -41,7 +41,7 @@ public class ACLoader extends AppCompatActivity {
 
     private void initActivity() {
         ContextUtil.getInstance().initAppContext();
-        Intent it = new Intent(this, ACNavStart.class);
+        Intent it = new Intent(this, ACJobShow.class);
         startActivityForResult(it, 1);
     }
 
@@ -79,6 +79,7 @@ public class ACLoader extends AppCompatActivity {
 
     /**
      * Callback received when a permissions request has been completed.
+     * 若权限齐全则初始化activity, 否则弹出提示框然后退出APP
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

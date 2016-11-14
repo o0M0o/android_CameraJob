@@ -1,22 +1,16 @@
 package com.wxm.camerajob.ui.acinterface;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
@@ -35,23 +30,16 @@ import com.wxm.camerajob.base.utility.FileLogger;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 import com.wxm.camerajob.ui.acutility.ACSetting;
 import com.wxm.camerajob.ui.fragment.utility.FrgJobShow;
-import com.wxm.camerajob.ui.test.ActivityTest;
-import com.wxm.camerajob.ui.test.ActivityTestSilentCamera;
-
-import java.util.ArrayList;
-import java.util.Locale;
+import com.wxm.camerajob.ui.test.ACCameraTest;
+import com.wxm.camerajob.ui.test.ACSilentCameraTest;
 
 import cn.wxm.andriodutillib.util.UtilFun;
 
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.WAKE_LOCK;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class ACNavStart
+public class ACJobShow
         extends AppCompatActivity
         implements  NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = "ACNavStart";
+    private static final String TAG = "ACJobShow";
     private final FrgJobShow mFRGJobShow = FrgJobShow.newInstance();
 
     /**
@@ -62,7 +50,7 @@ public class ACNavStart
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_nav_start);
+        setContentView(R.layout.ac_job_show);
         ContextUtil.getInstance().addActivity(this);
 
         initActivity();
@@ -108,7 +96,16 @@ public class ACNavStart
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acm_start_actbar, menu);
+        inflater.inflate(R.menu.acm_job_show, menu);
+
+        if(!BuildConfig.TestCamera)  {
+            MenuItem mi = menu.findItem(R.id.mi_camera_test);
+            mi.setVisible(false);
+
+            mi = menu.findItem(R.id.mi_silentcamera_test);
+            mi.setVisible(false);
+        }
+
         return true;
     }
 
@@ -134,14 +131,14 @@ public class ACNavStart
             }
             break;
 
-            case R.id.meuitem_camera_test : {
-                Intent data =  new Intent(this, ActivityTest.class);
+            case R.id.mi_camera_test: {
+                Intent data =  new Intent(this, ACCameraTest.class);
                 startActivityForResult(data, 1);
             }
             break;
 
-            case R.id.meuitem_silentcamera_test :   {
-                Intent data =  new Intent(this, ActivityTestSilentCamera.class);
+            case R.id.mi_silentcamera_test:   {
+                Intent data =  new Intent(this, ACSilentCameraTest.class);
                 startActivityForResult(data, 1);
             }
 

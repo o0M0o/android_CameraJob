@@ -15,7 +15,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.ui.fragment.test.CameraFragment;
 
-public class ActivityTest extends AppCompatActivity {
+public class ACCameraTest extends AppCompatActivity {
     private final CameraFragment mCamearFrag = CameraFragment.newInstance();
     private Button mBtActiveFrontCamear;
     private Button mBtActiveBackCamear;
@@ -25,7 +25,7 @@ public class ActivityTest extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_test);
+        setContentView(R.layout.ac_camera_test);
 
         if(null == savedInstanceState)  {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();

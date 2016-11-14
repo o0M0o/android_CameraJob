@@ -150,22 +150,26 @@ public class TFSettingCamera extends TFSettingBase {
 
             // for camera preview
             RelativeLayout rl = UtilFun.cast_t(view.findViewById(R.id.rl_switch));
-            rl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(0 < GlobalContext.GetDBManager().getCameraJobUtility().GetActiveJobCount()) {
-                        Dialog alertDialog = new AlertDialog.Builder(getContext()).
-                                setTitle("无法进行预览").
-                                setMessage("有任务在运行中，请删除或暂停任务后进行预览!").
-                                create();
-                        alertDialog.show();
-                    }   else {
-                        Intent it = new Intent(getActivity(), ACCameraPreview.class);
-                        it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
-                        startActivityForResult(it, 1);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                rl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(0 < GlobalContext.GetDBManager().getCameraJobUtility().GetActiveJobCount()) {
+                            Dialog alertDialog = new AlertDialog.Builder(getContext()).
+                                    setTitle("无法进行预览").
+                                    setMessage("有任务在运行中，请删除或暂停任务后进行预览!").
+                                    create();
+                            alertDialog.show();
+                        }   else {
+                            Intent it = new Intent(getActivity(), ACCameraPreview.class);
+                            it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
+                            startActivityForResult(it, 1);
+                        }
                     }
-                }
-            });
+                });
+            } else  {
+                rl.setVisibility(View.INVISIBLE);
+            }
         }
     }
 

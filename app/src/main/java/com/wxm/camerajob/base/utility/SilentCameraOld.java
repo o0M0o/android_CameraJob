@@ -1,5 +1,7 @@
 package com.wxm.camerajob.base.utility;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.util.Log;
 
@@ -8,6 +10,7 @@ import com.wxm.camerajob.base.data.TakePhotoParam;
 
 import java.util.concurrent.TimeUnit;
 
+import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
@@ -174,7 +177,7 @@ public class SilentCameraOld extends SilentCamera {
     private boolean captureStillPicture() {
         mCameraStatus = CAMERA_TAKEPHOTO_START;
         try {
-            mCamera.takePicture(null, null, mPicture);
+            mCamera.takePicture(null, mPCRawProcessor, null);
         } catch (Throwable e) {
             e.printStackTrace();
             Log.e(TAG, UtilFun.ThrowableToString(e));
@@ -187,10 +190,27 @@ public class SilentCameraOld extends SilentCamera {
     }
 
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+    private Camera.PictureCallback mPCJpgProcessor = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+            if(ret) {
+                String l = "save photo to : " + mTPParam.mFileName;
+                Log.i(TAG, l);
+                getLogger().info(l);
+            }
+
+            mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
+            takePhotoCallBack(ret);
+        }
+    };
+
+    private Camera.PictureCallback mPCRawProcessor = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+            bm = ImageUtil.rotateBitmap(bm, mSensorOrientation, null);
+            boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
             if(ret) {
                 String l = "save photo to : " + mTPParam.mFileName;
                 Log.i(TAG, l);
