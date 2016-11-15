@@ -16,7 +16,7 @@
         android:name=".base.utility.ContextUtil"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_camera_lable"
+        android:icon="@drawable/ic_camera_labe1_middle"
         android:label="@string/cn_app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"

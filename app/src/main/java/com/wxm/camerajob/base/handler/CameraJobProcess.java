@@ -267,7 +267,7 @@ public class CameraJobProcess {
         sh.setTakePhotoCallBack(new SilentCameraHelper.takePhotoCallBack() {
             @Override
             public void onTakePhotoSuccess(TakePhotoParam tp) {
-                Log.e(TAG, "take photo success, tag = " + tp.mTag);
+                Log.i(TAG, "take photo success, tag = " + tp.mTag);
 
                 //send msg
                 Message m = Message.obtain(GlobalContext.getMsgHandlder(),

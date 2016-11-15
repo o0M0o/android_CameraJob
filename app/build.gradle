@@ -27,12 +27,12 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.defkey
 
             buildConfigField "Boolean", "ThrowDebugException", "false"
-            buildConfigField "Boolean", "TestCamera", "true"
+            buildConfigField "Boolean", "TestCamera", "false"
         }
         debug {
             signingConfig signingConfigs.defkey

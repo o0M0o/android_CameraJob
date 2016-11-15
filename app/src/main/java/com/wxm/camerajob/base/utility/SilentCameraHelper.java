@@ -68,9 +68,11 @@ public class SilentCameraHelper {
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
 
+        /*
         mCameraSessionThread = new HandlerThread("CameraSession");
         mCameraSessionThread.start();
         mCameraSessionHandler = new Handler(mCameraSessionThread.getLooper());
+        */
     }
 
     /**
@@ -86,6 +88,7 @@ public class SilentCameraHelper {
         }
         mBackgroundThread = null;
 
+        /*
         mCameraSessionHandler = null;
         mCameraSessionThread.quitSafely();
         try {
@@ -94,6 +97,7 @@ public class SilentCameraHelper {
             e.printStackTrace();
         }
         mCameraSessionThread = null;
+        */
     }
 
 
@@ -132,7 +136,7 @@ public class SilentCameraHelper {
         @Override
         public void run() {
             try {
-                mSelfCameraParam.mSessionHandler =  mCameraSessionHandler;
+                mSelfCameraParam.mSessionHandler =  mBackgroundHandler;
                 mSCSelfCamera.takePhoto(mSelfCameraParam, mSelfTPTakePhoto, mTPCTake);
             } catch (Throwable e) {
                 e.printStackTrace();

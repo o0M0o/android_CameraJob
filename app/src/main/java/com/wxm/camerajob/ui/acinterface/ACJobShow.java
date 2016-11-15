@@ -155,24 +155,22 @@ public class ACJobShow
         switch(resultCode)  {
             case GlobalDef.INTRET_CAMERAJOB_ACCEPT:    {
                 CameraJob cj = data.getParcelableExtra(GlobalDef.STR_LOAD_JOB);
-                Log.i(TAG, "camerajob : " + cj.toString());
+                Log.d(TAG, "camerajob : " + cj.toString());
 
                 CameraJobUtility.createCameraJob(cj);
             }
             break;
 
             case GlobalDef.INTRET_CS_ACCEPT:    {
-                /*
-                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                /*Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                         GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                 m.obj = PreferencesUtil.loadCameraParam();
-                m.sendToTarget();
-                */
+                m.sendToTarget(); */
             }
             break;
 
             default:    {
-                Log.i(TAG, "不处理的 resultCode = " + resultCode);
+                Log.v(TAG, "not match resultCode = " + resultCode);
             }
             break;
         }

@@ -216,7 +216,7 @@ public class SilentCameraNew extends SilentCamera {
         // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
         // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
         int ret = (ORIENTATIONS.get(rotation) + mSensorOrientation + 270) % 360;
-        Log.i(TAG, "Orientation : display = " + rotation
+        Log.d(TAG, "Orientation : display = " + rotation
                 + ", sensor = " + mSensorOrientation + ", ret = " + ret);
         return ret;
     }
@@ -267,6 +267,7 @@ public class SilentCameraNew extends SilentCamera {
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
         ig.close();
+        closeCamera();
 
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);
@@ -362,6 +363,7 @@ public class SilentCameraNew extends SilentCamera {
                     if (null != ig) {
                         Log.i(TAG, "image ok");
                         r_c = false;
+
                         savePhoto(ig);
                     }
                 }
@@ -369,7 +371,7 @@ public class SilentCameraNew extends SilentCamera {
                 if(r_c) {
                     Log.i(TAG, "wait image ok");
                     try {
-                        Thread.sleep(400);
+                        Thread.sleep(250);
                         mCaptureSession.capture(mCaptureBuilder.build(), mCaptureCallback, null);
                     } catch (CameraAccessException | InterruptedException e) {
                         e.printStackTrace();
