@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.base.data.CameraJob;
 import com.wxm.camerajob.base.data.GlobalDef;
+import com.wxm.camerajob.base.data.IPreferenceChangeNotice;
 import com.wxm.camerajob.base.handler.GlobalContext;
 import com.wxm.camerajob.base.receiver.AlarmReceiver;
 
@@ -41,16 +42,24 @@ public class ContextUtil extends Application {
 
     private List<Activity> activities = new ArrayList<Activity>();
 
-    private SilentCameraHelper mSCHHandlerNew;
     @SuppressWarnings("FieldCanBeLocal")
     private String mAppRootDir;
     private String mAppPhotoRootDir;
 
     private static ContextUtil instance;
-
     public static ContextUtil getInstance() {
         return instance;
     }
+
+
+    // for camera setting change listener
+    private IPreferenceChangeNotice mIPCNCamera = new IPreferenceChangeNotice() {
+        @Override
+        public void onPreferenceChanged(String PreferenceName) {
+            if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(PreferenceName))  {
+            }
+        }
+    };
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
@@ -68,12 +77,6 @@ public class ContextUtil extends Application {
     }
 
     public void initAppContext() {
-        if (checkCameraHardware(this)) {
-            mSCHHandlerNew = new SilentCameraHelper();
-        } else {
-            mSCHHandlerNew = null;
-        }
-
         // 初始化context
         String en = Environment.getExternalStorageState();
         if (en.equals(Environment.MEDIA_MOUNTED)) {
@@ -127,14 +130,6 @@ public class ContextUtil extends Application {
         }
 
         System.exit(0);
-    }
-
-
-    public static SilentCameraHelper getCameraHelper() {
-        if (null != instance)
-            return instance.mSCHHandlerNew;
-        else
-            return null;
     }
 
     /**

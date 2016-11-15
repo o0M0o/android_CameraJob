@@ -2,13 +2,10 @@ package com.wxm.camerajob.base.utility;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraParam;
-import com.wxm.camerajob.base.data.GlobalDef;
 import com.wxm.camerajob.base.data.TakePhotoParam;
-import com.wxm.camerajob.base.handler.GlobalContext;
 
 import cn.wxm.andriodutillib.util.UtilFun;
 
@@ -113,12 +110,6 @@ public class SilentCameraHelper {
                 new SilentCamera.SilentCameraTakePhotoCallBack() {
                     @Override
                     public void onTakePhotoSuccess(TakePhotoParam tp) {
-                        //send msg
-                        Message m = Message.obtain(GlobalContext.getMsgHandlder(),
-                                GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
-                        m.obj = new Object[] {Integer.parseInt(mSelfTPTakePhoto.mTag), 1};
-                        m.sendToTarget();
-
                         if(null != mTPCBTakePhoto)
                             mTPCBTakePhoto.onTakePhotoSuccess(mSelfTPTakePhoto);
                     }

@@ -1,5 +1,6 @@
 package com.wxm.camerajob.base.handler;
 
+import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraJob;
@@ -262,9 +263,26 @@ public class CameraJobProcess {
         String dirp = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
         TakePhotoParam tp = new TakePhotoParam(dirp, fn, Integer.toString(cj.get_id()));
 
-        SilentCameraHelper sh = ContextUtil.getCameraHelper();
-        if(null != sh) {
-            sh.TakePhoto(PreferencesUtil.loadCameraParam(), tp);
-        }
+        SilentCameraHelper sh = new SilentCameraHelper();
+        sh.setTakePhotoCallBack(new SilentCameraHelper.takePhotoCallBack() {
+            @Override
+            public void onTakePhotoSuccess(TakePhotoParam tp) {
+                Log.e(TAG, "take photo success, tag = " + tp.mTag);
+
+                //send msg
+                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                        GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
+                m.obj = new Object[] {Integer.parseInt(tp.mTag), 1};
+                m.sendToTarget();
+            }
+
+            @Override
+            public void onTakePhotoFailed(TakePhotoParam tp) {
+                String l = "take photo failure, tag = " + tp.mTag;
+                Log.e(TAG, l);
+                FileLogger.getLogger().severe(l);
+            }
+        });
+        sh.TakePhoto(PreferencesUtil.loadCameraParam(), tp);
     }
 }
