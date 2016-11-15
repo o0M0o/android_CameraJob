@@ -39,6 +39,8 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
     private int mCLGrey;
     private int mCLBlack;
 
+    private SilentCameraHelper  mSCHelper = new SilentCameraHelper();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +60,20 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
 
         mCLGrey = getResources().getColor(R.color.gray);
         mCLBlack = getResources().getColor(R.color.black);
+
+        mSCHelper.setTakePhotoCallBack(
+                new SilentCameraHelper.takePhotoCallBack() {
+                    @Override
+                    public void onTakePhotoSuccess(TakePhotoParam tp) {
+                        mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS);
+                    }
+
+                    @Override
+                    public void onTakePhotoFailed(TakePhotoParam tp) {
+                        mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_FAILED);
+                    }
+                }
+        );
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -79,39 +95,13 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
                 String sp = ContextUtil.getInstance().getAppPhotoRootDir();
                 mTPParam = new TakePhotoParam(sp, "tmp.jpg", "1");
 
-                //noinspection ConstantConditions
-                final SilentCameraHelper sh = ContextUtil.getCameraHelper();
-                if(null != sh) {
-                    sh.setTakePhotoCallBack(
-                            new SilentCameraHelper.takePhotoCallBack() {
-                                @Override
-                                public void onTakePhotoSuccess(TakePhotoParam tp) {
-                                    //noinspection ConstantConditions
-                                    sh.setTakePhotoCallBack(null);
-                                    mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS);
-                                }
-
-                                @Override
-                                public void onTakePhotoFailed(TakePhotoParam tp) {
-                                    //noinspection ConstantConditions
-                                    sh.setTakePhotoCallBack(null);
-                                    mSelfHandler.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_FAILED);
-                                }
-                            }
-                    );
-
-                    //noinspection ConstantConditions
-                    sh.TakePhoto(PreferencesUtil.loadCameraParam(), mTPParam);
-                }
-
+                mSCHelper.TakePhoto(PreferencesUtil.loadCameraParam(), mTPParam);
             }
             break;
         }
-
     }
 
-
-    public static class ACTestMsgHandler extends Handler {
+    private static class ACTestMsgHandler extends Handler {
         private static final String TAG = "ACTestMsgHandler";
         private WeakReference<ACSilentCameraTest> mActivity;
 

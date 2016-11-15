@@ -3,11 +3,13 @@ package com.wxm.camerajob.base.utility;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.base.data.CameraParam;
-import com.wxm.camerajob.base.data.TakePhotoParam;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import cn.wxm.andriodutillib.util.ImageUtil;
@@ -21,16 +23,18 @@ import static com.wxm.camerajob.base.utility.FileLogger.getLogger;
  */
 public class SilentCameraOld extends SilentCamera {
     private final static String TAG = "SilentCameraOld";
+    private final static int   MSG_CAPTURE_TIMEOUT = 1;
+
     private Camera  mCamera;
     private int     mCameraID;
+    private CameraMsgHandler    mMHHandler;
 
-    public SilentCameraOld()    {
+    SilentCameraOld()    {
         super();
+        mMHHandler = new CameraMsgHandler(this);
     }
 
-    @Override
-    public boolean setupCamera(CameraParam cp) {
-        mCParam = cp;
+    private boolean setupCamera() {
         try {
             int selid = -1;
             int cc = Camera.getNumberOfCameras();
@@ -38,7 +42,7 @@ public class SilentCameraOld extends SilentCamera {
             for(int id = 0; id < cc; id++)  {
                 Camera.getCameraInfo(id, ci);
 
-                if(CameraParam.LENS_FACING_BACK == cp.mFace)    {
+                if(CameraParam.LENS_FACING_BACK == mCParam.mFace)    {
                     if(Camera.CameraInfo.CAMERA_FACING_BACK == ci.facing)   {
                         selid = id;
                     }
@@ -59,7 +63,6 @@ public class SilentCameraOld extends SilentCamera {
             }
 
             mCameraID = selid;
-            mCameraStatus = CAMERA_SETUP;
         } catch (Exception e)  {
             getLogger().severe(UtilFun.ExceptionToString(e));
             Log.e(TAG, UtilFun.ExceptionToString(e));
@@ -71,29 +74,47 @@ public class SilentCameraOld extends SilentCamera {
 
     @Override
     public void openCamera() {
-        Log.i(TAG, "open camera, current status = " + mCameraStatus);
-        if(mCameraStatus.equals(CAMERA_TAKEPHOTO_START)
-                || mCameraStatus.equals(CAMERA_TAKEPHOTO_FINISHED))   {
-            Log.w(TAG, "when open camera, status = " + mCameraStatus);
-
-            openCameraCallBack(false);
-            return ;
+        if(!setupCamera())  {
+            Log.w(TAG, "setup camera failure");
+            return;
         }
 
-        if(mCameraStatus.equals(CAMERA_OPEN_FINISHED)) {
-            openCameraCallBack(true);
-            return ;
-        }
-
-        if(!mCameraStatus.equals(CAMERA_NOT_SETUP))
-            closeCamera();
-
+        boolean b_ret = false;
+        boolean b_lock = false;
         try {
             if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
+            b_lock = true;
 
             mCamera = Camera.open(mCameraID);
+            mCameraStatus = CAMERA_OPENED;
+            b_ret = true;
+        } catch (Exception e){
+            b_ret = false;
+            e.printStackTrace();
+            getLogger().severe(UtilFun.ThrowableToString(e));
+        } finally {
+            if(b_lock)
+                mCameraLock.release();
+        }
+
+        openCameraCallBack(b_ret);
+    }
+
+    @Override
+    void capturePhoto() {
+        Log.i(TAG, "start capture");
+        mStartMSec = System.currentTimeMillis();
+
+        mCameraStatus = CAMERA_TAKEPHOTO_START;
+        boolean b_lock = false;
+        try {
+            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+                throw new RuntimeException("Time out waiting to lock camera opening.");
+            }
+            b_lock = true;
+
             Camera.Parameters cpa = mCamera.getParameters();
             mFlashSupported = (null != cpa.getFlashMode());
 
@@ -109,47 +130,37 @@ public class SilentCameraOld extends SilentCamera {
                     mCParam.mPhotoSize.getHeight());
 
             mCamera.setParameters(cpa);
-            mCameraStatus = CAMERA_OPEN_FINISHED;
-            openCameraCallBack(true);
-        } catch (Exception e){
+            mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+                @Override
+                public void onPreviewFrame(byte[] data, Camera camera) {
+                    Log.i(TAG, "preview being called!");
+                }
+            });
+
+            mCamera.startPreview();
+            mCamera.takePicture(null, null, mPCJpgProcessor);
+        } catch (Throwable e) {
             e.printStackTrace();
+            Log.e(TAG, UtilFun.ThrowableToString(e));
             getLogger().severe(UtilFun.ThrowableToString(e));
-            openCameraCallBack(false);
+
+            takePhotoCallBack(false);
         } finally {
-            mCameraLock.release();
-        }
-    }
-
-    @Override
-    public boolean takePhoto(TakePhotoParam tp) {
-        Log.i(TAG, "takephoto, current status = " + mCameraStatus);
-        if(!mCameraStatus.equals(CAMERA_OPEN_FINISHED)
-                && !mCameraStatus.equals(CAMERA_TAKEPHOTO_FAILED)
-                && !mCameraStatus.equals(CAMERA_TAKEPHOTO_SAVEED))  {
-            takePhotoCallBack(false);
-            return false;
+            if(b_lock)
+                mCameraLock.release();
         }
 
-        mCameraStatus = CAMERA_OPEN_FINISHED;
-        mStartMSec = System.currentTimeMillis();
-        mTPParam = tp;
-
-        boolean ret = false;
-        if(captureStillPicture())    {
-            ret = true;
-        } else  {
-            takePhotoCallBack(false);
-        }
-
-        return ret;
+        mMHHandler.sendEmptyMessageDelayed(MSG_CAPTURE_TIMEOUT, 5000);
     }
 
     @Override
     public void closeCamera() {
+        boolean b_lock = false;
         try {
             if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                throw new RuntimeException("Time out waiting to lock camera opening.");
+                throw new RuntimeException("Time out close camera.");
             }
+            b_lock = true;
 
             if(null != mCamera)     {
                 mCamera.release();
@@ -160,47 +171,24 @@ public class SilentCameraOld extends SilentCamera {
                     + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
             Log.i(TAG, l);
             getLogger().info(l);
-            mCameraStatus = CAMERA_NOT_SETUP;
+            mCameraStatus = CAMERA_NOT_OPEN;
         } catch (InterruptedException e) {
             getLogger().severe(UtilFun.ThrowableToString(e));
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
-            mCameraLock.release();
+            if(b_lock)
+                mCameraLock.release();
         }
     }
 
-
-    /**
-     * Capture a still picture
-     * @return 成功返回true, 否则返回false
-     */
-    private boolean captureStillPicture() {
-        mCameraStatus = CAMERA_TAKEPHOTO_START;
-        try {
-            mCamera.takePicture(null, null, mPCJpgProcessor);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Log.e(TAG, UtilFun.ThrowableToString(e));
-            getLogger().severe(UtilFun.ThrowableToString(e));
-
-            return false;
-        }
-
-        return true;
-    }
 
 
     private Camera.PictureCallback mPCJpgProcessor = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
-            if(ret) {
-                String l = "save photo to : " + mTPParam.mFileName;
-                Log.i(TAG, l);
-                getLogger().info(l);
-            }
 
-            mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
+            mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
             takePhotoCallBack(ret);
         }
     };
@@ -211,14 +199,45 @@ public class SilentCameraOld extends SilentCamera {
             Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
             bm = ImageUtil.rotateBitmap(bm, mSensorOrientation, null);
             boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
-            if(ret) {
-                String l = "save photo to : " + mTPParam.mFileName;
-                Log.i(TAG, l);
-                getLogger().info(l);
-            }
 
-            mCameraStatus = CAMERA_TAKEPHOTO_SAVEED;
+            mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
             takePhotoCallBack(ret);
         }
     };
+
+
+    /**
+     * activity msg handler
+     * Created by wxm on 2016/8/13.
+     */
+    private static class CameraMsgHandler extends Handler {
+        private static final String TAG = "CameraMsgHandler";
+        private WeakReference<SilentCameraOld>      mWRHandler;
+
+
+        CameraMsgHandler(SilentCameraOld h) {
+            super();
+            mWRHandler = new WeakReference<>(h);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_CAPTURE_TIMEOUT : {
+                    String l = "wait capture timeout";
+                    Log.e(TAG, l);
+                    FileLogger.getLogger().severe(l);
+
+                    SilentCameraOld h = mWRHandler.get();
+                    if(null != h)
+                        h.takePhotoCallBack(false);
+                }
+                break;
+
+                default:
+                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
+                    break;
+            }
+        }
+    }
 }

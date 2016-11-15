@@ -32,51 +32,69 @@ public abstract class SilentCamera {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public interface SilentCameraTakePhotoCallBack {
-        void onTakePhotoSuccess(TakePhotoParam tp);
-        void onTakePhotoFailed(TakePhotoParam tp);
-    }
+    String mCameraStatus = CAMERA_NOT_OPEN;
+    final static String CAMERA_NOT_OPEN             = "CAMERA_NOT_OPEN";
+    final static String CAMERA_OPENED               = "CAMERA_OPENED";
+    final static String CAMERA_TAKEPHOTO_START      = "CAMERA_TAKEPHOTO_START";
+    final static String CAMERA_TAKEPHOTO_SUCCESS    = "CAMERA_TAKEPHOTO_SUCCESS";
+    final static String CAMERA_TAKEPHOTO_FAILURE    = "CAMERA_TAKEPHOTO_FAILURE";
 
-    @SuppressWarnings("UnusedParameters")
-    public interface SilentCameraOpenCameraCallBack {
+    TakePhotoParam        mTPParam;
+    CameraParam           mCParam;
+    long                  mStartMSec;
+    boolean               mFlashSupported;
+
+
+    interface SilentCameraOpenCameraCallBack {
         void onOpenSuccess(CameraParam cp);
         void onOpenFailed(CameraParam cp);
     }
+    private SilentCameraOpenCameraCallBack      mOCCBOpen;
 
-    private SilentCameraOpenCameraCallBack     mOCCBOpen;
+    interface SilentCameraTakePhotoCallBack {
+        void onTakePhotoSuccess(TakePhotoParam tp);
+        void onTakePhotoFailed(TakePhotoParam tp);
+    }
     private SilentCameraTakePhotoCallBack      mTPCBTakePhoto;
 
-    protected TakePhotoParam        mTPParam;
-    protected CameraParam           mCParam;
-    protected long                  mStartMSec;
-    protected boolean               mFlashSupported;
 
-    protected String mCameraStatus = CAMERA_NOT_OPEN;
-    protected final static String CAMERA_NOT_SETUP            = "CAMERA_NOT_SETUP";
-    protected final static String CAMERA_NOT_OPEN             = "CAMERA_NOT_OPEN";
-    protected final static String CAMERA_SETUP                = "CAMERA_SETUP";
-    protected final static String CAMERA_OPEN_FINISHED        = "CAMERA_OPEN_FINISHED";
-    protected final static String CAMERA_TAKEPHOTO_START      = "CAMERA_TAKEPHOTO_START";
-    protected final static String CAMERA_TAKEPHOTO_FINISHED   = "CAMERA_TAKEPHOTO_FINISHED";
-    protected final static String CAMERA_TAKEPHOTO_SAVEED     = "CAMERA_TAKEPHOTO_SAVEED";
-    protected final static String CAMERA_TAKEPHOTO_FAILED     = "CAMERA_TAKEPHOTO_FAILED";
-
-
-    public SilentCamera()   {
+    SilentCamera()   {
         mCameraLock = new Semaphore(1);
+
+        mOCCBOpen = new SilentCameraOpenCameraCallBack() {
+            @Override
+            public void onOpenSuccess(CameraParam cp) {
+                capturePhoto();
+            }
+
+            @Override
+            public void onOpenFailed(CameraParam cp) {
+                takePhotoCallBack(false);
+            }
+        };
     }
 
-    public void setOpenCameraCallBack(SilentCameraOpenCameraCallBack oc)   {
-        mOCCBOpen = oc;
+
+    /**
+     * 执行拍照任务
+     * @param cp        相机设置
+     * @param tp        拍照设置
+     * @param stp       回调设置
+     */
+    public void takePhoto(CameraParam cp, TakePhotoParam tp, SilentCameraTakePhotoCallBack stp)    {
+        mCParam = cp;
+        mTPParam = tp;
+        mTPCBTakePhoto = stp;
+
+        openCamera();
     }
 
-    public void setTakePhotoCallBack(SilentCameraTakePhotoCallBack oc)   {
-        mTPCBTakePhoto = oc;
-    }
 
-
-    protected void openCameraCallBack(Boolean ret) {
+    /**
+     * 打开相机回调API
+     * @param ret  若为true则打开成功
+     */
+    void openCameraCallBack(Boolean ret) {
         if(ret) {
             String l = "camera opened";
             Log.i(TAG, l);
@@ -95,11 +113,19 @@ public abstract class SilentCamera {
         }
     }
 
-    protected void takePhotoCallBack(Boolean ret) {
+    /**
+     * 拍照回调API
+     * @param ret  若为true则拍照成功
+     */
+    void takePhotoCallBack(Boolean ret) {
         String tag = (mTPParam == null ? "null"
                 : (mTPParam.mTag == null ? "null" : mTPParam.mTag));
+        String str_status = mCameraStatus;
+
+        closeCamera();
         if(ret) {
-            String l = "take photo success, paratag = " + tag;
+            String l = "take photo success, tag = " + tag
+                        + ", photofile = " + mTPParam.mFileName;
             Log.i(TAG, l);
             FileLogger.getLogger().info(l);
 
@@ -107,8 +133,8 @@ public abstract class SilentCamera {
                 mTPCBTakePhoto.onTakePhotoSuccess(mTPParam);
         }
         else {
-            String l = "take photo failed, paratag = "
-                    + tag + ", camerastatus = " + mCameraStatus;
+            String l = "take photo failed, tag = "
+                    + tag + ", camerastatus = " + str_status;
             Log.i(TAG, l);
             FileLogger.getLogger().info(l);
 
@@ -117,7 +143,6 @@ public abstract class SilentCamera {
         }
     }
 
-
     /**
      * 保存照片到文件
      * @param data          照片数据
@@ -125,7 +150,7 @@ public abstract class SilentCamera {
      * @param fileName      文件名
      * @return   执行成功返回{@code true}
      */
-    protected boolean savePhotoToFile(byte[] data, String fileDir, String fileName) {
+    boolean savePhotoToFile(byte[] data, String fileDir, String fileName) {
         boolean ret = false;
         FileOutputStream output = null;
         File mf = new File(fileDir, fileName);
@@ -157,7 +182,7 @@ public abstract class SilentCamera {
      * @param fileName      文件名
      * @return   执行成功返回{@code true}
      */
-    protected boolean saveBitmapToJPGFile(Bitmap bm, String fileDir, String fileName) {
+    boolean saveBitmapToJPGFile(Bitmap bm, String fileDir, String fileName) {
         boolean ret = false;
         FileOutputStream output = null;
         File mf = new File(fileDir, fileName);
@@ -183,31 +208,21 @@ public abstract class SilentCamera {
 
 
     /**
-     * 设定相机
-     * 在使用相机前需要使用此函数
-     * @param cp    相机参数
-     * @return  成功返回true, 否则返回false
-     */
-    public abstract boolean setupCamera(CameraParam cp);
-
-
-    /**
      * 打开相机
-     * 通过回调函数得到操作结果
+     * 通过回调函数得到结果
      */
-    public abstract void openCamera();
+    abstract void openCamera();
 
 
     /**
-     * 执行拍照
-     * @param tp 拍照参数
-     * @return 成功返回true, 否则返回false
+     * 进行拍照
+     * 通过回调函数得到结果
      */
-    public abstract boolean takePhoto(TakePhotoParam tp);
+    abstract void capturePhoto();
 
 
     /**
      * 关闭相机
      */
-    public abstract void closeCamera();
+    abstract void closeCamera();
 }
