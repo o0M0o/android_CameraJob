@@ -1,9 +1,6 @@
 package com.wxm.camerajob.ui.acutility;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,16 +11,27 @@ import com.wxm.camerajob.ui.fragment.utility.FrgJobSlide;
 
 import java.util.LinkedList;
 
+import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
 import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
-public class ACJobSlide extends AppCompatActivity {
-    private FrgJobSlide mFrgSlide;
+/**
+ * 幻灯片展示Job
+ */
+public class ACJobSlide extends BaseAppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_job_slide);
+    protected void leaveActivity() {
+        int ret_data = GlobalDef.INTRET_USR_LOGOUT;
+
+        Intent data = new Intent();
+        setResult(ret_data, data);
+        finish();
+    }
+
+    @Override
+    protected void initFrgHolder() {
+        LOG_TAG = "ACJobSlide";
 
         Intent it = getIntent();
         if(null == it)
@@ -37,12 +45,7 @@ public class ACJobSlide extends AppCompatActivity {
         if(UtilFun.ListIsNullOrEmpty(ll_photo))
             return;
 
-        mFrgSlide = FrgJobSlide.newInstance(ll_photo);
-        if(null == savedInstanceState)  {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fl_job_slide, mFrgSlide);
-            transaction.commit();
-        }
+        mFGHolder = FrgJobSlide.newInstance(ll_photo);
     }
 
 

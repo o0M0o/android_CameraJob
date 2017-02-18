@@ -30,7 +30,6 @@ import com.wxm.camerajob.ui.helper.FrgCamerInfoHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +38,9 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
 import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
@@ -48,10 +50,7 @@ import static com.wxm.camerajob.base.handler.GlobalContext.GetDBManager;
  * 任务展示fragment
  * Created by 123 on 2016/10/14.
  */
-public class FrgJobShow extends Fragment {
-    private final static String TAG = "FrgJobShow";
-    private View mVWSelf;
-
+public class FrgJobShow extends FrgUtilitySupportBase {
     public final static String ALIVE_JOB    = "alive";
     public final static String DIED_JOB     = "died";
 
@@ -62,13 +61,11 @@ public class FrgJobShow extends Fragment {
     public final static String KEY_TYPE         = "key_type";
     public final static String KEY_ID           = "key_id";
 
-    private FrgJobShowMsgHandler mSelfHandler;
+    @BindView(R.id.aclv_start_jobs)
+    ListView            mLVJobs;
 
-    // for ui listview
-    private ListView                            mLVJobs;
-    private LVJobShowAdapter                    mLVAdapter;
-    private ArrayList<HashMap<String, String>>  mLVList = new ArrayList<>();
-    private Timer                               mTimer;
+    private Timer                   mTimer;
+    private FrgJobShowMsgHandler    mSelfHandler;
 
     /**
      *  任务数据变化回调类
@@ -105,50 +102,70 @@ public class FrgJobShow extends Fragment {
         }
     };
 
-
-    public static FrgJobShow newInstance() {
-        return new FrgJobShow();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.vw_job_show, null);
-        return v;
-    }
-
-    @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        if (null != view) {
-            mVWSelf = view;
-            init_ui();
-
-            // for notice
-            GetDBManager().getCameraJobUtility().addDataChangeNotice(mIDCJobNotice);
-            GetDBManager().getCameraJobStatusUtility().addDataChangeNotice(mIDCJobNotice);
-            PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
-
-            mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
-
-            // set timer
-            // 使用定时器定时全面刷新显示
-            mTimer = new Timer();
-            mTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
-                }
-            }, 5000, 10000);
-        }
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+
+    }
+
+    @Override
+    protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
+        LOG_TAG = "FrgJobShow";
+        View rootView = inflater.inflate(R.layout.vw_job_show, container, false);
+        ButterKnife.bind(this, rootView);
+        return rootView;
+    }
+
+    @Override
+    protected void enterActivity()  {
+        Log.d(LOG_TAG, "in enterActivity");
+        super.enterActivity();
+
+        // for handler
+        mSelfHandler = new FrgJobShowMsgHandler(this);
+
+        // for notice
+        GetDBManager().getCameraJobUtility().addDataChangeNotice(mIDCJobNotice);
+        GetDBManager().getCameraJobStatusUtility().addDataChangeNotice(mIDCJobNotice);
+        PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
+
+        mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+
+        // set timer
+        // 使用定时器定时全面刷新显示
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+            }
+        }, 5000, 10000);
+    }
+
+    @Override
+    protected void leaveActivity()  {
+        Log.d(LOG_TAG, "in leaveActivity");
 
         mTimer.cancel();
         PreferencesUtil.getInstance().removeChangeNotice(mIPCNCamera);
         GetDBManager().getCameraJobUtility().removeDataChangeNotice(mIDCJobNotice);
         GetDBManager().getCameraJobStatusUtility().removeDataChangeNotice(mIDCJobNotice);
+        super.leaveActivity();
+    }
+
+    @Override
+    protected void initUiComponent(View view) {
+    }
+
+    @Override
+    protected void initUiInfo() {
+        // for listview
+        LVJobShowAdapter mLVAdapter = new LVJobShowAdapter(getContext(),
+                new ArrayList<HashMap<String, String>>(),
+                new String[]{KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL},
+                new int[]{R.id.tv_job_name, R.id.tv_job_active,  R.id.tv_job_detail});
+        mLVJobs.setAdapter(mLVAdapter);
     }
 
 
@@ -157,10 +174,13 @@ public class FrgJobShow extends Fragment {
      * @param lsdata 新数据
      */
     public void updateData(List<HashMap<String, String>> lsdata) {
-        mLVList.clear();
-        mLVList.addAll(lsdata);
-
-        mLVAdapter.notifyDataSetChanged();
+        ArrayList<HashMap<String, String>> al_data = new ArrayList<>();
+        al_data.addAll(lsdata);
+        LVJobShowAdapter mLVAdapter = new LVJobShowAdapter(getContext(),
+                al_data,
+                new String[]{KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL},
+                new int[]{R.id.tv_job_name, R.id.tv_job_active,  R.id.tv_job_detail});
+        mLVJobs.setAdapter(mLVAdapter);
     }
 
 
@@ -171,25 +191,8 @@ public class FrgJobShow extends Fragment {
         mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
     }
 
-
     /// BEGIN PRIVATE
-
-    /**
-     * 初始化UI
-     */
-    private void init_ui() {
-        // init list view
-        mLVJobs = UtilFun.cast_t(mVWSelf.findViewById(R.id.aclv_start_jobs));
-        mLVAdapter= new LVJobShowAdapter(getContext(),
-                mLVList,
-                new String[]{KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL},
-                new int[]{R.id.tv_job_name, R.id.tv_job_active,  R.id.tv_job_detail});
-
-        mLVJobs.setAdapter(mLVAdapter);
-        mSelfHandler = new FrgJobShowMsgHandler(this);
-    }
     /// END PRIVATE
-
 
     /**
      * activity adapter
@@ -225,7 +228,7 @@ public class FrgJobShow extends Fragment {
         }
 
         void init_ui(View v, int position) {
-            HashMap<String, String> map = mLVList.get(position);
+            HashMap<String, String> map = UtilFun.cast_t(getItem(position));
 
             // for imagebutton
             ImageButton ib_play = (ImageButton)v.findViewById(R.id.ib_job_run_or_pause);
@@ -286,7 +289,7 @@ public class FrgJobShow extends Fragment {
         @Override
         public void onClick(View v) {
             int pos = mLVJobs.getPositionForView(v);
-            HashMap<String, String> map = mLVList.get(pos);
+            HashMap<String, String> map = UtilFun.cast_t(getItem(pos));
 
             switch (v.getId())  {
                 case R.id.ib_job_stop: {
@@ -376,12 +379,7 @@ public class FrgJobShow extends Fragment {
                                 ContextUtil.getInstance().getAppPhotoRootDir(), false);
             List<CameraJob> lsjob = GetDBManager().getCameraJobUtility().GetJobs();
             if(!UtilFun.ListIsNullOrEmpty(lsjob))   {
-                Collections.sort(lsjob, new Comparator<CameraJob>() {
-                    @Override
-                    public int compare(CameraJob lhs, CameraJob rhs) {
-                        return lhs.get_id() - rhs.get_id();
-                    }
-                });
+                Collections.sort(lsjob, (lhs, rhs) -> lhs.get_id() - rhs.get_id());
                 for (CameraJob cj : lsjob) {
                     alive_camerjob(cj);
 
@@ -391,12 +389,7 @@ public class FrgJobShow extends Fragment {
             }
 
             if(!UtilFun.ListIsNullOrEmpty(dirs)) {
-                Collections.sort(dirs, new Comparator<String>() {
-                    @Override
-                    public int compare(String lhs, String rhs) {
-                        return lhs.compareTo(rhs);
-                    }
-                });
+                Collections.sort(dirs, (lhs, rhs) -> lhs.compareTo(rhs));
 
                 for (String dir : dirs) {
                     died_camerajob(dir);

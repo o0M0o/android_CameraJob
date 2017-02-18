@@ -1,29 +1,24 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     signingConfigs {
         defkey {
             keyAlias 'andriodapp-key-longtime'
             keyPassword 'w789065'
-            storeFile file('G:/backup/appkey/andriodapp-key-longtime.jks')
+            storeFile file('H:/backup/appkey/andriodapp-key-longtime.jks')
             storePassword 'w127865'
         }
     }
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.wxm.camerajob"
-        minSdkVersion 19
-        targetSdkVersion 23
+        minSdkVersion 23
+        targetSdkVersion 25
         versionCode 7
         versionName "1.07"
         signingConfig signingConfigs.defkey
-
-        /*
-        jackOptions {
-            enabled true
-        }
-        */
     }
     buildTypes {
         release {
@@ -44,12 +39,10 @@ android {
     productFlavors {
     }
 
-    /*
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
-    */
 
     sourceSets {
         main {
@@ -67,28 +60,31 @@ android {
 }
 
 
-apply plugin: 'com.neenbedankt.android-apt'
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/extend_libs/ormlite/ormlite-android-5.0.jar')
-    compile files('libs/extend_libs/ormlite/ormlite-core-5.0.jar')
-    compile files('libs/extend_libs/ormlite/ormlite-android-5.0-javadoc.jar')
     compile project(':galleryfinal')
     compile project(':AndriodUtillib')
     compile files('libs/extend_libs/javamail/activation.jar')
     compile files('libs/extend_libs/javamail/additionnal.jar')
     compile files('libs/extend_libs/javamail/mail.jar')
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v13:23.4.0'
+    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:appcompat-v7:25.1.1'
+    compile 'com.android.support:support-v13:25.1.1'
     compile 'org.apache.logging.log4j:log4j:2.6.1'
-    compile 'com.android.support:design:23.4.0'
     compile 'com.facebook.fresco:fresco:0.12.0'
-    compile 'com.jakewharton:butterknife:8.2.1'
+
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'org.xutils:xutils:3.3.36'
     compile 'cn.finalteam:toolsfinal:1.1.4'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-annotations:24.2.1'
+    }
 }

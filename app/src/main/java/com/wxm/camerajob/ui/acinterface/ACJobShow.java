@@ -30,6 +30,8 @@ import com.wxm.camerajob.ui.fragment.utility.FrgJobShow;
 import com.wxm.camerajob.ui.test.ACCameraTest;
 import com.wxm.camerajob.ui.test.ACSilentCameraTest;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -37,7 +39,16 @@ public class ACJobShow
         extends AppCompatActivity
         implements  NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "ACJobShow";
-    private final FrgJobShow mFRGJobShow = FrgJobShow.newInstance();
+    private final FrgJobShow mFRGJobShow = new FrgJobShow();
+
+    @BindView(R.id.ac_navw_toolbar)
+    Toolbar mTBNavw;
+
+    @BindView(R.id.ac_start_outerlayout)
+    DrawerLayout mDLOuterLayout;
+
+    @BindView(R.id.start_nav_view)
+    NavigationView mNVNav;
 
     /**
      * 如果有权限，则直接初始化实例
@@ -50,6 +61,7 @@ public class ACJobShow
         setContentView(R.layout.ac_job_show);
         ContextUtil.getInstance().addActivity(this);
 
+        ButterKnife.bind(this);
         initActivity();
         if(null == savedInstanceState) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -58,24 +70,20 @@ public class ACJobShow
         }
     }
 
+
     private void initActivity() {
         // set nav view
         try {
-            Toolbar tb = (Toolbar) findViewById(R.id.ac_navw_toolbar);
-            setSupportActionBar(tb);
+            setSupportActionBar(mTBNavw);
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.ac_start_outerlayout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, tb,
+                    this, mDLOuterLayout, mTBNavw,
                     R.string.navigation_drawer_open,
                     R.string.navigation_drawer_close);
-            assert drawer != null;
-            drawer.addDrawerListener(toggle);
+            mDLOuterLayout.addDrawerListener(toggle);
             toggle.syncState();
 
-            NavigationView nv = (NavigationView) findViewById(R.id.start_nav_view);
-            assert nv != null;
-            nv.setNavigationItemSelectedListener(this);
+            mNVNav.setNavigationItemSelectedListener(this);
         } catch (NullPointerException e) {
             FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
         }
@@ -190,16 +198,10 @@ public class ACJobShow
             break;
 
             case R.id.nav_setting :    {
-//                Toast.makeText(getApplicationContext(),
-//                        "invoke setting!",
-//                        Toast.LENGTH_SHORT).show();
             }
             break;
 
             case R.id.nav_share_app :    {
-//                Toast.makeText(getApplicationContext(),
-//                        "invoke share!",
-//                        Toast.LENGTH_SHORT).show();
             }
             break;
 
@@ -209,9 +211,7 @@ public class ACJobShow
             break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.ac_start_outerlayout);
-        assert drawer != null;
-        drawer.closeDrawer(GravityCompat.START);
+        mDLOuterLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 

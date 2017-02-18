@@ -20,6 +20,10 @@ import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WAKE_LOCK;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+/**
+ * App第一个界面
+ * 申请权限，然后跳转到工作首界面
+ */
 public class ACLoader extends AppCompatActivity {
     private static final int REQUEST_ALL  = 99;
 
@@ -35,11 +39,14 @@ public class ACLoader extends AppCompatActivity {
 
         ContextUtil.getInstance().addActivity(this);
         if(mayRequestPermission()) {
-            initActivity();
+            jumpWorkActivity();
         }
     }
 
-    private void initActivity() {
+    /**
+     * 跳转到工作首界面
+     */
+    private void jumpWorkActivity() {
         ContextUtil.getInstance().initAppContext();
         Intent it = new Intent(this, ACJobShow.class);
         startActivityForResult(it, 1);
@@ -110,7 +117,7 @@ public class ACLoader extends AppCompatActivity {
             }
 
             if(ct) {
-                initActivity();
+                jumpWorkActivity();
             }
         }
     }

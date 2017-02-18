@@ -46,4 +46,7 @@
     <string name="hint_sender_email_address">发送邮箱地址</string>
     <string name="hint_sender_email_usr_name">发送邮件用户名</string>
     <string name="hint_use_email_send">开启邮件推送照片</string>
+
+    <string name="cn_save">保存</string>
+    <string name="job_name">任务名</string>
 </resources>

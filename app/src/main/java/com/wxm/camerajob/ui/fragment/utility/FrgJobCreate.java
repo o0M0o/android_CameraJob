@@ -39,8 +39,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.wxm.andriodutillib.Dialog.DlgDatePicker;
 import cn.wxm.andriodutillib.Dialog.DlgOKOrNOBase;
+import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
@@ -48,44 +52,68 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * Created by 123 on 2016/10/14.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class FrgJobCreate extends Fragment {
-    private final static String     TAG = "FrgJobCreate";
+public class FrgJobCreate extends FrgUtilitySupportBase {
 
     private final static String     KEY_JOB_TYPE    = "job_type";
     private final static String     KEY_JOB_POINT   = "job_point";
 
-    private View        mVWSelf;
-
     // for job setting
-    private EditText    mETJobName;
-    private TextView    mTVJobStartDate;
-    private TextView    mTVJobEndDate;
-    private GridView    mGVJobType;
-    private GridView    mGVJobPoint;
-    private Switch      mSWSendPicByEmail;
+    @BindView(R.id.acet_job_name)
+    EditText    mETJobName;
+
+    @BindView(R.id.tv_date_start)
+    TextView    mTVJobStartDate;
+
+    @BindView(R.id.tv_date_end)
+    TextView    mTVJobEndDate;
+
+    @BindView(R.id.gv_job_type)
+    GridView    mGVJobType;
+
+    @BindView(R.id.gv_job_point)
+    GridView    mGVJobPoint;
+
+    @BindView(R.id.sw_send_pic)
+    Switch    mSTSendPic;
+
+    @BindView(R.id.vs_email_detail)
+    ViewSwitcher    mVSEmailDetail;
+
+    //private Switch      mSWSendPicByEmail;
 
     private ArrayList<HashMap<String, String>>      mALJobPoint;
     private GVJobPointAdapter                       mGAJobPoint;
 
     // for camera setting
-    private TextView    mTVCameraFace;
-    private TextView    mTVCameraDpi;
-    private TextView    mTVCameraFlash;
-    private TextView    mTVCameraFocus;
+    @BindView(R.id.tv_camera_face)
+    TextView    mTVCameraFace;
+
+    @BindView(R.id.tv_camera_dpi)
+    TextView    mTVCameraDpi;
+
+    @BindView(R.id.tv_camera_flash)
+    TextView    mTVCameraFlash;
+
+    @BindView(R.id.tv_camera_focus)
+    TextView    mTVCameraFocus;
 
     // for send pic
-    private TextView mTVEmailSender;
-    private TextView mTVEmailSendServerType;
-    private TextView mTVEmailSendType;
-    private TextView mTVEmailReceiver;
+    @BindView(R.id.tv_email_sender)
+    TextView mTVEmailSender;
+
+    @BindView(R.id.tv_email_server_type)
+    TextView mTVEmailSendServerType;
+
+    @BindView(R.id.tv_email_send_type)
+    TextView mTVEmailSendType;
+
+    @BindView(R.id.tv_email_recv_address)
+    TextView mTVEmailReceiver;
 
     // for camera setting change listener
-    private IPreferenceChangeNotice  mIPCNCamera = new IPreferenceChangeNotice() {
-        @Override
-        public void onPreferenceChanged(String PreferenceName) {
-            if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(PreferenceName))  {
-                load_camera_setting();
-            }
+    private IPreferenceChangeNotice  mIPCNCamera = PreferenceName -> {
+        if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(PreferenceName))  {
+            load_camera_setting();
         }
     };
 
@@ -94,25 +122,33 @@ public class FrgJobCreate extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.vw_job_creater, null);
-        return v;
+    protected void enterActivity()  {
+        super.enterActivity();
+        PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
     }
 
     @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        if(null != view)    {
-            mVWSelf = view;
-            init_ui();
-
-            PreferencesUtil.getInstance().addChangeNotice(mIPCNCamera);
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void leaveActivity()  {
         PreferencesUtil.getInstance().removeChangeNotice(mIPCNCamera);
+        super.leaveActivity();
+    }
+
+    @Override
+    protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
+        LOG_TAG = "FrgJobCreate";
+        View rootView = inflater.inflate(R.layout.vw_job_creater, container, false);
+        ButterKnife.bind(this, rootView);
+        return rootView;
+    }
+
+    @Override
+    protected void initUiComponent(View view) {
+        init_job_setting();
+        init_camera_setting();
+    }
+
+    @Override
+    protected void initUiInfo() {
     }
 
 
@@ -128,9 +164,9 @@ public class FrgJobCreate extends Fragment {
         String job_starttime = mTVJobStartDate.getText().toString() + ":00";
         String job_endtime = mTVJobEndDate.getText().toString() + ":00";
 
-        Context ct = mVWSelf.getContext();
+        Context ct = getContext();
         if(job_name.isEmpty())  {
-            Log.i(TAG, "job name为空");
+            Log.i(LOG_TAG, "job name为空");
             mETJobName.requestFocus();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ct);
@@ -141,7 +177,7 @@ public class FrgJobCreate extends Fragment {
         }
 
         if(job_type.isEmpty())  {
-            Log.i(TAG, "job type为空");
+            Log.i(LOG_TAG, "job type为空");
             mGVJobType.requestFocus();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ct);
@@ -152,7 +188,7 @@ public class FrgJobCreate extends Fragment {
         }
 
         if(job_point.isEmpty())  {
-            Log.i(TAG, "job point为空");
+            Log.i(LOG_TAG, "job point为空");
             mGVJobPoint.requestFocus();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ct);
@@ -166,7 +202,7 @@ public class FrgJobCreate extends Fragment {
         Timestamp et = UtilFun.StringToTimestamp(job_endtime);
         if(0 <= st.compareTo(et))   {
             String show = String.format("任务开始时间(%s)比结束时间(%s)晚", job_starttime, job_endtime);
-            Log.w(TAG, show);
+            Log.w(LOG_TAG, show);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ct);
             builder.setMessage(show).setTitle("警告");
@@ -188,21 +224,9 @@ public class FrgJobCreate extends Fragment {
 
     /// BEGIN PRIVATE
     /**
-     * 初始化UI
-     */
-    private void init_ui() {
-        init_job_setting();
-        init_camera_setting();
-    }
-
-    /**
      * 初始化任务设置
      */
     private void init_job_setting() {
-        mETJobName = UtilFun.cast_t(mVWSelf.findViewById(R.id.acet_job_name));
-        mTVJobStartDate = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_date_start));
-        mTVJobEndDate = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_date_end));
-
         // 任务默认开始时间是“当前时间"
         // 任务默认结束时间是“一周”
         mTVJobStartDate.setText(UtilFun.MilliSecsToString(
@@ -211,9 +235,6 @@ public class FrgJobCreate extends Fragment {
                 + 1000 * 3600 * 24 * 7).substring(0, 16));
 
         // for job type & job point
-        mGVJobType = UtilFun.cast_t(mVWSelf.findViewById(R.id.gv_job_type));
-        mGVJobPoint = UtilFun.cast_t(mVWSelf.findViewById(R.id.gv_job_point));
-
         String[] str_arr = getResources().getStringArray(R.array.job_type);
         ArrayList<HashMap<String, String>> al_hm = new ArrayList<>();
         for(String i : str_arr) {
@@ -234,98 +255,79 @@ public class FrgJobCreate extends Fragment {
         mGVJobPoint.setAdapter(mGAJobPoint);
         mGAJobPoint.notifyDataSetChanged();
 
-        // for start and end time
-        View.OnClickListener cl = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int vid = v.getId();
-                if(R.id.iv_clock_start == vid || R.id.iv_clock_end == vid)  {
-                    final TextView hot_tv = R.id.iv_clock_start == vid ? mTVJobStartDate : mTVJobEndDate;
-
-                    DlgDatePicker dp = new DlgDatePicker();
-                    dp.setInitDate(hot_tv.getText().toString() + ":00");
-                    dp.setDialogListener(new DlgOKOrNOBase.DialogResultListener() {
-                        @Override
-                        public void onDialogPositiveResult(DialogFragment dialog) {
-                            DlgDatePicker cur_dp = UtilFun.cast_t(dialog);
-                            String cur_date = cur_dp.getCurDate();
-
-                            if(!UtilFun.StringIsNullOrEmpty(cur_date))
-                                hot_tv.setText(cur_date.substring(0, 16));
-
-                            hot_tv.requestFocus();
-                        }
-
-                        @Override
-                        public void onDialogNegativeResult(DialogFragment dialog) {
-                            hot_tv.requestFocus();
-                        }
-                    });
-
-                    dp.show(getFragmentManager(),
-                            R.id.iv_clock_start == vid ? "选择任务启动时间" : "选择任务结束时间");
-                }
-            }
-        };
-
-        ImageView iv = UtilFun.cast_t(mVWSelf.findViewById(R.id.iv_clock_start));
-        iv.setOnClickListener(cl);
-
-        iv = UtilFun.cast_t(mVWSelf.findViewById(R.id.iv_clock_end));
-        iv.setOnClickListener(cl);
-
         // for send pic
-        final Switch sw = UtilFun.cast_t(mVWSelf.findViewById(R.id.sw_send_pic));
-        final ViewSwitcher vs = UtilFun.cast_t(mVWSelf.findViewById(R.id.vs_email_detail));
-        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                vs.setDisplayedChild(isChecked ? 0 : 1);
-            }
-        });
+        mSTSendPic.setOnCheckedChangeListener((buttonView, isChecked) ->
+                mVSEmailDetail.setDisplayedChild(isChecked ? 0 : 1));
 
-        sw.setChecked(false);
-        vs.setDisplayedChild(1);
+        mSTSendPic.setChecked(false);
+        mVSEmailDetail.setDisplayedChild(1);
 
-        mTVEmailSender = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_sender));
-        mTVEmailSendServerType = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_server_type));
-        mTVEmailSendType = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_send_type));
-        mTVEmailReceiver = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_email_recv_address));
         mTVEmailSender.setText("请设置邮件发送者");
         mTVEmailReceiver.setText("请设置邮件接收者");
     }
+
+
+    @OnClick({R.id.iv_clock_start, R.id.iv_clock_end})
+    public void onClockClick(View v) {
+        final int vid = v.getId();
+        final TextView hot_tv = R.id.iv_clock_start == vid ? mTVJobStartDate : mTVJobEndDate;
+
+        DlgDatePicker dp = new DlgDatePicker();
+        dp.setInitDate(hot_tv.getText().toString() + ":00");
+        dp.addDialogListener(new DlgOKOrNOBase.DialogResultListener() {
+            @Override
+            public void onDialogPositiveResult(DialogFragment dialog) {
+                DlgDatePicker cur_dp = UtilFun.cast_t(dialog);
+                String cur_date = cur_dp.getCurDate();
+
+                if (!UtilFun.StringIsNullOrEmpty(cur_date))
+                    hot_tv.setText(cur_date.substring(0, 16));
+
+                hot_tv.requestFocus();
+            }
+
+            @Override
+            public void onDialogNegativeResult(DialogFragment dialog) {
+                hot_tv.requestFocus();
+            }
+        });
+
+        dp.show(getFragmentManager(),
+                R.id.iv_clock_start == vid ? "选择任务启动时间" : "选择任务结束时间");
+    }
+
+    /**
+     * 处理“设置”和“预览”点击事件
+     * @param v     点击目标视图
+     */
+    @OnClick({R.id.rl_setting, R.id.rl_preview})
+    public void onRLClick(View v)   {
+        Activity ac = getActivity();
+        int vid = v.getId();
+        switch (vid)    {
+            case R.id.rl_setting :  {
+                Intent data = new Intent(ac, ACCameraSetting.class);
+                ac.startActivityForResult(data, 1);
+            }
+            break;
+
+            case R.id.rl_preview :  {
+                Intent it = new Intent(ac, ACCameraPreview.class);
+                it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, PreferencesUtil.loadCameraParam());
+                ac.startActivityForResult(it, 1);
+            }
+            break;
+        }
+    }
+
 
     /**
      * 初始化摄像头设置
      */
     private void init_camera_setting() {
         // for camera setting
-        mTVCameraFace = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_camera_face));
-        mTVCameraDpi = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_camera_dpi));
-        mTVCameraFlash = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_camera_flash));
-        mTVCameraFocus = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_camera_focus));
-
-        final Activity ac = getActivity();
-        RelativeLayout rl = UtilFun.cast_t(mVWSelf.findViewById(R.id.rl_setting));
-        rl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent data = new Intent(ac, ACCameraSetting.class);
-                ac.startActivityForResult(data, 1);
-            }
-        });
-
-        rl = UtilFun.cast_t(mVWSelf.findViewById(R.id.rl_preview));
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            rl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent it = new Intent(ac, ACCameraPreview.class);
-                    it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, PreferencesUtil.loadCameraParam());
-                    ac.startActivityForResult(it, 1);
-                }
-            });
-        } else  {
+        RelativeLayout rl = UtilFun.cast_t(getView().findViewById(R.id.rl_preview));
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             rl.setVisibility(View.INVISIBLE);
         }
 
@@ -343,7 +345,7 @@ public class FrgJobCreate extends Fragment {
         mTVCameraDpi.setText(cp.mPhotoSize.toString());
         mTVCameraFlash.setText(getString(cp.mAutoFlash ?
                 R.string.cn_autoflash : R.string.cn_flash_no));
-        mTVCameraFocus.setText(getString(cp.mAutoFocus?
+        mTVCameraFocus.setText(getString(cp.mAutoFocus ?
                 R.string.cn_autofocus : R.string.cn_focus_no));
     }
     /// END PRIVATE
@@ -362,6 +364,7 @@ public class FrgJobCreate extends Fragment {
         public GVJobTypeAdapter(Context context, List<? extends Map<String, ?>> data,
                                 String[] from, int[] to) {
             super(context, data, R.layout.gi_job_type, from, to);
+
 
             mCLSelected = getResources().getColor(R.color.linen);
             mCLNotSelected = getResources().getColor(R.color.white);
@@ -446,7 +449,7 @@ public class FrgJobCreate extends Fragment {
                 }
             }
             catch (Resources.NotFoundException e)   {
-                Log.e(TAG, "Not find string array for '" + hv + "'");
+                Log.e(LOG_TAG, "Not find string array for '" + hv + "'");
                 e.printStackTrace();
             }
         }

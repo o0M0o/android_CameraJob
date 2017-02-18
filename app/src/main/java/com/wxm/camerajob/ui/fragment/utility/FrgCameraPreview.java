@@ -53,6 +53,9 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
 import cn.wxm.andriodutillib.type.MySize;
 import cn.wxm.andriodutillib.util.UtilFun;
 
@@ -61,14 +64,13 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * Created by 123 on 2016/10/14.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class FrgCameraPreview extends Fragment {
+public class FrgCameraPreview extends FrgUtilityBase {
     private final static String     TAG = "ACCameraPreview";
     private static final String     FRAGMENT_DIALOG = "dialog";
 
     private int                             mSensorOrientation;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
-    private AutoFitTextureView mTextureView;
     private CaptureRequest.Builder  mPreviewRequestBuilder;
     private CameraDevice mCameraDevice = null;
     private CameraCaptureSession mCaptureSession = null;
@@ -97,26 +99,35 @@ public class FrgCameraPreview extends Fragment {
 
     private CameraParam     mCPParam;
 
+    @BindView(R.id.frag_camera_textureview)
+    AutoFitTextureView mTextureView;
+
     public static FrgCameraPreview newInstance() {
         return new FrgCameraPreview();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.frg_camera, null);
-
-        Intent it = getActivity().getIntent();
-        mCPParam = it.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
-        return v;
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
     }
 
     @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        //view.findViewById(R.id.picture).setOnClickListener(this);
-        //view.findViewById(R.id.info).setOnClickListener(this);
-        //mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        mTextureView = (AutoFitTextureView) view.findViewById(R.id.frag_camera_textureview);
+    protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
+        LOG_TAG = "FrgJobCreate";
+        View rootView = inflater.inflate(R.layout.frg_camera, container, false);
+        ButterKnife.bind(this, rootView);
+        return rootView;
+    }
+
+    @Override
+    protected void initUiComponent(View view) {
+        Intent it = getActivity().getIntent();
+        mCPParam = it.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
+
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+    }
+
+    @Override
+    protected void initUiInfo() {
     }
 
 
@@ -159,6 +170,8 @@ public class FrgCameraPreview extends Fragment {
         }
         */
     }
+
+
 
     /**
      * 激活前置相机

@@ -31,6 +31,9 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
 import cn.wxm.andriodutillib.type.MySize;
 import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
@@ -39,23 +42,25 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * 任务 slide fragment
  * Created by 123 on 2016/10/14.
  */
-public class FrgJobSlide extends Fragment {
-    private final static String TAG = "FrgJobSlide";
-    private View mVWSelf;
+public class FrgJobSlide extends FrgUtilityBase {
 
     private final static int  MSG_TYPE_TO_NEXT_PHOTO = 1;
     private final static MySize    GALLERY_SIZE = new MySize(200, 150);
     private final static MySize    SHOW_SIZE    = new MySize(1000, 750);
 
-    // for ui
-    private Gallery         mGYPhotos;
-    private ImageSwitcher   mISPhoto;
-    private TextView        mTVTag;
-    private Timer           mTimer;
-    private FrgJobSlideMsgHandler mSelfHandler;
+    private Timer                   mTimer;
+    private FrgJobSlideMsgHandler   mSelfHandler;
 
-    // for data
     private LinkedList<String>  mLLPhotoFN = new LinkedList<>();
+
+    @BindView(R.id.gy_photos)
+    Gallery         mGYPhotos;
+
+    @BindView(R.id.is_photo)
+    ImageSwitcher   mISPhoto;
+
+    @BindView(R.id.tv_tag)
+    TextView        mTVTag;
 
     public static FrgJobSlide newInstance(List<String> photos) {
         FrgJobSlide ret =  new FrgJobSlide();
@@ -65,27 +70,11 @@ public class FrgJobSlide extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.vw_job_slide, null);
-        return v;
-    }
-
-    @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         if (null != view) {
-            mVWSelf = view;
             init_ui();
 
-            // set timer
-            // 使用定时器定时全面刷新显示
-            mSelfHandler = new FrgJobSlideMsgHandler();
-            mTimer = new Timer();
-            mTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mSelfHandler.sendEmptyMessage(MSG_TYPE_TO_NEXT_PHOTO);
-                }
-            }, 300, 1500);
+
         }
     }
 
@@ -95,14 +84,33 @@ public class FrgJobSlide extends Fragment {
         mTimer.cancel();
     }
 
-
-
-    /**
-     * 用现有数据重新绘制
-     */
-    public void refreshFrg()    {
+    @Override
+    protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
+        LOG_TAG = "FrgJobSlide";
+        View rootView = inflater.inflate(R.layout.vw_job_show, container, false);
+        ButterKnife.bind(this, rootView);
+        return rootView;
     }
 
+    @Override
+    protected void initUiComponent(View view) {
+
+        // set timer
+        // 使用定时器定时全面刷新显示
+        mSelfHandler = new FrgJobSlideMsgHandler();
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mSelfHandler.sendEmptyMessage(MSG_TYPE_TO_NEXT_PHOTO);
+            }
+        }, 300, 1500);
+    }
+
+    @Override
+    protected void initUiInfo() {
+
+    }
 
     /// BEGIN PRIVATE
 
@@ -114,16 +122,10 @@ public class FrgJobSlide extends Fragment {
 
         // get tag
         int position = 0;
-        mTVTag = UtilFun.cast_t(mVWSelf.findViewById(R.id.tv_tag));
-
         String fn = mLLPhotoFN.get(position);
         int l_pos = fn.lastIndexOf("/") + 1;
         mTVTag.setText(String.format(Locale.CHINA, "%d/%d (%s)",
                     position + 1, mLLPhotoFN.size(), fn.substring(l_pos, fn.length())));
-
-        // 获取视图控件对象
-        mGYPhotos = UtilFun.cast_t(mVWSelf.findViewById(R.id.gy_photos));
-        mISPhoto =  UtilFun.cast_t(mVWSelf.findViewById(R.id.is_photo));
 
         // 设置动画效果
         mISPhoto.setInAnimation(AnimationUtils.loadAnimation(home_context,
@@ -132,35 +134,32 @@ public class FrgJobSlide extends Fragment {
                                     android.R.anim.fade_out));
 
         // 为imageSwitcher设置ViewFactory对象
-        mISPhoto.setFactory(new ViewSwitcher.ViewFactory() {
-            @Override
-            public View makeView() {
-                // 初始化一个ImageView对象
-                // 设置保持纵横比居中缩放图像
-                // 设置imageView的宽高
-                ImageView imageView = new ImageView(home_context);
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setLayoutParams(new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        mISPhoto.setFactory(() -> {
+            // 初始化一个ImageView对象
+            // 设置保持纵横比居中缩放图像
+            // 设置imageView的宽高
+            ImageView imageView = new ImageView(home_context);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            imageView.setLayoutParams(new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
 
-                return imageView;
-            }
+            return imageView;
         });
 
         //初始化一个MainGalleryAdapter对象
         MainGalleryAdapter adapter = new MainGalleryAdapter();
         mGYPhotos.setAdapter(adapter);
         mGYPhotos.setSelection(position);
-        mGYPhotos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                //在ImageSwitcher中显示选中的图片
-                toPostion(position);
-            }
+        mGYPhotos.setOnItemClickListener((parent, view, position1, id) -> {
+            //在ImageSwitcher中显示选中的图片
+            toPostion(position1);
         });
     }
 
+    /**
+     * 相册跳转到新位置
+     * @param position  新位置
+     */
     public void toPostion(int position) {
         Drawable cur_d = UtilFun.cast_t(mGYPhotos.getAdapter().getItem(position));
         mISPhoto.setImageDrawable(cur_d);

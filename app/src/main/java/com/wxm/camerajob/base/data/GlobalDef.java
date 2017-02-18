@@ -33,6 +33,8 @@ public class GlobalDef {
     public final static int INT_GLOBALJOB_PERIOD        = 10000;
     public final static int INT_GLOBALJOB_CHECKPERIOD   = 10;
 
+    static public final int INTRET_USR_LOGOUT    = 2001;
+
     public final static String CNSTR_EVERY_TEN_SECOND         = "10秒";
     public final static String CNSTR_EVERY_TWENTY_SECOND      = "20秒";
     public final static String CNSTR_EVERY_THIRTY_SECOND      = "30秒";

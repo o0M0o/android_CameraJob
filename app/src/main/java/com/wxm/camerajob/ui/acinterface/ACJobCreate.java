@@ -20,26 +20,36 @@ import com.wxm.camerajob.base.data.PreferencesUtil;
 import com.wxm.camerajob.base.utility.ContextUtil;
 import com.wxm.camerajob.ui.acutility.ACCameraSetting;
 import com.wxm.camerajob.ui.fragment.utility.FrgJobCreate;
+import com.wxm.camerajob.ui.fragment.utility.FrgJobShow;
+
+import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
 
 public class ACJobCreate
-        extends AppCompatActivity   {
-    private final static String TAG = "ACJobCreate";
+        extends BaseAppCompatActivity {
     private final static int        REQUEST_SET_CAMERA = 123;
 
-    private final FrgJobCreate mFRGJobCreater = FrgJobCreate.newInstance();
+    private final FrgJobCreate mFRGJobCreat = FrgJobCreate.newInstance();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_job);
         ContextUtil.getInstance().addActivity(this);
+    }
 
-        if(null == savedInstanceState)  {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fl_job_creater, mFRGJobCreater);
-            transaction.commit();
-        }
+    @Override
+    protected void leaveActivity() {
+        int ret_data = GlobalDef.INTRET_USR_LOGOUT;
+
+        Intent data = new Intent();
+        setResult(ret_data, data);
+        finish();
+    }
+
+    @Override
+    protected void initFrgHolder() {
+        LOG_TAG = "ACJobCreate";
+        mFGSupportHolder = mFRGJobCreat;
     }
 
 
@@ -77,7 +87,7 @@ public class ACJobCreate
             break;
 
             default:    {
-                Log.i(TAG, "不处理的 resultCode = " + resultCode);
+                Log.i(LOG_TAG, "不处理的 resultCode = " + resultCode);
             }
             break;
         }
@@ -88,7 +98,7 @@ public class ACJobCreate
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mi_accept: {
-                CameraJob cj = mFRGJobCreater.onAccept();
+                CameraJob cj = mFRGJobCreat.onAccept();
                 if(null != cj) {
                     Intent data = new Intent();
                     data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
@@ -122,12 +132,9 @@ public class ACJobCreate
         if(!PreferencesUtil.checkCameraIsSet()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(home);
             builder.setTitle("相机未设置，需要先设置相机");
-            builder.setPositiveButton("确 定", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent data = new Intent(home, ACCameraSetting.class);
-                    startActivityForResult(data, REQUEST_SET_CAMERA);
-                }
+            builder.setPositiveButton("确 定", (dialog, which) -> {
+                Intent data = new Intent(home, ACCameraSetting.class);
+                startActivityForResult(data, REQUEST_SET_CAMERA);
             });
 
             Dialog dialog = builder.create();

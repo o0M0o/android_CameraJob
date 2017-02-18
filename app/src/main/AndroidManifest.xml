@@ -29,8 +29,8 @@
             android:exported="true" />
         <activity
             android:name=".ui.acinterface.ACJobCreate"
-            android:label="@string/job_create" />
-
+            android:label="@string/job_create"
+            android:theme="@style/AppTheme.NoActionBar" />
         <service
             android:name=".jobservice.CameraJobService"
             android:exported="true"
@@ -48,7 +48,8 @@
         <activity android:name=".ui.acinterface.ACHelp" />
         <activity
             android:name=".ui.acutility.ACCameraPreview"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.acutility.ACSetting" />
         <activity android:name=".ui.acutility.ACJobSlide" />
         <activity
