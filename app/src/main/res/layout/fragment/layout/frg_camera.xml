@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.wxm.camerajob.ui.view.AutoFitTextureView
+    <com.wxm.camerajob.ui.Base.AutoFitTextureView
         android:id="@+id/frag_camera_textureview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

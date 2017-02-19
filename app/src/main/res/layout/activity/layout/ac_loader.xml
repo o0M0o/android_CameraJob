@@ -5,6 +5,6 @@
     android:id="@+id/ac_loader"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wxm.camerajob.ui.acinterface.ACLoader">
+    tools:context=".ui.Utility.Loader.ACLoader">
 
 </android.support.constraint.ConstraintLayout>
