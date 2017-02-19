@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.wxm.camerajob.R;
+import com.wxm.camerajob.base.data.PreferencesUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,14 +44,10 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * Created by 123 on 2016/10/14.
  */
 public class FrgJobSlide extends FrgUtilityBase {
-
-    private final static int  MSG_TYPE_TO_NEXT_PHOTO = 1;
     private final static MySize    GALLERY_SIZE = new MySize(200, 150);
     private final static MySize    SHOW_SIZE    = new MySize(1000, 750);
 
-    private Timer                   mTimer;
-    private FrgJobSlideMsgHandler   mSelfHandler;
-
+    private Timer               mTimer;
     private LinkedList<String>  mLLPhotoFN = new LinkedList<>();
 
     @BindView(R.id.gy_photos)
@@ -70,54 +67,45 @@ public class FrgJobSlide extends FrgUtilityBase {
     }
 
     @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        if (null != view) {
-            init_ui();
-
-
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void leaveActivity()  {
         mTimer.cancel();
+        super.leaveActivity();
     }
 
     @Override
     protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         LOG_TAG = "FrgJobSlide";
-        View rootView = inflater.inflate(R.layout.vw_job_show, container, false);
+        View rootView = inflater.inflate(R.layout.vw_job_slide, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;
     }
 
     @Override
     protected void initUiComponent(View view) {
-
         // set timer
         // 使用定时器定时全面刷新显示
-        mSelfHandler = new FrgJobSlideMsgHandler();
         mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                mSelfHandler.sendEmptyMessage(MSG_TYPE_TO_NEXT_PHOTO);
+                getActivity().runOnUiThread(() -> {
+                    if(isDetached() || isHidden())
+                        return;
+
+                    int sz = mLLPhotoFN.size();
+                    int cur_pos = mGYPhotos.getSelectedItemPosition();
+                    int max_pos = sz - 1;
+
+                    int next_pos = cur_pos + 1 <= max_pos ? cur_pos + 1 : 0;
+                    mGYPhotos.setSelection(next_pos);
+                    toPostion(next_pos);
+                });
             }
         }, 300, 1500);
     }
 
     @Override
     protected void initUiInfo() {
-
-    }
-
-    /// BEGIN PRIVATE
-
-    /**
-     * 初始化UI
-     */
-    private void init_ui() {
         final Context home_context = getContext();
 
         // get tag
@@ -125,13 +113,13 @@ public class FrgJobSlide extends FrgUtilityBase {
         String fn = mLLPhotoFN.get(position);
         int l_pos = fn.lastIndexOf("/") + 1;
         mTVTag.setText(String.format(Locale.CHINA, "%d/%d (%s)",
-                    position + 1, mLLPhotoFN.size(), fn.substring(l_pos, fn.length())));
+                position + 1, mLLPhotoFN.size(), fn.substring(l_pos, fn.length())));
 
         // 设置动画效果
         mISPhoto.setInAnimation(AnimationUtils.loadAnimation(home_context,
-                                    android.R.anim.fade_in));
+                android.R.anim.fade_in));
         mISPhoto.setOutAnimation(AnimationUtils.loadAnimation(home_context,
-                                    android.R.anim.fade_out));
+                android.R.anim.fade_out));
 
         // 为imageSwitcher设置ViewFactory对象
         mISPhoto.setFactory(() -> {
@@ -156,6 +144,8 @@ public class FrgJobSlide extends FrgUtilityBase {
         });
     }
 
+    /// BEGIN PRIVATE
+
     /**
      * 相册跳转到新位置
      * @param position  新位置
@@ -176,7 +166,6 @@ public class FrgJobSlide extends FrgUtilityBase {
      * 定义Gallery的数据适配器MainGalleryAdapter
      */
     class MainGalleryAdapter extends BaseAdapter {
-
         /**
          * 获得数量
          */
@@ -236,41 +225,6 @@ public class FrgJobSlide extends FrgUtilityBase {
 
             //返回ImageView对象
             return imageView;
-        }
-    }
-
-    /**
-     * activity msg handler
-     * Created by wxm on 2016/8/13.
-     */
-    private class FrgJobSlideMsgHandler extends Handler {
-        private static final String TAG = "FrgJobSlideMsgHandler";
-
-        FrgJobSlideMsgHandler() {
-            super();
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            if(isDetached() || isHidden())
-                return;
-
-            switch (msg.what) {
-                case MSG_TYPE_TO_NEXT_PHOTO : {
-                    int sz = mLLPhotoFN.size();
-                    int cur_pos = mGYPhotos.getSelectedItemPosition();
-                    int max_pos = sz - 1;
-
-                    int next_pos = cur_pos + 1 <= max_pos ? cur_pos + 1 : 0;
-                    mGYPhotos.setSelection(next_pos);
-                    toPostion(next_pos);
-                }
-                break;
-
-                default:
-                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-                    break;
-            }
         }
     }
 }

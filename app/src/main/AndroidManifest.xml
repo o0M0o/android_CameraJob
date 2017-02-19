@@ -51,7 +51,8 @@
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.acutility.ACSetting" />
-        <activity android:name=".ui.acutility.ACJobSlide" />
+        <activity android:name=".ui.acutility.ACJobSlide"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".ui.acutility.ACEmailTest"
             android:exported="true"

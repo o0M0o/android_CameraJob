@@ -49,20 +49,14 @@ public class ACCameraSetting extends AppCompatActivity   {
                     Dialog alertDialog = new AlertDialog.Builder(this).
                             setTitle("配置已经更改").
                             setMessage("是否保存更改的配置?").
-                            setPositiveButton("是", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mTFCamera.updateSetting();
-                                    setResult(GlobalDef.INTRET_CS_ACCEPT, data);
-                                    finish();
-                                }
+                            setPositiveButton("是", (dialog, which) -> {
+                                mTFCamera.updateSetting();
+                                setResult(GlobalDef.INTRET_CS_ACCEPT, data);
+                                finish();
                             }).
-                            setNegativeButton("否", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    setResult(GlobalDef.INTRET_CS_GIVEUP, data);
-                                    finish();
-                                }
+                            setNegativeButton("否", (dialog, which) -> {
+                                setResult(GlobalDef.INTRET_CS_GIVEUP, data);
+                                finish();
                             }).create();
                     alertDialog.show();
                 } else {
