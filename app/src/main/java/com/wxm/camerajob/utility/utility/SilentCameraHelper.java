@@ -18,10 +18,6 @@ public class SilentCameraHelper {
 
     private Handler         mBackgroundHandler;
     private HandlerThread   mBackgroundThread;
-    private Handler         mCameraSessionHandler;
-    private HandlerThread   mCameraSessionThread;
-
-    //private Semaphore           mCameraLock;
 
     private takePhotoCallBack   mTPCBTakePhoto;
     public interface takePhotoCallBack {
@@ -31,10 +27,6 @@ public class SilentCameraHelper {
 
     public SilentCameraHelper()    {
         startBackgroundThread();
-
-        // for camera
-        //mCameraLock = new Semaphore(1);
-        //mSCCamera = ContextUtil.useNewCamera() ? new SilentCameraNew() : new SilentCameraOld();
     }
 
     protected void finalize() throws Throwable {
@@ -67,12 +59,6 @@ public class SilentCameraHelper {
         mBackgroundThread = new HandlerThread("Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-
-        /*
-        mCameraSessionThread = new HandlerThread("CameraSession");
-        mCameraSessionThread.start();
-        mCameraSessionHandler = new Handler(mCameraSessionThread.getLooper());
-        */
     }
 
     /**
@@ -87,17 +73,6 @@ public class SilentCameraHelper {
             e.printStackTrace();
         }
         mBackgroundThread = null;
-
-        /*
-        mCameraSessionHandler = null;
-        mCameraSessionThread.quitSafely();
-        try {
-            mCameraSessionThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        mCameraSessionThread = null;
-        */
     }
 
 

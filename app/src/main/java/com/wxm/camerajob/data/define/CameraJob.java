@@ -12,6 +12,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.io.IOException;
 import java.sql.Timestamp;
 
+import cn.wxm.andriodutillib.DBHelper.IDBRow;
 import cn.wxm.andriodutillib.util.UtilFun;
 
 /**
@@ -19,7 +20,8 @@ import cn.wxm.andriodutillib.util.UtilFun;
  * Created by wxm on 2016/6/11.
  */
 @DatabaseTable(tableName = "tbCameraJob")
-public class CameraJob implements Parcelable {
+public class CameraJob
+        implements Parcelable, IDBRow<Integer> {
     public final static String FIELD_ID = "_id";
 
     @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
@@ -248,5 +250,15 @@ public class CameraJob implements Parcelable {
 
     public void setStatus(CameraJobStatus status) {
         Status = status;
+    }
+
+    @Override
+    public Integer getID() {
+        return get_id();
+    }
+
+    @Override
+    public void setID(Integer integer) {
+        set_id(integer);
     }
 }

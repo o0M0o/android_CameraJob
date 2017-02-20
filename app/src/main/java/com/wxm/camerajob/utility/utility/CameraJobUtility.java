@@ -20,7 +20,7 @@ public class CameraJobUtility {
      * @return    若成功创建任务，返回ture
      */
     public static boolean createCameraJob(CameraJob cj) {
-        boolean ret = GetDBManager().getCameraJobUtility().AddJob(cj);
+        boolean ret = GetDBManager().getCameraJobUtility().createData(cj);
         if(ret) {
             String dir = ContextUtil.getInstance().createCameraJobPhotoDir(cj);
             ret = !UtilFun.StringIsNullOrEmpty(dir);
@@ -35,7 +35,7 @@ public class CameraJobUtility {
      * @param cj_id   待移除任务id
      */
     public static void removeCamerJob(int cj_id) {
-        GetDBManager().getCameraJobUtility().RemoveJob(cj_id);
+        GetDBManager().getCameraJobUtility().removeData(cj_id);
     }
 
     /**
@@ -43,7 +43,7 @@ public class CameraJobUtility {
      * @param cj_id   待移除任务id
      */
     public static void deleteCamerJob(int cj_id) {
-        GetDBManager().getCameraJobUtility().RemoveJob(cj_id);
+        GetDBManager().getCameraJobUtility().removeData(cj_id);
         String path = ContextUtil.getInstance().getCameraJobPhotoDir(cj_id);
         FileUtil.DeleteDirectory(path);
     }

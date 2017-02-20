@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 处理job
@@ -247,9 +248,8 @@ public class CameraJobProcess {
         FileLogger.getLogger().info("wakeup job : " + cj.toString());
 
         Calendar curCal = Calendar.getInstance();
-        String fn = String.format(
-                        "%d_%d%02d%02d-%02d%02d%02d.jpg"
-                        , cj.get_id()
+        String fn = String.format(Locale.CHINA,  "%d_%d%02d%02d-%02d%02d%02d.jpg"
+                        ,cj.get_id()
                         ,curCal.get(Calendar.YEAR)
                         ,curCal.get(Calendar.MONTH) + 1
                         ,curCal.get(Calendar.DAY_OF_MONTH)

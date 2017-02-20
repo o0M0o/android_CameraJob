@@ -7,7 +7,7 @@ package com.wxm.camerajob.data.define;
 public class DBDataChangeEvent {
     public final static int   EVENT_CREATE = 1;
     public final static int   EVENT_MODIFY = 2;
-    public final static int   EVENT_REMOVE = 3;
+    public final static int EVENT_REMOVE = 3;
 
     public final static int   DATA_JOB          = 1;
     public final static int   DATA_JOB_STATUS   = 2;

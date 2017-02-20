@@ -148,14 +148,10 @@ public class ContextUtil extends Application {
     /**
      * 捕获错误信息的handler
      */
-    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
-
-        @Override
-        public void uncaughtException(Thread thread, Throwable ex) {
-            //FileLogger.getLogger().severe("App崩溃");
-            //FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
-            Log.e(TAG, UtilFun.ThrowableToString(ex));
-        }
+    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = (thread, ex) -> {
+        //FileLogger.getLogger().severe("App崩溃");
+        //FileLogger.getLogger().severe(UtilFun.ThrowableToString(ex));
+        Log.e(TAG, UtilFun.ThrowableToString(ex));
     };
 
 

@@ -118,7 +118,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             public void run() {
                 mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
             }
-        }, 5000, 10000);
+        }, 2000, 10000);
     }
 
     @Override
@@ -283,12 +283,12 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
                 case R.id.ib_job_run_or_pause:    {
                     int id = Integer.parseInt(map.get(KEY_ID));
-                    CameraJob cj = GetDBManager().getCameraJobUtility().GetJob(id);
+                    CameraJob cj = GetDBManager().getCameraJobUtility().getData(id);
                     if(null != cj) {
                         CameraJobStatus cjs = cj.getStatus();
                         cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
                                 GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
-                        GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(cjs);
+                        GetDBManager().getCameraJobStatusUtility().modifyData(cjs);
 
                         mSelfHandler.refreshCameraJobs();
                     }
@@ -354,10 +354,10 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             mSelfList.clear();
             LinkedList<String> dirs = FileUtil.getDirDirs(
                                 ContextUtil.getInstance().getAppPhotoRootDir(), false);
-            List<CameraJob> lsjob = GetDBManager().getCameraJobUtility().GetJobs();
-            if(!UtilFun.ListIsNullOrEmpty(lsjob))   {
-                Collections.sort(lsjob, (lhs, rhs) -> lhs.get_id() - rhs.get_id());
-                for (CameraJob cj : lsjob) {
+            List<CameraJob> ls_job = GetDBManager().getCameraJobUtility().getAllData();
+            if(!UtilFun.ListIsNullOrEmpty(ls_job))   {
+                Collections.sort(ls_job, (lhs, rhs) -> lhs.get_id() - rhs.get_id());
+                for (CameraJob cj : ls_job) {
                     alive_camerjob(cj);
 
                     String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
@@ -366,7 +366,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             }
 
             if(!UtilFun.ListIsNullOrEmpty(dirs)) {
-                Collections.sort(dirs, (lhs, rhs) -> lhs.compareTo(rhs));
+                Collections.sort(dirs, String::compareTo);
 
                 for (String dir : dirs) {
                     died_camerajob(dir);

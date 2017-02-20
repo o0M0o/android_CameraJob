@@ -109,13 +109,13 @@ public class GlobalContext {
             int camerajob_id = UtilFun.cast(obj_arr[0]);
             int photo_count = UtilFun.cast(obj_arr[1]);
 
-            CameraJob js = GetDBManager().getCameraJobUtility().GetJob(camerajob_id);
+            CameraJob js = GetDBManager().getCameraJobUtility().getData(camerajob_id);
             if(null != js)   {
-                CameraJobStatus curjs = js.getStatus();
-                curjs.setJob_photo_count(curjs.getJob_photo_count() + photo_count);
-                curjs.getTs().setTime(Calendar.getInstance().getTimeInMillis());
+                CameraJobStatus cur_js = js.getStatus();
+                cur_js.setJob_photo_count(cur_js.getJob_photo_count() + photo_count);
+                cur_js.getTs().setTime(Calendar.getInstance().getTimeInMillis());
 
-                GetDBManager().getCameraJobStatusUtility().ModifyJobStatus(curjs);
+                GetDBManager().getCameraJobStatusUtility().modifyData(cur_js);
             }
         }
 
@@ -127,13 +127,13 @@ public class GlobalContext {
         private void processor_ask_cameraJob(Message msg)    {
             Handler h = (Handler)msg.obj;
 
-            List<CameraJob> lsret = GetDBManager().getCameraJobUtility().GetJobs();
-            if(null == lsret)
+            List<CameraJob> ls_ret = GetDBManager().getCameraJobUtility().getAllData();
+            if(null == ls_ret)
                 Log.e(TAG, "get camerajob failed!");
 
             Message answer = Message.obtain(h, GlobalDef.MSG_TYPE_REPLAY);
             answer.arg1 = GlobalDef.MSG_TYPE_CAMERAJOB_QUERY;
-            answer.obj = lsret;
+            answer.obj = ls_ret;
             answer.sendToTarget();
         }
 
@@ -142,7 +142,7 @@ public class GlobalContext {
          * 处理唤醒消息
          */
         private void processor_wakeup() {
-            List<CameraJob> ls = GetDBManager().getCameraJobUtility().GetJobs();
+            List<CameraJob> ls = GetDBManager().getCameraJobUtility().getAllData();
             if((null != ls) && (1 <= ls.size()))
                 GetJobProcess().processorWakeup(ls);
         }

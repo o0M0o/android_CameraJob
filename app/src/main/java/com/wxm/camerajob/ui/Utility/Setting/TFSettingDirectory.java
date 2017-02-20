@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.utility.utility.ContextUtil;
-import com.wxm.camerajob.ui.Base.TFSettingBase;
 
 
 import java.util.Locale;

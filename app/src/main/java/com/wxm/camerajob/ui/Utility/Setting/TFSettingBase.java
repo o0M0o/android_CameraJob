@@ -1,11 +1,7 @@
-package com.wxm.camerajob.ui.Base;
+package com.wxm.camerajob.ui.Utility.Setting;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 
-import com.wxm.camerajob.ui.Utility.Setting.ACSetting;
-
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
 import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
 import cn.wxm.andriodutillib.util.UtilFun;
 
@@ -26,23 +22,13 @@ public abstract class TFSettingBase extends FrgUtilitySupportBase {
     }
 
     /**
-     * 切换回主设置页
-     */
-    public void toMainPage()    {
-        ACSetting acs = getRootActivity();
-        if(null != acs) {
-            acs.change_page(ACSetting.PAGE_IDX_MAIN);
-        }
-    }
-
-    /**
      * 切换页面
      * @param idx  新页面的idx
      */
     public void toPageByIdx(int idx)    {
         ACSetting acs = getRootActivity();
         if(null != acs) {
-            acs.change_page(idx);
+            acs.changePage(idx);
         }
     }
 

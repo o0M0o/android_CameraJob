@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.ui.Base.TFSettingBase;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -39,17 +38,17 @@ public class TFSettingMain extends TFSettingBase {
         int vid = v.getId();
         switch (vid) {
             case R.id.rl_setting_check_version: {
-                toPageByIdx(ACSetting.PAGE_IDX_CHECK_VERSION);
+                toPageByIdx(FrgSetting.PAGE_IDX_CHECK_VERSION);
             }
             break;
 
             case R.id.rl_setting_directory: {
-                toPageByIdx(ACSetting.PAGE_IDX_DIRECTORY);
+                toPageByIdx(FrgSetting.PAGE_IDX_DIRECTORY);
             }
             break;
 
             case R.id.rl_setting_camera: {
-                toPageByIdx(ACSetting.PAGE_IDX_CAMERA);
+                toPageByIdx(FrgSetting.PAGE_IDX_CAMERA);
             }
             break;
         }

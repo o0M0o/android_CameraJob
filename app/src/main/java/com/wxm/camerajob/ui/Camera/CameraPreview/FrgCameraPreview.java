@@ -111,7 +111,7 @@ public class FrgCameraPreview extends FrgUtilityBase {
 
     @Override
     protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
-        LOG_TAG = "FrgJobCreate";
+        LOG_TAG = "FrgHelp";
         View rootView = inflater.inflate(R.layout.frg_camera, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;

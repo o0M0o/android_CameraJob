@@ -23,7 +23,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         super();
     }
 
-
+    /**
+     * 每十秒唤醒一次APP
+     * @param arg0   param
+     * @param data   param
+     */
     @Override
     public void onReceive(Context arg0, Intent data) {
         //Log.i(TAG, "app wakeup");

@@ -26,6 +26,8 @@ public class GlobalDef {
     public final static int INTRET_CS_GIVEUP            = 2011;
     public final static int INTRET_ACCEPT               = 2020;
     public final static int INTRET_GIVEUP               = 2021;
+    public final static int INTRET_SURE                 = 2022;
+
 
     public final static int INTRET_NOTCARE              = 9000;
 

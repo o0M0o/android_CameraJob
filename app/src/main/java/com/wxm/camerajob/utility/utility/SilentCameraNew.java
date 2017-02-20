@@ -45,20 +45,18 @@ import static com.wxm.camerajob.utility.utility.FileLogger.getLogger;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class SilentCameraNew extends SilentCamera {
     private final static String TAG = "SilentCameraNew";
-    private final static int   MSG_CAPTURE_TIMEOUT = 1;
+    private final static int MSG_CAPTURE_TIMEOUT = 1;
 
-    private ImageReader     mImageReader;
+    private ImageReader mImageReader;
 
-    private String                  mCameraId;
-    private CameraDevice            mCameraDevice = null;
-    private CameraCaptureSession    mCaptureSession = null;
-    private CaptureRequest.Builder  mCaptureBuilder = null;
+    private String mCameraId;
+    private CameraDevice mCameraDevice = null;
+    private CameraCaptureSession mCaptureSession = null;
+    private CaptureRequest.Builder mCaptureBuilder = null;
 
-    private CameraMsgHandlerNew    mMHHandler;
-
-    private final static HashMap<String, CameraHardWare>  mHMCameraHardware = new HashMap<>();
+    private final static HashMap<String, CameraHardWare> mHMCameraHardware = new HashMap<>();
     static {
-        CameraManager  mCMCameramanager = (CameraManager) ContextUtil.getInstance()
+        CameraManager mCMCameramanager = (CameraManager) ContextUtil.getInstance()
                 .getSystemService(Context.CAMERA_SERVICE);
 
         try {
@@ -68,11 +66,11 @@ public class SilentCameraNew extends SilentCamera {
 
                 CameraHardWare ch = new CameraHardWare();
                 Integer facing = cc.get(CameraCharacteristics.LENS_FACING);
-                if(null != facing) {
+                if (null != facing) {
                     ch.mFace = facing;
 
                     Integer or = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
-                    ch.mSensorOrientation = null != or ?  or : 90;
+                    ch.mSensorOrientation = null != or ? or : 90;
 
                     // Check if the flash is supported.
                     Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
@@ -87,9 +85,8 @@ public class SilentCameraNew extends SilentCamera {
     }
 
 
-    public SilentCameraNew()    {
+    public SilentCameraNew() {
         super();
-        mMHHandler = new CameraMsgHandlerNew(this);
     }
 
     private boolean setupCamera() {
@@ -110,7 +107,7 @@ public class SilentCameraNew extends SilentCamera {
 
     @Override
     public void openCamera() {
-        if(!setupCamera())  {
+        if (!setupCamera()) {
             Log.w(TAG, "setup camera failure");
             openCameraCallBack(false);
             return;
@@ -127,7 +124,7 @@ public class SilentCameraNew extends SilentCamera {
             CameraManager cm = (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
             cm.openCamera(mCameraId,
                     mCameraDeviceStateCallback, mCParam.mSessionHandler);
-        } catch (Exception e){
+        } catch (Exception e) {
             openCameraCallBack(false);
 
             e.printStackTrace();
@@ -154,9 +151,6 @@ public class SilentCameraNew extends SilentCamera {
             e.printStackTrace();
             takePhotoCallBack(false);
         }
-
-//        if(b_ok)
-//            mMHHandler.sendEmptyMessageDelayed(MSG_CAPTURE_TIMEOUT, 5000);
     }
 
     @Override
@@ -192,7 +186,7 @@ public class SilentCameraNew extends SilentCamera {
             getLogger().severe(UtilFun.ThrowableToString(e));
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
-            if(b_lock)
+            if (b_lock)
                 mCameraLock.release();
         }
     }
@@ -204,7 +198,7 @@ public class SilentCameraNew extends SilentCamera {
      * @return The JPEG orientation (one of 0, 90, 270, and 360)
      */
     private int getOrientation() {
-        Display dp =  ((WindowManager)
+        Display dp = ((WindowManager)
                 ContextUtil.getInstance()
                         .getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
@@ -302,12 +296,9 @@ public class SilentCameraNew extends SilentCamera {
 
                         mCaptureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
                         mImageReader.setOnImageAvailableListener(
-                                new ImageReader.OnImageAvailableListener() {
-                                    @Override
-                                    public void onImageAvailable(ImageReader reader) {
-                                        Log.i(TAG, "image already");
-                                        //savePhoto(reader.acquireLatestImage());
-                                    }
+                                reader -> {
+                                    Log.i(TAG, "image already");
+                                    //savePhoto(reader.acquireLatestImage());
                                 }, mCParam.mSessionHandler);
 
                         mCaptureSession.capture(mCaptureBuilder.build(), mCaptureCallback, null);
@@ -326,14 +317,14 @@ public class SilentCameraNew extends SilentCamera {
             };
 
 
-    private CameraCaptureSession.CaptureCallback  mCaptureCallback
+    private CameraCaptureSession.CaptureCallback mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
         private final static String TAG = "Capture.CaptureCallback";
-        private final static int     MAX_WAIT_TIMES = 5;
-        private int     mWaitCount = 0;
+        private final static int MAX_WAIT_TIMES = 5;
+        private int mWaitCount = 0;
 
-        private final static int   PARTIAL_TAG = 1;
-        private final static int   COMPELED_TAG = 2;
+        private final static int PARTIAL_TAG = 1;
+        private final static int COMPELED_TAG = 2;
 
         /**
          * 如果使用mCaptureSession.capture， 则不需要判断ae状态
@@ -368,7 +359,7 @@ public class SilentCameraNew extends SilentCamera {
                     }
                 }
 
-                if(r_c) {
+                if (r_c) {
                     Log.i(TAG, "wait image ok");
                     try {
                         Thread.sleep(250);
@@ -398,60 +389,23 @@ public class SilentCameraNew extends SilentCamera {
         @Override
         public void onCaptureFailed(@NonNull CameraCaptureSession session,
                                     @NonNull CaptureRequest request,
-                                    @NonNull CaptureFailure failure)    {
-            super.onCaptureFailed(session,request, failure);
-            Log.d(TAG, "CaptureFailed, reason = "  + failure.getReason());
+                                    @NonNull CaptureFailure failure) {
+            super.onCaptureFailed(session, request, failure);
+            Log.d(TAG, "CaptureFailed, reason = " + failure.getReason());
             FileLogger.getLogger().warning(
-                    "CaptureFailed, reason = "  + failure.getReason());
+                    "CaptureFailed, reason = " + failure.getReason());
 
             mCameraStatus = CAMERA_TAKEPHOTO_FAILURE;
             takePhotoCallBack(false);
         }
     };
-
-    /**
-     * activity msg handler
-     * Created by wxm on 2016/8/13.
-     */
-    private static class CameraMsgHandlerNew extends Handler {
-        private static final String TAG = "CameraMsgHandlerNew";
-        private WeakReference<SilentCameraNew> mWRHandler;
-
-
-        CameraMsgHandlerNew(SilentCameraNew h) {
-            super();
-            mWRHandler = new WeakReference<>(h);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_CAPTURE_TIMEOUT : {
-                    SilentCameraNew h = mWRHandler.get();
-                    if(null != h) {
-                        if(!h.mCameraStatus.equals(CAMERA_NOT_OPEN)) {
-                            String l = "force close camera";
-                            Log.e(TAG, l);
-                            FileLogger.getLogger().severe(l);
-
-                            h.closeCamera();
-                        }
-                    }
-                }
-                break;
-
-                default:
-                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-                    break;
-            }
-        }
-    }
-
-
 }
 
-class CameraHardWare    {
-    public int      mSensorOrientation;
-    public int      mFace;
-    public boolean  mFlashSupported;
+/**
+ * 相机硬件属性
+ */
+class CameraHardWare {
+    int mSensorOrientation;
+    int mFace;
+    boolean mFlashSupported;
 };

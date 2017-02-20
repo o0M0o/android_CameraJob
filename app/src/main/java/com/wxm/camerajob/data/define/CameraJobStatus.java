@@ -13,12 +13,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import cn.wxm.andriodutillib.DBHelper.IDBRow;
+
 /**
  * 拍照任务状态
  * Created by 123 on 2016/6/16.
  */
 @DatabaseTable(tableName = "tbCameraJobStatus")
-public class CameraJobStatus  implements Parcelable {
+public class CameraJobStatus
+        implements Parcelable, IDBRow<Integer> {
     public final static String FIELD_ID = "_id";
 
     @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
@@ -53,7 +56,7 @@ public class CameraJobStatus  implements Parcelable {
 
     @Override
     public String toString()    {
-        String ret = String.format(
+        String ret = String.format(Locale.CHINA,
                 "id : %d, job_status : %s, job_photo_count : %d, ts : %s"
                 , get_id()
                 , getJob_status()
@@ -135,5 +138,15 @@ public class CameraJobStatus  implements Parcelable {
 
     public void setTs(Timestamp ts) {
         this.ts = ts;
+    }
+
+    @Override
+    public Integer getID() {
+        return get_id();
+    }
+
+    @Override
+    public void setID(Integer integer) {
+        set_id(integer);
     }
 }

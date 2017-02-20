@@ -5,6 +5,7 @@ import android.support.design.BuildConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -66,7 +67,7 @@ public class FileLogger {
                 @Override
                 public String format(LogRecord record) {
 
-                    String ret = String.format("%s|%s|%s-%d|%s:%s|%s"
+                    String ret = String.format(Locale.CHINA, "%s|%s|%s-%d|%s:%s|%s"
                             , UtilFun.MilliSecsToString(record.getMillis())
                             , record.getLevel().getName()
                             , mLogTag ,record.getThreadID()

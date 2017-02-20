@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.Utility.Help;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,72 +12,43 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.utility.ContextUtil;
 
-public class ACHelp extends AppCompatActivity {
-    private String HELP_MAIN_FILEPATH = "file:///android_asset/help_main.html";
-    private static String TAG = "ACHelp";
-    private static final String ENCODING = "utf-8";
-    //private static final String MIMETYPE = "text/html; charset=UTF-8";
+import butterknife.ButterKnife;
+import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
+import cn.wxm.andriodutillib.util.UtilFun;
 
-    private WebView     mWVHelp;
+/**
+ * 展示帮助信息UI
+ */
+public class ACHelp
+        extends BaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_help);
         ContextUtil.getInstance().addActivity(this);
+    }
 
-        mWVHelp = (WebView)findViewById(R.id.ac_help_webvw);
-        assert mWVHelp != null;
+    @Override
+    protected void leaveActivity() {
+        int ret_data = GlobalDef.INTRET_USR_LOGOUT;
 
-        WebSettings wSet = mWVHelp.getSettings();
-        wSet.setDefaultTextEncodingName(ENCODING);
+        Intent data = new Intent();
+        setResult(ret_data, data);
+        finish();
+    }
+
+    @Override
+    protected void initFrgHolder() {
+        LOG_TAG = "ACJobCreate";
+        mFGHolder = new FrgHelp();
 
         // load help html
         Intent it = getIntent();
         String help_type = it.getStringExtra(GlobalDef.STR_HELP_TYPE);
-        if(null != help_type)   {
-            switch (help_type)  {
-                case GlobalDef.STR_HELP_MAIN :  {
-                    load_main_help();
-                }
-                break;
-            }
+        if(!UtilFun.StringIsNullOrEmpty(help_type))   {
+            Bundle arg = new Bundle();
+            arg.putString(GlobalDef.STR_HELP_TYPE, help_type);
+            mFGHolder.setArguments(arg);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acm_leave, menu);
-        return true;
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.mi_leave: {
-                Intent data = new Intent();
-                setResult(GlobalDef.INTRET_NOTCARE, data);
-                finish();
-            }
-            break;
-
-            default:
-                return super.onOptionsItemSelected(item);
-
-        }
-
-        return true;
-    }
-
-
-
-    /**
-     * 加载应用主帮助信息
-     */
-    private void load_main_help()   {
-        mWVHelp.loadUrl(HELP_MAIN_FILEPATH);
     }
 }
