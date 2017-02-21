@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility.utility;
+package com.wxm.camerajob.utility;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
-import static com.wxm.camerajob.utility.utility.FileLogger.getLogger;
+import static com.wxm.camerajob.utility.FileLogger.getLogger;
 
 /**
  * 兼容旧camera api

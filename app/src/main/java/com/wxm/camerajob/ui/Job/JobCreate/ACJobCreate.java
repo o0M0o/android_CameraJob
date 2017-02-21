@@ -14,7 +14,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesUtil;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting;
 
 import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;

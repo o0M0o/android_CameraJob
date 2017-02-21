@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility.service;
+package com.wxm.camerajob.service;
 
 import android.annotation.TargetApi;
 import android.app.job.JobInfo;
@@ -12,8 +12,8 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.utility.GlobalContext;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.GlobalContext;
+import com.wxm.camerajob.utility.ContextUtil;
 
 import java.util.LinkedList;
 

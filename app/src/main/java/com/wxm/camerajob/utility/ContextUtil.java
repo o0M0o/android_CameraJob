@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility.utility;
+package com.wxm.camerajob.utility;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.receiver.AlarmReceiver;
+import com.wxm.camerajob.receiver.AlarmReceiver;
 
 import java.io.File;
 import java.io.FileReader;

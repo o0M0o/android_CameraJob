@@ -106,10 +106,6 @@ public class FrgCameraPreview extends FrgUtilityBase {
     }
 
     @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-    }
-
-    @Override
     protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         LOG_TAG = "FrgHelp";
         View rootView = inflater.inflate(R.layout.frg_camera, container, false);
@@ -170,7 +166,10 @@ public class FrgCameraPreview extends FrgUtilityBase {
         */
     }
 
-
+    protected void leaveActivity() {
+        closeCamera();
+        stopBackgroundThread();
+    }
 
     /**
      * 激活前置相机
@@ -193,14 +192,6 @@ public class FrgCameraPreview extends FrgUtilityBase {
     }
      */
 
-    /**
-     * 关闭相机
-     */
-    public void CloseCamera()   {
-        closeCamera();
-    }
-
-
     /// BEGIN PRIVATE
     /**
      * Starts a background thread and its {@link Handler}.
@@ -215,13 +206,15 @@ public class FrgCameraPreview extends FrgUtilityBase {
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
-        mBackgroundThread.quitSafely();
-        try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(null != mBackgroundThread) {
+            mBackgroundThread.quitSafely();
+            try {
+                mBackgroundThread.join();
+                mBackgroundThread = null;
+                mBackgroundHandler = null;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -46,3 +46,39 @@
 -keep class javax.activation.** {
 *;
 }
+
+-dontwarn com.squareup.**
+-keep class com.squareup.** {
+    *;
+}
+
+-dontwarn java.nio.**
+-keep class java.nio.** {
+    *;
+}
+
+-dontwarn sun.misc.**
+-keep class sun.misc.** {
+    *;
+}
+
+-dontwarn java.lang.**
+-keep class java.lang.** {
+    *;
+}
+
+-dontwarn org.codehaus.**
+-keep class org.codehaus.** {
+    *;
+}
+
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# Only required if you use AsyncExecutor
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}

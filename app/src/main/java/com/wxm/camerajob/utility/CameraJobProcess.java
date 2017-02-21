@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility.utility;
+package com.wxm.camerajob.utility;
 
 import android.os.Message;
 import android.util.Log;

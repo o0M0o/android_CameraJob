@@ -12,7 +12,7 @@ import android.os.Bundle;
 
 import com.wxm.camerajob.ui.Job.JobShow.ACJobShow;
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.ContextUtil;
 
 import java.util.ArrayList;
 import java.util.Locale;

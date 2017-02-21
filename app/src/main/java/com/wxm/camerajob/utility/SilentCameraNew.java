@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility.utility;
+package com.wxm.camerajob.utility;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -19,15 +19,12 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import cn.wxm.andriodutillib.util.ImageUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
-import static com.wxm.camerajob.utility.utility.FileLogger.getLogger;
+import static com.wxm.camerajob.utility.FileLogger.getLogger;
 
 /**
  * 使用camera2 api

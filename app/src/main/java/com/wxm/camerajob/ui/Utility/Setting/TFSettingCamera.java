@@ -28,8 +28,8 @@ import android.widget.Switch;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.utility.GlobalContext;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.GlobalContext;
+import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview;
 

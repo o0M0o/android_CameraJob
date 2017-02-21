@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility.receiver;
+package com.wxm.camerajob.receiver;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -9,8 +9,8 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.utility.GlobalContext;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.GlobalContext;
+import com.wxm.camerajob.utility.ContextUtil;
 
 /**
  * 该类接收系统定时唤醒闹铃

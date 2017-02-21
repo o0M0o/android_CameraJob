@@ -13,19 +13,19 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
-        android:name=".utility.utility.ContextUtil"
+        android:name=".utility.ContextUtil"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_camera_labe1_middle"
+        android:icon="@drawable/ic_camera_labe1_big"
         android:label="@string/cn_app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="andriod:label">
-        <receiver android:name=".utility.receiver.AlarmReceiver" />
+        <receiver android:name=".receiver.AlarmReceiver" />
         <!-- android:process=":remote" /> -->
 
         <service
-            android:name=".utility.service.CameraJobService"
+            android:name=".service.CameraJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
@@ -38,26 +38,42 @@
             android:label="@string/job_create"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".ui.Camera.CameraSetting.ACCameraSetting" />
-        <activity android:name=".ui.Test.Camera.ACSilentCameraTest" />
+        <activity
+            android:name=".ui.Camera.CameraSetting.ACCameraSetting"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".ui.Test.Camera.ACSilentCameraTest"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ui.Job.JobShow.ACJobShow"
-            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.Utility.Help.ACHelp" />
+
+        <activity
+            android:name=".ui.Utility.Help.ACHelp"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ui.Camera.CameraPreview.ACCameraPreview"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.Utility.Setting.ACSetting" />
+
+        <activity
+            android:name=".ui.Utility.Setting.ACSetting"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ui.Job.JobSlide.ACJobSlide"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ui.Test.Email.ACEmailTest"
             android:exported="true"
             android:label="测试邮箱" />
+
         <activity
             android:name=".ui.Utility.Loader.ACLoader"
             android:configChanges="orientation|screenSize"

@@ -19,8 +19,8 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.data.define.TakePhotoParam;
-import com.wxm.camerajob.utility.utility.ContextUtil;
-import com.wxm.camerajob.utility.utility.SilentCameraHelper;
+import com.wxm.camerajob.utility.ContextUtil;
+import com.wxm.camerajob.utility.SilentCameraHelper;
 
 import java.lang.ref.WeakReference;
 

@@ -12,7 +12,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.wxm.camerajob.utility.utility.UILImageLoader;
+import com.wxm.camerajob.utility.UILImageLoader;
 
 import org.xutils.x;
 

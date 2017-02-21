@@ -99,7 +99,7 @@ public class FrgJobSlide extends FrgUtilityBase {
 
     @Override
     protected void initUiInfo() {
-        final Context home_context = getContext();
+        final Context home_context = getActivity();
 
         // get tag
         int position = 0;
@@ -193,7 +193,7 @@ public class FrgJobSlide extends FrgUtilityBase {
             //设置缩放方式
             //设置ImageView的宽高
             //设置IamgeView显示的图片
-            ImageView imageView = new ImageView(getContext());
+            ImageView imageView = new ImageView(getActivity());
             imageView.setLayoutParams(new Gallery.LayoutParams(400, ViewGroup.LayoutParams.MATCH_PARENT));
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 

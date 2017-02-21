@@ -4,13 +4,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.ContextUtil;
 
 import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
 

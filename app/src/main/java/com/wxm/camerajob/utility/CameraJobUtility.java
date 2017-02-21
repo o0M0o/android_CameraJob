@@ -1,11 +1,11 @@
-package com.wxm.camerajob.utility.utility;
+package com.wxm.camerajob.utility;
 
 import com.wxm.camerajob.data.define.CameraJob;
 
 import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
-import static com.wxm.camerajob.utility.utility.GlobalContext.GetDBManager;
+import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
 
 /**
  * 拍照任务辅助类

@@ -6,11 +6,9 @@ import android.hardware.Camera;
 import android.hardware.camera2.CameraCharacteristics;
 import android.os.Build;
 
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.ContextUtil;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.LinkedList;
 
 import cn.wxm.andriodutillib.type.MySize;
 import cn.wxm.andriodutillib.util.UtilFun;

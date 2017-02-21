@@ -21,8 +21,8 @@ import com.wxm.camerajob.data.define.DBDataChangeEvent;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesChangeEvent;
 import com.wxm.camerajob.data.define.PreferencesUtil;
-import com.wxm.camerajob.utility.utility.CameraJobUtility;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.CameraJobUtility;
+import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.ui.Base.JobGallery;
 import com.wxm.camerajob.ui.Job.JobSlide.ACJobSlide;
 import com.wxm.camerajob.ui.Base.FrgCamerInfoHelper;
@@ -47,7 +47,7 @@ import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
 import cn.wxm.andriodutillib.util.FileUtil;
 import cn.wxm.andriodutillib.util.UtilFun;
 
-import static com.wxm.camerajob.utility.utility.GlobalContext.GetDBManager;
+import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
 
 /**
  * 任务展示fragment
@@ -118,7 +118,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             public void run() {
                 mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
             }
-        }, 2000, 10000);
+        }, 1000, 5000);
     }
 
     @Override

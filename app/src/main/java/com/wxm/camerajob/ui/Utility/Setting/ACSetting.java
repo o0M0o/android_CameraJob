@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.utility.ContextUtil;
+import com.wxm.camerajob.utility.ContextUtil;
 
 import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
 import cn.wxm.andriodutillib.util.UtilFun;
