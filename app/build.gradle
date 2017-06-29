@@ -86,9 +86,9 @@ dependencies {
     compile files('libs/extend_libs/javamail/activation.jar')
     compile files('libs/extend_libs/javamail/additionnal.jar')
     compile files('libs/extend_libs/javamail/mail.jar')
-    compile 'com.android.support:design:25.1.1'
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:support-v13:25.1.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:support-v13:25.3.1'
     compile 'org.apache.logging.log4j:log4j:2.6.1'
     compile 'com.facebook.fresco:fresco:0.12.0'
 

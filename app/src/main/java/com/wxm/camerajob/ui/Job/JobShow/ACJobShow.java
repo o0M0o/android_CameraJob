@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,6 +23,7 @@ import com.wxm.camerajob.ui.Job.JobCreate.ACJobCreate;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
+import com.wxm.camerajob.ui.dialog.DlgUsrMessage;
 import com.wxm.camerajob.utility.CameraJobUtility;
 import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.utility.FileLogger;
@@ -33,8 +35,13 @@ import com.wxm.camerajob.ui.Test.Camera.ACSilentCameraTest;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.wxm.andriodutillib.Dialog.DlgOKOrNOBase;
 import cn.wxm.andriodutillib.util.UtilFun;
 
+/**
+ * 显示任务情况UI
+ * 同时也是APP主UI
+ */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class ACJobShow
         extends AppCompatActivity
@@ -215,15 +222,21 @@ public class ACJobShow
         return true;
     }
 
+    /**
+     * 给作者留言
+     */
     private void contactWriter()    {
-        Resources res = getResources();
+        DlgUsrMessage dlg = new DlgUsrMessage();
+        dlg.addDialogListener(new DlgOKOrNOBase.DialogResultListener() {
+            @Override
+            public void onDialogPositiveResult(DialogFragment dialogFragment) {
+            }
 
-        Intent data=new Intent(Intent.ACTION_SENDTO);
-        Uri ud = Uri.parse(
-                        String.format("mailto:%s", res.getString(R.string.contact_email)));
-        data.setData(ud);
-        //data.putExtra(Intent.EXTRA_SUBJECT, "这是标题");
-        //data.putExtra(Intent.EXTRA_TEXT, "这是内容");
-        startActivity(data);
+            @Override
+            public void onDialogNegativeResult(DialogFragment dialogFragment) {
+            }
+        });
+
+        dlg.show(getSupportFragmentManager(), "send message");
     }
 }

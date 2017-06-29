@@ -49,4 +49,14 @@
 
     <string name="cn_save">保存</string>
     <string name="job_name">任务名</string>
+
+    <string name="cn_usr_message">请输入您的意见或建议</string>
+    <!-- for send message -->
+    <string name="url_post_send_message">
+        http://www.wxmandriodapp.com:8080/KeepAccountServer/def/UMUtility
+    </string>
+    <string name="col_usr">usr</string>
+    <string name="col_message">message</string>
+    <string name="col_app_name">app_name</string>
+    <string name="col_val_app_name">CameraJob</string>
 </resources>
