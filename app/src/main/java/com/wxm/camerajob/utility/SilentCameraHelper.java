@@ -7,7 +7,7 @@ import android.util.Log;
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.TakePhotoParam;
 
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 静默相机辅助类

@@ -35,8 +35,8 @@ import com.wxm.camerajob.ui.Test.Camera.ACSilentCameraTest;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wxm.andriodutillib.Dialog.DlgOKOrNOBase;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.Dialog.DlgOKOrNOBase;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 显示任务情况UI

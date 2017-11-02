@@ -2,8 +2,8 @@ package com.wxm.camerajob.ui.Utility.Setting;
 
 import android.content.Context;
 
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.FrgUtility.FrgUtilitySupportBase;
+import wxm.androidutil.util.UtilFun;
 
 public abstract class TFSettingBase extends FrgUtilitySupportBase {
     protected boolean   mBSettingDirty = false;

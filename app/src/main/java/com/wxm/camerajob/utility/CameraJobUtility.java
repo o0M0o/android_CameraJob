@@ -2,8 +2,8 @@ package com.wxm.camerajob.utility;
 
 import com.wxm.camerajob.data.define.CameraJob;
 
-import cn.wxm.andriodutillib.util.FileUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.FileUtil;
+import wxm.androidutil.util.UtilFun;
 
 import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
 

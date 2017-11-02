@@ -10,8 +10,9 @@ import com.wxm.camerajob.utility.ContextUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
-import cn.wxm.andriodutillib.type.MySize;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.type.MySize;
+import wxm.androidutil.util.UtilFun;
+
 
 /**
  * 配置管理类

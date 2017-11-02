@@ -27,7 +27,7 @@ import cn.finalteam.galleryfinal.ThemeConfig;
 import cn.finalteam.galleryfinal.model.PhotoInfo;
 
 /**
- * 拍照任务相册类
+ * gallery for job
  * Created by 123 on 2016/8/14.
  */
 public class JobGallery {
@@ -54,9 +54,9 @@ public class JobGallery {
     }
 
     /**
-     * 打开相册
-     * @param ac        相关activity
-     * @param photodir  相册路径
+     * open gallery
+     * @param ac        for activity
+     * @param photodir  path for gallery
      */
     public void OpenGallery(Activity ac, String photodir)   {
         mAC = ac;

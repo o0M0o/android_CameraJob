@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * Created by 123 on 2016/5/7.
@@ -65,19 +65,25 @@ public class ContextUtil extends Application {
         activities.add(activity);
     }
 
+    /**
+     * init app context
+     * -- create phone path
+     * -- set alarm
+     */
     public void initAppContext() {
-        // 初始化context
         String en = Environment.getExternalStorageState();
         if (en.equals(Environment.MEDIA_MOUNTED)) {
             File sdcardDir = Environment.getExternalStorageDirectory();
             String path = sdcardDir.getPath() + "/CamerajobPhotos";
-            File path1 = new File(path);
-            if (!path1.exists()) {
-                path1.mkdirs();
+
+            File fpath = new File(path);
+            boolean bexist = fpath.exists();
+            if (!bexist) {
+                bexist = fpath.mkdirs();
             }
 
             mAppRootDir = sdcardDir.getPath();
-            mAppPhotoRootDir = path;
+            mAppPhotoRootDir = bexist ? path : mAppRootDir;
         } else {
             try {
                 File innerPath = ContextUtil.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -109,8 +115,6 @@ public class ContextUtil extends Application {
     public void onTerminate() {
         Log.i(TAG, "Application onTerminate");
         FileLogger.getLogger().info("Application Terminate");
-//        JobScheduler tm = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
-//        tm.cancelAll();
 
         super.onTerminate();
 
@@ -136,9 +140,9 @@ public class ContextUtil extends Application {
 
 
     /**
-     * 是否使用新相机API
+     *  check whether use new camera api
      *
-     * @return 如果使用新相机API则返回true
+     * @return  <code>true</code> if use new camera api
      */
     public static boolean useNewCamera() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
@@ -146,7 +150,7 @@ public class ContextUtil extends Application {
 
 
     /**
-     * 捕获错误信息的handler
+     * handler for app crash
      */
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = (thread, ex) -> {
         //FileLogger.getLogger().severe("App崩溃");
@@ -156,10 +160,10 @@ public class ContextUtil extends Application {
 
 
     /**
-     * 得到camerajob的图片路径
+     * create photo directory for job
      *
-     * @param cj 待查camerajob
-     * @return 图片文件夹路径
+     * @param cj    job
+     * @return      photo directory for cj
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public String createCameraJobPhotoDir(CameraJob cj) {
@@ -228,11 +232,10 @@ public class ContextUtil extends Application {
     }
 
     /**
-     * 得到camerajob的图片路径
-     * 此路径必须是已经存在的
+     * get job photo directory according to job id
      *
-     * @param cj_id 待查camerajob的_id
-     * @return 图片文件夹路径或者是空字符串
+     * @param cj_id     id for camera job
+     * @return          photo directory path for job or ""
      */
     public String getCameraJobPhotoDir(int cj_id) {
         File p = new File(mAppPhotoRootDir + "/" + cj_id);
@@ -244,9 +247,9 @@ public class ContextUtil extends Application {
     }
 
     /**
-     * 得到app的图片根目录
+     * get photo root directory
      *
-     * @return 图片根路径
+     * @return  photo root directory
      */
     public String getAppPhotoRootDir() {
         return mAppPhotoRootDir;
@@ -254,10 +257,10 @@ public class ContextUtil extends Application {
 
 
     /**
-     * 获取包版本号
+     * get version number for package
      *
-     * @param context 包上下文
-     * @return 包版本号
+     * @param context       for package
+     * @return              version number
      */
     public static int getVerCode(Context context) {
         int verCode = -1;
@@ -272,10 +275,10 @@ public class ContextUtil extends Application {
 
 
     /**
-     * 获取包版本名
+     * get version name for package
      *
-     * @param context 包上下文
-     * @return 包版本名
+     * @param context       context for package
+     * @return              version name
      */
     public static String getVerName(Context context) {
         String verName = "";
@@ -286,31 +289,5 @@ public class ContextUtil extends Application {
         }
 
         return verName;
-    }
-
-    /**
-     * 在测试版本满足条件后抛出异常
-     *
-     * @param bThrow 若true则抛出异常
-     */
-    public static void throwExIf(boolean bThrow) throws AssertionError {
-        if (BuildConfig.ThrowDebugException && bThrow) {
-            throw new AssertionError("测试版本出现异常");
-        }
-    }
-
-    /**
-     * 设置layout可见性
-     * 仅调整可见性，其它设置保持不变
-     *
-     * @param visible 若为 :
-     *                1. {@code View.INVISIBLE}, 不可见
-     *                2. {@code View.VISIBLE}, 可见
-     */
-    public static void setViewGroupVisible(ViewGroup rl, int visible) {
-        ViewGroup.LayoutParams param = rl.getLayoutParams();
-        param.width = rl.getWidth();
-        param.height = View.INVISIBLE != visible ? ViewGroup.LayoutParams.WRAP_CONTENT : 0;
-        rl.setLayoutParams(param);
     }
 }

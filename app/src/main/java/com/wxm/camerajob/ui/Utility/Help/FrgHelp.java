@@ -11,14 +11,13 @@ import com.wxm.camerajob.data.define.GlobalDef;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.FrgUtility.FrgUtilityBase;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 帮助fragment
  */
-public class FrgHelp
-        extends FrgUtilityBase {
+public class FrgHelp extends FrgUtilityBase {
     private String HELP_MAIN_FILEPATH = "file:///android_asset/help_main.html";
     private static final String ENCODING = "utf-8";
 
@@ -52,7 +51,7 @@ public class FrgHelp
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
     }
 
 

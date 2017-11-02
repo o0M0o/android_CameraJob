@@ -17,7 +17,7 @@ import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting;
 
-import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
+import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 
 /**
  * 创建Job UI

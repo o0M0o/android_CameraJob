@@ -1,7 +1,6 @@
 package com.wxm.camerajob.data.db;
 
 import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraJobStatus;
 import com.wxm.camerajob.data.define.DBDataChangeEvent;
 
@@ -9,7 +8,8 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
-import cn.wxm.andriodutillib.DBHelper.DBUtilityBase;
+import wxm.androidutil.DBHelper.DBUtilityBase;
+
 
 /**
  * 辅助处理camerajob的状态

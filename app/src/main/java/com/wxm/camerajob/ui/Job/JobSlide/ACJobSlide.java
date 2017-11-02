@@ -5,9 +5,9 @@ import com.wxm.camerajob.data.define.GlobalDef;
 
 import java.util.LinkedList;
 
-import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
-import cn.wxm.andriodutillib.util.FileUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.ExActivity.BaseAppCompatActivity;
+import wxm.androidutil.util.FileUtil;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 幻灯片展示Job

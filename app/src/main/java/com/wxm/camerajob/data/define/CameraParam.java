@@ -5,10 +5,11 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cn.wxm.andriodutillib.type.MySize;
+import wxm.androidutil.type.MySize;
+
 
 /**
- * 相机参数
+ * parameter for camera
  * Created by 123 on 2016/6/17.
  */
 public class CameraParam  implements Parcelable {
@@ -16,7 +17,7 @@ public class CameraParam  implements Parcelable {
     public final static int     LENS_FACING_FRONT = 0;
 
     private final static int  WAIT_MSECS = 8000;
-    public long     mWaitMSecs;
+    private long     mWaitMSecs;
 
     public int      mFace;
     public MySize mPhotoSize;

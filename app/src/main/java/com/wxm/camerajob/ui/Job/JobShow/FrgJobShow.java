@@ -25,7 +25,7 @@ import com.wxm.camerajob.utility.CameraJobUtility;
 import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.ui.Base.JobGallery;
 import com.wxm.camerajob.ui.Job.JobSlide.ACJobSlide;
-import com.wxm.camerajob.ui.Base.FrgCamerInfoHelper;
+import com.wxm.camerajob.ui.Base.FrgCameraInfoHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,9 +43,9 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
-import cn.wxm.andriodutillib.util.FileUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.FrgUtility.FrgUtilitySupportBase;
+import wxm.androidutil.util.FileUtil;
+import wxm.androidutil.util.UtilFun;
 
 import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
 
@@ -136,7 +136,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
         // for listview
         LVJobShowAdapter mLVAdapter = new LVJobShowAdapter(getContext(),
                 new ArrayList<HashMap<String, String>>(),
@@ -260,7 +260,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             rl = UtilFun.cast_t(rl_hot.findViewById(R.id.rl_setting));
             rl.setVisibility(View.INVISIBLE);
 
-            FrgCamerInfoHelper.refillLayout(rl_hot, PreferencesUtil.loadCameraParam());
+            FrgCameraInfoHelper.refillLayout(rl_hot, PreferencesUtil.loadCameraParam());
         }
 
         @Override

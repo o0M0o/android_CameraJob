@@ -13,11 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import cn.wxm.andriodutillib.DBHelper.IDBRow;
+import wxm.androidutil.DBHelper.IDBRow;
+
 
 /**
- * 拍照任务状态
- * Created by 123 on 2016/6/16.
+ * status for camera job
+ * Created by wxm on 2016/6/16.
  */
 @DatabaseTable(tableName = "tbCameraJobStatus")
 public class CameraJobStatus

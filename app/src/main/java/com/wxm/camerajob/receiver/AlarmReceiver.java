@@ -24,22 +24,18 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /**
-     * 每十秒唤醒一次APP
+     * wakeup when job active
      * @param arg0   param
      * @param data   param
      */
     @Override
     public void onReceive(Context arg0, Intent data) {
-        //Log.i(TAG, "app wakeup");
-        //FileLogger.getLogger().info("camerajob wakeup");
-
         try {
             Message m = Message.obtain(GlobalContext.getMsgHandlder(),
                     GlobalDef.MSG_TYPE_WAKEUP);
             m.sendToTarget();
 
             // 设置闹钟
-            //FileLogger.getLogger().info("camerajob set alarm again");
             Context ct = ContextUtil.getInstance();
             Intent intent = new Intent(ct, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(ct, 0, intent, 0);

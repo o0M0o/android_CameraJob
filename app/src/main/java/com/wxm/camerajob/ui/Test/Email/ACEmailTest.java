@@ -15,7 +15,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.ui.Base.SendEmailHelper;
 import com.wxm.camerajob.ui.Base.SendEmailPara;
 
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
 
 public class ACEmailTest extends AppCompatActivity implements View.OnClickListener {
     // for action

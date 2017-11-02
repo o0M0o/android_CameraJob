@@ -10,7 +10,7 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 /**
- * 发送邮件的辅助类
+ * helper for send email
  * Created by 123 on 2016/11/10.
  */
 public class SendEmailHelper extends javax.mail.Authenticator {
@@ -30,21 +30,18 @@ public class SendEmailHelper extends javax.mail.Authenticator {
 
     public void sendEmail(SendEmailPara sp) {
         mSEPara = sp;
-        Thread thread = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                try {
-                    if(init_context()) {
-                        if(send_out())
-                            mSEPara.mIFOnResult.onSendSuccess();
-                        else
-                            mSEPara.mIFOnResult.onSendFailure();
-                    } else {
+        Thread thread = new Thread(() -> {
+            try {
+                if(init_context()) {
+                    if(send_out())
+                        mSEPara.mIFOnResult.onSendSuccess();
+                    else
                         mSEPara.mIFOnResult.onSendFailure();
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                } else {
+                    mSEPara.mIFOnResult.onSendFailure();
                 }
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
             }
         });
         thread.start();

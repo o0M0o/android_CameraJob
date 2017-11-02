@@ -6,12 +6,12 @@ android {
         defkey {
             keyAlias 'andriodapp-key-longtime'
             keyPassword 'w789065'
-            storeFile file('H:/backup/appkey/andriodapp-key-longtime.jks')
+            storeFile file('E:/backup/appkey/andriodapp-key-longtime.jks')
             storePassword 'w127865'
         }
     }
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.wxm.camerajob"
         minSdkVersion 19
@@ -62,9 +62,14 @@ android {
             if (outputFile != null && outputFile.name.endsWith('.apk')) {
                 //这里修改apk文件名
                 def fileName = "${variant.productFlavors[0].name}-${defaultConfig.versionName}-${releaseTime() }.apk"
-                output.outputFile = new File(outputFile.parent, fileName)
+                output.outputFileName = fileName
             }
         }
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        alpha {}
     }
 
     compileOptions {
@@ -74,21 +79,20 @@ android {
 }
 
 static def releaseTime() {
-    //return new Date().format("yyyyMMDD", TimeZone.getTimeZone("PRC"))
-    return "any";
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("GMT+8"))
 }
 
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':galleryfinal')
-    compile project(':AndriodUtillib')
+    compile project(':androidutil')
     compile files('libs/extend_libs/javamail/activation.jar')
     compile files('libs/extend_libs/javamail/additionnal.jar')
     compile files('libs/extend_libs/javamail/mail.jar')
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:support-v13:25.3.1'
+    compile 'com.android.support:design:25.4.0'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.android.support:support-v13:25.4.0'
     compile 'org.apache.logging.log4j:log4j:2.6.1'
     compile 'com.facebook.fresco:fresco:0.12.0'
 
@@ -108,7 +112,7 @@ dependencies {
     compile 'org.xutils:xutils:3.3.36'
     compile 'cn.finalteam:toolsfinal:1.1.4'
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
+    compile 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
 }
 
 configurations.all {

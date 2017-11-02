@@ -12,8 +12,8 @@ import com.wxm.camerajob.data.define.CameraParam;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
-import cn.wxm.andriodutillib.util.ImageUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.ImageUtil;
+import wxm.androidutil.util.UtilFun;
 
 import static com.wxm.camerajob.utility.FileLogger.getLogger;
 

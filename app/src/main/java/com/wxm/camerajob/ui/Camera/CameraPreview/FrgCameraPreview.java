@@ -54,9 +54,9 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
-import cn.wxm.andriodutillib.type.MySize;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.FrgUtility.FrgUtilityBase;
+import wxm.androidutil.type.MySize;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 相机预览fragment
@@ -122,9 +122,8 @@ public class FrgCameraPreview extends FrgUtilityBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
     }
-
 
     @Override
     public void onPause() {
@@ -170,27 +169,6 @@ public class FrgCameraPreview extends FrgUtilityBase {
         closeCamera();
         stopBackgroundThread();
     }
-
-    /**
-     * 激活前置相机
-    public void ActiveFrontCamera() {
-        if((null != mTextureView) && (mTextureView.isAvailable()))  {
-            closeCamera();
-            openCamera(CameraCharacteristics.LENS_FACING_FRONT,
-                    mTextureView.getWidth(), mTextureView.getHeight());
-        }
-    }
-
-    /**
-     * 激活后置相机
-    public void ActiveBackCamera() {
-        if((null != mTextureView) && (mTextureView.isAvailable()))  {
-            closeCamera();
-            openCamera(CameraCharacteristics.LENS_FACING_BACK,
-                    mTextureView.getWidth(), mTextureView.getHeight());
-        }
-    }
-     */
 
     /// BEGIN PRIVATE
     /**

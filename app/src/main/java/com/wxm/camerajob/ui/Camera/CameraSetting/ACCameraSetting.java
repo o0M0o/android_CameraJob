@@ -13,7 +13,7 @@ import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.ui.Utility.Setting.TFSettingCamera;
 import com.wxm.camerajob.utility.ContextUtil;
 
-import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
+import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 
 /**
  * 相机设定UI

@@ -24,8 +24,8 @@ import com.wxm.camerajob.utility.SilentCameraHelper;
 
 import java.lang.ref.WeakReference;
 
-import cn.wxm.andriodutillib.util.ImageUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.ImageUtil;
+import wxm.androidutil.util.UtilFun;
 
 public class ACSilentCameraTest extends AppCompatActivity implements View.OnClickListener {
     private Button  mBTCapture;

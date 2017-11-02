@@ -7,17 +7,17 @@ import android.widget.TextView;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraParam;
 
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
 
 /**
- * 填充相机信息的辅助类
+ * help class for camera info
  * Created by 123 on 2016/11/9.
  */
-public class FrgCamerInfoHelper {
+public class FrgCameraInfoHelper {
     /**
-     * 用新数据重绘layout
-     * @param rl    必须是"rl_camera_info"
-     * @param cp    待绘制参数
+     * use cameraParam redraw layout
+     * @param rl    instance for rl_camera_info
+     * @param cp    data for redraw
      */
     public static void refillLayout(RelativeLayout rl, CameraParam cp)  {
         if(R.id.rl_camera_info != rl.getId())

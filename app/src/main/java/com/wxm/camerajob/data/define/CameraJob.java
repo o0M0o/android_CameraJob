@@ -12,11 +12,11 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.io.IOException;
 import java.sql.Timestamp;
 
-import cn.wxm.andriodutillib.DBHelper.IDBRow;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.DBHelper.IDBRow;
+import wxm.androidutil.util.UtilFun;
 
 /**
- * job
+ * job for take picture
  * Created by wxm on 2016/6/11.
  */
 @DatabaseTable(tableName = "tbCameraJob")

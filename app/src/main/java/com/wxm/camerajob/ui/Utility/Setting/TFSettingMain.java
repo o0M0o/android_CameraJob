@@ -30,7 +30,7 @@ public class TFSettingMain extends TFSettingBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
     }
 
     @OnClick({R.id.rl_setting_check_version, R.id.rl_setting_directory, R.id.rl_setting_camera})

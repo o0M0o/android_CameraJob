@@ -14,7 +14,7 @@ import com.wxm.camerajob.utility.FileLogger;
 
 import java.sql.SQLException;
 
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * APP的sqlite helper

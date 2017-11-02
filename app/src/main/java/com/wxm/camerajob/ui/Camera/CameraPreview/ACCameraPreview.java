@@ -8,10 +8,10 @@ import android.support.annotation.RequiresApi;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.ContextUtil;
 
-import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
+import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 
 /**
- * 相机预览UI
+ * camera preview
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class ACCameraPreview extends BaseAppCompatActivity {

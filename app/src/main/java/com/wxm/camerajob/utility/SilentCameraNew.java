@@ -30,8 +30,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import cn.wxm.andriodutillib.util.ImageUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
+import wxm.androidutil.util.ImageUtil;
 
 import static com.wxm.camerajob.utility.FileLogger.getLogger;
 

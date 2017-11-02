@@ -9,12 +9,12 @@ import com.wxm.camerajob.data.define.GlobalDef;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+import wxm.androidutil.DBHelper.DBUtilityBase;
 
-import cn.wxm.andriodutillib.DBHelper.DBUtilityBase;
 
 
 /**
- * 处理camerajob的数据库类
+ * database class for CameraJob
  * Created by 123 on 2016/6/16.
  */
 public class CameraJobDBUtility

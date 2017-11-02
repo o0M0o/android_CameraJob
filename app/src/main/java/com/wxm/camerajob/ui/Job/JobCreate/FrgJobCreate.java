@@ -43,10 +43,10 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wxm.andriodutillib.Dialog.DlgDatePicker;
-import cn.wxm.andriodutillib.Dialog.DlgOKOrNOBase;
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilitySupportBase;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.Dialog.DlgDatePicker;
+import wxm.androidutil.Dialog.DlgOKOrNOBase;
+import wxm.androidutil.FrgUtility.FrgUtilitySupportBase;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 相机预览fragment
@@ -142,7 +142,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
     }
 
     /**

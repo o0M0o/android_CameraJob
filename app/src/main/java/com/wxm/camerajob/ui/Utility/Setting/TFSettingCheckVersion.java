@@ -41,7 +41,7 @@ public class TFSettingCheckVersion extends TFSettingBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
     }
 
     @Override

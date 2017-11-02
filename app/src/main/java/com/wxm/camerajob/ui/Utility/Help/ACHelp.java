@@ -6,8 +6,8 @@ import android.os.Bundle;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.ContextUtil;
 
-import cn.wxm.andriodutillib.ExActivity.BaseAppCompatActivity;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.ExActivity.BaseAppCompatActivity;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 展示帮助信息UI

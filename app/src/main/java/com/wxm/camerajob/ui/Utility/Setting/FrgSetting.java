@@ -9,15 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import com.wxm.camerajob.R;
-import com.wxm.camerajob.data.define.GlobalDef;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.FrgUtility.FrgUtilityBase;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 帮助fragment
@@ -52,7 +50,7 @@ public class FrgSetting
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
         change_page(PAGE_IDX_MAIN);
     }
 

@@ -1,7 +1,7 @@
 package com.wxm.camerajob.ui.Base;
 
 /**
- * 发送邮件参数
+ * parameter for send email
  * Created by 123 on 2016/11/10.
  */
 public class SendEmailPara {

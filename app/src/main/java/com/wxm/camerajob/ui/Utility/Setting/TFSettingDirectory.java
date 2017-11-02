@@ -40,7 +40,7 @@ public class TFSettingDirectory extends TFSettingBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
     }
 
     @Override

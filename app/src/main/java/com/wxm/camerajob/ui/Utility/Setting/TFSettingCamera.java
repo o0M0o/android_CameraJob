@@ -35,6 +35,7 @@ import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,8 +43,8 @@ import java.util.LinkedList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.wxm.andriodutillib.type.MySize;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.type.MySize;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 相机设置页面
@@ -138,7 +139,7 @@ public class TFSettingCamera extends TFSettingBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
         CameraParam cp = PreferencesUtil.loadCameraParam();
         if(CameraCharacteristics.LENS_FACING_BACK == cp.mFace)  {
             mCPBack.Copy(cp);

@@ -12,7 +12,7 @@ import com.wxm.camerajob.data.db.DBManager;
 import java.util.Calendar;
 import java.util.List;
 
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * app context

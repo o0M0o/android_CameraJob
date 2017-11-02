@@ -27,10 +27,10 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.wxm.andriodutillib.FrgUtility.FrgUtilityBase;
-import cn.wxm.andriodutillib.type.MySize;
-import cn.wxm.andriodutillib.util.ImageUtil;
-import cn.wxm.andriodutillib.util.UtilFun;
+import wxm.androidutil.FrgUtility.FrgUtilityBase;
+import wxm.androidutil.type.MySize;
+import wxm.androidutil.util.ImageUtil;
+import wxm.androidutil.util.UtilFun;
 
 /**
  * 任务 slide fragment
@@ -98,7 +98,7 @@ public class FrgJobSlide extends FrgUtilityBase {
     }
 
     @Override
-    protected void initUiInfo() {
+    protected void loadUI() {
         final Context home_context = getActivity();
 
         // get tag
