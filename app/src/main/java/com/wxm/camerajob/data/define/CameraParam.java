@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Locale;
+
 import wxm.androidutil.type.MySize;
 
 
@@ -65,14 +67,12 @@ public class CameraParam  implements Parcelable {
     @Override
     public String toString()
     {
-        String ret = String.format(
+        return String.format(Locale.CHINA,
                 "face : %s, photosize : %d X %d, %s, %s"
                 ,mFace == CameraCharacteristics.LENS_FACING_BACK ? "back" : "front"
                 ,mPhotoSize.getWidth()   ,mPhotoSize.getHeight()
                 ,mAutoFlash ? "AUTO_FLASH" : "NO_FLASH"
                 ,mAutoFocus ? "AUTO_FOCUS" : "NO_AUTOFOCUS");
-
-        return ret;
     }
 
     @Override

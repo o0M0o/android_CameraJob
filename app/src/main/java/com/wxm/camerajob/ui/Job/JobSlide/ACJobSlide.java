@@ -10,7 +10,7 @@ import wxm.androidutil.util.FileUtil;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 幻灯片展示Job
+ * slide show ui for job
  */
 public class ACJobSlide extends BaseAppCompatActivity {
 

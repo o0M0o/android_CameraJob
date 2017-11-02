@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * 拍照参数
+ * param for take photo
  * Created by 123 on 2016/6/13.
  */
 public class TakePhotoParam {

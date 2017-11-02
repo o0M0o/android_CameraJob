@@ -30,8 +30,8 @@ import java.util.List;
 import wxm.androidutil.util.UtilFun;
 
 /**
+ * get global context
  * Created by 123 on 2016/5/7.
- * 获取全局context
  */
 public class ContextUtil extends Application {
     private static final String TAG = "ContextUtil";

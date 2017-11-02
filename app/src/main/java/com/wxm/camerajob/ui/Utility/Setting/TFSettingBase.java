@@ -5,6 +5,9 @@ import android.content.Context;
 import wxm.androidutil.FrgUtility.FrgUtilitySupportBase;
 import wxm.androidutil.util.UtilFun;
 
+/**
+ * setting base class
+ */
 public abstract class TFSettingBase extends FrgUtilitySupportBase {
     protected boolean   mBSettingDirty = false;
 

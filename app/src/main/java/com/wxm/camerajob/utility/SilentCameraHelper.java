@@ -10,7 +10,7 @@ import com.wxm.camerajob.data.define.TakePhotoParam;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 静默相机辅助类
+ * helper for silent camera
  * Created by 123 on 2016/6/16.
  */
 public class SilentCameraHelper {

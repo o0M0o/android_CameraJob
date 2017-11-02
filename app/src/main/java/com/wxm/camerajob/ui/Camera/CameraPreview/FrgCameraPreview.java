@@ -59,7 +59,7 @@ import wxm.androidutil.type.MySize;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 相机预览fragment
+ * fragment for camera preview
  * Created by 123 on 2016/10/14.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)

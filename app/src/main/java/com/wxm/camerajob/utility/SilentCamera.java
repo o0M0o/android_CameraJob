@@ -16,15 +16,16 @@ import java.util.concurrent.Semaphore;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 静默相机基类
+ * base class for silent camera
+ * silent camera can get photo without sound
  * Created by 123 on 2016/7/4.
  */
-public abstract class SilentCamera {
+abstract class SilentCamera {
     private final static String TAG = "SilentCamera";
 
-    protected Semaphore                   mCameraLock;
-    protected int                         mSensorOrientation;
-    protected static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    Semaphore                   mCameraLock;
+    int                         mSensorOrientation;
+    static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);

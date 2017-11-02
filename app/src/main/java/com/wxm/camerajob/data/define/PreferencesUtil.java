@@ -13,9 +13,8 @@ import org.greenrobot.eventbus.EventBus;
 import wxm.androidutil.type.MySize;
 import wxm.androidutil.util.UtilFun;
 
-
 /**
- * 配置管理类
+ * for preference manage
  * Created by 123 on 2016/6/18.
  */
 public class PreferencesUtil {

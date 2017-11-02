@@ -1,7 +1,7 @@
 package com.wxm.camerajob.data.define;
 
 /**
- * 数据库中数据变化后通知类
+ * event for data change in db
  * Created by User on 2017/2/14.
  */
 public class DBDataChangeEvent {

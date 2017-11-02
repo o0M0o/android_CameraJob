@@ -15,7 +15,7 @@ import java.util.logging.SimpleFormatter;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 写在文件中的日志
+ * log in file
  * Created by 123 on 2016/6/18.
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")

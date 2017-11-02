@@ -10,7 +10,7 @@ import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 展示帮助信息UI
+ * UI for help
  */
 public class ACHelp
         extends BaseAppCompatActivity {

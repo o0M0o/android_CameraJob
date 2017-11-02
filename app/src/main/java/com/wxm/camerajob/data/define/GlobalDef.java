@@ -1,7 +1,7 @@
 package com.wxm.camerajob.data.define;
 
 /**
- * app的全局设定
+ * global define for app
  * Created by wxm on 2016/6/10.
  */
 public class GlobalDef {

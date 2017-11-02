@@ -33,7 +33,7 @@ import wxm.androidutil.util.ImageUtil;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 任务 slide fragment
+ * slide fragment for job
  * Created by 123 on 2016/10/14.
  */
 public class FrgJobSlide extends FrgUtilityBase {

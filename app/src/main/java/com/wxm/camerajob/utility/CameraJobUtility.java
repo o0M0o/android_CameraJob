@@ -8,7 +8,7 @@ import wxm.androidutil.util.UtilFun;
 import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
 
 /**
- * 拍照任务辅助类
+ * helper for job
  * Created by 123 on 2016/11/9.
  */
 public class CameraJobUtility {

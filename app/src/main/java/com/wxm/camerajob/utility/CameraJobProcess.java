@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 处理job
+ * process camera job
  * Created by 123 on 2016/6/13.
  */
 public class CameraJobProcess {

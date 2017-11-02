@@ -39,8 +39,7 @@ import wxm.androidutil.Dialog.DlgOKOrNOBase;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 显示任务情况UI
- * 同时也是APP主UI
+ * UI(main UI for app) for show job status
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class ACJobShow

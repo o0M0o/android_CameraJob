@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * 检查版本设置页面
+ * UI for check version
  * Created by 123 on 2016/10/10.
  */
 public class TFSettingCheckVersion extends TFSettingBase {

@@ -22,8 +22,8 @@ import static android.Manifest.permission.WAKE_LOCK;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 /**
- * App第一个界面
- * 申请权限，然后跳转到工作首界面
+ * first activity for app
+ * apply for permission, then jump to fist work activity
  */
 public class ACLoader extends AppCompatActivity {
     private static final int REQUEST_ALL  = 99;

@@ -34,7 +34,7 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.READ_SMS;
 
 /**
- * 提交用户消息
+ * submit usr message
  * Created by ookoo on 2017/1/9.
  */
 public class DlgUsrMessage extends DlgOKOrNOBase {

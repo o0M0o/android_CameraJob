@@ -16,13 +16,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * 检查版本设置页面
+ * UI for directory setting
  * Created by 123 on 2016/10/10.
  */
 public class TFSettingDirectory extends TFSettingBase {
     @BindView(R.id.tv_show)
     TextView mTVShow;
-
 
     @Override
     protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {

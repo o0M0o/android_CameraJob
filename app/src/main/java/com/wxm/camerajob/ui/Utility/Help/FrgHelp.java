@@ -15,7 +15,7 @@ import wxm.androidutil.FrgUtility.FrgUtilityBase;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 帮助fragment
+ * fragment for help
  */
 public class FrgHelp extends FrgUtilityBase {
     private String HELP_MAIN_FILEPATH = "file:///android_asset/help_main.html";

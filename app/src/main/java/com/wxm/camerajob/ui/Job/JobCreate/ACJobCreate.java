@@ -20,7 +20,7 @@ import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting;
 import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 
 /**
- * 创建Job UI
+ * UI for create job
  */
 public class ACJobCreate
         extends BaseAppCompatActivity {

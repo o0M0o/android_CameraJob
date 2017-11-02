@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * APP的sqlite helper
+ * sqlite helper from app
  * Created by wxm on 2016/8/12.
  */
 public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {

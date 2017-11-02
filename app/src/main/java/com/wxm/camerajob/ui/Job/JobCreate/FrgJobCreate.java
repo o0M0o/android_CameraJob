@@ -49,7 +49,7 @@ import wxm.androidutil.FrgUtility.FrgUtilitySupportBase;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 相机预览fragment
+ * fragment for create job
  * Created by 123 on 2016/10/14.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)

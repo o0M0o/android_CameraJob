@@ -13,7 +13,7 @@ import com.wxm.camerajob.utility.GlobalContext;
 import com.wxm.camerajob.utility.ContextUtil;
 
 /**
- * 该类接收系统定时唤醒闹铃
+ * receiver alarm from system
  * Created by 123 on 2016/6/15.
  */
 public class AlarmReceiver extends BroadcastReceiver {

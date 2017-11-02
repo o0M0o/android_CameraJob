@@ -18,7 +18,7 @@ import wxm.androidutil.FrgUtility.FrgUtilityBase;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 帮助fragment
+ * fragment for setting
  */
 public class FrgSetting
         extends FrgUtilityBase {

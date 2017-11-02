@@ -1,6 +1,5 @@
 package com.wxm.camerajob.data.db;
 
-
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.DBDataChangeEvent;
@@ -12,7 +11,6 @@ import java.util.List;
 import wxm.androidutil.DBHelper.DBUtilityBase;
 
 
-
 /**
  * database class for CameraJob
  * Created by 123 on 2016/6/16.
@@ -21,7 +19,7 @@ public class CameraJobDBUtility
         extends DBUtilityBase<CameraJob, Integer> {
     private DBOrmLiteHelper mHelper;
 
-    public CameraJobDBUtility(DBOrmLiteHelper helper) {
+    CameraJobDBUtility(DBOrmLiteHelper helper) {
         mHelper = helper;
     }
 

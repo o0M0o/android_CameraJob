@@ -16,7 +16,7 @@ import com.wxm.camerajob.utility.ContextUtil;
 import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 
 /**
- * 相机设定UI
+ * UI for camera setting
  */
 public class ACCameraSetting extends BaseAppCompatActivity {
     @Override

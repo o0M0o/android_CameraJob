@@ -13,9 +13,9 @@ import cn.finalteam.galleryfinal.widget.GFImageView;
 
 
 /**
- * Desction:
- * Author:pengjianbo
- * Date:15/10/10 下午5:52
+ * Desction :   image loader
+ * Author   :   pengjianbo
+ * Date     :   15/10/10 下午5:52
  */
 public class UILImageLoader implements cn.finalteam.galleryfinal.ImageLoader {
 
@@ -46,6 +46,5 @@ public class UILImageLoader implements cn.finalteam.galleryfinal.ImageLoader {
 
     @Override
     public void clearMemoryCache() {
-
     }
 }

@@ -50,7 +50,7 @@ import wxm.androidutil.util.UtilFun;
 import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
 
 /**
- * 任务展示fragment
+ * fragment for show job
  * Created by 123 on 2016/10/14.
  */
 public class FrgJobShow extends FrgUtilitySupportBase {

@@ -18,7 +18,7 @@ import wxm.androidutil.util.UtilFun;
 import static com.wxm.camerajob.utility.FileLogger.getLogger;
 
 /**
- * 兼容旧camera api
+ * compatible with old camera api
  * Created by 123 on 2016/7/4.
  */
 public class SilentCameraOld extends SilentCamera {

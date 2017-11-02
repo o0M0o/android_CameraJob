@@ -12,14 +12,14 @@ import wxm.androidutil.DBHelper.DBUtilityBase;
 
 
 /**
- * 辅助处理camerajob的状态
+ * process status for camera job
  * Created by 123 on 2016/6/16.
  */
 public class CameraJobStatusDBUtility
         extends DBUtilityBase<CameraJobStatus, Integer> {
     private DBOrmLiteHelper mHelper;
 
-    public CameraJobStatusDBUtility(DBOrmLiteHelper helper)  {
+    CameraJobStatusDBUtility(DBOrmLiteHelper helper)  {
         mHelper = helper;
     }
 

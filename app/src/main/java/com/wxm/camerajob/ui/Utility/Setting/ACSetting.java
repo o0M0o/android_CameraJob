@@ -16,7 +16,7 @@ import wxm.androidutil.ExActivity.BaseAppCompatActivity;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 设置UI
+ * UI for setting
  */
 public class ACSetting
         extends BaseAppCompatActivity {

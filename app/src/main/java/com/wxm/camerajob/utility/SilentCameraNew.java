@@ -36,7 +36,7 @@ import wxm.androidutil.util.ImageUtil;
 import static com.wxm.camerajob.utility.FileLogger.getLogger;
 
 /**
- * 使用camera2 api
+ * silent camera use camera2 api
  * Created by 123 on 2016/7/4.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -399,7 +399,7 @@ public class SilentCameraNew extends SilentCamera {
 }
 
 /**
- * 相机硬件属性
+ * hardware for camera
  */
 class CameraHardWare {
     int mSensorOrientation;

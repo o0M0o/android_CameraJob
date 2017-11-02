@@ -1,6 +1,5 @@
 package com.wxm.camerajob.ui.Utility.Setting;
 
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * 设置主页面
+ * UI for main setting
  * Created by 123 on 2016/10/10.
  */
 public class TFSettingMain extends TFSettingBase {

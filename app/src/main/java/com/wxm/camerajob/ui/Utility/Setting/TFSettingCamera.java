@@ -47,7 +47,7 @@ import wxm.androidutil.type.MySize;
 import wxm.androidutil.util.UtilFun;
 
 /**
- * 相机设置页面
+ * UI for camera setting
  * Created by 123 on 2016/10/10.
  */
 public class TFSettingCamera extends TFSettingBase {

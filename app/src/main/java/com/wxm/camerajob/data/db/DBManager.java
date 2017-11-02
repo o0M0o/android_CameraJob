@@ -3,7 +3,7 @@ package com.wxm.camerajob.data.db;
 import android.content.Context;
 
 /**
- * 执行sqlite业务逻辑
+ * process sqlite business logic
  * Created by wxm on 2016/6/11.
  */
 public class DBManager {
