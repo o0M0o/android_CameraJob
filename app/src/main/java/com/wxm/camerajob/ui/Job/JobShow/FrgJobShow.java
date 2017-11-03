@@ -47,7 +47,9 @@ import wxm.androidutil.FrgUtility.FrgUtilitySupportBase;
 import wxm.androidutil.util.FileUtil;
 import wxm.androidutil.util.UtilFun;
 
-import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
+import static com.wxm.camerajob.utility.GlobalContext.GetCameraJobStatusUtility;
+import static com.wxm.camerajob.utility.GlobalContext.GetCameraJobUtility;
+
 
 /**
  * fragment for show job
@@ -283,12 +285,12 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
                 case R.id.ib_job_run_or_pause:    {
                     int id = Integer.parseInt(map.get(KEY_ID));
-                    CameraJob cj = GetDBManager().getCameraJobUtility().getData(id);
+                    CameraJob cj = GetCameraJobUtility().getData(id);
                     if(null != cj) {
                         CameraJobStatus cjs = cj.getStatus();
                         cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
                                 GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
-                        GetDBManager().getCameraJobStatusUtility().modifyData(cjs);
+                        GetCameraJobStatusUtility().modifyData(cjs);
 
                         mSelfHandler.refreshCameraJobs();
                     }
@@ -354,7 +356,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             mSelfList.clear();
             LinkedList<String> dirs = FileUtil.getDirDirs(
                                 ContextUtil.getInstance().getAppPhotoRootDir(), false);
-            List<CameraJob> ls_job = GetDBManager().getCameraJobUtility().getAllData();
+            List<CameraJob> ls_job = GetCameraJobUtility().getAllData();
             if(!UtilFun.ListIsNullOrEmpty(ls_job))   {
                 Collections.sort(ls_job, (lhs, rhs) -> lhs.get_id() - rhs.get_id());
                 for (CameraJob cj : ls_job) {

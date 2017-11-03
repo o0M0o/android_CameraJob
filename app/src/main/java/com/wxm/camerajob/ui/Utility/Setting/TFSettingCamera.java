@@ -46,6 +46,8 @@ import butterknife.OnClick;
 import wxm.androidutil.type.MySize;
 import wxm.androidutil.util.UtilFun;
 
+import static com.wxm.camerajob.utility.GlobalContext.GetCameraJobUtility;
+
 /**
  * UI for camera setting
  * Created by 123 on 2016/10/10.
@@ -121,7 +123,7 @@ public class TFSettingCamera extends TFSettingBase {
         RelativeLayout rl = UtilFun.cast_t(view.findViewById(R.id.rl_switch));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rl.setOnClickListener(v -> {
-                if(0 < GlobalContext.GetDBManager().getCameraJobUtility().GetActiveJobCount()) {
+                if(0 < GetCameraJobUtility().GetActiveJobCount()) {
                     Dialog alertDialog = new AlertDialog.Builder(getContext()).
                             setTitle("无法进行预览").
                             setMessage("有任务在运行中，请删除或暂停任务后进行预览!").

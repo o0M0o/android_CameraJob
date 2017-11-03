@@ -30,7 +30,7 @@ public class DBOrmLiteHelper  extends OrmLiteSqliteOpenHelper {
     private RuntimeExceptionDao<CameraJobStatus, Integer> mRDAOCameraJobStatus = null;
 
 
-    DBOrmLiteHelper(Context context) {
+    public DBOrmLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

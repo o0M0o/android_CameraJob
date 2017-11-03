@@ -19,7 +19,7 @@ public class CameraJobStatusDBUtility
         extends DBUtilityBase<CameraJobStatus, Integer> {
     private DBOrmLiteHelper mHelper;
 
-    CameraJobStatusDBUtility(DBOrmLiteHelper helper)  {
+    public CameraJobStatusDBUtility(DBOrmLiteHelper helper)  {
         mHelper = helper;
     }
 

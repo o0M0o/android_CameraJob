@@ -12,10 +12,7 @@ import android.os.Environment;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
-import com.wxm.camerajob.BuildConfig;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.receiver.AlarmReceiver;
@@ -97,7 +94,7 @@ public class ContextUtil extends Application {
             }
         }
 
-        GlobalContext.getInstance().initContext();
+        GlobalContext.getInstance().init();
 
         // 设置闹钟
         Intent intent = new Intent(this, AlarmReceiver.class);

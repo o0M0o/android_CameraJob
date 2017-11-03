@@ -4,10 +4,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.wxm.camerajob.data.db.CameraJobDBUtility;
+import com.wxm.camerajob.data.db.CameraJobStatusDBUtility;
+import com.wxm.camerajob.data.db.DBOrmLiteHelper;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraJobStatus;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.data.db.DBManager;
 
 import java.util.Calendar;
 import java.util.List;
@@ -24,7 +26,10 @@ public class GlobalContext {
 
     private GlobalMsgHandler    mMsgHandler;
     private CameraJobProcess     mJobProcessor;
-    private DBManager            mDBManager;
+
+    // for db
+    private CameraJobDBUtility          mCameraJobUtility;
+    private CameraJobStatusDBUtility    mCameraJobStatusUtility;
 
     private static GlobalContext ourInstance = new GlobalContext();
     public static GlobalContext getInstance() {
@@ -39,31 +44,49 @@ public class GlobalContext {
         return getInstance().mJobProcessor;
     }
 
-    public static DBManager GetDBManager() {
-        return getInstance().mDBManager;
+    public static CameraJobDBUtility GetCameraJobUtility() {
+        return getInstance().mCameraJobUtility;
+    }
+    public static CameraJobStatusDBUtility GetCameraJobStatusUtility() {
+        return getInstance().mCameraJobStatusUtility;
     }
 
     private GlobalContext()  {
         initFlag = 0;
     }
 
+    /**
+     * init self
+     * must invoke it before use other function
+     */
+    void init()   {
+        if(isInited())
+            return;
 
-    void initContext()   {
+        // for db
+        DBOrmLiteHelper helper = new DBOrmLiteHelper(ContextUtil.getInstance());
+        mCameraJobUtility = new CameraJobDBUtility(helper);
+        mCameraJobStatusUtility = new CameraJobStatusDBUtility(helper);
+
+        // for job
         mMsgHandler = new GlobalMsgHandler();
         mJobProcessor = new CameraJobProcess();
-        mDBManager = new DBManager(ContextUtil.getInstance());
+        mJobProcessor.init();
 
-        mJobProcessor.init(mDBManager);
-
+        // for self
         initFlag = 1;
     }
 
+    /**
+     * check whether finished init
+     * @return  if already init return true else false
+     */
     private boolean isInited()   {
         return initFlag == 1;
     }
 
     /**
-     * 全局handler
+     * global msg handler
      * Created by wxm on 2016/6/10.
      */
     private static class GlobalMsgHandler extends Handler {
@@ -82,15 +105,15 @@ public class GlobalContext {
 
             switch (msg.what)   {
                 case GlobalDef.MSG_TYPE_WAKEUP:
-                    processor_wakeup();
+                    process_wakeup();
                     break;
 
                 case GlobalDef.MSG_TYPE_CAMERAJOB_QUERY:
-                    processor_ask_cameraJob(msg);
+                    process_ask_cameraJob(msg);
                     break;
 
                 case GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO:
-                    processor_camerajob_takephoto(msg);
+                    process_takephoto(msg);
                     break;
 
                 default:
@@ -99,35 +122,33 @@ public class GlobalContext {
             }
         }
 
-
         /**
-         * 拍照后消息
-         * @param msg 消息
+         * take photo
+         * @param msg  message
          */
-        private void processor_camerajob_takephoto(Message msg) {
+        private void process_takephoto(Message msg) {
             Object[] obj_arr = UtilFun.cast(msg.obj);
             int camerajob_id = UtilFun.cast(obj_arr[0]);
             int photo_count = UtilFun.cast(obj_arr[1]);
 
-            CameraJob js = GetDBManager().getCameraJobUtility().getData(camerajob_id);
+            CameraJob js = GetCameraJobUtility().getData(camerajob_id);
             if(null != js)   {
                 CameraJobStatus cur_js = js.getStatus();
                 cur_js.setJob_photo_count(cur_js.getJob_photo_count() + photo_count);
                 cur_js.getTs().setTime(Calendar.getInstance().getTimeInMillis());
 
-                GetDBManager().getCameraJobStatusUtility().modifyData(cur_js);
+                GetCameraJobStatusUtility().modifyData(cur_js);
             }
         }
 
-
         /**
-         * 查询cameraJob
-         * @param msg  输入消息
+         * query camera job
+         * @param msg  message
          */
-        private void processor_ask_cameraJob(Message msg)    {
+        private void process_ask_cameraJob(Message msg)    {
             Handler h = (Handler)msg.obj;
 
-            List<CameraJob> ls_ret = GetDBManager().getCameraJobUtility().getAllData();
+            List<CameraJob> ls_ret = GetCameraJobUtility().getAllData();
             if(null == ls_ret)
                 Log.e(TAG, "get camerajob failed!");
 
@@ -137,12 +158,11 @@ public class GlobalContext {
             answer.sendToTarget();
         }
 
-
         /**
-         * 处理唤醒消息
+         * wake up
          */
-        private void processor_wakeup() {
-            List<CameraJob> ls = GetDBManager().getCameraJobUtility().getAllData();
+        private void process_wakeup() {
+            List<CameraJob> ls = GetCameraJobUtility().getAllData();
             if((null != ls) && (1 <= ls.size()))
                 GetJobProcess().processorWakeup(ls);
         }

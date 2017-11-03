@@ -5,7 +5,8 @@ import com.wxm.camerajob.data.define.CameraJob;
 import wxm.androidutil.util.FileUtil;
 import wxm.androidutil.util.UtilFun;
 
-import static com.wxm.camerajob.utility.GlobalContext.GetDBManager;
+import static com.wxm.camerajob.utility.GlobalContext.GetCameraJobUtility;
+
 
 /**
  * helper for job
@@ -20,7 +21,7 @@ public class CameraJobUtility {
      * @return    若成功创建任务，返回ture
      */
     public static boolean createCameraJob(CameraJob cj) {
-        boolean ret = GetDBManager().getCameraJobUtility().createData(cj);
+        boolean ret = GetCameraJobUtility().createData(cj);
         if(ret) {
             String dir = ContextUtil.getInstance().createCameraJobPhotoDir(cj);
             ret = !UtilFun.StringIsNullOrEmpty(dir);
@@ -35,7 +36,7 @@ public class CameraJobUtility {
      * @param cj_id   待移除任务id
      */
     public static void removeCamerJob(int cj_id) {
-        GetDBManager().getCameraJobUtility().removeData(cj_id);
+        GetCameraJobUtility().removeData(cj_id);
     }
 
     /**
@@ -43,7 +44,7 @@ public class CameraJobUtility {
      * @param cj_id   待移除任务id
      */
     public static void deleteCamerJob(int cj_id) {
-        GetDBManager().getCameraJobUtility().removeData(cj_id);
+        GetCameraJobUtility().removeData(cj_id);
         String path = ContextUtil.getInstance().getCameraJobPhotoDir(cj_id);
         FileUtil.DeleteDirectory(path);
     }

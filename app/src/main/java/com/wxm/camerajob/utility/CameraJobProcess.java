@@ -7,7 +7,6 @@ import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.data.define.TakePhotoParam;
-import com.wxm.camerajob.data.db.DBManager;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -19,47 +18,44 @@ import java.util.Locale;
  * process camera job
  * Created by 123 on 2016/6/13.
  */
-public class CameraJobProcess {
+class CameraJobProcess {
     private final String TAG = "CameraJobProcess";
     private int                     mInitFlag;
-    private LinkedList<CameraJob>   mActiveJob;
 
-    public CameraJobProcess() {
+    CameraJobProcess() {
         mInitFlag       = 0;
-        mActiveJob      = new LinkedList<>();
     }
 
-
     /**
-     * 初始化函数
-     * @param dbm db辅助类
-     * @return  初始化成功返回true,否则返回false
+     * init self
+     * @return  true if success else false
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean init(DBManager dbm)  {
+    boolean init()  {
         if(1 == mInitFlag)  {
             return true;
         }
 
         mInitFlag = 1;
-        mActiveJob.clear();
         return true;
     }
 
 
     /**
-     * 任务处理器唤醒函数
+     * wakeup to process job
      */
-    public void processorWakeup(List<CameraJob> ls)   {
+    void processorWakeup(List<CameraJob> ls)   {
         if(1 != mInitFlag)
             return;
 
-        mActiveJob.clear();
+        LinkedList<CameraJob>  active_job      = new LinkedList<>();
         for(CameraJob cj : ls)  {
-            cheakJobWakeup(cj);
+            if(checkJobWakeup(cj))  {
+                active_job.add(cj);
+            }
         }
         
-        for(CameraJob cj : mActiveJob)  {
+        for(CameraJob cj : active_job)  {
             wakeupDuty(cj);
         }
     }
@@ -67,16 +63,17 @@ public class CameraJobProcess {
 
 
     /**
-     * 执行job
-     * @param cj 唤醒的任务
+     * check job whether is wakeup
+     * @param cj   job need check
+     * @return  true if wakeup else false
      */
-    private void cheakJobWakeup(CameraJob cj)    {
-        Timestamp cur = new Timestamp(0);
-
+    private boolean checkJobWakeup(CameraJob cj)    {
+        boolean ret = false;
         if(!cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))   {
-            return;
+            return ret;
         }
 
+        Timestamp cur = new Timestamp(0);
         cur.setTime(System.currentTimeMillis());
         long curms = cur.getTime();
         long sms = cj.getStarttime().getTime();
@@ -84,24 +81,26 @@ public class CameraJobProcess {
         if((curms >= sms) && (curms < ems)) {
             switch (cj.getType()) {
                 case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                    process_mintuely_job(cj);
+                    ret = check_mintuely_job(cj);
                 }
                 break;
 
                 case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                    process_hourly_job(cj);
+                    ret = check_hourly_job(cj);
                 }
                 break;
 
                 case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                    process_daily_job(cj);
+                    ret = check_daily_job(cj);
                 }
                 break;
             }
         }
+
+        return ret;
     }
 
-    private void process_mintuely_job(CameraJob cj) {
+    private boolean check_mintuely_job(CameraJob cj) {
         Calendar curCal = Calendar.getInstance();
         int cursec = curCal.get(Calendar.SECOND);
         boolean ik = false;
@@ -125,11 +124,10 @@ public class CameraJobProcess {
             break;
         }
 
-        if(ik)
-            mActiveJob.add(cj);
+        return ik;
     }
 
-    private void process_hourly_job(CameraJob cj) {
+    private boolean check_hourly_job(CameraJob cj) {
         Calendar curCal = Calendar.getInstance();
         int cursec = curCal.get(Calendar.SECOND);
         int curmin = curCal.get(Calendar.MINUTE);
@@ -177,12 +175,11 @@ public class CameraJobProcess {
             break;
         }
 
-        if(ik)
-            mActiveJob.add(cj);
+        return ik;
     }
 
 
-    private void process_daily_job(CameraJob cj) {
+    private boolean check_daily_job(CameraJob cj) {
         Calendar curCal = Calendar.getInstance();
         int cursec = curCal.get(Calendar.SECOND);
         int curmin = curCal.get(Calendar.MINUTE);
@@ -237,11 +234,14 @@ public class CameraJobProcess {
             break;
         }
 
-        if(ik)
-            mActiveJob.add(cj);
+        return ik;
     }
 
 
+    /**
+     * execute job
+     * @param cj    job need executed
+     */
     @SuppressWarnings("ConstantConditions")
     private void wakeupDuty(CameraJob cj)   {
         Log.i(TAG, "wakeup job : " + cj.toString());
