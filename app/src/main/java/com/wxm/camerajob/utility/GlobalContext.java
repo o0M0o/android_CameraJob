@@ -48,7 +48,7 @@ public class GlobalContext {
     }
 
 
-    public void initContext()   {
+    void initContext()   {
         mMsgHandler = new GlobalMsgHandler();
         mJobProcessor = new CameraJobProcess();
         mDBManager = new DBManager(ContextUtil.getInstance());

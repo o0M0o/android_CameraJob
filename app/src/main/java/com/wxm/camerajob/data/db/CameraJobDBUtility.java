@@ -24,9 +24,8 @@ public class CameraJobDBUtility
     }
 
     /**
-     * 获取当前激活状态的任务数
-     *
-     * @return 目前处于活跃状态的任务数
+     * get amount for activity jobs
+     * @return  amount for live jobs
      */
     public int GetActiveJobCount() {
         int count = 0;
@@ -43,7 +42,6 @@ public class CameraJobDBUtility
     protected RuntimeExceptionDao<CameraJob, Integer> getDBHelper() {
         return mHelper.getCamerJobREDao();
     }
-
 
     @Override
     protected void onDataModify(List<Integer> md) {
