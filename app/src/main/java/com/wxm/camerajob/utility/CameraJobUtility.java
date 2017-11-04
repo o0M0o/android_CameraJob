@@ -15,10 +15,10 @@ import static com.wxm.camerajob.utility.GlobalContext.GetCameraJobUtility;
 public class CameraJobUtility {
 
     /**
-     * 创建拍照任务
-     * 先创建任务目录，然后创建任务
-     * @param cj   待创建任务数据
-     * @return    若成功创建任务，返回ture
+     * create camera job
+     * first create job directory, then create job
+     * @param cj    job information
+     * @return      true if success else false
      */
     public static boolean createCameraJob(CameraJob cj) {
         boolean ret = GetCameraJobUtility().createData(cj);
@@ -32,16 +32,16 @@ public class CameraJobUtility {
 
 
     /**
-     * 在数据库中移除指定的拍照任务
-     * @param cj_id   待移除任务id
+     * remove job from db
+     * @param cj_id   id for job
      */
     public static void removeCamerJob(int cj_id) {
         GetCameraJobUtility().removeData(cj_id);
     }
 
     /**
-     * 删除指定的拍照任务所占用的磁盘空间
-     * @param cj_id   待移除任务id
+     * delete files for job
+     * @param cj_id   id for job
      */
     public static void deleteCamerJob(int cj_id) {
         GetCameraJobUtility().removeData(cj_id);

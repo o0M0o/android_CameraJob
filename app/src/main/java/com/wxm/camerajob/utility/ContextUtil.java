@@ -94,7 +94,7 @@ public class ContextUtil extends Application {
             }
         }
 
-        GlobalContext.getInstance().init();
+        GlobalContext.init();
 
         // 设置闹钟
         Intent intent = new Intent(this, AlarmReceiver.class);
