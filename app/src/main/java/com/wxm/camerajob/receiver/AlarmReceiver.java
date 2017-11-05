@@ -9,7 +9,6 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.GlobalContext;
 import com.wxm.camerajob.utility.ContextUtil;
 
 /**
@@ -31,7 +30,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context arg0, Intent data) {
         try {
-            Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+            Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
                     GlobalDef.MSG_TYPE_WAKEUP);
             m.sendToTarget();
 

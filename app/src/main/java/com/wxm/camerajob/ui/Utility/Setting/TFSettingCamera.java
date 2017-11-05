@@ -28,7 +28,6 @@ import android.widget.Switch;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.GlobalContext;
 import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview;
@@ -46,7 +45,6 @@ import butterknife.OnClick;
 import wxm.androidutil.type.MySize;
 import wxm.androidutil.util.UtilFun;
 
-import static com.wxm.camerajob.utility.GlobalContext.GetCameraJobUtility;
 
 /**
  * UI for camera setting
@@ -123,7 +121,7 @@ public class TFSettingCamera extends TFSettingBase {
         RelativeLayout rl = UtilFun.cast_t(view.findViewById(R.id.rl_switch));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rl.setOnClickListener(v -> {
-                if(0 < GetCameraJobUtility().GetActiveJobCount()) {
+                if(0 < ContextUtil.GetCameraJobUtility().GetActiveJobCount()) {
                     Dialog alertDialog = new AlertDialog.Builder(getContext()).
                             setTitle("无法进行预览").
                             setMessage("有任务在运行中，请删除或暂停任务后进行预览!").

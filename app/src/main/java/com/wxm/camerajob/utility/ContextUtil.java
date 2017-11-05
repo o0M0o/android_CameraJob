@@ -9,10 +9,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
 
+import com.wxm.camerajob.data.db.CameraJobDBUtility;
+import com.wxm.camerajob.data.db.CameraJobStatusDBUtility;
+import com.wxm.camerajob.data.db.DBOrmLiteHelper;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.receiver.AlarmReceiver;
@@ -35,17 +39,25 @@ public class ContextUtil extends Application {
     private static final String INFO_FN = "info.json";
     private static final String SELF_PACKAGE_NAME = "com.wxm.camerajob";
 
-    private List<Activity> activities = new ArrayList<Activity>();
+    private static ContextUtil instance;
+
+    private List<Activity> activities = new ArrayList<>();
 
     @SuppressWarnings("FieldCanBeLocal")
     private String mAppRootDir;
     private String mAppPhotoRootDir;
 
-    private static ContextUtil instance;
+    private GlobalMsgHandler    mMsgHandler;
+    private CameraJobProcess     mJobProcessor;
+
+    // for db
+    private CameraJobDBUtility          mCameraJobUtility;
+    private CameraJobStatusDBUtility    mCameraJobStatusUtility;
+
+
     public static ContextUtil getInstance() {
         return instance;
     }
-
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
@@ -94,7 +106,15 @@ public class ContextUtil extends Application {
             }
         }
 
-        GlobalContext.init();
+        // for db
+        DBOrmLiteHelper helper = new DBOrmLiteHelper(ContextUtil.getInstance());
+        mCameraJobUtility = new CameraJobDBUtility(helper);
+        mCameraJobStatusUtility = new CameraJobStatusDBUtility(helper);
+
+        // for job
+        mMsgHandler = new GlobalMsgHandler();
+        mJobProcessor = new CameraJobProcess();
+        mJobProcessor.init();
 
         // 设置闹钟
         Intent intent = new Intent(this, AlarmReceiver.class);
@@ -122,6 +142,22 @@ public class ContextUtil extends Application {
         System.exit(0);
     }
 
+    public static Handler GetMsgHandlder()   {
+        return UtilFun.cast(instance.mMsgHandler);
+    }
+
+    public static CameraJobProcess GetJobProcess()   {
+        return instance.mJobProcessor;
+    }
+
+    public static CameraJobDBUtility GetCameraJobUtility() {
+        return instance.mCameraJobUtility;
+    }
+
+    public static CameraJobStatusDBUtility GetCameraJobStatusUtility() {
+        return instance.mCameraJobStatusUtility;
+    }
+
     /**
      * Check if this device has a camera
      */
@@ -137,9 +173,8 @@ public class ContextUtil extends Application {
 
 
     /**
-     *  check whether use new camera api
-     *
-     * @return  <code>true</code> if use new camera api
+     * check whether use new camera api
+     * @return  true if use new camera api else false
      */
     public static boolean useNewCamera() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
@@ -158,7 +193,6 @@ public class ContextUtil extends Application {
 
     /**
      * create photo directory for job
-     *
      * @param cj    job
      * @return      photo directory for cj
      */
@@ -196,10 +230,9 @@ public class ContextUtil extends Application {
     }
 
     /**
-     * 从目录路径得到camerajob数据
-     *
-     * @param path 目录路径
-     * @return 此目录对应的camerajob
+     * use directory path get job data
+     * @param path      directory path
+     * @return          camera job
      */
     public CameraJob getCameraJobFromPath(String path) {
         CameraJob ret = null;
@@ -230,7 +263,6 @@ public class ContextUtil extends Application {
 
     /**
      * get job photo directory according to job id
-     *
      * @param cj_id     id for camera job
      * @return          photo directory path for job or ""
      */
@@ -245,7 +277,6 @@ public class ContextUtil extends Application {
 
     /**
      * get photo root directory
-     *
      * @return  photo root directory
      */
     public String getAppPhotoRootDir() {
@@ -255,7 +286,6 @@ public class ContextUtil extends Application {
 
     /**
      * get version number for package
-     *
      * @param context       for package
      * @return              version number
      */
@@ -273,7 +303,6 @@ public class ContextUtil extends Application {
 
     /**
      * get version name for package
-     *
      * @param context       context for package
      * @return              version name
      */

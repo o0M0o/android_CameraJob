@@ -12,7 +12,6 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.utility.GlobalContext;
 import com.wxm.camerajob.utility.ContextUtil;
 
 import java.util.LinkedList;
@@ -65,7 +64,7 @@ public class CameraJobService extends JobService {
         //Log.i(TAG, "on start job: " + params.getJobId() + ", context : " + mCurContext);
 
         //Log.i(TAG, "on start job");
-        Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+        Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
                                 GlobalDef.MSG_TYPE_WAKEUP);
         m.sendToTarget();
         return false;

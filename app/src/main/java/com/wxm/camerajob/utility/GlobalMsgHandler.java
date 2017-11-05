@@ -26,12 +26,6 @@ class GlobalMsgHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        if(!GlobalContext.isInit())   {
-            Log.e(TAG, "context not inited");
-            return;
-        }
-
-
         switch (msg.what)   {
             case GlobalDef.MSG_TYPE_WAKEUP:
                 process_wakeup();
@@ -60,13 +54,13 @@ class GlobalMsgHandler extends Handler {
         int camerajob_id = UtilFun.cast(obj_arr[0]);
         int photo_count = UtilFun.cast(obj_arr[1]);
 
-        CameraJob js = GlobalContext.GetCameraJobUtility().getData(camerajob_id);
+        CameraJob js = ContextUtil.GetCameraJobUtility().getData(camerajob_id);
         if(null != js)   {
             CameraJobStatus cur_js = js.getStatus();
             cur_js.setJob_photo_count(cur_js.getJob_photo_count() + photo_count);
             cur_js.getTs().setTime(Calendar.getInstance().getTimeInMillis());
 
-            GlobalContext.GetCameraJobStatusUtility().modifyData(cur_js);
+            ContextUtil.GetCameraJobStatusUtility().modifyData(cur_js);
         }
     }
 
@@ -77,7 +71,7 @@ class GlobalMsgHandler extends Handler {
     private void process_ask_cameraJob(Message msg)    {
         Handler h = (Handler)msg.obj;
 
-        List<CameraJob> ls_ret = GlobalContext.GetCameraJobUtility().getAllData();
+        List<CameraJob> ls_ret = ContextUtil.GetCameraJobUtility().getAllData();
         if(null == ls_ret)
             Log.e(TAG, "get camerajob failed!");
 
@@ -91,8 +85,8 @@ class GlobalMsgHandler extends Handler {
      * wake up
      */
     private void process_wakeup() {
-        List<CameraJob> ls = GlobalContext.GetCameraJobUtility().getAllData();
+        List<CameraJob> ls = ContextUtil.GetCameraJobUtility().getAllData();
         if((null != ls) && (1 <= ls.size()))
-            GlobalContext.GetJobProcess().processorWakeup(ls);
+            ContextUtil.GetJobProcess().processorWakeup(ls);
     }
 }

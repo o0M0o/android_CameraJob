@@ -267,7 +267,7 @@ class CameraJobProcess {
                 Log.i(TAG, "take photo success, tag = " + tp.mTag);
 
                 //send msg
-                Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
                         GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
                 m.obj = new Object[] {Integer.parseInt(tp.mTag), 1};
                 m.sendToTarget();
