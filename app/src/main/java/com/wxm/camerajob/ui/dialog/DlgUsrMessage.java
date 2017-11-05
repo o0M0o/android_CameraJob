@@ -12,7 +12,7 @@ import android.view.View;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.utility.ContextUtil;
-import com.wxm.camerajob.utility.SIMCardInfo;
+import com.wxm.camerajob.hardware.SIMCardInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;

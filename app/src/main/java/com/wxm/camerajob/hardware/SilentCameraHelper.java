@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility;
+package com.wxm.camerajob.hardware;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.TakePhotoParam;
+import com.wxm.camerajob.utility.ContextUtil;
+import com.wxm.camerajob.utility.FileLogger;
 
 import wxm.androidutil.util.UtilFun;
 

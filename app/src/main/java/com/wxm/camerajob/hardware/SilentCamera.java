@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility;
+package com.wxm.camerajob.hardware;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -7,6 +7,7 @@ import android.view.Surface;
 
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.TakePhotoParam;
+import com.wxm.camerajob.utility.FileLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;

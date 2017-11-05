@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility;
+package com.wxm.camerajob.hardware;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.CameraParam;
+import com.wxm.camerajob.utility.FileLogger;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;

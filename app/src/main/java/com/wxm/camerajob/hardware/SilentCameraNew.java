@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility;
+package com.wxm.camerajob.hardware;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -24,6 +24,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+
+import com.wxm.camerajob.utility.ContextUtil;
+import com.wxm.camerajob.utility.FileLogger;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;

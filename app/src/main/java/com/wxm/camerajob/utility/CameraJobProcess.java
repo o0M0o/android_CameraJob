@@ -7,6 +7,7 @@ import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.data.define.TakePhotoParam;
+import com.wxm.camerajob.hardware.SilentCameraHelper;
 
 import java.sql.Timestamp;
 import java.util.Calendar;

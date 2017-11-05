@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility;
+package com.wxm.camerajob.hardware;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
