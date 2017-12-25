@@ -192,7 +192,7 @@ public class ACEmailTest extends AppCompatActivity implements View.OnClickListen
     // END PRIVATE
 
 
-    private class ACSendMailMsgHandler extends Handler {
+    private static class ACSendMailMsgHandler extends Handler {
         private static final String TAG = "ACSendMailMsgHandler";
         private Activity mACHome;
 

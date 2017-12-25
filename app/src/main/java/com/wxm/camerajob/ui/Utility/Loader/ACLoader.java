@@ -105,12 +105,8 @@ public class ACLoader extends AppCompatActivity {
                     builder.setMessage(msg)
                             .setTitle("警告")
                             .setCancelable(false)
-                            .setPositiveButton("离开应用", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ContextUtil.getInstance().onTerminate();
-                                }
-                            });
+                            .setPositiveButton("离开应用",
+                                    (dialog, which) -> ContextUtil.getInstance().onTerminate());
 
                     AlertDialog dlg = builder.create();
                     dlg.show();

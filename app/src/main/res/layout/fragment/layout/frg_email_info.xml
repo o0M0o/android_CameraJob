@@ -54,7 +54,7 @@
         </RelativeLayout>
 
         <ImageView
-            android:id="@+id/iv_line"
+            android:id="@+id/iv_email_info_line"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@id/rl_send"
@@ -68,7 +68,7 @@
             android:id="@+id/rl_receive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/iv_line">
+            android:layout_below="@id/iv_email_info_line">
 
             <ImageView
                 android:id="@+id/iv_email_recv"

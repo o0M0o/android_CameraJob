@@ -1,6 +1,7 @@
 package com.wxm.camerajob.hardware;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -386,6 +387,7 @@ public class SilentCameraNew extends SilentCamera {
             process(result, COMPELED_TAG);
         }
 
+        @SuppressLint("WrongConstant")
         @Override
         public void onCaptureFailed(@NonNull CameraCaptureSession session,
                                     @NonNull CaptureRequest request,
@@ -408,4 +410,4 @@ class CameraHardWare {
     int mSensorOrientation;
     int mFace;
     boolean mFlashSupported;
-};
+}

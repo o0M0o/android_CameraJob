@@ -66,14 +66,12 @@ public class FileLogger {
             mLogFH.setFormatter(new SimpleFormatter() {
                 @Override
                 public String format(LogRecord record) {
-
-                    String ret = String.format(Locale.CHINA, "%s|%s|%s-%d|%s:%s|%s"
+                    return String.format(Locale.CHINA, "%s|%s|%s-%d|%s:%s|%s"
                             , UtilFun.MilliSecsToString(record.getMillis())
                             , record.getLevel().getName()
                             , mLogTag ,record.getThreadID()
                             , record.getSourceClassName(), record.getSourceMethodName()
                             , formatMessage(record)) + (System.lineSeparator());
-                    return ret;
                 }
             });
 

@@ -42,48 +42,34 @@ public class ACCameraTest extends AppCompatActivity {
         mBtActiveFrontCamear.setTextColor(Color.GRAY);
         mBtActiveBackCamear.setTextColor(Color.GRAY);
 
-        mBtActiveFrontCamear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamearFrag.ActiveFrontCamera();
-                activeButton(mBtCameraClose, true);
-                activeButton(mBtTakePhoto, true);
+        mBtActiveFrontCamear.setOnClickListener(v -> {
+            mCamearFrag.ActiveFrontCamera();
+            activeButton(mBtCameraClose, true);
+            activeButton(mBtTakePhoto, true);
 
-                mBtActiveFrontCamear.setTextColor(Color.BLACK);
-                mBtActiveBackCamear.setTextColor(Color.GRAY);
-            }
+            mBtActiveFrontCamear.setTextColor(Color.BLACK);
+            mBtActiveBackCamear.setTextColor(Color.GRAY);
         });
 
-        mBtActiveBackCamear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamearFrag.ActiveBackCamera();
-                activeButton(mBtCameraClose, true);
-                activeButton(mBtTakePhoto, true);
+        mBtActiveBackCamear.setOnClickListener(v -> {
+            mCamearFrag.ActiveBackCamera();
+            activeButton(mBtCameraClose, true);
+            activeButton(mBtTakePhoto, true);
 
-                mBtActiveFrontCamear.setTextColor(Color.GRAY);
-                mBtActiveBackCamear.setTextColor(Color.BLACK);
-            }
+            mBtActiveFrontCamear.setTextColor(Color.GRAY);
+            mBtActiveBackCamear.setTextColor(Color.BLACK);
         });
 
-        mBtCameraClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamearFrag.CloseCamera();
-                activeButton(mBtTakePhoto, false);
+        mBtCameraClose.setOnClickListener(v -> {
+            mCamearFrag.CloseCamera();
+            activeButton(mBtTakePhoto, false);
 
-                mBtActiveFrontCamear.setTextColor(Color.GRAY);
-                mBtActiveBackCamear.setTextColor(Color.GRAY);
-                mBtCameraClose.setTextColor(Color.GRAY);
-            }
+            mBtActiveFrontCamear.setTextColor(Color.GRAY);
+            mBtActiveBackCamear.setTextColor(Color.GRAY);
+            mBtCameraClose.setTextColor(Color.GRAY);
         });
 
-        mBtTakePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamearFrag.TakePhoto();
-            }
-        });
+        mBtTakePhoto.setOnClickListener(v -> mCamearFrag.TakePhoto());
     }
 
 // --Commented out by Inspection START (2016/6/27 23:14):

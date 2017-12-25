@@ -1,7 +1,12 @@
 package com.wxm.camerajob.hardware;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
+
+import com.wxm.camerajob.utility.ContextUtil;
 
 /**
  * class name：SIMCardInfo<BR>
@@ -19,10 +24,6 @@ public class SIMCardInfo {
      * 使用Context.getSystemService(Context.TELEPHONY_SERVICE)来获取这个类的实例。
      */
     private TelephonyManager telephonyManager;
-    /**
-     * 国际移动用户识别码
-     */
-    private String IMSI;
 
     public SIMCardInfo(Context context) {
         telephonyManager = (TelephonyManager) context
@@ -35,7 +36,19 @@ public class SIMCardInfo {
      * <BR>@author CODYY)peijiangping
      */
     public String getNativePhoneNumber() {
-        return (null == telephonyManager) ? null : telephonyManager.getLine1Number();
+        Context ct = ContextUtil.getInstance();
+        if (ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return "";
+        }
+        return (null == telephonyManager) ? "" : telephonyManager.getLine1Number();
     }
 
     /**
@@ -47,9 +60,21 @@ public class SIMCardInfo {
      * @author CODYY)peijiangping
      */
     public String getProvidersName() {
+        Context ct = ContextUtil.getInstance();
+        if (ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return "";
+        }
+
         String ProvidersName = null;
         // 返回唯一的用户ID;就是这张卡的编号神马的
-        IMSI = telephonyManager.getSubscriberId();
+        String IMSI = telephonyManager.getSubscriberId();
         // IMSI号前面3位460是国家，紧接着后面2位00 02是中国移动，01是中国联通，03是中国电信。
         System.out.println(IMSI);
         if (IMSI.startsWith("46000") || IMSI.startsWith("46002")) {

@@ -1,6 +1,7 @@
 package com.wxm.camerajob.ui.dialog;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Message;
@@ -156,7 +157,8 @@ public class DlgUsrMessage extends DlgOKOrNOBase {
             mPDDlg.setMessage("发送进度");
             // 设置对话框不能用“取消”按钮关闭
             mPDDlg.setCancelable(true);
-            mPDDlg.setButton("取消", (dialogInterface, i) -> {
+            mPDDlg.setButton(DialogInterface.BUTTON_POSITIVE,
+                    "取消", (dialogInterface, i) -> {
             });
 
             // 设置对话框的进度条风格

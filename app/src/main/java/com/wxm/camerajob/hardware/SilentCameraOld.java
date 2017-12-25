@@ -131,12 +131,7 @@ public class SilentCameraOld extends SilentCamera {
                     mCParam.mPhotoSize.getHeight());
 
             mCamera.setParameters(cpa);
-            mCamera.setPreviewCallback(new Camera.PreviewCallback() {
-                @Override
-                public void onPreviewFrame(byte[] data, Camera camera) {
-                    Log.i(TAG, "preview being called!");
-                }
-            });
+            mCamera.setPreviewCallback((data, camera) -> Log.i(TAG, "preview being called!"));
 
             mCamera.startPreview();
             mCamera.takePicture(null, null, mPCJpgProcessor);
@@ -182,28 +177,20 @@ public class SilentCameraOld extends SilentCamera {
         }
     }
 
+    private Camera.PictureCallback mPCJpgProcessor = (data, camera) -> {
+        boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
 
-
-    private Camera.PictureCallback mPCJpgProcessor = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
-
-            mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
-            takePhotoCallBack(ret);
-        }
+        mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
+        takePhotoCallBack(ret);
     };
 
-    private Camera.PictureCallback mPCRawProcessor = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-            bm = ImageUtil.rotateBitmap(bm, mSensorOrientation, null);
-            boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+    private Camera.PictureCallback mPCRawProcessor = (data, camera) -> {
+        Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
+        bm = ImageUtil.rotateBitmap(bm, mSensorOrientation, null);
+        boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
 
-            mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
-            takePhotoCallBack(ret);
-        }
+        mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
+        takePhotoCallBack(ret);
     };
 
 

@@ -85,19 +85,4 @@ public class CameraJobService extends JobService {
                 (JobScheduler) ContextUtil.getInstance().getSystemService(Context.JOB_SCHEDULER_SERVICE);
         tm.schedule(t);
     }
-
-    /**
-     * Not currently used, but as an exercise you can hook this
-     * up to a button in the UI to finish a job that has landed
-     * in onStartJob().
-    public boolean callJobFinished() {
-        JobParameters params = jobParamsMap.poll();
-        if (params == null) {
-            return false;
-        } else {
-            jobFinished(params, false);
-            return true;
-        }
-    }
-     */
 }

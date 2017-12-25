@@ -202,7 +202,7 @@ public class FrgJobSlide extends FrgUtilityBase {
             Bitmap bm = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN.get(position), GALLERY_SIZE);
             imageView.setImageBitmap(bm);
 
-            /**
+            /*
              * 设置ImageView背景，这里背景使用的是android提供的一种背景风格
              * 在values/attr.xml文件中需要一下内容
              *  <declare-styleable name="Gallery">

@@ -15,7 +15,7 @@
         android:id="@+id/aciv_photo"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:background="@color/accent_material_dark"
+        android:background="@color/sys_highlighted_text_material_dark"
         android:scaleType="fitCenter"
         android:padding="10dp"
         android:layout_marginTop="80dp" />

@@ -344,12 +344,7 @@ public class CameraFragment
     private void showToast(final String text) {
         final Activity activity = getActivity();
         if (activity != null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity, text, Toast.LENGTH_SHORT).show();
-                }
-            });
+            activity.runOnUiThread(() -> Toast.makeText(activity, text, Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -445,10 +440,9 @@ public class CameraFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.frg_camera, null);
         //initLooper();
         //initUIAndListener(v);
-        return v;
+        return inflater.inflate(R.layout.frg_camera, null);
     }
 
     @Override
@@ -785,13 +779,6 @@ public class CameraFragment
     }
 
     /**
-     * Initiate a still image capture.
-    private void takePicture() {
-        lockFocus();
-    }
-     */
-
-    /**
      * Lock the focus as the first step for a still image capture.
      */
     private void lockFocus() {
@@ -990,12 +977,8 @@ public class CameraFragment
             final Activity activity = getActivity();
             return new AlertDialog.Builder(activity)
                     .setMessage(getArguments().getString(ARG_MESSAGE))
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            activity.finish();
-                        }
-                    })
+                    .setPositiveButton(android.R.string.ok,
+                            (dialogInterface, i) -> activity.finish())
                     .create();
         }
 
@@ -1011,22 +994,15 @@ public class CameraFragment
             final Fragment parent = getParentFragment();
             return new AlertDialog.Builder(getActivity())
                     .setMessage(R.string.request_permission)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FragmentCompat.requestPermissions(parent,
-                                    new String[]{Manifest.permission.CAMERA},
-                                    REQUEST_CAMERA_PERMISSION);
-                        }
-                    })
+                    .setPositiveButton(android.R.string.ok,
+                            (dialog, which) -> FragmentCompat.requestPermissions(parent,
+                                new String[]{Manifest.permission.CAMERA},
+                                REQUEST_CAMERA_PERMISSION))
                     .setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Activity activity = parent.getActivity();
-                                    if (activity != null) {
-                                        activity.finish();
-                                    }
+                            (dialog, which) -> {
+                                Activity activity = parent.getActivity();
+                                if (activity != null) {
+                                    activity.finish();
                                 }
                             })
                     .create();

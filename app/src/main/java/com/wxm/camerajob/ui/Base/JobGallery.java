@@ -72,7 +72,6 @@ public class JobGallery {
 
         boolean muti = true;
         functionConfigBuilder.setMutiSelectMaxSize(8);
-        final boolean mutiSelect = muti;
         functionConfigBuilder.setEnablePreview(true);
 
         //functionConfigBuilder.setSelected(mPhotoList);//添加过滤集合
@@ -87,7 +86,7 @@ public class JobGallery {
                 .build();
         GalleryFinal.init(coreConfig);
 
-        if (mutiSelect) {
+        if (muti) {
             GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY,
                     functionConfig, mOnHanlderResultCallback);
         } else {

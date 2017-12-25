@@ -57,14 +57,12 @@ public class CameraJobStatus
 
     @Override
     public String toString()    {
-        String ret = String.format(Locale.CHINA,
+        return String.format(Locale.CHINA,
                 "id : %d, job_status : %s, job_photo_count : %d, ts : %s"
                 , get_id()
                 , getJob_status()
                 , getJob_photo_count()
                 , getTs().toString());
-
-        return ret;
     }
 
     public int describeContents() {

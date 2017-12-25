@@ -650,12 +650,7 @@ public class FrgCameraPreview extends FrgUtilityBase {
      */
     private void showToast(final String text) {
         final Activity ac  = getActivity();
-        ac.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(ac, text, Toast.LENGTH_SHORT).show();
-            }
-        });
+        ac.runOnUiThread(() -> Toast.makeText(ac, text, Toast.LENGTH_SHORT).show());
     }
 
     /**
@@ -677,12 +672,8 @@ public class FrgCameraPreview extends FrgUtilityBase {
             final Activity activity = getActivity();
             return new AlertDialog.Builder(activity)
                     .setMessage(getArguments().getString(ARG_MESSAGE))
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            activity.finish();
-                        }
-                    })
+                    .setPositiveButton(android.R.string.ok,
+                            (dialogInterface, i) -> activity.finish())
                     .create();
         }
     }

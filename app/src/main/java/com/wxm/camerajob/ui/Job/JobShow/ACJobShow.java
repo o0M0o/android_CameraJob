@@ -2,8 +2,6 @@ package com.wxm.camerajob.ui.Job.JobShow;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;

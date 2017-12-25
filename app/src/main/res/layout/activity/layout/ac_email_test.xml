@@ -187,7 +187,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <ImageView
-            android:id="@+id/iv_line"
+            android:id="@+id/iv_email_test_line"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@id/til_email_title"
@@ -202,7 +202,7 @@
             android:layout_above="@+id/iv_line1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/iv_line"
+            android:layout_below="@id/iv_email_test_line"
             android:layout_centerVertical="true"
             android:background="@color/linen">
 

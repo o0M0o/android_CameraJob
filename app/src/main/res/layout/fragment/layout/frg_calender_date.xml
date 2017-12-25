@@ -37,7 +37,7 @@
     </RelativeLayout>
 
     <ImageView
-        android:id="@+id/iv_line"
+        android:id="@+id/iv_calender_date_line"
         android:layout_below="@id/rl_start"
         android:layout_width="match_parent"
         android:layout_height="2dp"
@@ -49,7 +49,7 @@
 
     <RelativeLayout
         android:id="@+id/rl_end"
-        android:layout_below="@id/iv_line"
+        android:layout_below="@id/iv_calender_date_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
