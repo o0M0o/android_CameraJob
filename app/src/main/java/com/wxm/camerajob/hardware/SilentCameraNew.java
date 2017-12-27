@@ -59,29 +59,30 @@ public class SilentCameraNew extends SilentCamera {
     static {
         CameraManager mCMCameramanager = (CameraManager) ContextUtil.getInstance()
                 .getSystemService(Context.CAMERA_SERVICE);
+        if(null != mCMCameramanager) {
+            try {
+                for (String cameraId : mCMCameramanager.getCameraIdList()) {
+                    CameraCharacteristics cc
+                            = mCMCameramanager.getCameraCharacteristics(cameraId);
 
-        try {
-            for (String cameraId : mCMCameramanager.getCameraIdList()) {
-                CameraCharacteristics cc
-                        = mCMCameramanager.getCameraCharacteristics(cameraId);
+                    CameraHardWare ch = new CameraHardWare();
+                    Integer facing = cc.get(CameraCharacteristics.LENS_FACING);
+                    if (null != facing) {
+                        ch.mFace = facing;
 
-                CameraHardWare ch = new CameraHardWare();
-                Integer facing = cc.get(CameraCharacteristics.LENS_FACING);
-                if (null != facing) {
-                    ch.mFace = facing;
+                        Integer or = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                        ch.mSensorOrientation = null != or ? or : 90;
 
-                    Integer or = cc.get(CameraCharacteristics.SENSOR_ORIENTATION);
-                    ch.mSensorOrientation = null != or ? or : 90;
+                        // Check if the flash is supported.
+                        Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                        ch.mFlashSupported = available == null ? false : available;
+                    }
 
-                    // Check if the flash is supported.
-                    Boolean available = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
-                    ch.mFlashSupported = available == null ? false : available;
+                    mHMCameraHardware.put(cameraId, ch);
                 }
-
-                mHMCameraHardware.put(cameraId, ch);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
         }
     }
 
@@ -123,8 +124,10 @@ public class SilentCameraNew extends SilentCamera {
 
         try {
             CameraManager cm = (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
-            cm.openCamera(mCameraId,
-                    mCameraDeviceStateCallback, mCParam.mSessionHandler);
+            if(null != cm) {
+                cm.openCamera(mCameraId,
+                        mCameraDeviceStateCallback, mCParam.mSessionHandler);
+            }
         } catch (Exception e) {
             openCameraCallBack(false);
 
@@ -199,11 +202,12 @@ public class SilentCameraNew extends SilentCamera {
      * @return The JPEG orientation (one of 0, 90, 270, and 360)
      */
     private int getOrientation() {
-        Display dp = ((WindowManager)
-                ContextUtil.getInstance()
-                        .getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
+        WindowManager wm = (WindowManager)ContextUtil.getInstance()
+                                .getSystemService(Context.WINDOW_SERVICE);
+        if(null == wm)
+            return -1;
 
+        Display dp = wm.getDefaultDisplay();
         int rotation = dp.getRotation();
 
         // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)

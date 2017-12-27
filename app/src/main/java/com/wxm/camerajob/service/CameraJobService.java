@@ -83,6 +83,8 @@ public class CameraJobService extends JobService {
         Log.d(TAG, "Scheduling job");
         JobScheduler tm =
                 (JobScheduler) ContextUtil.getInstance().getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        tm.schedule(t);
+        if (tm != null) {
+            tm.schedule(t);
+        }
     }
 }

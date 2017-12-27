@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -469,19 +468,20 @@ public class CameraFragment
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
         if (mTextureView.isAvailable()) {
-            Activity activity = getActivity();
-            CameraManager manager =
-                    (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
             try {
-                CameraCharacteristics characteristics
-                        = manager.getCameraCharacteristics(mCameraId);
+                Activity activity = getActivity();
+                CameraManager manager =
+                        (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
 
-                Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if(null != facing) {
-                    openCamera(facing, mTextureView.getWidth(), mTextureView.getHeight());
+                if (manager != null) {
+                     CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraId);
+                    Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                    if(null != facing) {
+                        openCamera(facing, mTextureView.getWidth(), mTextureView.getHeight());
+                    }
                 }
             }
-            catch(CameraAccessException e)  {
+            catch(Exception e)  {
                 e.printStackTrace();
             }
         } else {
@@ -533,6 +533,9 @@ public class CameraFragment
         Activity activity = getActivity();
         CameraManager manager =
                 (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+        if(null == manager)
+            return;
+
         try {
             for (String cameraId : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics
@@ -656,6 +659,9 @@ public class CameraFragment
 
         CameraManager manager =
                 (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
+        if(null == manager)
+            return;
+
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");

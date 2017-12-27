@@ -18,10 +18,6 @@ import com.wxm.camerajob.ui.Base.SendEmailPara;
 import wxm.androidutil.util.UtilFun;
 
 public class ACEmailTest extends AppCompatActivity implements View.OnClickListener {
-    // for action
-    private Button  mBTSend;
-    private Button  mBTAttach;
-
     // for setting
     private TextInputEditText mETEmailSender;
     private TextInputEditText mETEmailSenderPWD;
@@ -60,8 +56,8 @@ public class ACEmailTest extends AppCompatActivity implements View.OnClickListen
 
     // BEGIN PRIVATE
     private void init_ui() {
-        mBTSend = UtilFun.cast_t(findViewById(R.id.bt_send));
-        mBTAttach = UtilFun.cast_t(findViewById(R.id.bt_add_attach));
+        Button mBTSend = UtilFun.cast_t(findViewById(R.id.bt_send));
+        Button mBTAttach = UtilFun.cast_t(findViewById(R.id.bt_add_attach));
         mBTSend.setOnClickListener(this);
 
         mETEmailSender = UtilFun.cast_t(findViewById(R.id.et_email_sender));

@@ -44,7 +44,9 @@ public class AlarmReceiver extends BroadcastReceiver {
             long curms = System.currentTimeMillis();
             long nextms = (curms - (curms % GlobalDef.INT_GLOBALJOB_PERIOD))
                             + GlobalDef.INT_GLOBALJOB_PERIOD;
-            alarmManager.set(AlarmManager.RTC_WAKEUP, nextms, pendingIntent);
+            if (alarmManager != null) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, nextms, pendingIntent);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();

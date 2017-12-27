@@ -121,11 +121,14 @@ public class ContextUtil extends Application {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + GlobalDef.INT_GLOBALJOB_PERIOD, pendingIntent);
+        if (alarmManager != null) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis() + GlobalDef.INT_GLOBALJOB_PERIOD, pendingIntent);
 
-        Log.i(TAG, "Application created");
-        FileLogger.getLogger().info("Application created");
+            Log.i(TAG, "Application created");
+            FileLogger.getLogger().info("Application created");
+        }
+
     }
 
     @Override

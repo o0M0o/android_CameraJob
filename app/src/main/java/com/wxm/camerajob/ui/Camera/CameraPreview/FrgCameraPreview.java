@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -67,13 +66,11 @@ public class FrgCameraPreview extends FrgUtilityBase {
     private final static String     TAG = "ACCameraPreview";
     private static final String     FRAGMENT_DIALOG = "dialog";
 
-    private int                             mSensorOrientation;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     private CaptureRequest.Builder  mPreviewRequestBuilder;
     private CameraDevice mCameraDevice = null;
     private CameraCaptureSession mCaptureSession = null;
-    private CaptureRequest          mPreviewRequest;
     private MySize mPreviewSize;
 
     private String          mCameraId;
@@ -145,6 +142,9 @@ public class FrgCameraPreview extends FrgUtilityBase {
         if (mTextureView.isAvailable()) {
             CameraManager manager =
                     (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
+            if(null == manager)
+                return;
+
             try {
                 CameraCharacteristics characteristics
                         = manager.getCameraCharacteristics(mCameraId);
@@ -267,7 +267,7 @@ public class FrgCameraPreview extends FrgUtilityBase {
                         }
 
                         // Finally, we start displaying the camera preview.
-                        mPreviewRequest = mPreviewRequestBuilder.build();
+                        CaptureRequest mPreviewRequest = mPreviewRequestBuilder.build();
                         mCaptureSession.setRepeatingRequest(mPreviewRequest,
                                 mCaptureCallback, mBackgroundHandler);
                     } catch (CameraAccessException e) {
@@ -397,6 +397,9 @@ public class FrgCameraPreview extends FrgUtilityBase {
 
         CameraManager manager =
                 (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
+        if(null == manager)
+            return;
+
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -523,6 +526,9 @@ public class FrgCameraPreview extends FrgUtilityBase {
     private void setUpCameraOutputs(int face, int width, int height) {
         Activity ac = getActivity();
         CameraManager manager = (CameraManager)ac.getSystemService(Context.CAMERA_SERVICE);
+        if(null == manager)
+            return;
+
         try {
             for (String cameraId : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics
@@ -549,7 +555,7 @@ public class FrgCameraPreview extends FrgUtilityBase {
                 MySize mLargestSize = Collections.max(mysz_ls, new CompareSizesByArea());
                 int displayRotation = ac.getWindowManager().getDefaultDisplay().getRotation();
                 //noinspection ConstantConditions
-                mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                int mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
                 boolean swappedDimensions = false;
                 switch (displayRotation) {
                     case Surface.ROTATION_0:

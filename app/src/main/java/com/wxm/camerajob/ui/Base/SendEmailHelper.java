@@ -18,7 +18,6 @@ public class SendEmailHelper extends javax.mail.Authenticator {
     private SendEmailPara   mSEPara;
 
     private MimeMessage     mMMMsg;
-    private Properties      mPPprops;
 
     public SendEmailHelper()    {
     }
@@ -60,7 +59,7 @@ public class SendEmailHelper extends javax.mail.Authenticator {
 
     private boolean init_context()   {
         // for system property
-        mPPprops = System.getProperties();
+        Properties mPPprops = System.getProperties();
         mPPprops.put("mail.smtp.host", mSEPara.mSendServerHost);
         mPPprops.put("mail.smtp.auth", "true");
         mPPprops.put("mail.debug", "true");

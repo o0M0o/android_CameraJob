@@ -335,7 +335,14 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
      */
     private void init_camera_setting() {
         // for camera setting
-        RelativeLayout rl = UtilFun.cast_t(getView().findViewById(R.id.rl_preview));
+        View vw = getView();
+        if(null == vw)
+            return;
+
+        RelativeLayout rl = UtilFun.cast_t(vw.findViewById(R.id.rl_preview));
+        if(null == rl)
+            return;
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             rl.setVisibility(View.INVISIBLE);
         }

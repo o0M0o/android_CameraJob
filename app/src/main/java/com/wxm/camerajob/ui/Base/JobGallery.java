@@ -31,14 +31,13 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
  * Created by 123 on 2016/8/14.
  */
 public class JobGallery {
-    private final String TAG = "JobGallery";
-    private final int REQUEST_CODE_GALLERY = 1001;
     private Activity mAC;
 
     private GalleryFinal.OnHanlderResultCallback mOnHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
         @Override
         public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
             if (resultList != null) {
+                String TAG = "JobGallery";
                 Log.i(TAG, "open gallery success");
             }
         }
@@ -61,16 +60,14 @@ public class JobGallery {
     public void OpenGallery(Activity ac, String photodir)   {
         mAC = ac;
 
-        ThemeConfig themeConfig = null;
-        themeConfig = ThemeConfig.DEFAULT;
+        ThemeConfig themeConfig = ThemeConfig.DEFAULT;
 
         FunctionConfig.Builder functionConfigBuilder = new FunctionConfig.Builder();
         cn.finalteam.galleryfinal.ImageLoader imageLoader;
-        PauseOnScrollListener pauseOnScrollListener = null;
         imageLoader = new UILImageLoader();
-        pauseOnScrollListener = new UILPauseOnScrollListener(false, true);
+        PauseOnScrollListener pauseOnScrollListener =
+                new UILPauseOnScrollListener(false, true);
 
-        boolean muti = true;
         functionConfigBuilder.setMutiSelectMaxSize(8);
         functionConfigBuilder.setEnablePreview(true);
 
@@ -86,13 +83,9 @@ public class JobGallery {
                 .build();
         GalleryFinal.init(coreConfig);
 
-        if (muti) {
-            GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY,
-                    functionConfig, mOnHanlderResultCallback);
-        } else {
-            GalleryFinal.openGallerySingle(REQUEST_CODE_GALLERY,
-                    functionConfig, mOnHanlderResultCallback);
-        }
+        int REQUEST_CODE_GALLERY = 1001;
+        GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY,
+                functionConfig, mOnHanlderResultCallback);
 
         initImageLoader(mAC);
         initFresco();

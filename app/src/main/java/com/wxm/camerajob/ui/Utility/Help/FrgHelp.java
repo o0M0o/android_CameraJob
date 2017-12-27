@@ -18,7 +18,6 @@ import wxm.androidutil.util.UtilFun;
  * fragment for help
  */
 public class FrgHelp extends FrgUtilityBase {
-    private String HELP_MAIN_FILEPATH = "file:///android_asset/help_main.html";
     private static final String ENCODING = "utf-8";
 
     @BindView(R.id.ac_help_webvw)
@@ -59,6 +58,7 @@ public class FrgHelp extends FrgUtilityBase {
      * 加载应用主帮助信息
      */
     private void load_main_help()   {
+        String HELP_MAIN_FILEPATH = "file:///android_asset/help_main.html";
         mWVHelp.loadUrl(HELP_MAIN_FILEPATH);
     }
 }

@@ -92,7 +92,6 @@ public class SilentCameraOld extends SilentCamera {
             mCameraStatus = CAMERA_OPENED;
             b_ret = true;
         } catch (Exception e){
-            b_ret = false;
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
         } finally {

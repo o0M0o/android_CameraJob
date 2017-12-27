@@ -31,14 +31,8 @@ class CameraJobProcess {
      * init self
      * @return  true if success else false
      */
-    @SuppressWarnings("UnusedReturnValue")
-    boolean init()  {
-        if(1 == mInitFlag)  {
-            return true;
-        }
-
+    void init()  {
         mInitFlag = 1;
-        return true;
     }
 
 
@@ -69,11 +63,11 @@ class CameraJobProcess {
      * @return  true if wakeup else false
      */
     private boolean checkJobWakeup(CameraJob cj)    {
-        boolean ret = false;
         if(!cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))   {
-            return ret;
+            return false;
         }
 
+        boolean ret = false;
         Timestamp cur = new Timestamp(0);
         cur.setTime(System.currentTimeMillis());
         long curms = cur.getTime();

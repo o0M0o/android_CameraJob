@@ -32,6 +32,7 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:baselineAligned="false"
             android:id="@+id/ll_email_sender"
             android:layout_below="@id/rl_action"
             android:layout_marginTop="4dp"
@@ -85,6 +86,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:baselineAligned="false"
             android:id="@+id/ll_email_sender_server"
             android:layout_marginTop="4dp"
             android:layout_below="@id/ll_email_sender"

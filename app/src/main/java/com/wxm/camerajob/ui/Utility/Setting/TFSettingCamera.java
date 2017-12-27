@@ -68,8 +68,6 @@ public class TFSettingCamera extends TFSettingBase {
 
     private ArrayAdapter<String>        mAAPhotoSize;
 
-    private HashMap<String, CameraCharacteristics>  mHMCameras;
-
     private LinkedList<HashMap<String, String>>     mLLDpi;
     private LinkedList<HashMap<String, String>>     mLLBackCameraDpi;
     private LinkedList<HashMap<String, String>>     mLLFrontCameraDpi;
@@ -87,7 +85,6 @@ public class TFSettingCamera extends TFSettingBase {
 
     @Override
     protected void initUiComponent(View view) {
-        mHMCameras = new HashMap<>();
         mLLDpi = new LinkedList<>();
         mLLBackCameraDpi = new LinkedList<>();
         mLLFrontCameraDpi = new LinkedList<>();
@@ -277,12 +274,14 @@ public class TFSettingCamera extends TFSettingBase {
         String mFrontCameraID = "";
         CameraManager manager =
                 (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
+        if(null == manager)
+            return;
+
         try {
             for (String cameraId : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics
                         = manager.getCameraCharacteristics(cameraId);
 
-                mHMCameras.put(cameraId, characteristics);
                 StreamConfigurationMap map = characteristics.get(
                         CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                 if(null != map) {
