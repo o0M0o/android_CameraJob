@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Message;
 import android.util.Log;
 
+import com.wxm.camerajob.data.define.EMsgType;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.ContextUtil;
 
@@ -31,7 +32,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context arg0, Intent data) {
         try {
             Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
-                    GlobalDef.MSG_TYPE_WAKEUP);
+                    EMsgType.WAKEUP.getId());
             m.sendToTarget();
 
             // 设置闹钟

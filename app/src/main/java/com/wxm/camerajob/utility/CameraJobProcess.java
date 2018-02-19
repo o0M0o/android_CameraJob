@@ -4,10 +4,12 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.CameraJob;
+import com.wxm.camerajob.data.define.EMsgType;
 import com.wxm.camerajob.data.define.GlobalDef;
+import com.wxm.camerajob.data.define.EJobStatus;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.data.define.TakePhotoParam;
-import com.wxm.camerajob.data.define.TimeGap;
+import com.wxm.camerajob.data.define.ETimeGap;
 import com.wxm.camerajob.hardware.SilentCameraHelper;
 
 import java.sql.Timestamp;
@@ -61,7 +63,7 @@ class CameraJobProcess {
      * @return  true if wakeup else false
      */
     private boolean checkJobWakeup(CameraJob cj) {
-        if (!cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN)) {
+        if (!cj.getStatus().getJob_status().equals(EJobStatus.RUN.getStatus())) {
             return false;
         }
 
@@ -72,7 +74,7 @@ class CameraJobProcess {
         long ems = cj.getEndtime().getTime();
         if((curms >= sms) && (curms < ems)) {
             String cj_pt = cj.getPoint();
-            for(TimeGap tg : TimeGap.values())  {
+            for(ETimeGap tg : ETimeGap.values())  {
                 if(cj_pt.equals(tg.getGapName()))   {
                     return tg.isArrive(Calendar.getInstance());
                 }
@@ -112,7 +114,7 @@ class CameraJobProcess {
 
                 //send msg
                 Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
-                        GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO);
+                        EMsgType.CAMERAJOB_TAKEPHOTO.getId());
                 m.obj = new Object[] {Integer.parseInt(tp.mTag), 1};
                 m.sendToTarget();
             }

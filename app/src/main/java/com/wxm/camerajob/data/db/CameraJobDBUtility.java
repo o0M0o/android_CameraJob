@@ -3,7 +3,7 @@ package com.wxm.camerajob.data.db;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.DBDataChangeEvent;
-import com.wxm.camerajob.data.define.GlobalDef;
+import com.wxm.camerajob.data.define.EJobStatus;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -30,8 +30,9 @@ public class CameraJobDBUtility
     public int GetActiveJobCount() {
         int count = 0;
         List<CameraJob> lj = getAllData();
+        String sz_run = EJobStatus.RUN.getStatus();
         for (CameraJob cj : lj) {
-            if (cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))
+            if (cj.getStatus().getJob_status().equals(sz_run))
                 count++;
         }
 

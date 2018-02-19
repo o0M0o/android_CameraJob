@@ -18,7 +18,9 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraJobStatus;
 import com.wxm.camerajob.data.define.DBDataChangeEvent;
+import com.wxm.camerajob.data.define.EMsgType;
 import com.wxm.camerajob.data.define.GlobalDef;
+import com.wxm.camerajob.data.define.EJobStatus;
 import com.wxm.camerajob.data.define.PreferencesChangeEvent;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.utility.CameraJobUtility;
@@ -84,7 +86,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDBDataChangeEvent(DBDataChangeEvent event) {
         int ms = DBDataChangeEvent.EVENT_CREATE == event.getEventType() ? 1200 : 0;
-        mSelfHandler.sendEmptyMessageDelayed(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE, ms);
+        mSelfHandler.sendEmptyMessageDelayed(EMsgType.JOBSHOW_UPDATE.getId(), ms);
     }
 
     /**
@@ -94,7 +96,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPreferencesChangeEvent(PreferencesChangeEvent event) {
         if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(event.getPreferencesName()))  {
-            mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+            mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
         }
     }
 
@@ -107,7 +109,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
         // for handler
         mSelfHandler = new FrgJobShowMsgHandler(this);
-        mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+        mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
 
         // set timer
         // 使用定时器定时全面刷新显示
@@ -115,7 +117,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+                mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
             }
         }, 1000, 5000);
     }
@@ -164,7 +166,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
      * 用现有数据重新绘制
      */
     public void refreshFrg()    {
-        mSelfHandler.sendEmptyMessage(GlobalDef.MSG_TYPE_JOBSHOW_UPDATE);
+        mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
     }
 
     /// BEGIN PRIVATE
@@ -211,25 +213,21 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             ImageButton ib_delete = (ImageButton)v.findViewById(R.id.ib_job_stop);
 
             String status = map.get(KEY_STATUS);
-            switch (status) {
-                case GlobalDef.STR_CAMERAJOB_RUN:
-                    ib_play.setVisibility(View.VISIBLE);
+            if(status.equals(EJobStatus.RUN.getStatus()))    {
+                ib_play.setVisibility(View.VISIBLE);
 
-                    ib_play.setBackgroundResource(R.drawable.ic_pause);
-                    ib_play.setClickable(true);
-                    ib_play.setOnClickListener(this);
-                    break;
-                case GlobalDef.STR_CAMERAJOB_PAUSE:
-                    ib_play.setVisibility(View.VISIBLE);
+                ib_play.setBackgroundResource(R.drawable.ic_pause);
+                ib_play.setClickable(true);
+                ib_play.setOnClickListener(this);
+            } else if(status.equals(EJobStatus.PAUSE.getStatus())) {
+                ib_play.setVisibility(View.VISIBLE);
 
-                    ib_play.setBackgroundResource(R.drawable.ic_start);
-                    ib_play.setClickable(true);
-                    ib_play.setOnClickListener(this);
-                    break;
-                default:
-                    ib_play.setVisibility(View.INVISIBLE);
-                    ib_play.setClickable(false);
-                    break;
+                ib_play.setBackgroundResource(R.drawable.ic_start);
+                ib_play.setClickable(true);
+                ib_play.setOnClickListener(this);
+            } else  {
+                ib_play.setVisibility(View.INVISIBLE);
+                ib_play.setClickable(false);
             }
 
             ib_delete.setOnClickListener(this);
@@ -285,8 +283,10 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                     CameraJob cj = ContextUtil.GetCameraJobUtility().getData(id);
                     if(null != cj) {
                         CameraJobStatus cjs = cj.getStatus();
-                        cjs.setJob_status(cjs.getJob_status().equals(GlobalDef.STR_CAMERAJOB_PAUSE) ?
-                                GlobalDef.STR_CAMERAJOB_RUN : GlobalDef.STR_CAMERAJOB_PAUSE);
+                        String sz_run = EJobStatus.RUN.getStatus();
+                        String sz_pause = EJobStatus.PAUSE.getStatus();
+                        cjs.setJob_status(cjs.getJob_status().equals(sz_pause) ?
+                                sz_run : sz_pause);
                         ContextUtil.GetCameraJobStatusUtility().modifyData(cjs);
 
                         mSelfHandler.refreshCameraJobs();
@@ -334,15 +334,10 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case GlobalDef.MSG_TYPE_JOBSHOW_UPDATE: {
-                    refreshCameraJobs();
-                }
-                break;
-
-                default:
-                    Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-                    break;
+            if(msg.what == EMsgType.JOBSHOW_UPDATE.getId()) {
+                refreshCameraJobs();
+            }   else    {
+                Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
             }
         }
 
@@ -388,7 +383,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             map.put(KEY_JOB_ACTIVE, "");
             map.put(KEY_JOB_DETAIL, show);
             map.put(KEY_ID,  Integer.toString(cj.get_id()));
-            map.put(KEY_STATUS, GlobalDef.STR_CAMERAJOB_STOP);
+            map.put(KEY_STATUS, EJobStatus.STOP.getStatus());
             map.put(KEY_TYPE, DIED_JOB);
             mSelfList.add(map);
         }
@@ -401,7 +396,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                     , UtilFun.TimestampToString(cj.getEndtime()).substring(0, 16));
 
             String jobname = cj.getName();
-            String status = cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN) ?
+            String status = cj.getStatus().getJob_status().equals(EJobStatus.RUN.getStatus()) ?
                     "运行" : "暂停";
             jobname = jobname + "(" + status + ")";
 

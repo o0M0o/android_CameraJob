@@ -25,9 +25,10 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.GlobalDef;
+import com.wxm.camerajob.data.define.EJobStatus;
 import com.wxm.camerajob.data.define.PreferencesChangeEvent;
 import com.wxm.camerajob.data.define.PreferencesUtil;
-import com.wxm.camerajob.data.define.TimeGap;
+import com.wxm.camerajob.data.define.ETimeGap;
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview;
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting;
 
@@ -37,7 +38,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,7 +226,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
         cj.setStarttime(st);
         cj.setEndtime(et);
         cj.getTs().setTime(System.currentTimeMillis());
-        cj.getStatus().setJob_status(GlobalDef.STR_CAMERAJOB_RUN);
+        cj.getStatus().setJob_status(EJobStatus.RUN.getStatus());
         return cj;
     }
 
@@ -437,23 +437,23 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
                 List<String> str_arr = new ArrayList<>();
                 switch (hv) {
                     case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                        str_arr.add(TimeGap.GAP_FIFTEEN_SECOND.getGapName());
-                        str_arr.add(TimeGap.GAP_THIRTY_SECOND.getGapName());
+                        str_arr.add(ETimeGap.GAP_FIFTEEN_SECOND.getGapName());
+                        str_arr.add(ETimeGap.GAP_THIRTY_SECOND.getGapName());
                     }
                     break;
 
                     case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                        str_arr.add(TimeGap.GAP_ONE_MINUTE.getGapName());
-                        str_arr.add(TimeGap.GAP_FIVE_MINUTE.getGapName());
-                        str_arr.add(TimeGap.GAP_TEN_MINUTE.getGapName());
-                        str_arr.add(TimeGap.GAP_THIRTY_MINUTE.getGapName());
+                        str_arr.add(ETimeGap.GAP_ONE_MINUTE.getGapName());
+                        str_arr.add(ETimeGap.GAP_FIVE_MINUTE.getGapName());
+                        str_arr.add(ETimeGap.GAP_TEN_MINUTE.getGapName());
+                        str_arr.add(ETimeGap.GAP_THIRTY_MINUTE.getGapName());
                     }
                     break;
 
                     case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                        str_arr.add(TimeGap.GAP_ONE_HOUR.getGapName());
-                        str_arr.add(TimeGap.GAP_TWO_HOUR.getGapName());
-                        str_arr.add(TimeGap.GAP_FOUR_HOUR.getGapName());
+                        str_arr.add(ETimeGap.GAP_ONE_HOUR.getGapName());
+                        str_arr.add(ETimeGap.GAP_TWO_HOUR.getGapName());
+                        str_arr.add(ETimeGap.GAP_FOUR_HOUR.getGapName());
                     }
                     break;
                 }

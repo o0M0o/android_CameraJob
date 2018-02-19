@@ -13,13 +13,6 @@ public class GlobalDef {
     public final static String CNSTR_JOBTYPE_HOURLY    = "每小时";
     public final static String CNSTR_JOBTYPE_DAILY     = "每天";
 
-    public final static int MSG_TYPE_WAKEUP                 = 1000;
-    public final static int MSG_TYPE_CAMERAJOB_QUERY        = 1102;
-    public final static int MSG_TYPE_CAMERAJOB_TAKEPHOTO    = 1104;
-    public final static int MSG_TYPE_JOBSHOW_UPDATE         = 1200;
-    public final static int MSG_TYPE_CAMERA_MODIFY          = 1300;
-    public final static int MSG_TYPE_REPLAY                 = 9000;
-
     public final static int INTRET_CAMERAJOB_ACCEPT     = 2000;
     public final static int INTRET_CAMERAJOB_GIVEUP     = 2001;
     public final static int INTRET_CS_ACCEPT            = 2010;
@@ -41,12 +34,6 @@ public class GlobalDef {
     static public final String STR_HELP_MAIN            = "help_main";
 
     public final static String  STR_CAMERA_DPI      = "CAMERA_DPI";
-
-
-    public final static String  STR_CAMERAJOB_RUN           = "running";
-    public final static String  STR_CAMERAJOB_PAUSE         = "pause";
-    public final static String  STR_CAMERAJOB_STOP          = "stopped";
-    public final static String  STR_CAMERAJOB_UNKNOWN       = "unknown";
 
     public final static String  STR_CAMERAPROPERTIES_NAME       = "camera_properties";
     public final static String  STR_PROPERTIES_FILENAME         = "appConfig.properties";

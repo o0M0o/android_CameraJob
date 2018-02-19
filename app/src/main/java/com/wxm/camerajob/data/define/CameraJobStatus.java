@@ -39,7 +39,7 @@ public class CameraJobStatus
 
     public CameraJobStatus()    {
         setTs(new Timestamp(0));
-        setJob_status(GlobalDef.STR_CAMERAJOB_UNKNOWN);
+        setJob_status(EJobStatus.UNKNOWN.getStatus());
         setJob_photo_count(0);
 
         set_id(0);

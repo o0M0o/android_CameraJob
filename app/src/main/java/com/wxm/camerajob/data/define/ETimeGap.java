@@ -7,7 +7,7 @@ import java.util.function.Function;
  * time gap for camera job
  * Created by ookoo on 2018/2/19.
  */
-public enum TimeGap {
+public enum ETimeGap {
     GAP_FIFTEEN_SECOND("15秒",
         cr -> {
             int cursec = cr.get(Calendar.SECOND);
@@ -62,7 +62,7 @@ public enum TimeGap {
     private String szName;
     private Function<Calendar, Boolean> funArrive;
 
-    TimeGap(String name,  Function<Calendar, Boolean> funer)    {
+    ETimeGap(String name, Function<Calendar, Boolean> funer)    {
         szName = name;
         funArrive = funer;
     }

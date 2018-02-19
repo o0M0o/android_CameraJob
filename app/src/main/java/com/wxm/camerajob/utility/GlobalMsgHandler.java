@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraJobStatus;
+import com.wxm.camerajob.data.define.EMsgType;
 import com.wxm.camerajob.data.define.GlobalDef;
 
 import java.util.Calendar;
@@ -26,22 +27,15 @@ class GlobalMsgHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        switch (msg.what)   {
-            case GlobalDef.MSG_TYPE_WAKEUP:
-                process_wakeup();
-                break;
-
-            case GlobalDef.MSG_TYPE_CAMERAJOB_QUERY:
-                process_ask_cameraJob(msg);
-                break;
-
-            case GlobalDef.MSG_TYPE_CAMERAJOB_TAKEPHOTO:
-                process_takephoto(msg);
-                break;
-
-            default:
-                Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-                break;
+        int what = msg.what;
+        if(what == EMsgType.WAKEUP.getId()) {
+            process_wakeup();
+        } else if(what == EMsgType.CAMERAJOB_QUERY.getId()) {
+            process_ask_cameraJob(msg);
+        } else if(what == EMsgType.CAMERAJOB_TAKEPHOTO.getId()) {
+            process_takephoto(msg);
+        } else  {
+            Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
         }
     }
 
@@ -75,8 +69,8 @@ class GlobalMsgHandler extends Handler {
         if(null == ls_ret)
             Log.e(TAG, "get camerajob failed!");
 
-        Message answer = Message.obtain(h, GlobalDef.MSG_TYPE_REPLAY);
-        answer.arg1 = GlobalDef.MSG_TYPE_CAMERAJOB_QUERY;
+        Message answer = Message.obtain(h, EMsgType.REPLAY.getId());
+        answer.arg1 = EMsgType.CAMERAJOB_QUERY.getId();
         answer.obj = ls_ret;
         answer.sendToTarget();
     }
