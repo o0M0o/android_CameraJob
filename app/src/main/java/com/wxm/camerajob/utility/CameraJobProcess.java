@@ -22,7 +22,7 @@ import java.util.Locale;
  * process camera job
  * Created by 123 on 2016/6/13.
  */
-class CameraJobProcess {
+public class CameraJobProcess {
     private final String TAG = "CameraJobProcess";
     private int                     mInitFlag;
 
@@ -41,7 +41,7 @@ class CameraJobProcess {
     /**
      * wakeup to process job
      */
-    void processorWakeup(List<CameraJob> ls)   {
+    public void processorWakeup(List<CameraJob> ls)   {
         if(1 != mInitFlag)
             return;
 
