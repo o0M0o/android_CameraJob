@@ -37,24 +37,6 @@ public class GlobalDef {
 
     static public final int INTRET_USR_LOGOUT    = 2001;
 
-    public final static String CNSTR_EVERY_TEN_SECOND         = "10秒";
-    public final static String CNSTR_EVERY_TWENTY_SECOND      = "20秒";
-    public final static String CNSTR_EVERY_THIRTY_SECOND      = "30秒";
-
-    public final static String CNSTR_EVERY_ONE_MINUTE         = "1分钟";
-    public final static String CNSTR_EVERY_TWO_MINUTE         = "2分钟";
-    public final static String CNSTR_EVERY_FIVE_MINUTE        = "5分钟";
-    public final static String CNSTR_EVERY_TEN_MINUTE         = "10分钟";
-    public final static String CNSTR_EVERY_TWENTY_MINUTE      = "20分钟";
-    public final static String CNSTR_EVERY_THIRTY_MINUTE      = "30分钟";
-
-    public final static String CNSTR_EVERY_ONE_HOUR           = "1小时";
-    public final static String CNSTR_EVERY_TWO_HOUR           = "2小时";
-    public final static String CNSTR_EVERY_FOUR_HOUR          = "4小时";
-    public final static String CNSTR_EVERY_SIX_HOUR           = "6小时";
-    public final static String CNSTR_EVERY_EIGHT_HOUR         = "8小时";
-    public final static String CNSTR_EVERY_TWELVE_HOUR        = "12小时";
-
     static public final String STR_HELP_TYPE            = "HELP_TYPE";
     static public final String STR_HELP_MAIN            = "help_main";
 

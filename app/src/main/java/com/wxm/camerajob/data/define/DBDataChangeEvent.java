@@ -7,7 +7,7 @@ package com.wxm.camerajob.data.define;
 public class DBDataChangeEvent {
     public final static int   EVENT_CREATE = 1;
     public final static int   EVENT_MODIFY = 2;
-    public final static int EVENT_REMOVE = 3;
+    public final static int   EVENT_REMOVE = 3;
 
     public final static int   DATA_JOB          = 1;
     public final static int   DATA_JOB_STATUS   = 2;
@@ -21,16 +21,16 @@ public class DBDataChangeEvent {
     }
 
     /**
-     * 获取事件类型
-     * @return  事件类型
+     * get event type
+     * @return  event type
      */
     public int getEventType()   {
         return mEventType;
     }
 
     /**
-     * 获取数据类型
-     * @return  数据类型
+     * get data type
+     * @return  data type
      */
     public int getDataType()   {
         return mDataType;

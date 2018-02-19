@@ -21,7 +21,7 @@ import wxm.androidutil.util.UtilFun;
  */
 @DatabaseTable(tableName = "tbCameraJob")
 public class CameraJob
-        implements Parcelable, IDBRow<Integer> {
+        implements Parcelable, Cloneable, IDBRow<Integer> {
     public final static String FIELD_ID = "_id";
 
     @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
@@ -61,16 +61,22 @@ public class CameraJob
         setPoint("");
     }
 
-    public CameraJob Clone()  {
-        CameraJob n = new CameraJob();
-        n.set_id(get_id());
-        n.setName(getName());
-        n.setStatus(getStatus());
-        n.setType(getType());
-        n.setPoint(getPoint());
-        n.setEndtime(getEndtime());
-        n.setStarttime(getStarttime());
-        n.setTs(getTs());
+    @Override
+    public Object clone()  {
+        CameraJob n = null;
+        try {
+            n = (CameraJob)super.clone();
+            n.set_id(get_id());
+            n.setName(getName());
+            n.setStatus(getStatus());
+            n.setType(getType());
+            n.setPoint(getPoint());
+            n.setEndtime(getEndtime());
+            n.setStarttime(getStarttime());
+            n.setTs(getTs());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
         return n;
     }

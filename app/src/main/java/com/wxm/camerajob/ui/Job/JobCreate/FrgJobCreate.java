@@ -27,6 +27,7 @@ import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesChangeEvent;
 import com.wxm.camerajob.data.define.PreferencesUtil;
+import com.wxm.camerajob.data.define.TimeGap;
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview;
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting;
 
@@ -36,6 +37,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,9 +148,9 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
     }
 
     /**
-     * 配置变化处理器
+     * for preference event
      *
-     * @param event 事件
+     * @param event    for preference
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPreferencesChangeEvent(PreferencesChangeEvent event) {
@@ -157,11 +159,10 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
         }
     }
 
-
     /**
-     * 接受输入参数
+     * use input parameter create job
      *
-     * @return 若输入参数合法，返回对应值，否则返回null
+     * @return  if parameter legal return job else return null
      */
     public CameraJob onAccept() {
         String job_name = mETJobName.getText().toString();
@@ -232,7 +233,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
     /// BEGIN PRIVATE
 
     /**
-     * 初始化任务设置
+     * init job
      */
     private void init_job_setting() {
         // 任务默认开始时间是“当前时间"
@@ -305,9 +306,9 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
     }
 
     /**
-     * 处理“设置”和“预览”点击事件
+     * for 'setting' and 'preview'
      *
-     * @param v 点击目标视图
+     * @param v  event sender
      */
     @OnClick({R.id.rl_setting, R.id.rl_preview})
     public void onRLClick(View v) {
@@ -331,7 +332,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
 
 
     /**
-     * 初始化摄像头设置
+     * init camera
      */
     private void init_camera_setting() {
         // for camera setting
@@ -351,7 +352,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
     }
 
     /**
-     * 加载配置信息中的摄像头设置并显示
+     * load camera preference
      */
     private void load_camera_setting() {
         CameraParam cp = PreferencesUtil.loadCameraParam();
@@ -368,7 +369,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
 
 
     /**
-     * gridview适配器类
+     * for gridview
      */
     public class GVJobTypeAdapter
             extends SimpleAdapter
@@ -433,25 +434,31 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
             HashMap<String, Object> hmd = UtilFun.cast(getItem(pos));
             String hv = UtilFun.cast_t(hmd.get(KEY_JOB_TYPE));
             try {
-                String[] str_arr = null;
+                List<String> str_arr = new ArrayList<>();
                 switch (hv) {
                     case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                        str_arr = getResources().getStringArray(R.array.minutely_invoke);
+                        str_arr.add(TimeGap.GAP_FIFTEEN_SECOND.getGapName());
+                        str_arr.add(TimeGap.GAP_THIRTY_SECOND.getGapName());
                     }
                     break;
 
                     case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                        str_arr = getResources().getStringArray(R.array.hourly_invoke);
+                        str_arr.add(TimeGap.GAP_ONE_MINUTE.getGapName());
+                        str_arr.add(TimeGap.GAP_FIVE_MINUTE.getGapName());
+                        str_arr.add(TimeGap.GAP_TEN_MINUTE.getGapName());
+                        str_arr.add(TimeGap.GAP_THIRTY_MINUTE.getGapName());
                     }
                     break;
 
                     case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                        str_arr = getResources().getStringArray(R.array.daily_invoke);
+                        str_arr.add(TimeGap.GAP_ONE_HOUR.getGapName());
+                        str_arr.add(TimeGap.GAP_TWO_HOUR.getGapName());
+                        str_arr.add(TimeGap.GAP_FOUR_HOUR.getGapName());
                     }
                     break;
                 }
 
-                if (null != str_arr) {
+                if (!str_arr.isEmpty()) {
                     mALJobPoint.clear();
                     for (String i : str_arr) {
                         HashMap<String, String> hm = new HashMap<>();
@@ -472,7 +479,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
 
 
     /**
-     * gridview适配器类
+     * for gridview
      */
     public class GVJobPointAdapter
             extends SimpleAdapter

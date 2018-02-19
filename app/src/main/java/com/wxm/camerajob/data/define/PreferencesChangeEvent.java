@@ -12,8 +12,8 @@ public class PreferencesChangeEvent {
     }
 
     /**
-     * 获取变化配置名
-     * @return  配置名
+     * get changed preference name
+     * @return  preference name
      */
     public String getPreferencesName()   {
         return mPreferencesName;

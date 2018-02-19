@@ -122,8 +122,8 @@ public class ACJobCreate
     }
 
     /**
-     * 检查相机设置
-     * 必须设置相机后才可以继续后面的操作
+     * check camera
+     * must set camera before use it
      */
     private void checkCamera() {
         final Activity home = this;

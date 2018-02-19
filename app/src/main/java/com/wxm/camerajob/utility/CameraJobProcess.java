@@ -7,6 +7,7 @@ import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.data.define.TakePhotoParam;
+import com.wxm.camerajob.data.define.TimeGap;
 import com.wxm.camerajob.hardware.SilentCameraHelper;
 
 import java.sql.Timestamp;
@@ -29,7 +30,6 @@ class CameraJobProcess {
 
     /**
      * init self
-     * @return  true if success else false
      */
     void init()  {
         mInitFlag = 1;
@@ -55,183 +55,32 @@ class CameraJobProcess {
         }
     }
 
-
-
     /**
      * check job whether is wakeup
      * @param cj   job need check
      * @return  true if wakeup else false
      */
-    private boolean checkJobWakeup(CameraJob cj)    {
-        if(!cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN))   {
+    private boolean checkJobWakeup(CameraJob cj) {
+        if (!cj.getStatus().getJob_status().equals(GlobalDef.STR_CAMERAJOB_RUN)) {
             return false;
         }
 
-        boolean ret = false;
         Timestamp cur = new Timestamp(0);
         cur.setTime(System.currentTimeMillis());
         long curms = cur.getTime();
         long sms = cj.getStarttime().getTime();
         long ems = cj.getEndtime().getTime();
         if((curms >= sms) && (curms < ems)) {
-            switch (cj.getType()) {
-                case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
-                    ret = check_mintuely_job(cj);
+            String cj_pt = cj.getPoint();
+            for(TimeGap tg : TimeGap.values())  {
+                if(cj_pt.equals(tg.getGapName()))   {
+                    return tg.isArrive(Calendar.getInstance());
                 }
-                break;
-
-                case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
-                    ret = check_hourly_job(cj);
-                }
-                break;
-
-                case GlobalDef.CNSTR_JOBTYPE_DAILY: {
-                    ret = check_daily_job(cj);
-                }
-                break;
             }
         }
 
-        return ret;
+        return false;
     }
-
-    private boolean check_mintuely_job(CameraJob cj) {
-        Calendar curCal = Calendar.getInstance();
-        int cursec = curCal.get(Calendar.SECOND);
-        boolean ik = false;
-        switch (cj.getPoint())   {
-            case GlobalDef.CNSTR_EVERY_TEN_SECOND : {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec % 10)
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_TWENTY_SECOND : {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec % 20)
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_THIRTY_SECOND: {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec % 30)
-                    ik = true;
-            }
-            break;
-        }
-
-        return ik;
-    }
-
-    private boolean check_hourly_job(CameraJob cj) {
-        Calendar curCal = Calendar.getInstance();
-        int cursec = curCal.get(Calendar.SECOND);
-        int curmin = curCal.get(Calendar.MINUTE);
-        boolean ik = false;
-        switch (cj.getPoint())   {
-            case GlobalDef.CNSTR_EVERY_ONE_MINUTE: {
-                if(GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec)
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_TWO_MINUTE: {
-                if((0 == curmin % 2)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_FIVE_MINUTE: {
-                if((0 == curmin % 5)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_TEN_MINUTE: {
-                if((0 == curmin % 10)
-                    && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_TWENTY_MINUTE : {
-                if((0 == curmin % 20)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_THIRTY_MINUTE: {
-                if((0 == curmin % 30)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-        }
-
-        return ik;
-    }
-
-
-    private boolean check_daily_job(CameraJob cj) {
-        Calendar curCal = Calendar.getInstance();
-        int cursec = curCal.get(Calendar.SECOND);
-        int curmin = curCal.get(Calendar.MINUTE);
-        int curhou = curCal.get(Calendar.HOUR_OF_DAY);
-        boolean ik = false;
-        switch (cj.getPoint())   {
-            case GlobalDef.CNSTR_EVERY_ONE_HOUR: {
-                if((0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_TWO_HOUR : {
-                if((0 == curhou % 2)
-                        && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_FOUR_HOUR: {
-                if((0 == curhou % 4)
-                        && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_SIX_HOUR: {
-                if((0 == curhou % 6)
-                        && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_EIGHT_HOUR: {
-                if((0 == curhou % 8)
-                        && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-
-            case GlobalDef.CNSTR_EVERY_TWELVE_HOUR: {
-                if((0 == curhou % 12)
-                        && (0 == curmin)
-                        && (GlobalDef.INT_GLOBALJOB_CHECKPERIOD > cursec))
-                    ik = true;
-            }
-            break;
-        }
-
-        return ik;
-    }
-
 
     /**
      * execute job

@@ -14,7 +14,7 @@ import wxm.androidutil.type.MySize;
  * parameter for camera
  * Created by 123 on 2016/6/17.
  */
-public class CameraParam  implements Parcelable {
+public class CameraParam  implements Parcelable, Cloneable {
     public final static int     LENS_FACING_BACK  = 1;
     public final static int     LENS_FACING_FRONT = 0;
 
@@ -93,22 +93,20 @@ public class CameraParam  implements Parcelable {
         dest.writeBooleanArray(new boolean[] {mAutoFocus, mAutoFlash});
     }
 
-    /**
-     * 根据cp修改数据
-     */
-    public void Copy(CameraParam cp) {
-        /*
-        cp.mFace            = mFace;
-        cp.mPhotoSize       = mPhotoSize;
-        cp.mAutoFlash       = mAutoFlash;
-        cp.mAutoFocus       = mAutoFocus;
-        cp.mSessionHandler = mSessionHandler;
-        */
-        mFace               = cp.mFace;
-        mPhotoSize          = cp.mPhotoSize;
-        mAutoFocus          = cp.mAutoFocus;
-        mAutoFlash          = cp.mAutoFlash;
-        mSessionHandler     = cp.mSessionHandler;
-        mWaitMSecs          = cp.mWaitMSecs;
+    public CameraParam clone()   {
+        CameraParam n = null;
+        try {
+            n = (CameraParam)super.clone();
+            n.mFace               = mFace;
+            n.mPhotoSize          = mPhotoSize;
+            n.mAutoFocus          = mAutoFocus;
+            n.mAutoFlash          = mAutoFlash;
+            n.mSessionHandler     = mSessionHandler;
+            n.mWaitMSecs          = mWaitMSecs;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        return n;
     }
 }

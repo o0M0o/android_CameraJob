@@ -22,7 +22,7 @@ import wxm.androidutil.DBHelper.IDBRow;
  */
 @DatabaseTable(tableName = "tbCameraJobStatus")
 public class CameraJobStatus
-        implements Parcelable, IDBRow<Integer> {
+        implements Parcelable, Cloneable, IDBRow<Integer> {
     public final static String FIELD_ID = "_id";
 
     @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
@@ -45,13 +45,18 @@ public class CameraJobStatus
         set_id(0);
     }
 
-    public CameraJobStatus Clone()  {
-        CameraJobStatus n = new CameraJobStatus();
-        n.set_id(get_id());
-        n.setJob_status(getJob_status());
-        n.setJob_photo_count(getJob_photo_count());
-        n.setTs(getTs());
-
+    @Override
+    public Object clone()  {
+        CameraJobStatus n = null;
+        try {
+            n = (CameraJobStatus)super.clone();
+            n.set_id(get_id());
+            n.setJob_status(getJob_status());
+            n.setJob_photo_count(getJob_photo_count());
+            n.setTs(getTs());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         return n;
     }
 

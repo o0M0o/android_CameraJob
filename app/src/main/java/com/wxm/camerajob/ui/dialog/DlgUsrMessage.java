@@ -119,11 +119,11 @@ public class DlgUsrMessage extends DlgOKOrNOBase {
     }
 
     /**
-     * 通过http post发送消息
+     * use http send message
      *
-     * @param usr 用户
-     * @param msg 消息
-     * @return 发送成功返回true
+     * @param usr   user info
+     * @param msg   message info
+     * @return      true if success
      */
     private boolean sendMsgByHttpPost(String usr, String msg) {
         HttpPostTask ht = new HttpPostTask(usr, msg);

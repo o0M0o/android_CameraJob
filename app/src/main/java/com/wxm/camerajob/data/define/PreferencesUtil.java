@@ -31,12 +31,10 @@ public class PreferencesUtil {
     private PreferencesUtil()   {
     }
 
-
-
     /**
-     * 加载相机参数配置
-     * (相机参数配置为app唯一性配置)
-     * @return  配置数据
+     * load camera parameter
+     * (camera parameter is GLOBAL in app)
+     * @return  camera parameter
      */
     public static CameraParam loadCameraParam() {
         CameraParam cp = new CameraParam(null);
@@ -62,11 +60,10 @@ public class PreferencesUtil {
         return cp;
     }
 
-
     /**
-     * 保存相机参数配置
-     * (相机参数配置为app唯一性配置)
-     * @param cp 保存配置
+     * save camera parameter
+     * (camera parameter is GLOBAL in app)
+     * @param cp    camera parameter
      */
     public static void saveCameraParam(CameraParam cp) {
         Context ct = ContextUtil.getInstance();
@@ -89,10 +86,9 @@ public class PreferencesUtil {
         EventBus.getDefault().post(pe);
     }
 
-
     /**
-     * 检查相机是否已经设置过
-     * @return 设置过相机返回true
+     * check camera is set or not
+     * @return  if camera is set return true
      */
     public static boolean checkCameraIsSet()    {
         Context ct = ContextUtil.getInstance();
@@ -104,18 +100,17 @@ public class PreferencesUtil {
         return fg.equals(CAMERA_SET_FLAG_ISSET);
     }
 
-
     /**
-     * 设置相机“设置标志"
-     * @param bisset 相机设置过否标志
+     * set camera set flag
+     * @param isSet  flag for camera set
      */
-    private static void setCameraSetFlag(boolean bisset) {
+    private static void setCameraSetFlag(boolean isSet) {
         Context ct = ContextUtil.getInstance();
         SharedPreferences param = ct.getSharedPreferences(
                 CAMERA_SET,
                 Context.MODE_PRIVATE);
 
         param.edit().putString(CAMERA_SET_FLAG,
-                bisset ? CAMERA_SET_FLAG_ISSET : CAMERA_SET_FLAG_NOSET).apply();
+                isSet ? CAMERA_SET_FLAG_ISSET : CAMERA_SET_FLAG_NOSET).apply();
     }
 }

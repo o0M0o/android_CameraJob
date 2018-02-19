@@ -139,11 +139,11 @@ public class TFSettingCamera extends TFSettingBase {
     protected void loadUI() {
         CameraParam cp = PreferencesUtil.loadCameraParam();
         if(CameraCharacteristics.LENS_FACING_BACK == cp.mFace)  {
-            mCPBack.Copy(cp);
+            mCPBack = cp.clone();
             fill_backcamera();
         }
         else    {
-            mCPFront.Copy(cp);
+            mCPFront = cp.clone();
             fill_frontcamera();
         }
     }
@@ -153,7 +153,7 @@ public class TFSettingCamera extends TFSettingBase {
         int vid = v.getId();
         switch (vid)    {
             case R.id.acrb_cs_backcamera : {
-                mCPFront.Copy(get_cur_param());
+                mCPFront = get_cur_param().clone();
                 fill_backcamera();
 
                 mBSettingDirty = true;
@@ -161,7 +161,7 @@ public class TFSettingCamera extends TFSettingBase {
             break;
 
             case R.id.acrb_cs_frontcamera : {
-                mCPBack.Copy(get_cur_param());
+                mCPBack = get_cur_param().clone();
                 fill_frontcamera();
 
                 mBSettingDirty = true;
