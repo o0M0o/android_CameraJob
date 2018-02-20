@@ -24,6 +24,7 @@ import android.widget.ViewSwitcher;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraParam;
+import com.wxm.camerajob.data.define.EJobType;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.EJobStatus;
 import com.wxm.camerajob.data.define.PreferencesChangeEvent;
@@ -433,16 +434,20 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
         private void invoke_job_point(int pos) {
             HashMap<String, Object> hmd = UtilFun.cast(getItem(pos));
             String hv = UtilFun.cast_t(hmd.get(KEY_JOB_TYPE));
+            EJobType et = EJobType.getEJobType(hv);
+            if(null == et)
+                return;
+
             try {
                 List<String> str_arr = new ArrayList<>();
-                switch (hv) {
-                    case GlobalDef.CNSTR_JOBTYPE_MINUTELY: {
+                switch (et) {
+                    case JOB_MINUTELY : {
                         str_arr.add(ETimeGap.GAP_FIFTEEN_SECOND.getGapName());
                         str_arr.add(ETimeGap.GAP_THIRTY_SECOND.getGapName());
                     }
                     break;
 
-                    case GlobalDef.CNSTR_JOBTYPE_HOURLY: {
+                    case JOB_HOURLY: {
                         str_arr.add(ETimeGap.GAP_ONE_MINUTE.getGapName());
                         str_arr.add(ETimeGap.GAP_FIVE_MINUTE.getGapName());
                         str_arr.add(ETimeGap.GAP_TEN_MINUTE.getGapName());
@@ -450,7 +455,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
                     }
                     break;
 
-                    case GlobalDef.CNSTR_JOBTYPE_DAILY: {
+                    case JOB_DAILY: {
                         str_arr.add(ETimeGap.GAP_ONE_HOUR.getGapName());
                         str_arr.add(ETimeGap.GAP_TWO_HOUR.getGapName());
                         str_arr.add(ETimeGap.GAP_FOUR_HOUR.getGapName());

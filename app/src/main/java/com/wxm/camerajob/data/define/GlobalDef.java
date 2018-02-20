@@ -9,10 +9,6 @@ public class GlobalDef {
     public final static String STR_LOAD_CAMERASETTING   = "load_camerasetting";
     public final static String STR_LOAD_PHOTODIR        = "load_photodir";
 
-    public final static String CNSTR_JOBTYPE_MINUTELY  = "每分钟";
-    public final static String CNSTR_JOBTYPE_HOURLY    = "每小时";
-    public final static String CNSTR_JOBTYPE_DAILY     = "每天";
-
     public final static int INTRET_CAMERAJOB_ACCEPT     = 2000;
     public final static int INTRET_CAMERAJOB_GIVEUP     = 2001;
     public final static int INTRET_CS_ACCEPT            = 2010;
