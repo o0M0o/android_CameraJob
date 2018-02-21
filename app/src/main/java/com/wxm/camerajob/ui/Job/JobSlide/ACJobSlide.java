@@ -1,6 +1,8 @@
 package com.wxm.camerajob.ui.Job.JobSlide;
 
 import android.content.Intent;
+
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.data.define.GlobalDef;
 
 import java.util.LinkedList;
@@ -31,7 +33,7 @@ public class ACJobSlide extends BaseAppCompatActivity {
         if (null == it)
             return;
 
-        String sp = it.getStringExtra(GlobalDef.STR_LOAD_PHOTODIR);
+        String sp = it.getStringExtra(EAction.LOAD_PHOTO_DIR.getName());
         if (UtilFun.StringIsNullOrEmpty(sp))
             return;
 

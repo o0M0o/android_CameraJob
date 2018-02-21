@@ -2,9 +2,7 @@ package com.wxm.camerajob.data.define;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraCharacteristics;
-import android.os.Build;
 
 import com.wxm.camerajob.utility.ContextUtil;
 
@@ -43,19 +41,14 @@ public class PreferencesUtil {
                 GlobalDef.STR_CAMERAPROPERTIES_NAME,
                 Context.MODE_PRIVATE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cp.mFace = param.getInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
-                    CameraCharacteristics.LENS_FACING_BACK);
-        } else {
-            cp.mFace = param.getInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
-                    Camera.CameraInfo.CAMERA_FACING_BACK);
-        }
+        cp.mFace = param.getInt(EProperty.PROPERTIES_CAMERA_FACE.getName(),
+                CameraCharacteristics.LENS_FACING_BACK);
 
-        String sz_str = param.getString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
+        String sz_str = param.getString(EProperty.PROPERTIES_CAMERA_DPI.getName(),
                                 new MySize(640, 480).toString());
         cp.mPhotoSize = UtilFun.StringToSize(sz_str);
-        cp.mAutoFocus = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFOCUS, true);
-        cp.mAutoFlash = param.getBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH, true);
+        cp.mAutoFocus = param.getBoolean(EProperty.PROPERTIES_CAMERA_AUTO_FOCUS.getName(), true);
+        cp.mAutoFlash = param.getBoolean(EProperty.PROPERTIES_CAMERA_AUTO_FLASH.getName(), true);
 
         return cp;
     }
@@ -70,13 +63,13 @@ public class PreferencesUtil {
         SharedPreferences param = ct.getSharedPreferences(
                     GlobalDef.STR_CAMERAPROPERTIES_NAME,
                     Context.MODE_PRIVATE);
-        param.edit().putInt(GlobalDef.STR_PROPERTIES_CAMERA_FACE,
+        param.edit().putInt(EProperty.PROPERTIES_CAMERA_FACE.getName(),
                     cp.mFace).apply();
-        param.edit().putString(GlobalDef.STR_PROPERTIES_CAMERA_DPI,
+        param.edit().putString(EProperty.PROPERTIES_CAMERA_DPI.getName(),
                     cp.mPhotoSize.toString()).apply();
-        param.edit().putBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFOCUS,
+        param.edit().putBoolean(EProperty.PROPERTIES_CAMERA_AUTO_FOCUS.getName(),
                     cp.mAutoFocus).apply();
-        param.edit().putBoolean(GlobalDef.STR_PROPERTIES_CAMERA_AUTOFLASH,
+        param.edit().putBoolean(EProperty.PROPERTIES_CAMERA_AUTO_FLASH.getName(),
                     cp.mAutoFlash).apply();
 
         setCameraSetFlag(true);

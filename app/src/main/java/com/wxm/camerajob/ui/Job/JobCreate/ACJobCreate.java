@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.PreferencesUtil;
 import com.wxm.camerajob.utility.ContextUtil;
@@ -99,7 +100,7 @@ public class ACJobCreate
                 CameraJob cj = mFRGJobCreat.onAccept();
                 if(null != cj) {
                     Intent data = new Intent();
-                    data.putExtra(GlobalDef.STR_LOAD_JOB, cj);
+                    data.putExtra(EAction.LOAD_JOB.getName(), cj);
                     setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);
                     finish();
                 }

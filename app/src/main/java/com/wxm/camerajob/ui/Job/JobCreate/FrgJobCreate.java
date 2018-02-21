@@ -24,6 +24,7 @@ import android.widget.ViewSwitcher;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraParam;
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.data.define.EJobType;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.EJobStatus;
@@ -324,7 +325,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
 
             case R.id.rl_preview: {
                 Intent it = new Intent(ac, ACCameraPreview.class);
-                it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, PreferencesUtil.loadCameraParam());
+                it.putExtra(EAction.LOAD_CAMERA_SETTING.getName(), PreferencesUtil.loadCameraParam());
                 ac.startActivityForResult(it, 1);
             }
             break;

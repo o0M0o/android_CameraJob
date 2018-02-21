@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.wxm.camerajob.BuildConfig;
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.ui.Job.JobCreate.ACJobCreate;
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
@@ -167,7 +168,7 @@ public class ACJobShow
 
         switch(resultCode)  {
             case GlobalDef.INTRET_CAMERAJOB_ACCEPT:    {
-                CameraJob cj = data.getParcelableExtra(GlobalDef.STR_LOAD_JOB);
+                CameraJob cj = data.getParcelableExtra(EAction.LOAD_JOB.getName());
                 Log.d(TAG, "camerajob : " + cj.toString());
 
                 CameraJobUtility.createCameraJob(cj);

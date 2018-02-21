@@ -27,6 +27,7 @@ import android.widget.Switch;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraParam;
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.data.define.PreferencesUtil;
@@ -126,7 +127,7 @@ public class TFSettingCamera extends TFSettingBase {
                     alertDialog.show();
                 }   else {
                     Intent it = new Intent(getActivity(), ACCameraPreview.class);
-                    it.putExtra(GlobalDef.STR_LOAD_CAMERASETTING, get_cur_param());
+                    it.putExtra(EAction.LOAD_CAMERA_SETTING.getName(), get_cur_param());
                     startActivityForResult(it, 1);
                 }
             });

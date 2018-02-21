@@ -113,6 +113,7 @@ dependencies {
     compile 'cn.finalteam:toolsfinal:1.1.4'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
+    compile 'org.jetbrains:annotations:15.0'
 }
 
 configurations.all {

@@ -18,6 +18,7 @@ import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraJobStatus;
 import com.wxm.camerajob.data.define.DBDataChangeEvent;
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.data.define.EMsgType;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.EJobStatus;
@@ -310,7 +311,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                                     Integer.parseInt(map.get(KEY_ID)));
 
                     Intent it = new Intent(getActivity(), ACJobSlide.class);
-                    it.putExtra(GlobalDef.STR_LOAD_PHOTODIR, pp);
+                    it.putExtra(EAction.LOAD_PHOTO_DIR.getName(), pp);
                     startActivityForResult(it, 1);
                 }
             }

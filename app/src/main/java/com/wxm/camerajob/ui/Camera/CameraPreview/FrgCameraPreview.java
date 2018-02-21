@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.wxm.camerajob.R;
 import com.wxm.camerajob.data.define.CameraParam;
+import com.wxm.camerajob.data.define.EAction;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.ui.Base.AutoFitTextureView;
 
@@ -113,7 +114,7 @@ public class FrgCameraPreview extends FrgUtilityBase {
     @Override
     protected void initUiComponent(View view) {
         Intent it = getActivity().getIntent();
-        mCPParam = it.getParcelableExtra(GlobalDef.STR_LOAD_CAMERASETTING);
+        mCPParam = it.getParcelableExtra(EAction.LOAD_CAMERA_SETTING.getName());
 
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
     }
