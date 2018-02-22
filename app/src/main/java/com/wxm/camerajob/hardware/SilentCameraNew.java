@@ -46,7 +46,6 @@ import static com.wxm.camerajob.utility.FileLogger.getLogger;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class SilentCameraNew extends SilentCamera {
     private final static String TAG = "SilentCameraNew";
-    private final static int MSG_CAPTURE_TIMEOUT = 1;
 
     private ImageReader mImageReader;
 
@@ -254,7 +253,7 @@ public class SilentCameraNew extends SilentCamera {
             };
 
     /**
-     * 保存photo
+     * save photo
      */
     private boolean savePhoto(Image ig) {
         if (null == ig) {

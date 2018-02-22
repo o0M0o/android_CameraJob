@@ -117,23 +117,19 @@ public class TFSettingCamera extends TFSettingBase {
 
         // for camera preview
         RelativeLayout rl = UtilFun.cast_t(view.findViewById(R.id.rl_switch));
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            rl.setOnClickListener(v -> {
-                if(0 < ContextUtil.GetCameraJobUtility().GetActiveJobCount()) {
-                    Dialog alertDialog = new AlertDialog.Builder(getContext()).
-                            setTitle("无法进行预览").
-                            setMessage("有任务在运行中，请删除或暂停任务后进行预览!").
-                            create();
-                    alertDialog.show();
-                }   else {
-                    Intent it = new Intent(getActivity(), ACCameraPreview.class);
-                    it.putExtra(EAction.LOAD_CAMERA_SETTING.getName(), get_cur_param());
-                    startActivityForResult(it, 1);
-                }
-            });
-        } else  {
-            rl.setVisibility(View.GONE);
-        }
+        rl.setOnClickListener(v -> {
+            if(0 < ContextUtil.GetCameraJobUtility().GetActiveJobCount()) {
+                Dialog alertDialog = new AlertDialog.Builder(getContext()).
+                        setTitle("无法进行预览").
+                        setMessage("有任务在运行中，请删除或暂停任务后进行预览!").
+                        create();
+                alertDialog.show();
+            }   else {
+                Intent it = new Intent(getActivity(), ACCameraPreview.class);
+                it.putExtra(EAction.LOAD_CAMERA_SETTING.getName(), get_cur_param());
+                startActivityForResult(it, 1);
+            }
+        });
     }
 
     @Override
@@ -174,7 +170,7 @@ public class TFSettingCamera extends TFSettingBase {
 
     @Override
     public void updateSetting() {
-        if(mBSettingDirty)  {
+        if(mBSettingDirty) {
             CameraParam cp = get_cur_param();
             PreferencesUtil.saveCameraParam(cp);
 

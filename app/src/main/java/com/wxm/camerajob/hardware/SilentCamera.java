@@ -78,10 +78,10 @@ abstract class SilentCamera {
 
 
     /**
-     * 执行拍照任务
-     * @param cp        相机设置
-     * @param tp        拍照设置
-     * @param stp       回调设置
+     * take photo
+     * @param cp        for camera
+     * @param tp        for photo
+     * @param stp       call back holder
      */
     public void takePhoto(CameraParam cp, TakePhotoParam tp, SilentCameraTakePhotoCallBack stp)    {
         mCParam = cp;
@@ -93,8 +93,8 @@ abstract class SilentCamera {
 
 
     /**
-     * 打开相机回调API
-     * @param ret  若为true则打开成功
+     * callback for open camera
+     * @param ret  true if success
      */
     void openCameraCallBack(Boolean ret) {
         if(ret) {
@@ -116,8 +116,8 @@ abstract class SilentCamera {
     }
 
     /**
-     * 拍照回调API
-     * @param ret  若为true则拍照成功
+     * callback for take photo
+     * @param ret  true if success
      */
     void takePhotoCallBack(Boolean ret) {
         String tag = (mTPParam == null ? "null"
@@ -146,11 +146,11 @@ abstract class SilentCamera {
     }
 
     /**
-     * 保存照片到文件
-     * @param data          照片数据
-     * @param fileDir       文件所在文件夹
-     * @param fileName      文件名
-     * @return   执行成功返回{@code true}
+     * save photo data to file
+     * @param data          photo data
+     * @param fileDir       dir
+     * @param fileName      file name
+     * @return              true if success
      */
     boolean savePhotoToFile(byte[] data, String fileDir, String fileName) {
         boolean ret = false;
@@ -178,11 +178,11 @@ abstract class SilentCamera {
     }
 
     /**
-     * 保存照片到文件
-     * @param bm            位图数据
-     * @param fileDir       文件所在文件夹
-     * @param fileName      文件名
-     * @return   执行成功返回{@code true}
+     * save bitmap as jpg file
+     * @param bm            bitmap data
+     * @param fileDir       jpg file dir
+     * @param fileName      jpg filename
+     * @return              true if success
      */
     boolean saveBitmapToJPGFile(Bitmap bm, String fileDir, String fileName) {
         boolean ret = false;
@@ -208,23 +208,20 @@ abstract class SilentCamera {
         return ret;
     }
 
-
     /**
-     * 打开相机
-     * 通过回调函数得到结果
+     * open camera
+     * use callback to get result
      */
     abstract void openCamera();
 
-
     /**
-     * 进行拍照
-     * 通过回调函数得到结果
+     * take photo
+     * use callback to get result
      */
     abstract void capturePhoto();
 
-
     /**
-     * 关闭相机
+     * close camera
      */
     abstract void closeCamera();
 }

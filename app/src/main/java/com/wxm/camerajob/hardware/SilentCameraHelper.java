@@ -2,12 +2,19 @@ package com.wxm.camerajob.hardware;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.data.define.TakePhotoParam;
 import com.wxm.camerajob.utility.ContextUtil;
 import com.wxm.camerajob.utility.FileLogger;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import wxm.androidutil.util.UtilFun;
 
@@ -18,9 +25,6 @@ import wxm.androidutil.util.UtilFun;
 public class SilentCameraHelper {
     private final static String TAG = "SilentCameraHelper";
 
-    private Handler         mBackgroundHandler;
-    private HandlerThread   mBackgroundThread;
-
     private takePhotoCallBack   mTPCBTakePhoto;
     public interface takePhotoCallBack {
         void onTakePhotoSuccess(TakePhotoParam tp);
@@ -28,53 +32,23 @@ public class SilentCameraHelper {
     }
 
     public SilentCameraHelper()    {
-        startBackgroundThread();
-    }
-
-    protected void finalize() throws Throwable {
-        stopBackgroundThread();
-        super.finalize();
     }
 
     /**
-     *  设置拍照回调接口
-     * @param tcb  回调参数
+     *  set callback for take photo
+     * @param tcb  callback holder
      */
     public void setTakePhotoCallBack(takePhotoCallBack tcb)  {
         mTPCBTakePhoto = tcb;
     }
 
     /**
-     * 拍照
-     *
-     * @param cp    相机设置
-     * @param para  拍照参数
+     * take photo
+     * @param cp    for camera
+     * @param para  for take photo
      */
     public void TakePhoto(CameraParam cp, TakePhotoParam para)  {
-        mBackgroundHandler.post(new TakePhotoRunner(cp, para));
-    }
-
-    /**
-     * 启动后台线程
-     */
-    private void startBackgroundThread()    {
-        mBackgroundThread = new HandlerThread("Background");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
-
-    /**
-     * 关闭后台线程
-     */
-    private void stopBackgroundThread() {
-        mBackgroundHandler = null;
-        mBackgroundThread.quitSafely();
-        try {
-            mBackgroundThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        mBackgroundThread = null;
+        new Thread(new TakePhotoRunner(cp, para), "CameraRunner").run();
     }
 
 
@@ -104,6 +78,7 @@ public class SilentCameraHelper {
 
         TakePhotoRunner(CameraParam cp, TakePhotoParam tp)    {
             super();
+
             mSelfCameraParam = cp;
             mSelfTPTakePhoto = tp;
             mSCSelfCamera = ContextUtil.useNewCamera() ?
@@ -113,7 +88,7 @@ public class SilentCameraHelper {
         @Override
         public void run() {
             try {
-                mSelfCameraParam.mSessionHandler =  mBackgroundHandler;
+                mSelfCameraParam.mSessionHandler = new Handler();
                 mSCSelfCamera.takePhoto(mSelfCameraParam, mSelfTPTakePhoto, mTPCTake);
             } catch (Throwable e) {
                 e.printStackTrace();
