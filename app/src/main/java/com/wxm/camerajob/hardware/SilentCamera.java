@@ -25,7 +25,6 @@ import wxm.androidutil.util.UtilFun;
 abstract class SilentCamera {
     private final static String TAG = "SilentCamera";
 
-    Semaphore                   mCameraLock;
     int                         mSensorOrientation;
     static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
@@ -55,8 +54,6 @@ abstract class SilentCamera {
 
 
     SilentCamera()   {
-        mCameraLock = new Semaphore(1);
-
         mOCCBOpen = new SilentCameraOpenCameraCallBack() {
             @Override
             public void onOpenSuccess(CameraParam cp) {

@@ -11,6 +11,7 @@ import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.utility.FileLogger;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import wxm.androidutil.util.ImageUtil;
@@ -26,12 +27,15 @@ public class SilentCameraOld extends SilentCamera {
     private final static String TAG = "SilentCameraOld";
     private final static int   MSG_CAPTURE_TIMEOUT = 1;
 
+    Semaphore mCameraLock;
     private Camera  mCamera;
     private int     mCameraID;
     private CameraMsgHandler    mMHHandler;
 
     SilentCameraOld()    {
         super();
+
+        mCameraLock = new Semaphore(1);
         mMHHandler = new CameraMsgHandler(this);
     }
 
