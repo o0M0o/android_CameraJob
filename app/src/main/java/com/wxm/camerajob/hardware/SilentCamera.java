@@ -16,6 +16,7 @@ import java.util.concurrent.Semaphore;
 
 import wxm.androidutil.util.UtilFun;
 
+
 /**
  * base class for silent camera
  * silent camera can get photo without sound
@@ -34,18 +35,11 @@ abstract class SilentCamera {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    String mCameraStatus = CAMERA_NOT_OPEN;
-    final static String CAMERA_NOT_OPEN             = "CAMERA_NOT_OPEN";
-    final static String CAMERA_OPENED               = "CAMERA_OPENED";
-    final static String CAMERA_TAKEPHOTO_START      = "CAMERA_TAKEPHOTO_START";
-    final static String CAMERA_TAKEPHOTO_SUCCESS    = "CAMERA_TAKEPHOTO_SUCCESS";
-    final static String CAMERA_TAKEPHOTO_FAILURE    = "CAMERA_TAKEPHOTO_FAILURE";
+    ECameraStatus mCameraStatus = ECameraStatus.NOT_OPEN;
 
     TakePhotoParam        mTPParam;
     CameraParam           mCParam;
-    long                  mStartMSec;
     boolean               mFlashSupported;
-
 
     interface SilentCameraOpenCameraCallBack {
         void onOpenSuccess(CameraParam cp);
@@ -122,7 +116,6 @@ abstract class SilentCamera {
     void takePhotoCallBack(Boolean ret) {
         String tag = (mTPParam == null ? "null"
                 : (mTPParam.mTag == null ? "null" : mTPParam.mTag));
-        String str_status = mCameraStatus;
 
         closeCamera();
         if(ret) {
@@ -136,7 +129,7 @@ abstract class SilentCamera {
         }
         else {
             String l = "take photo failed, tag = "
-                    + tag + ", camerastatus = " + str_status;
+                    + tag + ", camera_status = " + mCameraStatus.getDescription();
             Log.i(TAG, l);
             FileLogger.getLogger().info(l);
 

@@ -89,7 +89,7 @@ public class SilentCameraOld extends SilentCamera {
             b_lock = true;
 
             mCamera = Camera.open(mCameraID);
-            mCameraStatus = CAMERA_OPENED;
+            mCameraStatus = ECameraStatus.OPEN;
             b_ret = true;
         } catch (Exception e){
             e.printStackTrace();
@@ -105,9 +105,8 @@ public class SilentCameraOld extends SilentCamera {
     @Override
     void capturePhoto() {
         Log.i(TAG, "start capture");
-        mStartMSec = System.currentTimeMillis();
 
-        mCameraStatus = CAMERA_TAKEPHOTO_START;
+        mCameraStatus = ECameraStatus.TAKE_PHOTO_START;
         boolean b_lock = false;
         try {
             if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
@@ -166,7 +165,7 @@ public class SilentCameraOld extends SilentCamera {
                     + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
             Log.i(TAG, l);
             getLogger().info(l);
-            mCameraStatus = CAMERA_NOT_OPEN;
+            mCameraStatus = ECameraStatus.NOT_OPEN;
         } catch (InterruptedException e) {
             getLogger().severe(UtilFun.ThrowableToString(e));
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
@@ -179,7 +178,7 @@ public class SilentCameraOld extends SilentCamera {
     private Camera.PictureCallback mPCJpgProcessor = (data, camera) -> {
         boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
 
-        mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
+        mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
     };
 
@@ -188,7 +187,7 @@ public class SilentCameraOld extends SilentCamera {
         bm = ImageUtil.rotateBitmap(bm, mSensorOrientation, null);
         boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
 
-        mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
+        mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
     };
 

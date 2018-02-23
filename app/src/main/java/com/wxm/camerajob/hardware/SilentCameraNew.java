@@ -54,6 +54,9 @@ public class SilentCameraNew extends SilentCamera {
     private CameraCaptureSession mCaptureSession = null;
     private CaptureRequest.Builder mCaptureBuilder = null;
 
+    /**
+     * get camera hardware setting
+     */
     private final static HashMap<String, CameraHardWare> mHMCameraHardware = new HashMap<>();
     static {
         CameraManager mCMCameramanager = (CameraManager) ContextUtil.getInstance()
@@ -90,6 +93,11 @@ public class SilentCameraNew extends SilentCamera {
         super();
     }
 
+    /**
+     * setup camera before use it
+     * use camera face to find it's camera id
+     * @return      true if find
+     */
     private boolean setupCamera() {
         mCameraId = "";
         for (String cameraId : mHMCameraHardware.keySet()) {
@@ -138,8 +146,7 @@ public class SilentCameraNew extends SilentCamera {
     @Override
     void capturePhoto() {
         Log.i(TAG, "start capture");
-        mCameraStatus = CAMERA_TAKEPHOTO_START;
-        mStartMSec = System.currentTimeMillis();
+        mCameraStatus = ECameraStatus.TAKE_PHOTO_START;
 
         //boolean b_ok = true;
         try {
@@ -158,40 +165,26 @@ public class SilentCameraNew extends SilentCamera {
 
     @Override
     public void closeCamera() {
-        boolean b_lock = false;
-        try {
-            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                throw new RuntimeException("Time out waiting to lock camera opening.");
-            }
-
-            b_lock = true;
-            mCaptureBuilder = null;
-            if (null != mCaptureSession) {
-                mCaptureSession.close();
-                mCaptureSession = null;
-            }
-            if (null != mCameraDevice) {
-                mCameraDevice.close();
-                mCameraDevice = null;
-            }
-
-            if (null != mImageReader) {
-                mImageReader.close();
-                mImageReader = null;
-            }
-
-            String l = "camera closed, paratag = "
-                    + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
-            Log.i(TAG, l);
-            getLogger().info(l);
-            mCameraStatus = CAMERA_NOT_OPEN;
-        } catch (InterruptedException e) {
-            getLogger().severe(UtilFun.ThrowableToString(e));
-            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
-        } finally {
-            if (b_lock)
-                mCameraLock.release();
+        mCaptureBuilder = null;
+        if (null != mCaptureSession) {
+            mCaptureSession.close();
+            mCaptureSession = null;
         }
+        if (null != mCameraDevice) {
+            mCameraDevice.close();
+            mCameraDevice = null;
+        }
+
+        if (null != mImageReader) {
+            mImageReader.close();
+            mImageReader = null;
+        }
+
+        String l = "camera closed, paratag = "
+                + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
+        Log.i(TAG, l);
+        getLogger().info(l);
+        mCameraStatus = ECameraStatus.NOT_OPEN;
     }
 
 
@@ -271,7 +264,7 @@ public class SilentCameraNew extends SilentCamera {
         bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);
         boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
 
-        mCameraStatus = ret ? CAMERA_TAKEPHOTO_SUCCESS : CAMERA_TAKEPHOTO_FAILURE;
+        mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
         return ret;
     }
@@ -400,7 +393,7 @@ public class SilentCameraNew extends SilentCamera {
             FileLogger.getLogger().warning(
                     "CaptureFailed, reason = " + failure.getReason());
 
-            mCameraStatus = CAMERA_TAKEPHOTO_FAILURE;
+            mCameraStatus = ECameraStatus.TAKE_PHOTO_FAILURE;
             takePhotoCallBack(false);
         }
     };

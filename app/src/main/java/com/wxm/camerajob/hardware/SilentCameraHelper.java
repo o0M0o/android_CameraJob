@@ -53,7 +53,7 @@ public class SilentCameraHelper {
 
 
     /**
-     * 执行拍照任务
+     * do take photo
      */
     private class TakePhotoRunner implements Runnable {
         private SilentCamera        mSCSelfCamera;
