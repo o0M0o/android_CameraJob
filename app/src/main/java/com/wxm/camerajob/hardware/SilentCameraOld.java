@@ -27,15 +27,12 @@ public class SilentCameraOld extends SilentCamera {
     private final static String TAG = "SilentCameraOld";
     private final static int   MSG_CAPTURE_TIMEOUT = 1;
 
-    Semaphore mCameraLock;
     private Camera  mCamera;
     private int     mCameraID;
     private CameraMsgHandler    mMHHandler;
 
     SilentCameraOld()    {
         super();
-
-        mCameraLock = new Semaphore(1);
         mMHHandler = new CameraMsgHandler(this);
     }
 
@@ -85,22 +82,13 @@ public class SilentCameraOld extends SilentCamera {
         }
 
         boolean b_ret = false;
-        boolean b_lock = false;
         try {
-            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                throw new RuntimeException("Time out waiting to lock camera opening.");
-            }
-            b_lock = true;
-
             mCamera = Camera.open(mCameraID);
             mCameraStatus = ECameraStatus.OPEN;
             b_ret = true;
         } catch (Exception e){
             e.printStackTrace();
             getLogger().severe(UtilFun.ThrowableToString(e));
-        } finally {
-            if(b_lock)
-                mCameraLock.release();
         }
 
         openCameraCallBack(b_ret);
@@ -109,15 +97,8 @@ public class SilentCameraOld extends SilentCamera {
     @Override
     void capturePhoto() {
         Log.i(TAG, "start capture");
-
         mCameraStatus = ECameraStatus.TAKE_PHOTO_START;
-        boolean b_lock = false;
         try {
-            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                throw new RuntimeException("Time out waiting to lock camera opening.");
-            }
-            b_lock = true;
-
             Camera.Parameters cpa = mCamera.getParameters();
             mFlashSupported = (null != cpa.getFlashMode());
 
@@ -143,9 +124,6 @@ public class SilentCameraOld extends SilentCamera {
             getLogger().severe(UtilFun.ThrowableToString(e));
 
             takePhotoCallBack(false);
-        } finally {
-            if(b_lock)
-                mCameraLock.release();
         }
 
         mMHHandler.sendEmptyMessageDelayed(MSG_CAPTURE_TIMEOUT, 5000);
@@ -153,30 +131,16 @@ public class SilentCameraOld extends SilentCamera {
 
     @Override
     public void closeCamera() {
-        boolean b_lock = false;
-        try {
-            if (!mCameraLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-                throw new RuntimeException("Time out close camera.");
-            }
-            b_lock = true;
-
-            if(null != mCamera)     {
-                mCamera.release();
-                mCamera = null;
-            }
-
-            String l = "camera closed, paratag = "
-                    + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
-            Log.i(TAG, l);
-            getLogger().info(l);
-            mCameraStatus = ECameraStatus.NOT_OPEN;
-        } catch (InterruptedException e) {
-            getLogger().severe(UtilFun.ThrowableToString(e));
-            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
-        } finally {
-            if(b_lock)
-                mCameraLock.release();
+        if(null != mCamera)     {
+            mCamera.release();
+            mCamera = null;
         }
+
+        String l = "camera closed, paratag = "
+                + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
+        Log.i(TAG, l);
+        getLogger().info(l);
+        mCameraStatus = ECameraStatus.NOT_OPEN;
     }
 
     private Camera.PictureCallback mPCJpgProcessor = (data, camera) -> {

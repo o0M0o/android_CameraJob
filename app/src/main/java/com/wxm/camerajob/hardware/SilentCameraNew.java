@@ -59,13 +59,13 @@ public class SilentCameraNew extends SilentCamera {
      */
     private final static HashMap<String, CameraHardWare> mHMCameraHardware = new HashMap<>();
     static {
-        CameraManager mCMCameramanager = (CameraManager) ContextUtil.getInstance()
+        CameraManager camera_manager = (CameraManager) ContextUtil.getInstance()
                 .getSystemService(Context.CAMERA_SERVICE);
-        if(null != mCMCameramanager) {
+        if(null != camera_manager) {
             try {
-                for (String cameraId : mCMCameramanager.getCameraIdList()) {
+                for (String camera_id : camera_manager.getCameraIdList()) {
                     CameraCharacteristics cc
-                            = mCMCameramanager.getCameraCharacteristics(cameraId);
+                            = camera_manager.getCameraCharacteristics(camera_id);
 
                     CameraHardWare ch = new CameraHardWare();
                     Integer facing = cc.get(CameraCharacteristics.LENS_FACING);
@@ -80,7 +80,7 @@ public class SilentCameraNew extends SilentCamera {
                         ch.mFlashSupported = available == null ? false : available;
                     }
 
-                    mHMCameraHardware.put(cameraId, ch);
+                    mHMCameraHardware.put(camera_id, ch);
                 }
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -89,7 +89,7 @@ public class SilentCameraNew extends SilentCamera {
     }
 
 
-    public SilentCameraNew() {
+    SilentCameraNew() {
         super();
     }
 
@@ -148,7 +148,6 @@ public class SilentCameraNew extends SilentCamera {
         Log.i(TAG, "start capture");
         mCameraStatus = ECameraStatus.TAKE_PHOTO_START;
 
-        //boolean b_ok = true;
         try {
             mImageReader = ImageReader.newInstance(
                     mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
@@ -157,7 +156,6 @@ public class SilentCameraNew extends SilentCamera {
                     Collections.singletonList(mImageReader.getSurface()),
                     mSessionStateCallback, null);
         } catch (CameraAccessException e) {
-            //b_ok = false;
             e.printStackTrace();
             takePhotoCallBack(false);
         }
@@ -248,12 +246,7 @@ public class SilentCameraNew extends SilentCamera {
     /**
      * save photo
      */
-    private boolean savePhoto(Image ig) {
-        if (null == ig) {
-            FileLogger.getLogger().severe("can not get image");
-            return false;
-        }
-
+    private void savePhoto(Image ig) {
         ByteBuffer buffer = ig.getPlanes()[0].getBuffer();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
@@ -266,7 +259,6 @@ public class SilentCameraNew extends SilentCamera {
 
         mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
-        return ret;
     }
 
     private CameraCaptureSession.StateCallback mSessionStateCallback =
@@ -324,8 +316,9 @@ public class SilentCameraNew extends SilentCamera {
         private final static int COMPELED_TAG = 2;
 
         /**
-         * 如果使用mCaptureSession.capture， 则不需要判断ae状态
-         * @param result  para
+         * if use mCaptureSession.capture, then not need check AE_STATE
+         * @param result    para
+         * @param tag       for log use
          */
         private void process(CaptureResult result, int tag) {
             mWaitCount++;
