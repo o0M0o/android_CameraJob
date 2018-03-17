@@ -57,9 +57,8 @@ class GlobalMsgHandler extends Handler {
         if(null == ls_ret)
             Log.e(TAG, "get camerajob failed!");
 
-        Message answer = Message.obtain(h, EMsgType.REPLAY.getId());
+        Message answer = Message.obtain(h, EMsgType.REPLAY.getId(), ls_ret);
         answer.arg1 = EMsgType.CAMERAJOB_QUERY.getId();
-        answer.obj = ls_ret;
         answer.sendToTarget();
     }
 

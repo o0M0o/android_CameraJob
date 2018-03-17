@@ -112,10 +112,9 @@ public class CameraJobProcess {
             public void onTakePhotoSuccess(TakePhotoParam tp) {
                 Log.i(TAG, "take photo success, tag = " + tp.mTag);
 
-                //send msg
                 Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
-                        EMsgType.CAMERAJOB_TAKEPHOTO.getId());
-                m.obj = new Object[] {Integer.parseInt(tp.mTag), 1};
+                        EMsgType.CAMERAJOB_TAKEPHOTO.getId(),
+                        new Object[] {Integer.parseInt(tp.mTag), 1});
                 m.sendToTarget();
             }
 

@@ -36,6 +36,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,7 +71,6 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     ListView            mLVJobs;
 
     private Timer                   mTimer;
-    private FrgJobShowMsgHandler    mSelfHandler;
 
     @Override
     protected View inflaterView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
@@ -87,7 +87,8 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDBDataChangeEvent(DBDataChangeEvent event) {
         int ms = DBDataChangeEvent.EVENT_CREATE == event.getEventType() ? 1200 : 0;
-        mSelfHandler.sendEmptyMessageDelayed(EMsgType.JOBSHOW_UPDATE.getId(), ms);
+        FrgJobShow h = this;
+        new Handler((Handler.Callback) this).postDelayed(h::refreshFrg, ms);
     }
 
     /**
@@ -97,7 +98,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPreferencesChangeEvent(PreferencesChangeEvent event) {
         if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(event.getPreferencesName()))  {
-            mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
+            refreshFrg();
         }
     }
 
@@ -108,19 +109,14 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
         EventBus.getDefault().register(this);
 
-        // for handler
-        mSelfHandler = new FrgJobShowMsgHandler(this);
-        mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
-
-        // set timer
-        // 使用定时器定时全面刷新显示
+        // update jobs info every 3 seconds
         mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
+                refreshCameraJobs();
             }
-        }, 1000, 5000);
+        }, 100, 3000);
     }
 
     @Override
@@ -164,17 +160,97 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
 
     /**
-     * 用现有数据重新绘制
+     * update ui
      */
     public void refreshFrg()    {
-        mSelfHandler.sendEmptyMessage(EMsgType.JOBSHOW_UPDATE.getId());
+        refreshCameraJobs();
     }
 
     /// BEGIN PRIVATE
+    /**
+     * 更新任务数据
+     */
+    private void refreshCameraJobs() {
+        List<HashMap<String, String>> lshm_jobs = new ArrayList<>();
+
+        LinkedList<String> dirs = FileUtil.getDirDirs(
+                ContextUtil.getInstance().getAppPhotoRootDir(), false);
+        List<CameraJob> ls_job = ContextUtil.GetCameraJobUtility().getAllData();
+        if(!UtilFun.ListIsNullOrEmpty(ls_job))   {
+            ls_job.sort(Comparator.comparingInt(CameraJob::get_id));
+            for (CameraJob cj : ls_job) {
+                alive_camerjob(lshm_jobs, cj);
+
+                String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
+                dirs.remove(dir);
+            }
+        }
+
+        if(!UtilFun.ListIsNullOrEmpty(dirs)) {
+            dirs.sort(String::compareTo);
+
+            for (String dir : dirs) {
+                died_camerajob(lshm_jobs, dir);
+            }
+        }
+
+        updateData(lshm_jobs);
+    }
+
+    private void died_camerajob(List<HashMap<String, String>> jobs, String dir) {
+        CameraJob cj = ContextUtil.getInstance().getCameraJobFromPath(dir);
+        if(null == cj)
+            return;
+
+        String jobname = cj.getName() + "(已移除)";
+        String show  = "可查看已拍摄图片\n可移除本任务文件";
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put(KEY_JOB_NAME, jobname);
+        map.put(KEY_JOB_ACTIVE, "");
+        map.put(KEY_JOB_DETAIL, show);
+        map.put(KEY_ID,  Integer.toString(cj.get_id()));
+        map.put(KEY_STATUS, EJobStatus.STOP.getStatus());
+        map.put(KEY_TYPE, DIED_JOB);
+        jobs.add(map);
+    }
+
+    private void alive_camerjob(List<HashMap<String, String>> jobs, CameraJob cj)     {
+        String at = String.format(Locale.CHINA
+                , "%s/%s\n%s -\n%s"
+                , cj.getType(), cj.getPoint()
+                , UtilFun.TimestampToString(cj.getStarttime()).substring(0, 16)
+                , UtilFun.TimestampToString(cj.getEndtime()).substring(0, 16));
+
+        String jobname = cj.getName();
+        String status = cj.getStatus().getJob_status().equals(EJobStatus.RUN.getStatus()) ?
+                "运行" : "暂停";
+        jobname = jobname + "(" + status + ")";
+
+        String detail;
+        if(0 != cj.getStatus().getJob_photo_count()) {
+            detail = String.format(Locale.CHINA, "已拍摄 : %d\n%s"
+                    ,cj.getStatus().getJob_photo_count()
+                    ,UtilFun.TimestampToString(cj.getStatus().getTs()));
+        }
+        else    {
+            detail = String.format(Locale.CHINA, "已拍摄 : %d"
+                    ,cj.getStatus().getJob_photo_count());
+        }
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put(KEY_JOB_NAME, jobname);
+        map.put(KEY_JOB_ACTIVE, at);
+        map.put(KEY_JOB_DETAIL, detail);
+        map.put(KEY_ID,  Integer.toString(cj.get_id()));
+        map.put(KEY_STATUS, cj.getStatus().getJob_status());
+        map.put(KEY_TYPE, ALIVE_JOB);
+        jobs.add(map);
+    }
     /// END PRIVATE
 
     /**
-     * activity adapter
+     * adapter for listview to show jobs status
      * Created by wxm on 2016/8/13.
      */
     public class LVJobShowAdapter extends SimpleAdapter
@@ -274,7 +350,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                         CameraJobUtility.removeCamerJob(id);
                     } else  {
                         CameraJobUtility.deleteCamerJob(id);
-                        mSelfHandler.refreshCameraJobs();
+                        refreshFrg();
                     }
                 }
                 break;
@@ -290,7 +366,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                                 sz_run : sz_pause);
                         ContextUtil.GetCameraJobStatusUtility().modifyData(cjs);
 
-                        mSelfHandler.refreshCameraJobs();
+                        refreshFrg();
                     }
                 }
                 break;
@@ -315,111 +391,6 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                     startActivityForResult(it, 1);
                 }
             }
-        }
-    }
-
-
-    /**
-     * activity msg handler
-     * Created by wxm on 2016/8/13.
-     */
-    private static class FrgJobShowMsgHandler extends Handler {
-        private static final String TAG = "FrgJobShowMsgHandler";
-        private ArrayList<HashMap<String, String>> mSelfList = new ArrayList<>();
-        private FrgJobShow  mFrgHome;
-
-        FrgJobShowMsgHandler(FrgJobShow home) {
-            super();
-            mFrgHome = home;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            if(msg.what == EMsgType.JOBSHOW_UPDATE.getId()) {
-                refreshCameraJobs();
-            }   else    {
-                Log.e(TAG, String.format("msg(%s) can not process", msg.toString()));
-            }
-        }
-
-        /**
-         * 更新任务数据
-         */
-        void refreshCameraJobs() {
-            mSelfList.clear();
-            LinkedList<String> dirs = FileUtil.getDirDirs(
-                                ContextUtil.getInstance().getAppPhotoRootDir(), false);
-            List<CameraJob> ls_job = ContextUtil.GetCameraJobUtility().getAllData();
-            if(!UtilFun.ListIsNullOrEmpty(ls_job))   {
-                Collections.sort(ls_job, (lhs, rhs) -> lhs.get_id() - rhs.get_id());
-                for (CameraJob cj : ls_job) {
-                    alive_camerjob(cj);
-
-                    String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
-                    dirs.remove(dir);
-                }
-            }
-
-            if(!UtilFun.ListIsNullOrEmpty(dirs)) {
-                Collections.sort(dirs, String::compareTo);
-
-                for (String dir : dirs) {
-                    died_camerajob(dir);
-                }
-            }
-
-            mFrgHome.updateData(mSelfList);
-        }
-
-        private void died_camerajob(String dir) {
-            CameraJob cj = ContextUtil.getInstance().getCameraJobFromPath(dir);
-            if(null == cj)
-                return;
-
-            String jobname = cj.getName() + "(已移除)";
-            String show  = "可查看已拍摄图片\n可移除本任务文件";
-
-            HashMap<String, String> map = new HashMap<>();
-            map.put(KEY_JOB_NAME, jobname);
-            map.put(KEY_JOB_ACTIVE, "");
-            map.put(KEY_JOB_DETAIL, show);
-            map.put(KEY_ID,  Integer.toString(cj.get_id()));
-            map.put(KEY_STATUS, EJobStatus.STOP.getStatus());
-            map.put(KEY_TYPE, DIED_JOB);
-            mSelfList.add(map);
-        }
-
-        private void alive_camerjob(CameraJob cj)     {
-            String at = String.format(Locale.CHINA
-                    , "%s/%s\n%s -\n%s"
-                    , cj.getType(), cj.getPoint()
-                    , UtilFun.TimestampToString(cj.getStarttime()).substring(0, 16)
-                    , UtilFun.TimestampToString(cj.getEndtime()).substring(0, 16));
-
-            String jobname = cj.getName();
-            String status = cj.getStatus().getJob_status().equals(EJobStatus.RUN.getStatus()) ?
-                    "运行" : "暂停";
-            jobname = jobname + "(" + status + ")";
-
-            String detail;
-            if(0 != cj.getStatus().getJob_photo_count()) {
-                detail = String.format(Locale.CHINA, "已拍摄 : %d\n%s"
-                                ,cj.getStatus().getJob_photo_count()
-                                ,UtilFun.TimestampToString(cj.getStatus().getTs()));
-            }
-            else    {
-                detail = String.format(Locale.CHINA, "已拍摄 : %d"
-                        ,cj.getStatus().getJob_photo_count());
-            }
-
-            HashMap<String, String> map = new HashMap<>();
-            map.put(KEY_JOB_NAME, jobname);
-            map.put(KEY_JOB_ACTIVE, at);
-            map.put(KEY_JOB_DETAIL, detail);
-            map.put(KEY_ID,  Integer.toString(cj.get_id()));
-            map.put(KEY_STATUS, cj.getStatus().getJob_status());
-            map.put(KEY_TYPE, ALIVE_JOB);
-            mSelfList.add(map);
         }
     }
 }

@@ -12,7 +12,6 @@ import android.os.Message;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.EMsgType;
-import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.ContextUtil;
 
 import java.util.LinkedList;
@@ -62,10 +61,9 @@ public class CameraJobService extends JobService {
         // do is track which jobs have landed on our service, and
         // update the UI accordingly.
         jobParamsMap.add(params);
-        //Log.i(TAG, "on start job: " + params.getJobId() + ", context : " + mCurContext);
 
-        //Log.i(TAG, "on start job");
-        Message m = Message.obtain(ContextUtil.GetMsgHandlder(), EMsgType.WAKEUP.getId());
+        Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
+                        EMsgType.WAKEUP.getId(), EMsgType.WAKEUP);
         m.sendToTarget();
         return false;
     }
