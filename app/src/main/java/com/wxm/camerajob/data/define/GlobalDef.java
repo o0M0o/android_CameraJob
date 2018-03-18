@@ -13,7 +13,6 @@ public class GlobalDef {
     public final static int INTRET_GIVEUP               = 2021;
     public final static int INTRET_SURE                 = 2022;
 
-
     public final static int INTRET_NOTCARE              = 9000;
 
     public final static int INT_INVALID_ID              = -1;
@@ -21,6 +20,10 @@ public class GlobalDef {
     public final static int INT_GLOBALJOB_CHECKPERIOD   = 10;
 
     static public final int INTRET_USR_LOGOUT    = 2001;
+
+    static public final int MS_SECOND    = 1000;
+    static public final int MS_MINUTE    = 60000;
+    static public final int MS_HOUR      = 3600000;
 
     static public final String STR_HELP_TYPE            = "HELP_TYPE";
     static public final String STR_HELP_MAIN            = "help_main";

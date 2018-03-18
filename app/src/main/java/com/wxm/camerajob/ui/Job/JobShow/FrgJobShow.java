@@ -168,7 +168,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
     /// BEGIN PRIVATE
     /**
-     * 更新任务数据
+     * update jobs status in UI
      */
     private void refreshCameraJobs() {
         List<HashMap<String, String>> lshm_jobs = new ArrayList<>();
