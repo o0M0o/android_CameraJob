@@ -1,4 +1,4 @@
-package com.wxm.camerajob.receiver;
+package com.wxm.camerajob.alarm;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -15,7 +15,6 @@ import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.utility.ContextUtil;
 
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
 
 import wxm.androidutil.util.UtilFun;
@@ -78,7 +77,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     ETimeGap et = ETimeGap.getETimeGap(cj.getPoint());
                     if(null != et)  {
                         long cur_ms = et.getDelay(Calendar.getInstance());
-                        ret = min(cur_ms, ret);
+                        ret = 0 == ret ? cur_ms : min(cur_ms, ret);
                     }
                 }
             }

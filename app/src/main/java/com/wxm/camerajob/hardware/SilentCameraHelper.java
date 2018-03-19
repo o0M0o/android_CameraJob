@@ -48,7 +48,8 @@ public class SilentCameraHelper {
      * @param para  for take photo
      */
     public void TakePhoto(CameraParam cp, TakePhotoParam para)  {
-        new Thread(new TakePhotoRunner(cp, para), "CameraRunner").run();
+        //new Thread(new TakePhotoRunner(cp, para), "CameraRunner").run();
+        new TakePhotoRunner(cp, para).run();
     }
 
 

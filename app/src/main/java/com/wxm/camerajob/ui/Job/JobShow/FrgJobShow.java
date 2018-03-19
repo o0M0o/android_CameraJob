@@ -1,5 +1,6 @@
 package com.wxm.camerajob.ui.Job.JobShow;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -87,8 +88,9 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDBDataChangeEvent(DBDataChangeEvent event) {
         int ms = DBDataChangeEvent.EVENT_CREATE == event.getEventType() ? 1200 : 0;
-        FrgJobShow h = this;
-        new Handler((Handler.Callback) this).postDelayed(h::refreshFrg, ms);
+
+        //new Handler((Handler.Callback) this.getActivity()).postDelayed(this::refreshFrg, ms);
+        new Handler().postDelayed(this::refreshFrg, ms);
     }
 
     /**
@@ -110,11 +112,12 @@ public class FrgJobShow extends FrgUtilitySupportBase {
         EventBus.getDefault().register(this);
 
         // update jobs info every 3 seconds
+        FrgJobShow h = this;
         mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                refreshCameraJobs();
+                h.getActivity().runOnUiThread(h::refreshCameraJobs);
             }
         }, 100, 3000);
     }

@@ -1,4 +1,4 @@
-package com.wxm.camerajob.service;
+package com.wxm.camerajob.alarm;
 
 import android.annotation.TargetApi;
 import android.app.job.JobInfo;

@@ -19,7 +19,7 @@ import com.wxm.camerajob.data.db.CameraJobStatusDBUtility;
 import com.wxm.camerajob.data.db.DBOrmLiteHelper;
 import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.GlobalDef;
-import com.wxm.camerajob.receiver.AlarmReceiver;
+import com.wxm.camerajob.alarm.AlarmReceiver;
 
 import java.io.File;
 import java.io.FileReader;

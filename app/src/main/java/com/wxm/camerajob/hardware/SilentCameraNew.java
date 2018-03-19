@@ -251,7 +251,6 @@ public class SilentCameraNew extends SilentCamera {
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
         ig.close();
-        closeCamera();
 
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);

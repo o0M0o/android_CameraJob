@@ -1,6 +1,7 @@
 package com.wxm.camerajob.utility;
 
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.wxm.camerajob.data.define.CameraJob;
@@ -17,14 +18,18 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 /**
  * process camera job
  * Created by 123 on 2016/6/13.
  */
-public class CameraJobProcess {
+class CameraJobProcess {
     private final String TAG = "CameraJobProcess";
     private int                     mInitFlag;
+    private Lock    mCameraLock;
 
     CameraJobProcess() {
         mInitFlag       = 0;
@@ -41,7 +46,7 @@ public class CameraJobProcess {
     /**
      * wakeup to process job
      */
-    public void processorWakeup(List<CameraJob> ls)   {
+    void processorWakeup(List<CameraJob> ls)   {
         if(1 != mInitFlag)
             return;
 
@@ -51,10 +56,8 @@ public class CameraJobProcess {
                 active_job.add(cj);
             }
         }
-        
-        for(CameraJob cj : active_job)  {
-            wakeupDuty(cj);
-        }
+
+        wakeupDuty(active_job);
     }
 
     /**
@@ -86,10 +89,13 @@ public class CameraJobProcess {
 
     /**
      * execute job
-     * @param cj    job need executed
+     * @param ls_cj    job need executed
      */
-    @SuppressWarnings("ConstantConditions")
-    private void wakeupDuty(CameraJob cj)   {
+    private void wakeupDuty(LinkedList<CameraJob> ls_cj)   {
+        if(ls_cj.isEmpty())
+            return;
+
+        CameraJob cj = ls_cj.pop();
         Log.i(TAG, "wakeup job : " + cj.toString());
         FileLogger.getLogger().info("wakeup job : " + cj.toString());
 
@@ -116,6 +122,8 @@ public class CameraJobProcess {
                         EMsgType.CAMERAJOB_TAKEPHOTO.getId(),
                         new Object[] {Integer.parseInt(tp.mTag), 1});
                 m.sendToTarget();
+
+                wakeupDuty(ls_cj);
             }
 
             @Override
@@ -123,6 +131,8 @@ public class CameraJobProcess {
                 String l = "take photo failure, tag = " + tp.mTag;
                 Log.e(TAG, l);
                 FileLogger.getLogger().severe(l);
+
+                wakeupDuty(ls_cj);
             }
         });
         sh.TakePhoto(PreferencesUtil.loadCameraParam(), tp);
