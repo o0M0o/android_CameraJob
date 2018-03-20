@@ -443,6 +443,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
                 List<String> str_arr = new ArrayList<>();
                 switch (et) {
                     case JOB_MINUTELY : {
+                        str_arr.add(ETimeGap.GAP_FIVE_SECOND.getGapName());
                         str_arr.add(ETimeGap.GAP_FIFTEEN_SECOND.getGapName());
                         str_arr.add(ETimeGap.GAP_THIRTY_SECOND.getGapName());
                     }

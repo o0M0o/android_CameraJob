@@ -17,7 +17,7 @@ public class GlobalDef {
 
     public final static int INT_INVALID_ID              = -1;
     public final static int INT_GLOBALJOB_PERIOD        = 10000;
-    public final static int INT_GLOBALJOB_CHECKPERIOD   = 10;
+    public final static int INT_GLOBALJOB_CHECKPERIOD   = 5;
 
     static public final int INTRET_USR_LOGOUT    = 2001;
 

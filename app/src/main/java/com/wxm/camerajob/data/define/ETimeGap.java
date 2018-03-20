@@ -10,6 +10,16 @@ import javax.microedition.khronos.opengles.GL;
  * Created by ookoo on 2018/2/19.
  */
 public enum ETimeGap {
+    GAP_FIVE_SECOND("5秒",
+        cr -> {
+            int cursec = cr.get(Calendar.SECOND);
+            return 3 >= cursec % 5;
+        },
+        cr -> {
+            int cursec = cr.get(Calendar.SECOND);
+            return cursec == 5 ? 5 * GlobalDef.MS_SECOND
+                   : (5 - ((long)cursec % 5)) * GlobalDef.MS_SECOND;
+        }),
     GAP_FIFTEEN_SECOND("15秒",
         cr -> {
             int cursec = cr.get(Calendar.SECOND);

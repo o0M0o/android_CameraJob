@@ -33,7 +33,7 @@ public class TFSettingDirectory extends TFSettingBase {
 
     @Override
     protected void initUiComponent(View view) {
-        String s = String.format(Locale.CHINA, "当前APP根目录 : %s",
+        String s = String.format(Locale.CHINA, "照片根目录 : %s",
                 ContextUtil.getInstance().getAppPhotoRootDir());
         mTVShow.setText(s);
     }
