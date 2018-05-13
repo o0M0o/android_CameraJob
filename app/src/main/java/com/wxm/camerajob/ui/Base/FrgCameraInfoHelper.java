@@ -29,13 +29,13 @@ public class FrgCameraInfoHelper {
         TextView mTVCameraFlash = UtilFun.cast_t(rl.findViewById(R.id.tv_camera_flash));
         TextView mTVCameraFocus = UtilFun.cast_t(rl.findViewById(R.id.tv_camera_focus));
 
-        mTVCameraFace.setText(rl.getContext().getString(CameraParam.LENS_FACING_BACK == cp.mFace ?
+        mTVCameraFace.setText(rl.getContext().getString(CameraParam.LENS_FACING_BACK == cp.getMFace() ?
                 R.string.cn_backcamera : R.string.cn_frontcamera));
 
-        mTVCameraDpi.setText(cp.mPhotoSize.toString());
-        mTVCameraFlash.setText(ct.getString(cp.mAutoFlash ?
+        mTVCameraDpi.setText(cp.getMPhotoSize().toString());
+        mTVCameraFlash.setText(ct.getString(cp.getMAutoFlash() ?
                         R.string.cn_autoflash : R.string.cn_flash_no));
-        mTVCameraFocus.setText(ct.getString(cp.mAutoFocus?
+        mTVCameraFocus.setText(ct.getString(cp.getMAutoFocus() ?
                         R.string.cn_autofocus : R.string.cn_focus_no));
     }
 }

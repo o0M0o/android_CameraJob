@@ -27,13 +27,13 @@ public class ACJobCreate
         extends BaseAppCompatActivity {
     private final static int        REQUEST_SET_CAMERA = 123;
 
-    private final FrgJobCreate mFRGJobCreat = FrgJobCreate.newInstance();
+    private final FrgJobCreate mFRGJobCreate = FrgJobCreate.newInstance();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContextUtil.getInstance().addActivity(this);
+        ContextUtil.Companion.getInstance().addActivity(this);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ACJobCreate
     @Override
     protected void initFrgHolder() {
         LOG_TAG = "ACJobCreate";
-        mFGSupportHolder = mFRGJobCreat;
+        mFGSupportHolder = mFRGJobCreate;
     }
 
 
@@ -69,7 +69,7 @@ public class ACJobCreate
             case GlobalDef.INTRET_CS_ACCEPT:    {
                 /*
                 if(REQUEST_SET_CAMERA == requestCode) {
-                    Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                    Message m = Message.obtain(GlobalContext.getMsgHandler(),
                             GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                     m.obj = PreferencesUtil.loadCameraParam();
                     m.sendToTarget();
@@ -78,7 +78,7 @@ public class ACJobCreate
             }
             break;
 
-            case GlobalDef.INTRET_CS_GIVEUP :   {
+            case GlobalDef.INTRET_CS_GIVEUP:   {
                 if(REQUEST_SET_CAMERA == requestCode) {
                     checkCamera();
                 }
@@ -97,10 +97,10 @@ public class ACJobCreate
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mi_accept: {
-                CameraJob cj = mFRGJobCreat.onAccept();
+                CameraJob cj = mFRGJobCreate.onAccept();
                 if(null != cj) {
                     Intent data = new Intent();
-                    data.putExtra(EAction.LOAD_JOB.getName(), cj);
+                    data.putExtra(EAction.LOAD_JOB.getActName(), cj);
                     setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT, data);
                     finish();
                 }
@@ -128,7 +128,7 @@ public class ACJobCreate
      */
     private void checkCamera() {
         final Activity home = this;
-        if(!PreferencesUtil.checkCameraIsSet()) {
+        if(!PreferencesUtil.INSTANCE.checkCameraIsSet()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(home);
             builder.setTitle("相机未设置，需要先设置相机");
             builder.setPositiveButton("确 定", (dialog, which) -> {

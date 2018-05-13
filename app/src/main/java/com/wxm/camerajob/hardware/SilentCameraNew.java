@@ -32,12 +32,10 @@ import com.wxm.camerajob.utility.FileLogger;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import wxm.androidutil.util.UtilFun;
 import wxm.androidutil.util.ImageUtil;
 
-import static com.wxm.camerajob.utility.FileLogger.getLogger;
 
 /**
  * silent camera use camera2 api
@@ -59,7 +57,7 @@ public class SilentCameraNew extends SilentCamera {
      */
     private final static HashMap<String, CameraHardWare> mHMCameraHardware = new HashMap<>();
     static {
-        CameraManager camera_manager = (CameraManager) ContextUtil.getInstance()
+        CameraManager camera_manager = (CameraManager) ContextUtil.Companion.getInstance()
                 .getSystemService(Context.CAMERA_SERVICE);
         if(null != camera_manager) {
             try {
@@ -102,7 +100,7 @@ public class SilentCameraNew extends SilentCamera {
         mCameraId = "";
         for (String cameraId : mHMCameraHardware.keySet()) {
             CameraHardWare ch = mHMCameraHardware.get(cameraId);
-            if (mCParam.mFace != ch.mFace)
+            if (mCParam.getMFace() != ch.mFace)
                 continue;
 
             mSensorOrientation = ch.mSensorOrientation;
@@ -122,7 +120,7 @@ public class SilentCameraNew extends SilentCamera {
             return;
         }
 
-        if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(ContextUtil.Companion.getInstance(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "need camera permission");
             openCameraCallBack(false);
@@ -130,16 +128,16 @@ public class SilentCameraNew extends SilentCamera {
         }
 
         try {
-            CameraManager cm = (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
+            CameraManager cm = (CameraManager) ContextUtil.Companion.getInstance().getSystemService(Context.CAMERA_SERVICE);
             if(null != cm) {
                 cm.openCamera(mCameraId,
-                        mCameraDeviceStateCallback, mCParam.mSessionHandler);
+                        mCameraDeviceStateCallback, mCParam.getMSessionHandler());
             }
         } catch (Exception e) {
             openCameraCallBack(false);
 
             e.printStackTrace();
-            getLogger().severe(UtilFun.ThrowableToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ThrowableToString(e));
         }
     }
 
@@ -150,7 +148,7 @@ public class SilentCameraNew extends SilentCamera {
 
         try {
             mImageReader = ImageReader.newInstance(
-                    mCParam.mPhotoSize.getWidth(), mCParam.mPhotoSize.getHeight(),
+                    mCParam.getMPhotoSize().getWidth(), mCParam.getMPhotoSize().getHeight(),
                     ImageFormat.JPEG, 2);
             mCameraDevice.createCaptureSession(
                     Collections.singletonList(mImageReader.getSurface()),
@@ -179,9 +177,9 @@ public class SilentCameraNew extends SilentCamera {
         }
 
         String l = "camera closed, paratag = "
-                + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
+                + ((mTPParam == null) || (mTPParam.getMTag() == null) ? "null" : mTPParam.getMTag());
         Log.i(TAG, l);
-        getLogger().info(l);
+        FileLogger.Companion.getLogger().info(l);
         mCameraStatus = ECameraStatus.NOT_OPEN;
     }
 
@@ -192,7 +190,7 @@ public class SilentCameraNew extends SilentCamera {
      * @return The JPEG orientation (one of 0, 90, 270, and 360)
      */
     private int getOrientation() {
-        WindowManager wm = (WindowManager)ContextUtil.getInstance()
+        WindowManager wm = (WindowManager)ContextUtil.Companion.getInstance()
                                 .getSystemService(Context.WINDOW_SERVICE);
         if(null == wm)
             return -1;
@@ -218,7 +216,7 @@ public class SilentCameraNew extends SilentCamera {
                 @Override
                 public void onOpened(@NonNull CameraDevice camera) {
                     Log.i(TAG, "onOpened");
-                    getLogger().info("get camerdevice");
+                    FileLogger.Companion.getLogger().info("get camerdevice");
 
                     mCameraDevice = camera;
                     openCameraCallBack(true);
@@ -227,7 +225,7 @@ public class SilentCameraNew extends SilentCamera {
                 @Override
                 public void onDisconnected(@NonNull CameraDevice camera) {
                     Log.i(TAG, "onDisconnected");
-                    getLogger().info("camerdevice disconnected");
+                    FileLogger.Companion.getLogger().info("camerdevice disconnected");
 
                     mCameraDevice = null;
                     openCameraCallBack(false);
@@ -236,7 +234,7 @@ public class SilentCameraNew extends SilentCamera {
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
                     Log.i(TAG, "onError, error = " + error);
-                    getLogger().info("onError, error = " + error);
+                    FileLogger.Companion.getLogger().info("onError, error = " + error);
 
                     mCameraDevice = null;
                     openCameraCallBack(false);
@@ -254,7 +252,7 @@ public class SilentCameraNew extends SilentCamera {
 
         Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         bm = ImageUtil.rotateBitmap(bm, getOrientation(), null);
-        boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+        boolean ret = saveBitmapToJPGFile(bm, mTPParam.getMPhotoFileDir(), mTPParam.getMFileName());
 
         mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
@@ -287,7 +285,7 @@ public class SilentCameraNew extends SilentCamera {
                                 reader -> {
                                     Log.i(TAG, "image already");
                                     //savePhoto(reader.acquireLatestImage());
-                                }, mCParam.mSessionHandler);
+                                }, mCParam.getMSessionHandler());
 
                         mCaptureSession.capture(mCaptureBuilder.build(), mCaptureCallback, null);
                     } catch (CameraAccessException e) {
@@ -382,7 +380,7 @@ public class SilentCameraNew extends SilentCamera {
                                     @NonNull CaptureFailure failure) {
             super.onCaptureFailed(session, request, failure);
             Log.d(TAG, "CaptureFailed, reason = " + failure.getReason());
-            FileLogger.getLogger().warning(
+            FileLogger.Companion.getLogger().warning(
                     "CaptureFailed, reason = " + failure.getReason());
 
             mCameraStatus = ECameraStatus.TAKE_PHOTO_FAILURE;

@@ -1,11 +1,9 @@
 package com.wxm.camerajob.ui.Job.JobShow;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,6 @@ import com.wxm.camerajob.data.define.CameraJob;
 import com.wxm.camerajob.data.define.CameraJobStatus;
 import com.wxm.camerajob.data.define.DBDataChangeEvent;
 import com.wxm.camerajob.data.define.EAction;
-import com.wxm.camerajob.data.define.EMsgType;
 import com.wxm.camerajob.data.define.GlobalDef;
 import com.wxm.camerajob.data.define.EJobStatus;
 import com.wxm.camerajob.data.define.PreferencesChangeEvent;
@@ -36,7 +33,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -99,7 +95,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPreferencesChangeEvent(PreferencesChangeEvent event) {
-        if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(event.getPreferencesName()))  {
+        if(GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(event.getAttrName()))  {
             refreshFrg();
         }
     }
@@ -177,14 +173,14 @@ public class FrgJobShow extends FrgUtilitySupportBase {
         List<HashMap<String, String>> lshm_jobs = new ArrayList<>();
 
         LinkedList<String> dirs = FileUtil.getDirDirs(
-                ContextUtil.getInstance().getAppPhotoRootDir(), false);
-        List<CameraJob> ls_job = ContextUtil.GetCameraJobUtility().getAllData();
+                ContextUtil.Companion.getInstance().getAppPhotoRootDir(), false);
+        List<CameraJob> ls_job = ContextUtil.Companion.getCameraJobUtility().getAllData();
         if(!UtilFun.ListIsNullOrEmpty(ls_job))   {
             ls_job.sort(Comparator.comparingInt(CameraJob::get_id));
             for (CameraJob cj : ls_job) {
                 alive_camerjob(lshm_jobs, cj);
 
-                String dir = ContextUtil.getInstance().getCameraJobPhotoDir(cj.get_id());
+                String dir = ContextUtil.Companion.getInstance().getCameraJobPhotoDir(cj.get_id());
                 dirs.remove(dir);
             }
         }
@@ -201,7 +197,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
     }
 
     private void died_camerajob(List<HashMap<String, String>> jobs, String dir) {
-        CameraJob cj = ContextUtil.getInstance().getCameraJobFromPath(dir);
+        CameraJob cj = ContextUtil.Companion.getInstance().getCameraJobFromPath(dir);
         if(null == cj)
             return;
 
@@ -314,7 +310,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
             ImageButton ib_look = (ImageButton)v.findViewById(R.id.ib_job_look);
             ImageButton ib_slide = UtilFun.cast_t(v.findViewById(R.id.ib_job_slide_look));
-            String pp = ContextUtil.getInstance().getCameraJobPhotoDir(
+            String pp = ContextUtil.Companion.getInstance().getCameraJobPhotoDir(
                     Integer.parseInt(map.get(KEY_ID)));
             if(0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
                 ib_look.setVisibility(View.INVISIBLE);
@@ -337,7 +333,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
             rl = UtilFun.cast_t(rl_hot.findViewById(R.id.rl_setting));
             rl.setVisibility(View.INVISIBLE);
 
-            FrgCameraInfoHelper.refillLayout(rl_hot, PreferencesUtil.loadCameraParam());
+            FrgCameraInfoHelper.refillLayout(rl_hot, PreferencesUtil.INSTANCE.loadCameraParam());
         }
 
         @Override
@@ -350,9 +346,9 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                     int id = Integer.parseInt(map.get(KEY_ID));
                     String type = map.get(KEY_TYPE);
                     if(ALIVE_JOB.equals(type))  {
-                        CameraJobUtility.removeCamerJob(id);
+                        CameraJobUtility.INSTANCE.removeCameraJob(id);
                     } else  {
-                        CameraJobUtility.deleteCamerJob(id);
+                        CameraJobUtility.INSTANCE.deleteCameraJob(id);
                         refreshFrg();
                     }
                 }
@@ -360,14 +356,14 @@ public class FrgJobShow extends FrgUtilitySupportBase {
 
                 case R.id.ib_job_run_or_pause:    {
                     int id = Integer.parseInt(map.get(KEY_ID));
-                    CameraJob cj = ContextUtil.GetCameraJobUtility().getData(id);
+                    CameraJob cj = ContextUtil.Companion.getCameraJobUtility().getData(id);
                     if(null != cj) {
                         CameraJobStatus cjs = cj.getStatus();
                         String sz_run = EJobStatus.RUN.getStatus();
                         String sz_pause = EJobStatus.PAUSE.getStatus();
                         cjs.setJob_status(cjs.getJob_status().equals(sz_pause) ?
                                 sz_run : sz_pause);
-                        ContextUtil.GetCameraJobStatusUtility().modifyData(cjs);
+                        ContextUtil.Companion.getCameraJobStatusUtility().modifyData(cjs);
 
                         refreshFrg();
                     }
@@ -375,7 +371,7 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                 break;
 
                 case R.id.ib_job_look:    {
-                    String pp = ContextUtil.getInstance()
+                    String pp = ContextUtil.Companion.getInstance()
                             .getCameraJobPhotoDir(
                                     Integer.parseInt(map.get(KEY_ID)));
 
@@ -385,12 +381,12 @@ public class FrgJobShow extends FrgUtilitySupportBase {
                 break;
 
                 case R.id.ib_job_slide_look :   {
-                    String pp = ContextUtil.getInstance()
+                    String pp = ContextUtil.Companion.getInstance()
                             .getCameraJobPhotoDir(
                                     Integer.parseInt(map.get(KEY_ID)));
 
                     Intent it = new Intent(getActivity(), ACJobSlide.class);
-                    it.putExtra(EAction.LOAD_PHOTO_DIR.getName(), pp);
+                    it.putExtra(EAction.LOAD_PHOTO_DIR.getActName(), pp);
                     startActivityForResult(it, 1);
                 }
             }

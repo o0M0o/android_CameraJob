@@ -9,7 +9,7 @@ import android.telephony.TelephonyManager;
 import com.wxm.camerajob.utility.ContextUtil;
 
 /**
- * class name：SIMCardInfo<BR>
+ * class paraName：SIMCardInfo<BR>
  * class description：读取Sim卡信息<BR>
  * PS： 必须在加入各种权限 <BR>
  * Date:2012-3-12<BR>
@@ -36,7 +36,7 @@ public class SIMCardInfo {
      * <BR>@author CODYY)peijiangping
      */
     public String getNativePhoneNumber() {
-        Context ct = ContextUtil.getInstance();
+        Context ct = ContextUtil.Companion.getInstance();
         if (ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -54,13 +54,13 @@ public class SIMCardInfo {
     /**
      * Role:Telecom service providers获取手机服务商信息 <BR>
      * 需要加入权限<uses-permission
-     * android:name="android.permission.READ_PHONE_STATE"/> <BR>
+     * android:paraName="android.permission.READ_PHONE_STATE"/> <BR>
      * Date:2012-3-12 <BR>
      *
      * @author CODYY)peijiangping
      */
     public String getProvidersName() {
-        Context ct = ContextUtil.getInstance();
+        Context ct = ContextUtil.Companion.getInstance();
         if (ActivityCompat.checkSelfPermission(ct, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions

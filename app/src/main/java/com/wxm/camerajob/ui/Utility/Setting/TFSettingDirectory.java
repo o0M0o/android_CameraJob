@@ -34,7 +34,7 @@ public class TFSettingDirectory extends TFSettingBase {
     @Override
     protected void initUiComponent(View view) {
         String s = String.format(Locale.CHINA, "照片根目录 : %s",
-                ContextUtil.getInstance().getAppPhotoRootDir());
+                ContextUtil.Companion.getInstance().getAppPhotoRootDir());
         mTVShow.setText(s);
     }
 

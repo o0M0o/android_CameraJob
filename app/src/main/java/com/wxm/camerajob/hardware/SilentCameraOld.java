@@ -11,13 +11,9 @@ import com.wxm.camerajob.data.define.CameraParam;
 import com.wxm.camerajob.utility.FileLogger;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import wxm.androidutil.util.ImageUtil;
 import wxm.androidutil.util.UtilFun;
-
-import static com.wxm.camerajob.utility.FileLogger.getLogger;
 
 /**
  * compatible with old camera api
@@ -44,7 +40,7 @@ public class SilentCameraOld extends SilentCamera {
             for(int id = 0; id < cc; id++)  {
                 Camera.getCameraInfo(id, ci);
 
-                if(CameraParam.LENS_FACING_BACK == mCParam.mFace)    {
+                if(CameraParam.LENS_FACING_BACK == mCParam.getMFace())    {
                     if(Camera.CameraInfo.CAMERA_FACING_BACK == ci.facing)   {
                         selid = id;
                     }
@@ -66,7 +62,7 @@ public class SilentCameraOld extends SilentCamera {
 
             mCameraID = selid;
         } catch (Exception e)  {
-            getLogger().severe(UtilFun.ExceptionToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ExceptionToString(e));
             Log.e(TAG, UtilFun.ExceptionToString(e));
             return false;
         }
@@ -88,7 +84,7 @@ public class SilentCameraOld extends SilentCamera {
             b_ret = true;
         } catch (Exception e){
             e.printStackTrace();
-            getLogger().severe(UtilFun.ThrowableToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ThrowableToString(e));
         }
 
         openCameraCallBack(b_ret);
@@ -102,16 +98,16 @@ public class SilentCameraOld extends SilentCamera {
             Camera.Parameters cpa = mCamera.getParameters();
             mFlashSupported = (null != cpa.getFlashMode());
 
-            if(mFlashSupported && mCParam.mAutoFlash)     {
+            if(mFlashSupported && mCParam.getMAutoFlash())     {
                 cpa.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
             }
 
-            if(mCParam.mAutoFocus)  {
+            if(mCParam.getMAutoFocus())  {
                 cpa.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
 
-            cpa.setPictureSize(mCParam.mPhotoSize.getWidth(),
-                    mCParam.mPhotoSize.getHeight());
+            cpa.setPictureSize(mCParam.getMPhotoSize().getWidth(),
+                    mCParam.getMPhotoSize().getHeight());
 
             mCamera.setParameters(cpa);
             mCamera.setPreviewCallback((data, camera) -> Log.i(TAG, "preview being called!"));
@@ -121,7 +117,7 @@ public class SilentCameraOld extends SilentCamera {
         } catch (Throwable e) {
             e.printStackTrace();
             Log.e(TAG, UtilFun.ThrowableToString(e));
-            getLogger().severe(UtilFun.ThrowableToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ThrowableToString(e));
 
             takePhotoCallBack(false);
         }
@@ -137,14 +133,14 @@ public class SilentCameraOld extends SilentCamera {
         }
 
         String l = "camera closed, paratag = "
-                + ((mTPParam == null) || (mTPParam.mTag == null) ? "null" : mTPParam.mTag);
+                + ((mTPParam == null) || (mTPParam.getMTag() == null) ? "null" : mTPParam.getMTag());
         Log.i(TAG, l);
-        getLogger().info(l);
+        FileLogger.Companion.getLogger().info(l);
         mCameraStatus = ECameraStatus.NOT_OPEN;
     }
 
     private Camera.PictureCallback mPCJpgProcessor = (data, camera) -> {
-        boolean ret = savePhotoToFile(data, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+        boolean ret = savePhotoToFile(data, mTPParam.getMPhotoFileDir(), mTPParam.getMFileName());
 
         mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
@@ -153,7 +149,7 @@ public class SilentCameraOld extends SilentCamera {
     private Camera.PictureCallback mPCRawProcessor = (data, camera) -> {
         Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
         bm = ImageUtil.rotateBitmap(bm, mSensorOrientation, null);
-        boolean ret = saveBitmapToJPGFile(bm, mTPParam.mPhotoFileDir, mTPParam.mFileName);
+        boolean ret = saveBitmapToJPGFile(bm, mTPParam.getMPhotoFileDir(), mTPParam.getMFileName());
 
         mCameraStatus = ret ? ECameraStatus.TAKE_PHOTO_SUCCESS : ECameraStatus.TAKE_PHOTO_FAILURE;
         takePhotoCallBack(ret);
@@ -180,7 +176,7 @@ public class SilentCameraOld extends SilentCamera {
                 case MSG_CAPTURE_TIMEOUT : {
                     String l = "wait capture timeout";
                     Log.e(TAG, l);
-                    FileLogger.getLogger().severe(l);
+                    FileLogger.Companion.getLogger().severe(l);
 
                     SilentCameraOld h = mWRHandler.get();
                     if(null != h)

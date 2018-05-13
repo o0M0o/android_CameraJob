@@ -36,7 +36,7 @@ import static android.Manifest.permission.READ_SMS;
 
 /**
  * submit usr message
- * Created by ookoo on 2017/1/9.
+ * Created by WangXM on 2017/1/9.
  */
 public class DlgUsrMessage extends DlgOKOrNOBase {
     // for progress dialog when send http post
@@ -107,9 +107,9 @@ public class DlgUsrMessage extends DlgOKOrNOBase {
         }
 
         String usr = null;
-        if (ContextCompat.checkSelfPermission(ContextUtil.getInstance(), READ_PHONE_STATE)
+        if (ContextCompat.checkSelfPermission(ContextUtil.Companion.getInstance(), READ_PHONE_STATE)
                 == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(ContextUtil.getInstance(), READ_SMS)
+                && ContextCompat.checkSelfPermission(ContextUtil.Companion.getInstance(), READ_SMS)
                     == PackageManager.PERMISSION_GRANTED) {
             SIMCardInfo si = new SIMCardInfo(getContext());
             usr = si.getNativePhoneNumber();
@@ -185,7 +185,7 @@ public class DlgUsrMessage extends DlgOKOrNOBase {
                 param.put(mSZColUsr, mSZUsr);
                 param.put(mSZColMsg, mSZMsg);
                 param.put(mSZColAppName,
-                        mSZColValAppName + "-" + ContextUtil.getVerName(getContext()));
+                        mSZColValAppName + "-" + ContextUtil.Companion.getVerName(getContext()));
 
                 RequestBody body = RequestBody.create(JSON, param.toString());
 

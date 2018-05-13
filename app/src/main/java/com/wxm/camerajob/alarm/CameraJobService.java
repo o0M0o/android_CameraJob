@@ -31,7 +31,7 @@ public class CameraJobService extends JobService {
     public void onCreate() {
         super.onCreate();
         //Log.i(TAG, "JobService created");
-        //Context mCurContext = ContextUtil.getInstance();
+        //Context mCurContext = ContextUtil.Companion.getInstance();
     }
     */
 
@@ -62,7 +62,7 @@ public class CameraJobService extends JobService {
         // update the UI accordingly.
         jobParamsMap.add(params);
 
-        Message m = Message.obtain(ContextUtil.GetMsgHandlder(),
+        Message m = Message.obtain(ContextUtil.Companion.getMsgHandler(),
                         EMsgType.WAKEUP.getId(), EMsgType.WAKEUP);
         m.sendToTarget();
         return false;
@@ -80,7 +80,7 @@ public class CameraJobService extends JobService {
     public void scheduleJob(JobInfo t) {
         Log.d(TAG, "Scheduling job");
         JobScheduler tm =
-                (JobScheduler) ContextUtil.getInstance().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+                (JobScheduler) ContextUtil.Companion.getInstance().getSystemService(Context.JOB_SCHEDULER_SERVICE);
         if (tm != null) {
             tm.schedule(t);
         }

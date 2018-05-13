@@ -66,7 +66,7 @@ public class ACJobShow
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_job_show);
-        ContextUtil.getInstance().addActivity(this);
+        ContextUtil.Companion.getInstance().addActivity(this);
 
         ButterKnife.bind(this);
         initActivity();
@@ -91,7 +91,7 @@ public class ACJobShow
 
             mNVNav.setNavigationItemSelectedListener(this);
         } catch (NullPointerException e) {
-            FileLogger.getLogger().severe(UtilFun.ThrowableToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ThrowableToString(e));
         }
     }
 
@@ -168,15 +168,15 @@ public class ACJobShow
 
         switch(resultCode)  {
             case GlobalDef.INTRET_CAMERAJOB_ACCEPT:    {
-                CameraJob cj = data.getParcelableExtra(EAction.LOAD_JOB.getName());
+                CameraJob cj = data.getParcelableExtra(EAction.LOAD_JOB.getActName());
                 Log.d(TAG, "camerajob : " + cj.toString());
 
-                CameraJobUtility.createCameraJob(cj);
+                CameraJobUtility.INSTANCE.createCameraJob(cj);
             }
             break;
 
             case GlobalDef.INTRET_CS_ACCEPT:    {
-                /*Message m = Message.obtain(GlobalContext.getMsgHandlder(),
+                /*Message m = Message.obtain(GlobalContext.getMsgHandler(),
                         GlobalDef.MSG_TYPE_CAMERA_MODIFY);
                 m.obj = PreferencesUtil.loadCameraParam();
                 m.sendToTarget(); */

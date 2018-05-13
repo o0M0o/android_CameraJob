@@ -82,21 +82,21 @@ public class SilentCameraHelper {
 
             mSelfCameraParam = cp;
             mSelfTPTakePhoto = tp;
-            mSCSelfCamera = ContextUtil.useNewCamera() ?
+            mSCSelfCamera = ContextUtil.Companion.useNewCamera() ?
                     new SilentCameraNew() : new SilentCameraOld();
         }
 
         @Override
         public void run() {
             try {
-                mSelfCameraParam.mSessionHandler = new Handler();
+                mSelfCameraParam.setMSessionHandler(new Handler());
                 mSCSelfCamera.takePhoto(mSelfCameraParam, mSelfTPTakePhoto, mTPCTake);
             } catch (Throwable e) {
                 e.printStackTrace();
 
                 String str_e = UtilFun.ThrowableToString(e);
                 Log.d(TAG, str_e);
-                FileLogger.getLogger().severe(str_e);
+                FileLogger.Companion.getLogger().severe(str_e);
             }
         }
     }

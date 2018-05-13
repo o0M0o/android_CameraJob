@@ -91,7 +91,7 @@ abstract class SilentCamera {
         if(ret) {
             String l = "camera opened";
             Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
+            FileLogger.Companion.getLogger().info(l);
 
             if(null != mOCCBOpen)
                 mOCCBOpen.onOpenSuccess(mCParam);
@@ -99,7 +99,7 @@ abstract class SilentCamera {
         else {
             String l = "camera open failed";
             Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
+            FileLogger.Companion.getLogger().info(l);
 
             if(null != mOCCBOpen)
                 mOCCBOpen.onOpenFailed(mCParam);
@@ -112,14 +112,14 @@ abstract class SilentCamera {
      */
     void takePhotoCallBack(Boolean ret) {
         String tag = (mTPParam == null ? "null"
-                : (mTPParam.mTag == null ? "null" : mTPParam.mTag));
+                : (mTPParam.getMTag() == null ? "null" : mTPParam.getMTag()));
 
         closeCamera();
         if(ret) {
             String l = "take photo success, tag = " + tag
-                        + ", photofile = " + mTPParam.mFileName;
+                        + ", photofile = " + mTPParam.getMFileName();
             Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
+            FileLogger.Companion.getLogger().info(l);
 
             if(null != mTPCBTakePhoto)
                 mTPCBTakePhoto.onTakePhotoSuccess(mTPParam);
@@ -128,7 +128,7 @@ abstract class SilentCamera {
             String l = "take photo failed, tag = "
                     + tag + ", camera_status = " + mCameraStatus.getDescription();
             Log.i(TAG, l);
-            FileLogger.getLogger().info(l);
+            FileLogger.Companion.getLogger().info(l);
 
             if(null != mTPCBTakePhoto)
                 mTPCBTakePhoto.onTakePhotoFailed(mTPParam);
@@ -139,7 +139,7 @@ abstract class SilentCamera {
      * save photo data to file
      * @param data          photo data
      * @param fileDir       dir
-     * @param fileName      file name
+     * @param fileName      file paraName
      * @return              true if success
      */
     boolean savePhotoToFile(byte[] data, String fileDir, String fileName) {
@@ -152,14 +152,14 @@ abstract class SilentCamera {
             ret = true;
         } catch (IOException e) {
             e.printStackTrace();
-            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ExceptionToString(e));
         } finally {
             if(null != output)  {
                 try {
                     output.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+                    FileLogger.Companion.getLogger().severe(UtilFun.ExceptionToString(e));
                 }
             }
         }
@@ -183,14 +183,14 @@ abstract class SilentCamera {
             ret = bm.compress(Bitmap.CompressFormat.JPEG, 85, output);
         } catch (IOException e) {
             e.printStackTrace();
-            FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+            FileLogger.Companion.getLogger().severe(UtilFun.ExceptionToString(e));
         } finally {
             if(null != output)  {
                 try {
                     output.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    FileLogger.getLogger().severe(UtilFun.ExceptionToString(e));
+                    FileLogger.Companion.getLogger().severe(UtilFun.ExceptionToString(e));
                 }
             }
         }

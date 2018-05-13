@@ -37,7 +37,7 @@ public class ACLoader extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_loader);
 
-        ContextUtil.getInstance().addActivity(this);
+        ContextUtil.Companion.getInstance().addActivity(this);
         if(mayRequestPermission()) {
             jumpWorkActivity();
         }
@@ -47,7 +47,6 @@ public class ACLoader extends AppCompatActivity {
      * 跳转到工作首界面
      */
     private void jumpWorkActivity() {
-        ContextUtil.getInstance().initAppContext();
         Intent it = new Intent(this, ACJobShow.class);
         startActivityForResult(it, 1);
     }
@@ -105,7 +104,7 @@ public class ACLoader extends AppCompatActivity {
                             .setTitle("警告")
                             .setCancelable(false)
                             .setPositiveButton("离开应用",
-                                    (dialog, which) -> ContextUtil.getInstance().onTerminate());
+                                    (dialog, which) -> ContextUtil.Companion.getInstance().onTerminate());
 
                     AlertDialog dlg = builder.create();
                     dlg.show();

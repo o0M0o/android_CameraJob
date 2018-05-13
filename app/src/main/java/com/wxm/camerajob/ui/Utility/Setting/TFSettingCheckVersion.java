@@ -35,8 +35,8 @@ public class TFSettingCheckVersion extends TFSettingBase {
     protected void initUiComponent(View view) {
         String s = String.format(Locale.CHINA
                 , "当前版本号 : %d\n当前版本名 : %s"
-                , ContextUtil.getVerCode(getContext())
-                , ContextUtil.getVerName(getContext()));
+                , ContextUtil.Companion.getVerCode(getContext())
+                , ContextUtil.Companion.getVerName(getContext()));
         mTVShow.setText(s);
     }
 

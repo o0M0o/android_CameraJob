@@ -33,7 +33,7 @@ public class ACJobSlide extends BaseAppCompatActivity {
         if (null == it)
             return;
 
-        String sp = it.getStringExtra(EAction.LOAD_PHOTO_DIR.getName());
+        String sp = it.getStringExtra(EAction.LOAD_PHOTO_DIR.getActName());
         if (UtilFun.StringIsNullOrEmpty(sp))
             return;
 

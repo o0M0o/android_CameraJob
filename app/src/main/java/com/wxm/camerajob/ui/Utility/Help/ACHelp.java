@@ -18,7 +18,7 @@ public class ACHelp
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContextUtil.getInstance().addActivity(this);
+        ContextUtil.Companion.getInstance().addActivity(this);
     }
 
     @Override

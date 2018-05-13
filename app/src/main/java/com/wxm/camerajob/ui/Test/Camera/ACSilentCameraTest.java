@@ -92,10 +92,10 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
                 mBTCapture.setClickable(false);
                 mBTCapture.setTextColor(mCLGrey);
 
-                String sp = ContextUtil.getInstance().getAppPhotoRootDir();
+                String sp = ContextUtil.Companion.getInstance().getAppPhotoRootDir();
                 mTPParam = new TakePhotoParam(sp, "tmp.jpg", "1");
 
-                mSCHelper.TakePhoto(PreferencesUtil.loadCameraParam(), mTPParam);
+                mSCHelper.TakePhoto(PreferencesUtil.INSTANCE.loadCameraParam(), mTPParam);
             }
             break;
         }
@@ -127,7 +127,7 @@ public class ACSilentCameraTest extends AppCompatActivity implements View.OnClic
                     //MySize psz = new MySize(rt.width(), rt.height());
                     //Log.i(TAG, "perfence size : " + psz);
 
-                    String fn = ac_home.mTPParam.mPhotoFileDir + "/" + ac_home.mTPParam.mFileName;
+                    String fn = ac_home.mTPParam.getMPhotoFileDir() + "/" + ac_home.mTPParam.getMFileName();
                     //Bitmap bm = ImageUtil.getRotatedLocalBitmap(fn, psz);
                     Bitmap bm = ImageUtil.getLocalBitmap(fn);
                     if(null != bm) {

@@ -110,7 +110,7 @@ public class TFSettingCamera extends TFSettingBase {
             }
         });
 
-        if(ContextUtil.useNewCamera())
+        if(ContextUtil.Companion.useNewCamera())
             load_camerainfo_new();
         else
             load_camerainfo_old();
@@ -118,7 +118,7 @@ public class TFSettingCamera extends TFSettingBase {
         // for camera preview
         RelativeLayout rl = UtilFun.cast_t(view.findViewById(R.id.rl_switch));
         rl.setOnClickListener(v -> {
-            if(0 < ContextUtil.GetCameraJobUtility().GetActiveJobCount()) {
+            if(0 < ContextUtil.Companion.getCameraJobUtility().getActiveJobCount()) {
                 Dialog alertDialog = new AlertDialog.Builder(getContext()).
                         setTitle("无法进行预览").
                         setMessage("有任务在运行中，请删除或暂停任务后进行预览!").
@@ -126,7 +126,7 @@ public class TFSettingCamera extends TFSettingBase {
                 alertDialog.show();
             }   else {
                 Intent it = new Intent(getActivity(), ACCameraPreview.class);
-                it.putExtra(EAction.LOAD_CAMERA_SETTING.getName(), get_cur_param());
+                it.putExtra(EAction.LOAD_CAMERA_SETTING.getActName(), get_cur_param());
                 startActivityForResult(it, 1);
             }
         });
@@ -134,8 +134,8 @@ public class TFSettingCamera extends TFSettingBase {
 
     @Override
     protected void loadUI() {
-        CameraParam cp = PreferencesUtil.loadCameraParam();
-        if(CameraCharacteristics.LENS_FACING_BACK == cp.mFace)  {
+        CameraParam cp = PreferencesUtil.INSTANCE.loadCameraParam();
+        if(CameraCharacteristics.LENS_FACING_BACK == cp.getMFace())  {
             mCPBack = cp.clone();
             fill_backcamera();
         }
@@ -172,7 +172,7 @@ public class TFSettingCamera extends TFSettingBase {
     public void updateSetting() {
         if(mBSettingDirty) {
             CameraParam cp = get_cur_param();
-            PreferencesUtil.saveCameraParam(cp);
+            PreferencesUtil.INSTANCE.saveCameraParam(cp);
 
             mBSettingDirty = false;
         }
@@ -186,18 +186,18 @@ public class TFSettingCamera extends TFSettingBase {
     private CameraParam get_cur_param() {
         CameraParam cp = new CameraParam(null);
         if(mRBBackCamera.isChecked())
-            cp.mFace = CameraParam.LENS_FACING_BACK;
+            cp.setMFace(CameraParam.LENS_FACING_BACK);
         else
-            cp.mFace = CameraParam.LENS_FACING_FRONT;
+            cp.setMFace(CameraParam.LENS_FACING_FRONT);
 
         Object sel = mSPPhotoSize.getSelectedItem();
         if(null != sel)
-            cp.mPhotoSize = UtilFun.StringToSize(sel.toString());
+            cp.setMPhotoSize(UtilFun.StringToSize(sel.toString()));
         else
-            cp.mPhotoSize = UtilFun.StringToSize(mSPPhotoSize.getItemAtPosition(0).toString());
+            cp.setMPhotoSize(UtilFun.StringToSize(mSPPhotoSize.getItemAtPosition(0).toString()));
 
-        cp.mAutoFlash = mSWAutoFlash.isChecked();
-        cp.mAutoFocus = mSWAutoFocus.isChecked();
+        cp.setMAutoFlash(mSWAutoFlash.isChecked());
+        cp.setMAutoFocus(mSWAutoFocus.isChecked());
         return cp;
     }
 
@@ -270,7 +270,7 @@ public class TFSettingCamera extends TFSettingBase {
         String mBackCameraID = "";
         String mFrontCameraID = "";
         CameraManager manager =
-                (CameraManager) ContextUtil.getInstance().getSystemService(Context.CAMERA_SERVICE);
+                (CameraManager) ContextUtil.Companion.getInstance().getSystemService(Context.CAMERA_SERVICE);
         if(null == manager)
             return;
 
@@ -359,7 +359,7 @@ public class TFSettingCamera extends TFSettingBase {
      * @param cp 填充参数
      */
     private void fill_others(CameraParam cp)    {
-        String dpi = cp.mPhotoSize.toString();
+        String dpi = cp.getMPhotoSize().toString();
         int pos = mAAPhotoSize.getPosition(dpi);
         if(-1 == pos)   {
             mSPPhotoSize.setSelection(0);
@@ -368,13 +368,13 @@ public class TFSettingCamera extends TFSettingBase {
             mSPPhotoSize.setSelection(pos);
         }
 
-        if(cp.mAutoFlash)
+        if(cp.getMAutoFlash())
             mSWAutoFlash.setChecked(true);
         else
             mSWAutoFlash.setChecked(false);
 
 
-        if(cp.mAutoFocus)
+        if(cp.getMAutoFocus())
             mSWAutoFocus.setChecked(true);
         else
             mSWAutoFocus.setChecked(false);

@@ -114,7 +114,7 @@ public class FrgCameraPreview extends FrgUtilityBase {
     @Override
     protected void initUiComponent(View view) {
         Intent it = getActivity().getIntent();
-        mCPParam = it.getParcelableExtra(EAction.LOAD_CAMERA_SETTING.getName());
+        mCPParam = it.getParcelableExtra(EAction.LOAD_CAMERA_SETTING.getActName());
 
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
     }
@@ -227,8 +227,8 @@ public class FrgCameraPreview extends FrgUtilityBase {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
             closeCamera();
-            openCamera(mCPParam.mFace,
-                    mCPParam.mPhotoSize.getWidth(), mCPParam.mPhotoSize.getHeight());
+            openCamera(mCPParam.getMFace(),
+                    mCPParam.getMPhotoSize().getWidth(), mCPParam.getMPhotoSize().getHeight());
         }
 
         @Override

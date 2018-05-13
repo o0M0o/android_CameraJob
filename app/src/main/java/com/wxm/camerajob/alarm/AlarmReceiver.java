@@ -42,15 +42,15 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context arg0, Intent data) {
         try {
             // wakeup app
-            Message.obtain(ContextUtil.GetMsgHandlder(), WAKEUP.getId(), WAKEUP)
+            Message.obtain(ContextUtil.Companion.getMsgHandler(), WAKEUP.getId(), WAKEUP)
                     .sendToTarget();
 
             // set alarm
-            Context ct = ContextUtil.getInstance();
+            Context ct = ContextUtil.Companion.getInstance();
             Intent intent = new Intent(ct, AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(ct, 0, intent, 0);
             AlarmManager alarmManager =
-                    (AlarmManager)ContextUtil.getInstance().getSystemService(Context.ALARM_SERVICE);
+                    (AlarmManager)ContextUtil.Companion.getInstance().getSystemService(Context.ALARM_SERVICE);
 
             if (alarmManager != null) {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, getNextAlarmDelay(), pendingIntent);
@@ -70,11 +70,11 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private long getNextAlarmDelay() {
         long ret = 0;
-        List<CameraJob> ls_job = ContextUtil.GetCameraJobUtility().getAllData();
+        List<CameraJob> ls_job = ContextUtil.Companion.getCameraJobUtility().getAllData();
         if(!UtilFun.ListIsNullOrEmpty(ls_job))   {
             for (CameraJob cj : ls_job) {
                 if(cj.getStatus().getJob_status().equals(EJobStatus.RUN.getStatus()))   {
-                    ETimeGap et = ETimeGap.getETimeGap(cj.getPoint());
+                    ETimeGap et = ETimeGap.Companion.getETimeGap(cj.getPoint());
                     if(null != et)  {
                         long cur_ms = et.getDelay(Calendar.getInstance());
                         ret = 0 == ret ? cur_ms : min(cur_ms, ret);

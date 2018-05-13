@@ -40,7 +40,7 @@ public class FrgHelp extends FrgUtilityBase {
             String h_t = arg.getString(GlobalDef.STR_HELP_TYPE);
             if(!UtilFun.StringIsNullOrEmpty(h_t))   {
                 switch (h_t)    {
-                    case GlobalDef.STR_HELP_MAIN :  {
+                    case GlobalDef.STR_HELP_MAIN:  {
                         load_main_help();
                     }
                     break;

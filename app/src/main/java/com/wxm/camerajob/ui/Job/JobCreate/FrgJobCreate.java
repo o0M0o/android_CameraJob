@@ -156,7 +156,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPreferencesChangeEvent(PreferencesChangeEvent event) {
-        if (GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(event.getPreferencesName())) {
+        if (GlobalDef.STR_CAMERAPROPERTIES_NAME.equals(event.getAttrName())) {
             load_camera_setting();
         }
     }
@@ -325,7 +325,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
 
             case R.id.rl_preview: {
                 Intent it = new Intent(ac, ACCameraPreview.class);
-                it.putExtra(EAction.LOAD_CAMERA_SETTING.getName(), PreferencesUtil.loadCameraParam());
+                it.putExtra(EAction.LOAD_CAMERA_SETTING.getActName(), PreferencesUtil.INSTANCE.loadCameraParam());
                 ac.startActivityForResult(it, 1);
             }
             break;
@@ -357,14 +357,14 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
      * load camera preference
      */
     private void load_camera_setting() {
-        CameraParam cp = PreferencesUtil.loadCameraParam();
-        mTVCameraFace.setText(getString(CameraParam.LENS_FACING_BACK == cp.mFace ?
+        CameraParam cp = PreferencesUtil.INSTANCE.loadCameraParam();
+        mTVCameraFace.setText(getString(CameraParam.LENS_FACING_BACK == cp.getMFace() ?
                 R.string.cn_backcamera : R.string.cn_frontcamera));
 
-        mTVCameraDpi.setText(cp.mPhotoSize.toString());
-        mTVCameraFlash.setText(getString(cp.mAutoFlash ?
+        mTVCameraDpi.setText(cp.getMPhotoSize().toString());
+        mTVCameraFlash.setText(getString(cp.getMAutoFlash() ?
                 R.string.cn_autoflash : R.string.cn_flash_no));
-        mTVCameraFocus.setText(getString(cp.mAutoFocus ?
+        mTVCameraFocus.setText(getString(cp.getMAutoFocus() ?
                 R.string.cn_autofocus : R.string.cn_focus_no));
     }
     /// END PRIVATE
@@ -435,7 +435,7 @@ public class FrgJobCreate extends FrgUtilitySupportBase {
         private void invoke_job_point(int pos) {
             HashMap<String, Object> hmd = UtilFun.cast(getItem(pos));
             String hv = UtilFun.cast_t(hmd.get(KEY_JOB_TYPE));
-            EJobType et = EJobType.getEJobType(hv);
+            EJobType et = EJobType.Companion.getEJobType(hv);
             if(null == et)
                 return;
 

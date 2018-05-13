@@ -19,15 +19,13 @@ public class ACCameraPreview extends BaseAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContextUtil.getInstance().addActivity(this);
+        ContextUtil.Companion.getInstance().addActivity(this);
     }
 
     @Override
     protected void leaveActivity() {
-        int ret_data = GlobalDef.INTRET_USR_LOGOUT;
-
         Intent data = new Intent();
-        setResult(ret_data, data);
+        setResult(GlobalDef.INTRET_USR_LOGOUT, data);
         finish();
     }
 

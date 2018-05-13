@@ -1,37 +1,40 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-android'
 
 android {
     signingConfigs {
-        defkey {
-            keyAlias 'andriodapp-key-longtime'
-            keyPassword 'w789065'
-            storeFile file('E:/backup/appkey/andriodapp-key-longtime.jks')
-            storePassword 'w127865'
+        YYBKey {
+            keyAlias        project.YYB_KEY_ALIAS
+            keyPassword     project.YYB_KEY_PWD
+            storeFile       file(project.YYB_FILE_PATH)
+            storePassword   project.YYB_STORE_PWD
+        }
+        KuAnKey {
+            keyAlias        project.KUAN_KEY_ALIAS
+            keyPassword     project.KUAN_KEY_PWD
+            storeFile       file(project.KUAN_FILE_PATH)
+            storePassword   project.KUAN_STORE_PWD
         }
     }
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.wxm.camerajob"
         minSdkVersion 24
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 9
         versionName "1.09"
-        signingConfig signingConfigs.defkey
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.defkey
 
             buildConfigField "Boolean", "ThrowDebugException", "false"
             buildConfigField "Boolean", "TestCamera", "false"
         }
         debug {
-            signingConfig signingConfigs.defkey
-
             buildConfigField "Boolean", "ThrowDebugException", "true"
             buildConfigField "Boolean", "TestCamera", "true"
         }
@@ -52,18 +55,18 @@ android {
     }
 
     productFlavors {
-        yyb_camerajob{}
+        YYB_DOFCalculator{
+            signingConfig signingConfigs.YYBKey
+        }
+
+        KuAn_DOFCalculator{
+            signingConfig signingConfigs.KuAnKey
+        }
     }
 
-
     android.applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                //这里修改apk文件名
-                def fileName = "${variant.productFlavors[0].name}-${defaultConfig.versionName}-${releaseTime() }.apk"
-                output.outputFileName = fileName
-            }
+        variant.outputs.all {
+            outputFileName = "${variant.name}-${variant.versionName}-${releaseTime()}.apk"
         }
     }
 
@@ -84,40 +87,50 @@ static def releaseTime() {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':galleryfinal')
-    compile project(':androidutil')
-    compile files('libs/extend_libs/javamail/activation.jar')
-    compile files('libs/extend_libs/javamail/additionnal.jar')
-    compile files('libs/extend_libs/javamail/mail.jar')
-    compile 'com.android.support:design:25.4.0'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:support-v13:25.4.0'
-    compile 'org.apache.logging.log4j:log4j:2.6.1'
-    compile 'com.facebook.fresco:fresco:0.12.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
 
-    compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 
-    compile 'org.greenrobot:eventbus:3.0.0'
+    implementation files('libs/extend_libs/javamail/activation.jar')
+    implementation files('libs/extend_libs/javamail/additionnal.jar')
+    implementation files('libs/extend_libs/javamail/mail.jar')
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:support-v13:26.1.0'
+    implementation 'org.apache.logging.log4j:log4j:2.6.1'
+    implementation 'com.facebook.fresco:fresco:0.12.0'
 
-    compile 'io.reactivex:rxandroid:1.1.0'
-    compile 'com.trello:rxlifecycle:0.5.0'
-    compile 'com.trello:rxlifecycle-components:0.5.0'
-    compile 'com.squareup.retrofit2:retrofit:2.0.1'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.1'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.1'
+    implementation 'com.jakewharton:butterknife:8.8.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
 
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'org.xutils:xutils:3.3.36'
-    compile 'cn.finalteam:toolsfinal:1.1.4'
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
-    compile 'org.jetbrains:annotations:15.0'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+    implementation 'io.reactivex:rxandroid:1.1.0'
+    implementation 'com.trello:rxlifecycle:0.5.0'
+    implementation 'com.trello:rxlifecycle-components:0.5.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.0.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.0.1'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.1'
+
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    implementation 'org.xutils:xutils:3.3.36'
+    implementation 'cn.finalteam:toolsfinal:1.1.4'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'org.jetbrains:annotations:15.0'
+
+    implementation project(':galleryfinal')
+    implementation project(':androidutil')
 }
 
 configurations.all {
     resolutionStrategy {
         force 'com.android.support:support-annotations:24.2.1'
     }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
