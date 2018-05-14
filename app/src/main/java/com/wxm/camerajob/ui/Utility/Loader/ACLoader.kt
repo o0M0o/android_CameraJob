@@ -1,0 +1,116 @@
+package com.wxm.camerajob.ui.Utility.Loader
+
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+
+import com.wxm.camerajob.ui.Job.JobShow.ACJobShow
+import com.wxm.camerajob.R
+import com.wxm.camerajob.utility.ContextUtil
+
+import java.util.ArrayList
+import java.util.Locale
+
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.WAKE_LOCK
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+/**
+ * first activity for app
+ * apply for permission, then jump to fist work activity
+ */
+class ACLoader : AppCompatActivity() {
+
+    /**
+     * 如果有权限，则直接初始化
+     * 如果无权限，则申请权限后再进行初始化
+     * @param savedInstanceState   param
+     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.ac_loader)
+
+        ContextUtil.instance.addActivity(this)
+        if (mayRequestPermission()) {
+            jumpWorkActivity()
+        }
+    }
+
+    /**
+     * 跳转到工作首界面
+     */
+    private fun jumpWorkActivity() {
+        val it = Intent(this, ACJobShow::class.java)
+        startActivityForResult(it, 1)
+    }
+
+
+    /**
+     * 申请APP需要的权限
+     * @return  如果APP权限已经足够，返回true, 否则返回false
+     */
+    private fun mayRequestPermission(): Boolean {
+        val ls_str = ArrayList<String>()
+        if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ls_str.add(WRITE_EXTERNAL_STORAGE)
+        }
+
+        if (ContextCompat.checkSelfPermission(this, CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ls_str.add(CAMERA)
+        }
+
+        if (ContextCompat.checkSelfPermission(this, WAKE_LOCK) != PackageManager.PERMISSION_GRANTED) {
+            ls_str.add(WAKE_LOCK)
+        }
+
+
+        if (ls_str.isEmpty())
+            return true
+
+        val str_arr = ls_str.toTypedArray()
+        ActivityCompat.requestPermissions(this, str_arr, REQUEST_ALL)
+        return false
+    }
+
+
+    /**
+     * Callback received when a permissions request has been completed.
+     * 若权限齐全则初始化activity, 否则弹出提示框然后退出APP
+     */
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
+                                            grantResults: IntArray) {
+        if (requestCode == REQUEST_ALL) {
+            var ct = true
+            for (pos in grantResults.indices) {
+                if (grantResults[pos] != PackageManager.PERMISSION_GRANTED) {
+                    ct = false
+                    val msg = String.format(Locale.CHINA,
+                            "由于缺少必须的权限(%s)，本APP无法运行!",
+                            permissions[pos])
+
+                    val builder = AlertDialog.Builder(this)
+                    builder.setMessage(msg)
+                            .setTitle("警告")
+                            .setCancelable(false)
+                            .setPositiveButton("离开应用"
+                            ) { dialog, which -> ContextUtil.instance.onTerminate() }
+
+                    val dlg = builder.create()
+                    dlg.show()
+                }
+            }
+
+            if (ct) {
+                jumpWorkActivity()
+            }
+        }
+    }
+
+    companion object {
+        private val REQUEST_ALL = 99
+    }
+}
