@@ -1,38 +1,31 @@
 package com.wxm.camerajob.ui.dialog
 
+import android.Manifest.permission.READ_PHONE_STATE
+import android.Manifest.permission.READ_SMS
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Bundle
 import android.os.Message
 import android.support.design.widget.TextInputEditText
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
-
 import com.wxm.camerajob.R
-import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.hardware.SIMCardInfo
-
-import org.json.JSONException
-import org.json.JSONObject
-
-import java.io.IOException
-
-import butterknife.BindString
-import butterknife.BindView
-import butterknife.ButterKnife
-import wxm.androidutil.Dialog.DlgOKOrNOBase
-import wxm.androidutil.util.UtilFun
-import wxm.androidutil.util.WRMsgHandler
+import com.wxm.camerajob.utility.AlertDlgUtility
+import com.wxm.camerajob.utility.ContextUtil
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-
-import android.Manifest.permission.READ_PHONE_STATE
-import android.Manifest.permission.READ_SMS
+import org.json.JSONException
+import org.json.JSONObject
+import wxm.androidutil.Dialog.DlgOKOrNOBase
+import wxm.androidutil.util.UtilFun
+import wxm.androidutil.util.WRMsgHandler
+import java.io.IOException
 
 /**
  * submit usr message
@@ -40,70 +33,61 @@ import android.Manifest.permission.READ_SMS
  */
 class DlgUsrMessage : DlgOKOrNOBase() {
     private var mProgressStatus = 0
-    private var mHDProgress: LocalMsgHandler? = null
-    private var mPDDlg: ProgressDialog? = null
+    private lateinit var mHDProgress: LocalMsgHandler
+    private lateinit var mPDDlg: ProgressDialog
 
-    @BindString(R.string.url_post_send_message)
-    internal var mSZUrlPost: String? = null
+    private lateinit var mSZUrlPost: String
+    private lateinit var mSZColUsr: String
+    private lateinit var mSZColMsg: String
+    private lateinit var mSZColAppName: String
+    private lateinit var mSZColValAppName: String
+    private lateinit var mSZUsrMessage: String
+    private lateinit var mSZAccept: String
+    private lateinit var mSZGiveUp: String
 
-    @BindString(R.string.col_usr)
-    internal var mSZColUsr: String? = null
+    private lateinit var mETUsrMessage: TextInputEditText
 
-    @BindString(R.string.col_message)
-    internal var mSZColMsg: String? = null
+    override fun createDlgView(savedInstanceState: Bundle?): View {
+        initDlgTitle(mSZUsrMessage, mSZAccept, mSZGiveUp)
+        return View.inflate(activity, R.layout.dlg_send_message, null)
+    }
 
-    @BindString(R.string.col_app_name)
-    internal var mSZColAppName: String? = null
+    override fun initDlgView(savedInstanceState: Bundle?) {
+        mETUsrMessage = findDlgChildView(R.id.et_usr_message)!!
 
-    @BindString(R.string.col_val_app_name)
-    internal var mSZColValAppName: String? = null
+        context.resources.let {
+            mSZUrlPost = it.getString(R.string.url_post_send_message)
+            mSZColUsr = it.getString(R.string.col_usr)
+            mSZColMsg = it.getString(R.string.col_message)
+            mSZColAppName = it.getString(R.string.col_app_name)
+            mSZColValAppName = it.getString(R.string.col_val_app_name)
+            mSZUsrMessage = it.getString(R.string.cn_usr_message)
+            mSZAccept = it.getString(R.string.cn_accept)
+            mSZGiveUp = it.getString(R.string.cn_giveup)
 
-    @BindString(R.string.cn_usr_message)
-    internal var mSZUsrMessage: String? = null
-
-    @BindString(R.string.cn_accept)
-    internal var mSZAccept: String? = null
-
-    @BindString(R.string.cn_giveup)
-    internal var mSZGiveUp: String? = null
-
-    /*
-    @BindView(R.id.et_usr_name)
-    TextInputEditText mETUsrName;
-    */
-
-    @BindView(R.id.et_usr_message)
-    internal var mETUsrMessage: TextInputEditText? = null
-
-    protected fun InitDlgView(): View {
-        InitDlgTitle(mSZUsrMessage, mSZAccept, mSZGiveUp)
-        val vw = View.inflate(activity, R.layout.dlg_send_message, null)
-        ButterKnife.bind(this, vw)
+            Unit
+        }
 
         // for progress
         mHDProgress = LocalMsgHandler(this)
         mPDDlg = ProgressDialog(context)
-        return vw
     }
 
     override fun checkBeforeOK(): Boolean {
-        val msg = mETUsrMessage!!.text.toString()
-        if (UtilFun.StringIsNullOrEmpty(msg)) {
-            val builder = AlertDialog.Builder(context)
-            builder.setMessage("消息不能为空")
-                    .setTitle("警告")
-            val dlg = builder.create()
-            dlg.show()
-            return false
-        }
+        mETUsrMessage.text.toString().let {
+            if (UtilFun.StringIsNullOrEmpty(it)) {
+                AlertDlgUtility.showAlert(activity, "警告", "消息不能为空")
+                return false
+            }
 
-        var usr: String? = null
-        if (ContextCompat.checkSelfPermission(ContextUtil.instance, READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(ContextUtil.instance, READ_SMS) == PackageManager.PERMISSION_GRANTED) {
-            val si = SIMCardInfo(context)
-            usr = si.nativePhoneNumber
+            val msg = it
+            (if (ContextCompat.checkSelfPermission(ContextUtil.instance, READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(ContextUtil.instance, READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                SIMCardInfo(context).nativePhoneNumber
+            } else "null").let {
+                return sendMsgByHttpPost(it, msg)
+            }
         }
-
-        return sendMsgByHttpPost(if (UtilFun.StringIsNullOrEmpty(usr)) "null" else usr, msg)
     }
 
     /**
@@ -114,71 +98,63 @@ class DlgUsrMessage : DlgOKOrNOBase() {
      * @return      true if success
      */
     private fun sendMsgByHttpPost(usr: String, msg: String): Boolean {
-        val ht = HttpPostTask(usr, msg)
-        ht.execute()
+        HttpPostTask(usr, msg).execute()
         return true
     }
-
 
     /**
      * for send http post
      */
-    inner class HttpPostTask internal constructor(private val mSZUsr: String, private val mSZMsg: String) : AsyncTask<Void, Void, Boolean>() {
-
+    inner class HttpPostTask internal constructor(private val mSZUsr: String, private val mSZMsg: String)
+        : AsyncTask<Void, Void, Boolean>() {
         override fun onPreExecute() {
             super.onPreExecute()
-
             mProgressStatus = 0
 
-            mPDDlg!!.max = 100
-            // 设置对话框的标题
-            mPDDlg!!.setTitle("发送消息")
-            // 设置对话框 显示的内容
-            mPDDlg!!.setMessage("发送进度")
-            // 设置对话框不能用“取消”按钮关闭
-            mPDDlg!!.setCancelable(true)
-            mPDDlg!!.setButton(DialogInterface.BUTTON_POSITIVE,
-                    "取消") { dialogInterface, i -> }
+            mPDDlg.apply {
+                max = 100
+                setTitle("发送消息")
+                setMessage("发送进度")
+                setCancelable(true)
+                setButton(DialogInterface.BUTTON_POSITIVE, "取消")
+                { _, _ -> }
 
-            // 设置对话框的进度条风格
-            mPDDlg!!.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-            mPDDlg!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-            // 设置对话框的进度条是否显示进度
-            mPDDlg!!.isIndeterminate = false
+                // 设置对话框的进度条风格
+                setProgressStyle(ProgressDialog.STYLE_SPINNER)
+                setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+                // 设置对话框的进度条是否显示进度
+                isIndeterminate = false
 
-            mPDDlg!!.incrementProgressBy(-mPDDlg!!.progress)
-            mPDDlg!!.show()
-        }
-
-        override fun onCancelled() {
-            super.onCancelled()
+                incrementProgressBy(-progress)
+                show()
+            }
         }
 
         override fun doInBackground(vararg params: Void): Boolean? {
             val client = OkHttpClient()
             try {
                 // set param
-                val param = JSONObject()
-                param.put(mSZColUsr, mSZUsr)
-                param.put(mSZColMsg, mSZMsg)
-                param.put(mSZColAppName,
-                        mSZColValAppName + "-" + ContextUtil.getVerName(context))
-
-                val body = RequestBody.create(JSON, param.toString())
+                val body = JSONObject().apply {
+                    put(mSZColUsr, mSZUsr)
+                    put(mSZColMsg, mSZMsg)
+                    put(mSZColAppName, "$mSZColValAppName-${ContextUtil.getVerName(context)}")
+                }.let {
+                    RequestBody.create(JSON, it.toString())
+                }
 
                 mProgressStatus = 50
-                val m = Message()
-                m.what = MSG_PROGRESS_UPDATE
-                mHDProgress!!.sendMessage(m)
+                Message().apply { what = MSG_PROGRESS_UPDATE }.let {
+                    mHDProgress.sendMessage(it)
+                }
 
-                val request = Request.Builder()
-                        .url(mSZUrlPost!!).post(body).build()
-                client.newCall(request).execute()
+                Request.Builder().url(mSZUrlPost).post(body).build().let {
+                    client.newCall(it).execute()
+                }
 
                 mProgressStatus = 100
-                val m1 = Message()
-                m1.what = MSG_PROGRESS_UPDATE
-                mHDProgress!!.sendMessage(m1)
+                Message().apply { what = MSG_PROGRESS_UPDATE }.let {
+                    mHDProgress.sendMessage(it)
+                }
             } catch (e: JSONException) {
                 e.printStackTrace()
             } catch (e: IOException) {
@@ -191,30 +167,29 @@ class DlgUsrMessage : DlgOKOrNOBase() {
 
         override fun onPostExecute(bret: Boolean?) {
             super.onPostExecute(bret)
-            mPDDlg!!.dismiss()
+            mPDDlg.dismiss()
         }
     }
 
     /**
      * safe message hanlder
      */
-    private class LocalMsgHandler internal constructor(ac: DlgUsrMessage) : WRMsgHandler<DlgUsrMessage>(ac) {
-        init {
-            TAG = "LocalMsgHandler"
-        }
-
+    private class LocalMsgHandler
+        internal constructor(ac: DlgUsrMessage) : WRMsgHandler<DlgUsrMessage>(ac) {
         override fun processMsg(m: Message, home: DlgUsrMessage) {
             when (m.what) {
                 MSG_PROGRESS_UPDATE -> {
-                    home.mPDDlg!!.progress = home.mProgressStatus
+                    home.mPDDlg.progress = home.mProgressStatus
                 }
 
-                else -> Log.e(TAG, String.format("msg(%s) can not process", m.toString()))
+                else -> Log.e(LOG_TAG, "$m can not process")
             }
         }
     }
 
     companion object {
+        private val LOG_TAG = ::LocalMsgHandler.javaClass.simpleName
+
         // for progress dialog when send http post
         private val PROGRESS_DIALOG = 0x112
         private val MSG_PROGRESS_UPDATE = 0x111

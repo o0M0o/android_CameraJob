@@ -20,7 +20,7 @@ import wxm.androidutil.util.UtilFun;
 
 /**
  * helper for silent camera
- * Created by 123 on 2016/6/16.
+ * Created by WangXM on 2016/6/16.
  */
 public class SilentCameraHelper {
     private final static String TAG = "SilentCameraHelper";

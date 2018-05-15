@@ -1,4 +1,4 @@
-package wxm.dofcalculator.ui.base
+package com.wxm.camerajob.ui.Base
 
 import android.support.annotation.IdRes
 import android.view.View
@@ -24,5 +24,14 @@ object EventHelper {
      */
     fun setOnClickOperator(vwParent: View, @IdRes vwChildId: IntArray, funOperator: (v:View) -> Unit)     {
         setOnClickListener(vwParent, vwChildId, View.OnClickListener { v -> funOperator(v) })
+    }
+
+    /**
+     * set on-click-function [funOperator] for view in [vwObj]
+     */
+    fun setOnClickFun(vwObj: Array<View>, funOperator: (v:View) -> Unit)    {
+        vwObj.forEach   {
+            it.setOnClickListener(funOperator)
+        }
     }
 }

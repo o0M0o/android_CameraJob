@@ -1,12 +1,8 @@
 package com.wxm.camerajob.ui.Job.JobSlide
 
-import android.content.Context
-import android.content.res.TypedArray
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -24,9 +20,8 @@ import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
 
-import butterknife.BindView
-import butterknife.ButterKnife
-import wxm.androidutil.FrgUtility.FrgUtilityBase
+import kotterknife.bindView
+import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
 import wxm.androidutil.type.MySize
 import wxm.androidutil.util.ImageUtil
 import wxm.androidutil.util.UtilFun
@@ -35,111 +30,79 @@ import wxm.androidutil.util.UtilFun
  * slide fragment for job
  * Created by WangXM on 2016/10/14.
  */
-class FrgJobSlide : FrgUtilityBase() {
-
-    private var mTimer: Timer? = null
+class FrgJobSlide : FrgSupportBaseAdv() {
+    private val mTimer: Timer = Timer()
     private val mLLPhotoFN = LinkedList<String>()
 
-    @BindView(R.id.gy_photos)
-    internal var mGYPhotos: Gallery? = null
+    private val mGYPhotos: Gallery by bindView(R.id.gy_photos)
+    private val mISPhoto: ImageSwitcher by bindView(R.id.is_photo)
+    private val mTVTag: TextView by bindView(R.id.tv_tag)
 
-    @BindView(R.id.is_photo)
-    internal var mISPhoto: ImageSwitcher? = null
-
-    @BindView(R.id.tv_tag)
-    internal var mTVTag: TextView? = null
-
-    protected fun leaveActivity() {
-        mTimer!!.cancel()
-        super.leaveActivity()
+    override fun onDetach() {
+        super.onDetach()
+        mTimer.cancel()
     }
 
-    protected fun inflaterView(inflater: LayoutInflater, container: ViewGroup, bundle: Bundle): View {
-        LOG_TAG = "FrgJobSlide"
-        val rootView = inflater.inflate(R.layout.vw_job_slide, container, false)
-        ButterKnife.bind(this, rootView)
-        return rootView
-    }
+    override fun isUseEventBus(): Boolean = false
+    override fun getLayoutID(): Int = R.layout.vw_job_slide
 
-    protected fun initUiComponent(view: View) {
-        // set timer
-        // 使用定时器定时全面刷新显示
-        mTimer = Timer()
-        mTimer!!.schedule(object : TimerTask() {
-            override fun run() {
-                getActivity().runOnUiThread({
-                    if (isDetached() || isHidden())
-                        return@getActivity ().runOnUiThread
-
-                    val sz = mLLPhotoFN.size
-                    val cur_pos = mGYPhotos!!.selectedItemPosition
-                    val max_pos = sz - 1
-
-                    val next_pos = if (cur_pos + 1 <= max_pos) cur_pos + 1 else 0
-                    mGYPhotos!!.setSelection(next_pos)
-                    toPostion(next_pos)
-                })
-            }
-        }, 300, 1500)
-    }
-
-    protected fun loadUI() {
-        val home_context = getActivity()
-
-        // get tag
-        val position = 0
-        val fn = mLLPhotoFN[position]
-        val l_pos = fn.lastIndexOf("/") + 1
-        mTVTag!!.text = String.format(Locale.CHINA, "%d/%d (%s)",
-                position + 1, mLLPhotoFN.size, fn.substring(l_pos, fn.length))
-
+    override fun initUI(savedInstanceState: Bundle?) {
         // 设置动画效果
-        mISPhoto!!.inAnimation = AnimationUtils.loadAnimation(home_context,
-                android.R.anim.fade_in)
-        mISPhoto!!.outAnimation = AnimationUtils.loadAnimation(home_context,
-                android.R.anim.fade_out)
+        mISPhoto.inAnimation = AnimationUtils.loadAnimation(activity, android.R.anim.fade_in)
+        mISPhoto.outAnimation = AnimationUtils.loadAnimation(activity, android.R.anim.fade_out)
+
+        mGYPhotos.adapter = MainGalleryAdapter()
+        mGYPhotos.setOnItemClickListener { _, _, position1, _ ->
+            toPosition(position1)
+        }
 
         // 为imageSwitcher设置ViewFactory对象
-        mISPhoto!!.setFactory {
+        mISPhoto.setFactory {
             // 初始化一个ImageView对象
             // 设置保持纵横比居中缩放图像
             // 设置imageView的宽高
-            val imageView = ImageView(home_context)
-            imageView.scaleType = ImageView.ScaleType.FIT_CENTER
-            imageView.layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT)
-
-            imageView
+            ImageView(activity).apply {
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT)
+            }
         }
 
-        //初始化一个MainGalleryAdapter对象
-        val adapter = MainGalleryAdapter()
-        mGYPhotos!!.adapter = adapter
-        mGYPhotos!!.setSelection(position)
-        mGYPhotos!!.setOnItemClickListener { parent, view, position1, id ->
-            //在ImageSwitcher中显示选中的图片
-            toPostion(position1)
-        }
+        mTimer.schedule(object : TimerTask() {
+            override fun run() {
+                activity.runOnUiThread({
+                    if (!isVisible)
+                        return@runOnUiThread
+
+                    val nextPos = (mGYPhotos.selectedItemPosition + 1) % mLLPhotoFN.size
+                    mGYPhotos.setSelection(nextPos)
+                    toPosition(nextPos)
+                })
+            }
+        }, 300, 1500)
+
+        loadUI(savedInstanceState)
+    }
+
+    override fun loadUI(savedInstanceState: Bundle?) {
+        toPosition(0)
     }
 
     /// BEGIN PRIVATE
-
     /**
      * 相册跳转到新位置
      * @param position  新位置
      */
-    fun toPostion(position: Int) {
-        val cur_d = UtilFun.cast_t<Drawable>(mGYPhotos!!.adapter.getItem(position))
-        mISPhoto!!.setImageDrawable(cur_d)
+    fun toPosition(position: Int) {
+        mISPhoto.setImageDrawable(UtilFun.cast_t<Drawable>(mGYPhotos.adapter.getItem(position)))
 
         val fn = mLLPhotoFN[position]
-        val l_pos = fn.lastIndexOf("/") + 1
-        mTVTag!!.text = String.format(Locale.CHINA, "%d/%d (%s)",
-                position + 1, mLLPhotoFN.size, fn.substring(l_pos, fn.length))
+        (fn.lastIndexOf("/") + 1).let {
+            mTVTag.text = String.format(Locale.CHINA, "%d/%d (%s)",
+                    position + 1, mLLPhotoFN.size, fn.substring(it, fn.length))
+        }
     }
     /// END PRIVATE
-
-
     /**
      * 定义Gallery的数据适配器MainGalleryAdapter
      */
@@ -155,8 +118,8 @@ class FrgJobSlide : FrgUtilityBase() {
          * 获得当前选项
          */
         override fun getItem(position: Int): Any {
-            val bp = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN[position], SHOW_SIZE)
-            return BitmapDrawable(getResources(), bp)
+            return BitmapDrawable(resources,
+                    ImageUtil.getRotatedLocalBitmap(mLLPhotoFN[position], SHOW_SIZE))
         }
 
         /**
@@ -170,35 +133,21 @@ class FrgJobSlide : FrgUtilityBase() {
          * 获得当前选项的视图
          */
         override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            //初始化一个ImageView对象
-            //设置缩放方式
-            //设置ImageView的宽高
-            //设置IamgeView显示的图片
-            val imageView = ImageView(getActivity())
-            imageView.layoutParams = Gallery.LayoutParams(400, ViewGroup.LayoutParams.MATCH_PARENT)
-            imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+            return ImageView(activity).apply {
+                layoutParams = Gallery.LayoutParams(400, ViewGroup.LayoutParams.MATCH_PARENT)
+                scaleType = ImageView.ScaleType.FIT_CENTER
 
-            //int w = imageView.getWidth();
-            //int h = imageView.getHeight();
-            val bm = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN[position], GALLERY_SIZE)
-            imageView.setImageBitmap(bm)
+                //int w = imageView.getWidth();
+                //int h = imageView.getHeight();
+                val bm = ImageUtil.getRotatedLocalBitmap(mLLPhotoFN[position], GALLERY_SIZE)
+                setImageBitmap(bm)
 
-            /*
-             * 设置ImageView背景，这里背景使用的是android提供的一种背景风格
-             * 在values/attr.xml文件中需要一下内容
-             *  <declare-styleable paraName="Gallery">
-             *      <attr paraName="android:galleryItemBackground" />
-             *  </declare-styleable>
-             */
-            val typedArray = getActivity()
-                    .obtainStyledAttributes(R.styleable.Gallery)
-            val mGalleryItemBackground = typedArray.getResourceId(
-                    R.styleable.Gallery_android_galleryItemBackground, 0)
-            imageView.setBackgroundResource(mGalleryItemBackground)
-            typedArray.recycle()
-
-            //返回ImageView对象
-            return imageView
+                val typedArray = activity.obtainStyledAttributes(R.styleable.Gallery)
+                val mGalleryItemBackground = typedArray.getResourceId(
+                        R.styleable.Gallery_android_galleryItemBackground, 0)
+                setBackgroundResource(mGalleryItemBackground)
+                typedArray.recycle()
+            }
         }
     }
 
@@ -207,10 +156,7 @@ class FrgJobSlide : FrgUtilityBase() {
         private val SHOW_SIZE = MySize(1000, 750)
 
         fun newInstance(photos: List<String>): FrgJobSlide {
-            val ret = FrgJobSlide()
-            ret.mLLPhotoFN.addAll(photos)
-
-            return ret
+            return FrgJobSlide().apply { mLLPhotoFN.addAll(photos) }
         }
     }
 }

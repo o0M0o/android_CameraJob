@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.Test.Camera
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.DialogFragment
@@ -10,21 +9,8 @@ import android.app.Fragment
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.ImageFormat
-import android.graphics.Matrix
-import android.graphics.Point
-import android.graphics.RectF
-import android.graphics.SurfaceTexture
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraCaptureSession
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraDevice
-import android.hardware.camera2.CameraManager
-import android.hardware.camera2.CameraMetadata
-import android.hardware.camera2.CaptureRequest
-import android.hardware.camera2.CaptureResult
-import android.hardware.camera2.TotalCaptureResult
-import android.hardware.camera2.params.StreamConfigurationMap
+import android.graphics.*
+import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
 import android.os.Build
@@ -36,24 +22,14 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
-import android.view.LayoutInflater
-import android.view.Surface
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
-
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.Base.AutoFitTextureView
-
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.Collections
-import java.util.Comparator
+import java.util.*
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
@@ -120,7 +96,10 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      * This a callback object for the [ImageReader]. "onImageAvailable" will be called when a
      * still image is ready to be saved.
      */
-    private val mOnImageAvailableListener = ImageReader.OnImageAvailableListener { reader -> mBackgroundHandler!!.post(ImageSaver(reader.acquireNextImage(), mFile)) }
+    private val mOnImageAvailableListener =
+            ImageReader.OnImageAvailableListener { reader ->
+                mBackgroundHandler!!.post(ImageSaver(reader.acquireNextImage(), mFile!!))
+            }
 
 
     private val mCameraDeviceStateCallback = object : CameraDevice.StateCallback() {
@@ -140,8 +119,8 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
             mCameraOpenCloseLock.release()
             camera.close()
             mCameraDevice = null
-            val activity = activity
-            activity?.finish()
+
+            activity.finish()
         }
     }
 
@@ -267,7 +246,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     /**
      * 激活前置相机
      */
-    fun ActiveFrontCamera() {
+    fun activeFrontCamera() {
         if (null != mTextureView && mTextureView!!.isAvailable) {
             closeCamera()
 
@@ -279,7 +258,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     /**
      * 激活后置相机
      */
-    fun ActiveBackCamera() {
+    fun activeBackCamera() {
         if (null != mTextureView && mTextureView!!.isAvailable) {
             closeCamera()
             openCamera(CameraCharacteristics.LENS_FACING_BACK,
@@ -288,16 +267,9 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     }
 
     /**
-     * 关闭相机
-     */
-    fun CloseCamera() {
-        closeCamera()
-    }
-
-    /**
      * 拍照
      */
-    fun TakePhoto() {
+    fun takePhoto() {
         lockFocus()
     }
 
@@ -312,7 +284,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
         //view.findViewById(R.id.picture).setOnClickListener(this);
         //view.findViewById(R.id.info).setOnClickListener(this);
         //mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        mTextureView = view.findViewById<View>(R.id.frag_camera_textureview) as AutoFitTextureView
+        mTextureView = view.findViewById(R.id.frag_camera_textureview)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -330,20 +302,14 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
         // the SurfaceTextureListener).
         if (mTextureView!!.isAvailable) {
             try {
-                val activity = activity
-                val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-
-                if (manager != null) {
-                    val characteristics = manager.getCameraCharacteristics(mCameraId!!)
-                    val facing = characteristics.get(CameraCharacteristics.LENS_FACING)
-                    if (null != facing) {
-                        openCamera(facing, mTextureView!!.width, mTextureView!!.height)
+                (activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager).let {
+                    it.getCameraCharacteristics(mCameraId!!).get(CameraCharacteristics.LENS_FACING)?.let {
+                        openCamera(it, mTextureView!!.width, mTextureView!!.height)
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         } else {
             mTextureView!!.surfaceTextureListener = mSurfaceTextureListener
         }
@@ -388,39 +354,27 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setUpCameraOutputs(face: Int, width: Int, height: Int) {
-        val activity = activity
-        val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager ?: return
-
+        val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         try {
-            for (cameraId in manager.cameraIdList) {
-                val characteristics = manager.getCameraCharacteristics(cameraId)
-
-                val facing = characteristics.get(CameraCharacteristics.LENS_FACING)
-                /*
-                // We don't use a front facing camera in this sample.
-                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
-                    continue;
-                }
-                */
-                if (null != facing && face != facing)
-                    continue
-
-                val map = characteristics.get(
-                        CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP) ?: continue
+            manager.cameraIdList.find {
+                face == manager.getCameraCharacteristics(it).get(CameraCharacteristics.LENS_FACING)
+            }?.let {
+                val characteristics = manager.getCameraCharacteristics(it)
+                val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+                        ?: return@let
 
                 // For still image captures, we use the largest available size.
-                val mLargestSize = Collections.max(
-                        Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
+                val mLargestSize = Collections.max(Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
                         CompareSizesByArea())
                 mImageReader = ImageReader.newInstance(mLargestSize.width, mLargestSize.height,
-                        ImageFormat.JPEG, /*maxImages*/2)
-                mImageReader!!.setOnImageAvailableListener(
-                        mOnImageAvailableListener, mBackgroundHandler)
+                        ImageFormat.JPEG, 2).apply {
+                    setOnImageAvailableListener(
+                            mOnImageAvailableListener, mBackgroundHandler)
+                }
 
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
                 val displayRotation = activity.windowManager.defaultDisplay.rotation
-
                 mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)!!
                 var swappedDimensions = false
                 when (displayRotation) {
@@ -430,7 +384,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
                     Surface.ROTATION_90, Surface.ROTATION_270 -> if (mSensorOrientation == 0 || mSensorOrientation == 180) {
                         swappedDimensions = true
                     }
-                    else -> Log.e(TAG, "Display rotation is invalid: $displayRotation")
+                    else -> Log.e(LOG_TAG, "Display rotation is invalid: $displayRotation")
                 }
 
                 val displaySize = Point()
@@ -476,7 +430,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
                 val available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE)
                 mFlashSupported = available ?: false
 
-                mCameraId = cameraId
+                mCameraId = it
                 return
             }
         } catch (e: CameraAccessException) {
@@ -501,13 +455,12 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
         setUpCameraOutputs(face, width, height)
         configureTransform(width, height)
 
-        val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager ?: return
-
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw RuntimeException("Time out waiting to lock camera opening.")
             }
-            manager.openCamera(mCameraId!!, mCameraDeviceStateCallback, mBackgroundHandler)
+            (activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager)
+                    .openCamera(mCameraId!!, mCameraDeviceStateCallback, mBackgroundHandler)
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         } catch (e: InterruptedException) {
@@ -519,7 +472,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     /**
      * Closes the current [CameraDevice].
      */
-    private fun closeCamera() {
+    fun closeCamera() {
         try {
             mCameraOpenCloseLock.acquire()
             if (null != mCaptureSession) {
@@ -545,9 +498,10 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      * Starts a background thread and its [Handler].
      */
     private fun startBackgroundThread() {
-        mBackgroundThread = HandlerThread("CameraBackground")
-        mBackgroundThread!!.start()
-        mBackgroundHandler = Handler(mBackgroundThread!!.looper)
+        mBackgroundThread = HandlerThread("CameraBackground").apply {
+            start()
+            mBackgroundHandler = Handler(looper)
+        }
     }
 
     /**
@@ -562,7 +516,6 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
-
     }
 
 
@@ -571,22 +524,21 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      */
     private fun createCameraPreviewSession() {
         try {
-            val texture = mTextureView!!.surfaceTexture!!
+            mTextureView!!.surfaceTexture!!.apply {
+                // We configure the size of default buffer to be the size of camera preview we want.
+                setDefaultBufferSize(mPreviewSize!!.width, mPreviewSize!!.height)
 
-            // We configure the size of default buffer to be the size of camera preview we want.
-            texture.setDefaultBufferSize(mPreviewSize!!.width, mPreviewSize!!.height)
+                // This is the output Surface we need to start preview.
+                Surface(this).let {
+                    // We set up a CaptureRequest.Builder with the output Surface.
+                    mPreviewRequestBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+                    mPreviewRequestBuilder!!.addTarget(it)
 
-            // This is the output Surface we need to start preview.
-            val surface = Surface(texture)
-
-            // We set up a CaptureRequest.Builder with the output Surface.
-            mPreviewRequestBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-            mPreviewRequestBuilder!!.addTarget(surface)
-
-            // Here, we create a CameraCaptureSession for camera preview.
-            mCameraDevice!!.createCaptureSession(
-                    Arrays.asList(surface, mImageReader!!.surface),
-                    mSessionStateCallback, null)
+                    // Here, we create a CameraCaptureSession for camera preview.
+                    mCameraDevice!!.createCaptureSession(Arrays.asList(it, mImageReader!!.surface),
+                            mSessionStateCallback, null)
+                }
+            }
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
@@ -602,7 +554,6 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      * @param viewHeight The height of `mTextureView`
      */
     private fun configureTransform(viewWidth: Int, viewHeight: Int) {
-        val activity = activity
         if (null == mTextureView || null == mPreviewSize || null == activity) {
             return
         }
@@ -669,36 +620,36 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      */
     private fun captureStillPicture() {
         try {
-            val activity = activity
             if (null == activity || null == mCameraDevice) {
                 return
             }
             // This is the CaptureRequest.Builder that we use to take a picture.
-            val captureBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-            captureBuilder.addTarget(mImageReader!!.surface)
+            val captureBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE).apply {
+                addTarget(mImageReader!!.surface)
 
-            // Use the same AE and AF modes as the preview.
-            captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
-                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
+                // Use the same AE and AF modes as the preview.
+                set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
+
+                // Orientation
+                set(CaptureRequest.JPEG_ORIENTATION, getOrientation(activity.windowManager.defaultDisplay.rotation))
+            }
+
             setAutoFlash(captureBuilder)
 
-            // Orientation
-            val rotation = activity.windowManager.defaultDisplay.rotation
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation))
-
-            val CaptureCallback = object : CameraCaptureSession.CaptureCallback() {
-
+            object : CameraCaptureSession.CaptureCallback() {
                 override fun onCaptureCompleted(session: CameraCaptureSession,
                                                 request: CaptureRequest,
                                                 result: TotalCaptureResult) {
                     showToast("Saved: " + mFile!!)
-                    Log.d(TAG, mFile!!.toString())
+                    Log.d(LOG_TAG, mFile!!.toString())
                     unlockFocus()
                 }
-            }
+            }.let {
+                mCaptureSession!!.stopRepeating()
+                mCaptureSession!!.capture(captureBuilder.build(), it, null)
 
-            mCaptureSession!!.stopRepeating()
-            mCaptureSession!!.capture(captureBuilder.build(), CaptureCallback, null)
+                Unit
+            }
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
@@ -751,35 +702,26 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     /**
      * Saves a JPEG [Image] into the specified [File].
      */
-    private class ImageSaver(
-            /**
-             * The JPEG image
-             */
-            private val mImage: Image,
-            /**
-             * The file we save the image into.
-             */
-            private val mFile: File) : Runnable {
-
+    private class ImageSaver(private val mImage: Image, private val mFile: File)
+        : Runnable {
         override fun run() {
             val buffer = mImage.planes[0].buffer
             val bytes = ByteArray(buffer.remaining())
             buffer.get(bytes)
-            var output: FileOutputStream? = null
-            try {
-                output = FileOutputStream(mFile)
-                output.write(bytes)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-                mImage.close()
-                if (null != output) {
+
+            FileOutputStream(mFile).let {
+                try {
+                    it.write(bytes)
+                    Unit
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } finally {
+                    mImage.close()
                     try {
-                        output.close()
+                        it.close()
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
-
                 }
             }
         }
@@ -790,7 +732,6 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      * Compares two `Size`s based on their areas.
      */
     private class CompareSizesByArea : Comparator<Size> {
-
         override fun compare(lhs: Size, rhs: Size): Int {
             // We cast here to ensure the multiplications won't overflow
             return java.lang.Long.signum(lhs.width.toLong() * lhs.height - rhs.width.toLong() * rhs.height)
@@ -802,100 +743,89 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
      * Shows an error message dialog.
      */
     class ErrorDialog : DialogFragment() {
-
         override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
-            val activity = activity
             return AlertDialog.Builder(activity)
                     .setMessage(arguments.getString(ARG_MESSAGE))
                     .setPositiveButton(android.R.string.ok
-                    ) { dialogInterface, i -> activity.finish() }
+                    ) { _, _ -> activity.finish() }
                     .create()
         }
 
         companion object {
-
-            private val ARG_MESSAGE = "message"
+            private const val ARG_MESSAGE = "message"
 
             fun newInstance(message: String): ErrorDialog {
-                val dialog = ErrorDialog()
-                val args = Bundle()
-                args.putString(ARG_MESSAGE, message)
-                dialog.arguments = args
-                return dialog
+                return ErrorDialog().apply {
+                    arguments = Bundle().apply { putString(ARG_MESSAGE, message) }
+                }
             }
         }
-
     }
 
     /**
      * Shows OK/Cancel confirmation dialog about camera permission.
      */
     class ConfirmationDialog : DialogFragment() {
-
         override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
             val parent = parentFragment
             return AlertDialog.Builder(activity)
                     .setMessage(R.string.request_permission)
                     .setPositiveButton(android.R.string.ok
-                    ) { dialog, which ->
+                    ) { _, _ ->
                         FragmentCompat.requestPermissions(parent,
                                 arrayOf(Manifest.permission.CAMERA),
                                 REQUEST_CAMERA_PERMISSION)
                     }
-                    .setNegativeButton(android.R.string.cancel
-                    ) { dialog, which ->
-                        val activity = parent.activity
-                        activity?.finish()
-                    }
+                    .setNegativeButton(android.R.string.cancel)
+                    { _, _ -> parent.activity.finish() }
                     .create()
         }
     }
 
     companion object {
         private val ORIENTATIONS = SparseIntArray()
-        private val REQUEST_CAMERA_PERMISSION = 1
-        private val TAG = "CameraFragment"
-        private val FRAGMENT_DIALOG = "dialog"
+        private const val REQUEST_CAMERA_PERMISSION = 1
+        private val LOG_TAG = ::CameraFragment.javaClass.simpleName
+        private const val FRAGMENT_DIALOG = "dialog"
 
         /**
          * Camera state: Showing camera preview.
          */
-        private val STATE_PREVIEW = 0
+        private const val STATE_PREVIEW = 0
 
         /**
          * Camera state: Waiting for the focus to be locked.
          */
-        private val STATE_WAITING_LOCK = 1
+        private const val STATE_WAITING_LOCK = 1
 
         /**
          * Camera state: Waiting for the exposure to be precapture state.
          */
-        private val STATE_WAITING_PRECAPTURE = 2
+        private const val STATE_WAITING_PRECAPTURE = 2
 
         /**
          * Camera state: Waiting for the exposure state to be something other than precapture.
          */
-        private val STATE_WAITING_NON_PRECAPTURE = 3
+        private const val STATE_WAITING_NON_PRECAPTURE = 3
 
         /**
          * Camera state: Picture was taken.
          */
-        private val STATE_PICTURE_TAKEN = 4
+        private const val STATE_PICTURE_TAKEN = 4
 
         /**
          * Max preview width that is guaranteed by Camera2 API
          */
-        private val MAX_PREVIEW_WIDTH = 1920
+        private const val MAX_PREVIEW_WIDTH = 1920
 
         /**
          * Max preview height that is guaranteed by Camera2 API
          */
-        private val MAX_PREVIEW_HEIGHT = 1080
+        private const val MAX_PREVIEW_HEIGHT = 1080
 
         fun newInstance(): CameraFragment {
             return CameraFragment()
         }
-
 
         /**
          * Given `choices` of `Size`s supported by a camera, choose the smallest one that
@@ -923,28 +853,27 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
             val notBigEnough = ArrayList<Size>()
             val w = aspectRatio.width
             val h = aspectRatio.height
-            for (option in choices) {
-                if (option.width <= maxWidth && option.height <= maxHeight &&
-                        option.height == option.width * h / w) {
-                    if (option.width >= textureViewWidth && option.height >= textureViewHeight) {
-                        bigEnough.add(option)
+            choices.forEach {
+                if (it.width <= maxWidth && it.height <= maxHeight &&
+                        it.height == it.width * h / w) {
+                    if (it.width >= textureViewWidth && it.height >= textureViewHeight) {
+                        bigEnough.add(it)
                     } else {
-                        notBigEnough.add(option)
+                        notBigEnough.add(it)
                     }
                 }
             }
 
             // Pick the smallest of those big enough. If there is no one big enough, pick the
             // largest of those not big enough.
-            if (bigEnough.size > 0) {
-                return Collections.min(bigEnough, CompareSizesByArea())
-            } else if (notBigEnough.size > 0) {
-                return Collections.max(notBigEnough, CompareSizesByArea())
-            } else {
-                Log.e(TAG, "Couldn't find any suitable preview size")
-                return choices[0]
+            return when {
+                bigEnough.size > 0 -> Collections.min(bigEnough, CompareSizesByArea())
+                notBigEnough.size > 0 -> Collections.max(notBigEnough, CompareSizesByArea())
+                else -> {
+                    Log.e(LOG_TAG, "Couldn't find any suitable preview size")
+                    choices[0]
+                }
             }
         }
     }
-
 }

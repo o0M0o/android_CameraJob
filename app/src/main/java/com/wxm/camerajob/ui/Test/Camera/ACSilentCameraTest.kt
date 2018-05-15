@@ -54,8 +54,8 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
         mSelfHandler = ACTestMsgHandler(this)
         mTPParam = null
 
-        mCLGrey = resources.getColor(R.color.gray)
-        mCLBlack = resources.getColor(R.color.black)
+        mCLGrey = this.getColor(R.color.gray)
+        mCLBlack = this.getColor(R.color.black)
 
         mSCHelper.setTakePhotoCallBack(
                 object : SilentCameraHelper.takePhotoCallBack {

@@ -20,7 +20,7 @@ import wxm.androidutil.util.UtilFun;
 /**
  * base class for silent camera
  * silent camera can get photo without sound
- * Created by 123 on 2016/7/4.
+ * Created by WangXM on 2016/7/4.
  */
 abstract class SilentCamera {
     private final static String TAG = "SilentCamera";

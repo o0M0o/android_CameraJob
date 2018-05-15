@@ -5,7 +5,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
-
+import cn.finalteam.galleryfinal.CoreConfig
+import cn.finalteam.galleryfinal.FunctionConfig
+import cn.finalteam.galleryfinal.GalleryFinal
+import cn.finalteam.galleryfinal.ThemeConfig
+import cn.finalteam.galleryfinal.model.PhotoInfo
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.core.ImagePipelineConfig
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator
@@ -13,17 +17,8 @@ import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType
 import com.wxm.camerajob.utility.UILImageLoader
-
 import org.xutils.x
-
 import java.io.File
-
-import cn.finalteam.galleryfinal.CoreConfig
-import cn.finalteam.galleryfinal.FunctionConfig
-import cn.finalteam.galleryfinal.GalleryFinal
-import cn.finalteam.galleryfinal.PauseOnScrollListener
-import cn.finalteam.galleryfinal.ThemeConfig
-import cn.finalteam.galleryfinal.model.PhotoInfo
 
 
 /**
@@ -31,58 +26,56 @@ import cn.finalteam.galleryfinal.model.PhotoInfo
  * Created by 123 on 2016/8/14.
  */
 class JobGallery {
-    private var mAC: Activity? = null
+    companion object {
+        private val LOG_TAG = ::JobGallery.javaClass.simpleName
+        private const val REQUEST_CODE_GALLERY = 1001
+    }
 
-    private val mOnHanlderResultCallback = object : GalleryFinal.OnHanlderResultCallback {
+    private lateinit var mHolder: Activity
+
+    private val mResultCallback = object : GalleryFinal.OnHanlderResultCallback {
         override fun onHanlderSuccess(reqeustCode: Int, resultList: List<PhotoInfo>?) {
             if (resultList != null) {
-                val TAG = "JobGallery"
-                Log.i(TAG, "open gallery success")
+                Log.i(LOG_TAG, "open gallery success")
             }
         }
 
         override fun onHanlderFailure(requestCode: Int, errorMsg: String) {
-            Toast.makeText(mAC, errorMsg, Toast.LENGTH_SHORT).show()
+            Toast.makeText(mHolder, errorMsg, Toast.LENGTH_SHORT).show()
         }
     }
 
     /**
      * open gallery
      * @param ac        for activity
-     * @param photodir  path for gallery
+     * @param photoDir  path for gallery
      */
-    fun OpenGallery(ac: Activity, photodir: String) {
-        mAC = ac
+    fun openGallery(ac: Activity, photoDir: String) {
+        mHolder = ac
 
-        val themeConfig = ThemeConfig.DEFAULT
+        val funConfigBuilder = FunctionConfig.Builder().apply {
+            setMutiSelectMaxSize(8)
+            setEnablePreview(true)
+        }
 
-        val functionConfigBuilder = FunctionConfig.Builder()
+        //funConfigBuilder.setSelected(mPhotoList);//添加过滤集合
+        val funConfig = funConfigBuilder.build()
         val imageLoader: cn.finalteam.galleryfinal.ImageLoader
         imageLoader = UILImageLoader()
-        val pauseOnScrollListener = UILPauseOnScrollListener(false, true)
-
-        functionConfigBuilder.setMutiSelectMaxSize(8)
-        functionConfigBuilder.setEnablePreview(true)
-
-        //functionConfigBuilder.setSelected(mPhotoList);//添加过滤集合
-        val functionConfig = functionConfigBuilder.build()
-
-        val pp = File(photodir)
-        val coreConfig = CoreConfig.Builder(mAC, imageLoader, themeConfig)
-                .setFunctionConfig(functionConfig)
-                .setPauseOnScrollListener(pauseOnScrollListener)
+        CoreConfig.Builder(mHolder, imageLoader, ThemeConfig.DEFAULT)
+                .setFunctionConfig(funConfig)
+                .setPauseOnScrollListener(UILPauseOnScrollListener(false, true))
                 .setNoAnimcation(false)
-                .setShowPhotoFolder(pp)
-                .build()
-        GalleryFinal.init(coreConfig)
+                .setShowPhotoFolder(File(photoDir))
+                .build().let {
+                    GalleryFinal.init(it)
+                }
 
-        val REQUEST_CODE_GALLERY = 1001
-        GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY,
-                functionConfig, mOnHanlderResultCallback)
+        GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY, funConfig, mResultCallback)
 
-        initImageLoader(mAC)
+        initImageLoader(mHolder)
         initFresco()
-        x.Ext.init(mAC!!.application)
+        x.Ext.init(mHolder.application)
     }
 
 
@@ -105,9 +98,10 @@ class JobGallery {
 
 
     private fun initFresco() {
-        val config = ImagePipelineConfig.newBuilder(mAC!!)
+        ImagePipelineConfig.newBuilder(mHolder)
                 .setBitmapsConfig(Bitmap.Config.ARGB_8888)
-                .build()
-        Fresco.initialize(mAC!!, config)
+                .build().let {
+                    Fresco.initialize(mHolder, it)
+                }
     }
 }

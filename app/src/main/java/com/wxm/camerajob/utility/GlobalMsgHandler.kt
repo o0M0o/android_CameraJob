@@ -30,7 +30,7 @@ internal class GlobalMsgHandler : Handler() {
         }
     }
 
-    private fun onWakeup(msg: Message) {
+    private fun onWakeup(@Suppress("UNUSED_PARAMETER") msg: Message) {
         ContextUtil.getCameraJobUtility().allData.let {
             ContextUtil.getJobProcess().processorWakeup(it)
         }

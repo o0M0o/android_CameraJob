@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.DialogFragment
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -13,29 +12,24 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
-
+import butterknife.ButterKnife
 import com.wxm.camerajob.BuildConfig
-import com.wxm.camerajob.data.define.EAction
-import com.wxm.camerajob.ui.Job.JobCreate.ACJobCreate
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraJob
+import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
+import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
+import com.wxm.camerajob.ui.Job.JobCreate.ACJobCreate
+import com.wxm.camerajob.ui.Test.Camera.ACCameraTest
+import com.wxm.camerajob.ui.Test.Camera.ACSilentCameraTest
+import com.wxm.camerajob.ui.Utility.Help.ACHelp
+import com.wxm.camerajob.ui.Utility.Setting.ACSetting
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage
 import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.utility.FileLogger
-import com.wxm.camerajob.ui.Utility.Help.ACHelp
-import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
-import com.wxm.camerajob.ui.Utility.Setting.ACSetting
-import com.wxm.camerajob.ui.Test.Camera.ACCameraTest
-import com.wxm.camerajob.ui.Test.Camera.ACSilentCameraTest
-
-import butterknife.BindView
-import butterknife.ButterKnife
+import kotterknife.bindView
 import wxm.androidutil.Dialog.DlgOKOrNOBase
-import wxm.androidutil.util.UtilFun
 
 /**
  * UI(main UI for app) for show job status
@@ -43,14 +37,9 @@ import wxm.androidutil.util.UtilFun
 class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val mFRGJobShow = FrgJobShow()
 
-    @BindView(R.id.ac_navw_toolbar)
-    internal var mTBNavw: Toolbar? = null
-
-    @BindView(R.id.ac_start_outerlayout)
-    internal var mDLOuterLayout: DrawerLayout? = null
-
-    @BindView(R.id.start_nav_view)
-    internal var mNVNav: NavigationView? = null
+    private val mTBNav: Toolbar by bindView(R.id.ac_navw_toolbar)
+    private val mDLOuterLayout: DrawerLayout by bindView(R.id.ac_start_outerlayout)
+    private val mNVNav: NavigationView by bindView(R.id.start_nav_view)
 
     /**
      * 如果有权限，则直接初始化实例
@@ -72,42 +61,32 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     private fun initActivity() {
-        // set nav view
-        try {
-            setSupportActionBar(mTBNavw)
+        setSupportActionBar(mTBNav)
 
-            val toggle = ActionBarDrawerToggle(
-                    this, mDLOuterLayout, mTBNavw,
-                    R.string.navigation_drawer_open,
-                    R.string.navigation_drawer_close)
-            mDLOuterLayout!!.addDrawerListener(toggle)
-            toggle.syncState()
-
-            mNVNav!!.setNavigationItemSelectedListener(this)
-        } catch (e: NullPointerException) {
-            FileLogger.logger.severe(UtilFun.ThrowableToString(e))
+        ActionBarDrawerToggle(this, mDLOuterLayout, mTBNav,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close).apply{
+            mDLOuterLayout.addDrawerListener(this)
+            syncState()
         }
 
+        mNVNav.setNavigationItemSelectedListener(this)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig)
-        mFRGJobShow.refreshFrg()
+        mFRGJobShow.reloadUI()
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        val inflater = menuInflater
-        inflater.inflate(R.menu.acm_job_show, menu)
+        menuInflater.inflate(R.menu.acm_job_show, menu)
 
+        @Suppress("ConstantConditionIf")
         if (!BuildConfig.TestCamera) {
-            var mi = menu.findItem(R.id.mi_camera_test)
-            mi.isVisible = false
-
-            mi = menu.findItem(R.id.mi_silentcamera_test)
-            mi.isVisible = false
+            menu.findItem(R.id.mi_silentcamera_test).isVisible = false
+            menu.findItem(R.id.mi_camera_test).isVisible = false
         }
 
         return true
@@ -117,30 +96,23 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mi_job_add -> {
-                val intent = Intent(this, ACJobCreate::class.java)
-                startActivityForResult(intent, 1)
+                startActivityForResult(Intent(this, ACJobCreate::class.java), 1)
             }
 
             R.id.mi_setting -> {
-                val data = Intent(this, ACSetting::class.java)
-                startActivityForResult(data, 1)
+                startActivityForResult(Intent(this, ACSetting::class.java), 1)
             }
 
             R.id.mi_camera_setting -> {
-                val data = Intent(this, ACCameraSetting::class.java)
-                startActivityForResult(data, 1)
+                startActivityForResult(Intent(this, ACCameraSetting::class.java), 1)
             }
 
             R.id.mi_camera_test -> {
-                val data = Intent(this, ACCameraTest::class.java)
-                startActivityForResult(data, 1)
+                startActivityForResult(Intent(this, ACCameraTest::class.java), 1)
             }
 
             R.id.mi_silentcamera_test -> {
-                run {
-                    val data = Intent(this, ACSilentCameraTest::class.java)
-                    startActivityForResult(data, 1)
-                }
+                startActivityForResult(Intent(this, ACSilentCameraTest::class.java), 1)
                 return super.onOptionsItemSelected(item)
             }
 
@@ -153,24 +125,20 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-
         when (resultCode) {
             GlobalDef.INTRET_CAMERAJOB_ACCEPT -> {
-                val cj = data.getParcelableExtra<CameraJob>(EAction.LOAD_JOB.actName)
-                Log.d(TAG, "camerajob : " + cj.toString())
-
-                CameraJobUtility.createCameraJob(cj)
+                data.getParcelableExtra<CameraJob>(EAction.LOAD_JOB.actName).let {
+                    Log.d(LOG_TAG, "create cameraJob : $it ")
+                    CameraJobUtility.createCameraJob(it)
+                    Unit
+                }
             }
 
             GlobalDef.INTRET_CS_ACCEPT -> {
-                /*Message m = Message.obtain(GlobalContext.getMsgHandler(),
-                        GlobalDef.MSG_TYPE_CAMERA_MODIFY);
-                m.obj = PreferencesUtil.loadCameraParam();
-                m.sendToTarget(); */
             }
 
             else -> {
-                Log.v(TAG, "not match resultCode = $resultCode")
+                Log.v(LOG_TAG, "not match resultCode = $resultCode")
             }
         }
     }
@@ -196,7 +164,7 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
             }
         }
 
-        mDLOuterLayout!!.closeDrawer(GravityCompat.START)
+        mDLOuterLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -215,6 +183,6 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     companion object {
-        private val TAG = "ACJobShow"
+        private val LOG_TAG = ::ACJobShow.javaClass.simpleName
     }
 }

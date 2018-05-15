@@ -17,7 +17,7 @@ import wxm.androidutil.util.UtilFun;
 
 /**
  * compatible with old camera api
- * Created by 123 on 2016/7/4.
+ * Created by WangXM on 2016/7/4.
  */
 public class SilentCameraOld extends SilentCamera {
     private final static String TAG = "SilentCameraOld";

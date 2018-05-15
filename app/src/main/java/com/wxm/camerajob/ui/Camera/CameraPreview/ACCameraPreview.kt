@@ -8,30 +8,26 @@ import android.support.annotation.RequiresApi
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.utility.ContextUtil
 
-import wxm.androidutil.ExActivity.BaseAppCompatActivity
+import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**
  * camera preview
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-class ACCameraPreview : BaseAppCompatActivity() {
+class ACCameraPreview : ACSwitcherActivity<FrgCameraPreview>() {
+    override fun setupFragment(p0: Bundle?) {
+        addFragment(FrgCameraPreview.newInstance())
+    }
 
-    protected fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ContextUtil.instance.addActivity(this)
     }
 
-    protected fun leaveActivity() {
-        val data = Intent()
-        setResult(GlobalDef.INTRET_USR_LOGOUT, data)
+    override fun leaveActivity() {
+        setResult(GlobalDef.INTRET_USR_LOGOUT, Intent())
         finish()
     }
-
-    protected fun initFrgHolder() {
-        LOG_TAG = "ACCameraPreview"
-        mFGHolder = FrgCameraPreview.newInstance()
-    }
-
     /// BEGIN PRIVATE
     /// END PRIVATE
 }

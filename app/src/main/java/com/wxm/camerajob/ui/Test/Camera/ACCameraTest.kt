@@ -1,73 +1,68 @@
 package com.wxm.camerajob.ui.Test.Camera
 
-import android.app.FragmentTransaction
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
 
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
+import kotterknife.bindView
 
 class ACCameraTest : AppCompatActivity() {
-    private val mCamearFrag = CameraFragment.newInstance()
-    private var mBtActiveFrontCamear: Button? = null
-    private var mBtActiveBackCamear: Button? = null
-    private var mBtTakePhoto: Button? = null
-    private var mBtCameraClose: Button? = null
+    private val mCameraFrag = CameraFragment.newInstance()
+    private val mBtActiveFrontCamera: Button by bindView(R.id.acbt_test_frontcamera_active)
+    private val mBtActiveBackCamera: Button by bindView(R.id.acbt_test_backcamera_active)
+    private val mBtTakePhoto: Button by bindView(R.id.acbt_test_takephoto)
+    private val mBtCameraClose: Button by bindView(R.id.acbt_test_camera_close)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ac_camera_test)
 
         if (null == savedInstanceState) {
-            val transaction = fragmentManager.beginTransaction()
-            transaction.replace(R.id.acfl_test_camera_preview, mCamearFrag)
-            transaction.commit()
+            fragmentManager.beginTransaction().apply {
+                replace(R.id.acfl_test_camera_preview, mCameraFrag)
+                commit()
+            }
         }
 
-        mBtActiveFrontCamear = findViewById<View>(R.id.acbt_test_frontcamera_active)
-        mBtActiveBackCamear = findViewById<View>(R.id.acbt_test_backcamera_active)
-        mBtTakePhoto = findViewById<View>(R.id.acbt_test_takephoto)
-        mBtCameraClose = findViewById<View>(R.id.acbt_test_camera_close)
+        activeButton(mBtTakePhoto, false)
+        activeButton(mBtCameraClose, false)
+        mBtActiveFrontCamera.setTextColor(Color.GRAY)
+        mBtActiveBackCamera.setTextColor(Color.GRAY)
 
-        activeButton(mBtTakePhoto!!, false)
-        activeButton(mBtCameraClose!!, false)
-        mBtActiveFrontCamear!!.setTextColor(Color.GRAY)
-        mBtActiveBackCamear!!.setTextColor(Color.GRAY)
+        mBtActiveFrontCamera.setOnClickListener { _ ->
+            mCameraFrag.activeFrontCamera()
+            activeButton(mBtCameraClose, true)
+            activeButton(mBtTakePhoto, true)
 
-        mBtActiveFrontCamear!!.setOnClickListener { v ->
-            mCamearFrag.ActiveFrontCamera()
-            activeButton(mBtCameraClose!!, true)
-            activeButton(mBtTakePhoto!!, true)
-
-            mBtActiveFrontCamear!!.setTextColor(Color.BLACK)
-            mBtActiveBackCamear!!.setTextColor(Color.GRAY)
+            mBtActiveFrontCamera.setTextColor(Color.BLACK)
+            mBtActiveBackCamera.setTextColor(Color.GRAY)
         }
 
-        mBtActiveBackCamear!!.setOnClickListener { v ->
-            mCamearFrag.ActiveBackCamera()
-            activeButton(mBtCameraClose!!, true)
-            activeButton(mBtTakePhoto!!, true)
+        mBtActiveBackCamera.setOnClickListener { _ ->
+            mCameraFrag.activeBackCamera()
+            activeButton(mBtCameraClose, true)
+            activeButton(mBtTakePhoto, true)
 
-            mBtActiveFrontCamear!!.setTextColor(Color.GRAY)
-            mBtActiveBackCamear!!.setTextColor(Color.BLACK)
+            mBtActiveFrontCamera.setTextColor(Color.GRAY)
+            mBtActiveBackCamera.setTextColor(Color.BLACK)
         }
 
-        mBtCameraClose!!.setOnClickListener { v ->
-            mCamearFrag.CloseCamera()
-            activeButton(mBtTakePhoto!!, false)
+        mBtCameraClose.setOnClickListener {
+            mCameraFrag.closeCamera()
+            activeButton(mBtTakePhoto, false)
 
-            mBtActiveFrontCamear!!.setTextColor(Color.GRAY)
-            mBtActiveBackCamear!!.setTextColor(Color.GRAY)
-            mBtCameraClose!!.setTextColor(Color.GRAY)
+            mBtActiveFrontCamera.setTextColor(Color.GRAY)
+            mBtActiveBackCamera.setTextColor(Color.GRAY)
+            mBtCameraClose.setTextColor(Color.GRAY)
         }
 
-        mBtTakePhoto!!.setOnClickListener { v -> mCamearFrag.TakePhoto() }
+        mBtTakePhoto.setOnClickListener { mCameraFrag.takePhoto() }
     }
 
     // --Commented out by Inspection START (2016/6/27 23:14):
@@ -99,16 +94,14 @@ class ACCameraTest : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        val inflater = menuInflater
-        inflater.inflate(R.menu.acm_leave, menu)
+        menuInflater.inflate(R.menu.acm_leave, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mi_leave -> {
-                val data = Intent()
-                setResult(GlobalDef.INTRET_CS_GIVEUP, data)
+                setResult(GlobalDef.INTRET_CS_GIVEUP, Intent())
                 finish()
             }
 

@@ -24,7 +24,7 @@ import static java.lang.Math.min;
 
 /**
  * wakeup app & set alarm for next wakeup
- * Created by 123 on 2016/6/15.
+ * Created by WangXM on 2016/6/15.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     private final static String TAG = "AlarmReceiver";
