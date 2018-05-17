@@ -53,7 +53,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         override fun onOpened(camera: CameraDevice) {
             "onOpened".let {
                 Log.i(LOG_TAG, it)
-                FileLogger.logger.info("$LOG_TAG $it")
+                FileLogger.logger.info(it)
             }
 
             mCameraDevice = camera
@@ -63,7 +63,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         override fun onDisconnected(camera: CameraDevice) {
             "onDisconnected".let {
                 Log.i(LOG_TAG, it)
-                FileLogger.logger.info("$LOG_TAG $it")
+                FileLogger.logger.info(it)
             }
 
             mCameraDevice = null
@@ -73,7 +73,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         override fun onError(camera: CameraDevice, error: Int) {
             "onError, error = $error".let {
                 Log.i(LOG_TAG, it)
-                FileLogger.logger.info("$LOG_TAG $it")
+                FileLogger.logger.info(it)
             }
 
             mCameraDevice = null
@@ -113,7 +113,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
             UtilFun.ThrowableToString(e).apply {
                 Log.e(LOG_TAG, this)
-                FileLogger.logger.severe("$LOG_TAG $this")
+                FileLogger.logger.severe(this)
             }
         }
     }
@@ -147,7 +147,8 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
         ("camera closed, paraTag = " + if (mTPParam == null) "null" else mTPParam!!.mTag).let {
             Log.i(LOG_TAG, it)
-            FileLogger.logger.info("$LOG_TAG, $it")
+            FileLogger.logger.info(it)
+            Unit
         }
 
         mCameraStatus = ECameraStatus.NOT_OPEN

@@ -58,6 +58,6 @@ class FileLogger private constructor() {
         private const val LOG_NAME = "cameraJob_run_%s.log"
 
         private val instance: FileLogger = FileLogger()
-        var logger: Logger = instance.mLogger
+        val logger: Logger = instance.mLogger
     }
 }

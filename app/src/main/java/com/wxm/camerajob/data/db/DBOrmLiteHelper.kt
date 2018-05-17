@@ -40,8 +40,7 @@ class DBOrmLiteHelper(context: Context) : OrmLiteSqliteOpenHelper(context, DATAB
                     TableUtils.dropTable<CameraJob, Any>(connectionSource, CameraJob::class.java, false)
                     TableUtils.dropTable<CameraJobStatus, Any>(connectionSource, CameraJobStatus::class.java, false)
                 } catch (e: SQLException) {
-                    e.printStackTrace()
-                    FileLogger.logger.severe("dropTable failure, ex = " + UtilFun.ExceptionToString(e))
+                    FileLogger.logger.severe(e.toString())
                 }
 
                 createAndInitTable()

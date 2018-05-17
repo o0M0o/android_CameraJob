@@ -2,17 +2,15 @@ package com.wxm.camerajob.ui.Job.JobCreate
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
+import android.widget.SimpleAdapter.ViewBinder
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.ui.Base.EventHelper
@@ -26,6 +24,8 @@ import org.greenrobot.eventbus.ThreadMode
 import wxm.androidutil.Dialog.DlgDatePicker
 import wxm.androidutil.Dialog.DlgOKOrNOBase
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
+import wxm.androidutil.MoreAdapter.MoreAdapter
+import wxm.androidutil.ViewHolder.ViewHolder
 import wxm.androidutil.util.UtilFun
 import java.util.*
 import kotlin.collections.HashMap
@@ -44,9 +44,6 @@ class FrgJobCreate : FrgSupportBaseAdv() {
     private val mGVJobPoint: GridView by bindView(R.id.gv_job_point)
     private val mSTSendPic: Switch by bindView(R.id.sw_send_pic)
     private val mVSEmailDetail: ViewSwitcher by bindView(R.id.vs_email_detail)
-
-    private var mALJobPoint: ArrayList<HashMap<String, String>>? = null
-    private var mGAJobPoint: GVJobPointAdapter? = null
 
     // for camera setting
     private val mTVCameraFace: TextView by bindView(R.id.tv_camera_face)
@@ -161,16 +158,9 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             addAll(resources.getStringArray(R.array.job_type)
                     .map { HashMap<String, String>().apply { put(KEY_JOB_TYPE, it) } })
         }.let {
-            GVJobTypeAdapter(context, it,
-                    arrayOf(KEY_JOB_TYPE), intArrayOf(R.id.tv_job_type)).let {
-                mGVJobType.adapter = it
-            }
+            mGVJobType.adapter = GVJobTypeAdapter(it,
+                    arrayOf(KEY_JOB_TYPE), intArrayOf(R.id.tv_job_type))
         }
-
-        mALJobPoint = ArrayList()
-        mGAJobPoint = GVJobPointAdapter(context, mALJobPoint!!,
-                arrayOf(KEY_JOB_POINT), intArrayOf(R.id.tv_job_point))
-        mGVJobPoint.adapter = mGAJobPoint
 
         // for send pic
         mSTSendPic.setOnCheckedChangeListener { _, isChecked
@@ -267,35 +257,25 @@ class FrgJobCreate : FrgSupportBaseAdv() {
     /**
      * for gridview
      */
-    inner class GVJobTypeAdapter(context: Context, data: List<Map<String, *>>,
-                                 from: Array<String>, to: IntArray) : SimpleAdapter(context, data, R.layout.gi_job_type, from, to), View.OnClickListener {
+    inner class GVJobTypeAdapter(data: List<Map<String, String>>, fromKey: Array<String?>, toId: IntArray)
+        : MoreAdapter(context, data, R.layout.gi_job_type, fromKey, toId), View.OnClickListener {
         private val mCLSelected: Int = context.getColor(R.color.linen)
         private val mCLNotSelected: Int = context.getColor(R.color.white)
         private var mLastSelected: Int = GlobalDef.INT_INVALID_ID
 
+        @Suppress("UNCHECKED_CAST")
         val selectJobType: String?
             get() {
-                return if (GlobalDef.INT_INVALID_ID == mLastSelected) ""
-                else UtilFun.cast<HashMap<String, String>>(getItem(mLastSelected))[KEY_JOB_TYPE]
+                return if (GlobalDef.INT_INVALID_ID == mLastSelected) null
+                else (getItem(mLastSelected) as HashMap<String, String>)[KEY_JOB_TYPE]
             }
 
-        override fun getViewTypeCount(): Int {
-            val org_ct = count
-            return if (org_ct < 1) 1 else org_ct
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            return position
-        }
-
-        override fun getView(position: Int, view: View?, arg2: ViewGroup?): View? {
-            val v = super.getView(position, view, arg2)
-            if (null != v) {
-                v.setOnClickListener(this)
-                v.setBackgroundColor(if (mLastSelected == position) mCLSelected else mCLNotSelected)
+        override fun loadView(pos: Int, vhHolder: ViewHolder) {
+            val handler = this::onClick
+            vhHolder.convertView.apply {
+                setOnClickListener(handler)
+                setBackgroundColor(if (mLastSelected == pos) mCLSelected else mCLNotSelected)
             }
-
-            return v
         }
 
         override fun onClick(v: View) {
@@ -335,14 +315,12 @@ class FrgJobCreate : FrgSupportBaseAdv() {
                     }
                 }.let {
                     if (it.isNotEmpty()) {
-                        mALJobPoint!!.apply {
-                            clear()
+                        val jobPoint = ArrayList<Map<String, String>>().apply {
                             addAll(it.map { HashMap<String, String>().apply { put(KEY_JOB_POINT, it) } })
                         }
 
-                        mGAJobPoint!!.apply {
-                            cleanSelected()
-                            notifyDataSetChanged()
+                        GVJobPointAdapter(jobPoint, arrayOf(KEY_JOB_POINT), intArrayOf(R.id.tv_job_point)).let {
+                            mGVJobPoint.adapter = it
                         }
                     }
                 }
@@ -357,47 +335,33 @@ class FrgJobCreate : FrgSupportBaseAdv() {
     /**
      * for gridview
      */
-    inner class GVJobPointAdapter(context: Context, data: List<Map<String, *>>,
-                                  from: Array<String>, to: IntArray) : SimpleAdapter(context, data, R.layout.gi_job_point, from, to), View.OnClickListener {
+    inner class GVJobPointAdapter(data: List<Map<String, String>>, from: Array<String?>, to: IntArray)
+        : MoreAdapter(context, data, R.layout.gi_job_point, from, to) {
         private val mCLSelected: Int = context.getColor(R.color.linen)
         private val mCLNotSelected: Int = context.getColor(R.color.white)
         private var mLastSelected: Int = GlobalDef.INT_INVALID_ID
 
+        @Suppress("UNCHECKED_CAST")
         val selectJobPoint: String?
             get() {
-                if (GlobalDef.INT_INVALID_ID == mLastSelected)
-                    return ""
-
-                val hmd = UtilFun.cast<HashMap<String, Any>>(getItem(mLastSelected))
-                return UtilFun.cast_t<String>(hmd[KEY_JOB_POINT])
+                return if (GlobalDef.INT_INVALID_ID == mLastSelected) null
+                else (getItem(mLastSelected) as HashMap<String, String>)[KEY_JOB_POINT]
             }
 
-        override fun getViewTypeCount(): Int {
-            val org_ct = count
-            return if (org_ct < 1) 1 else org_ct
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            return position
-        }
-
-        override fun getView(position: Int, view: View?, arg2: ViewGroup?): View? {
-            val v = super.getView(position, view, arg2)
-            if (null != v) {
-                v.setOnClickListener(this)
-                v.setBackgroundColor(if (mLastSelected == position) mCLSelected else mCLNotSelected)
+        override fun loadView(pos: Int, vhHolder: ViewHolder) {
+            val handler = this::onClick
+            vhHolder.convertView.apply {
+                setOnClickListener(handler)
+                setBackgroundColor(if (mLastSelected == pos) mCLSelected else mCLNotSelected)
             }
-
-            return v
         }
 
-        override fun onClick(v: View) {
+        fun onClick(v: View) {
             mGVJobPoint.getPositionForView(v).let {
                 if (mLastSelected != it) {
                     mLastSelected = it
                     notifyDataSetChanged()
                 }
-
             }
         }
 

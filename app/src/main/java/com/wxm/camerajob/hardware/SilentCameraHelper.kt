@@ -63,7 +63,7 @@ class SilentCameraHelper {
             } catch (e: Throwable) {
                 UtilFun.ThrowableToString(e).apply {
                     Log.d(LOG_TAG, this)
-                    FileLogger.logger.severe("$LOG_TAG $this")
+                    FileLogger.logger.severe(this)
                 }
             }
         }

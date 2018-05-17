@@ -110,7 +110,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         super.onCaptureFailed(session, request, failure)
         ("CaptureFailed, reason = ${failure.reason} ").apply {
             Log.d(LOG_TAG, this)
-            FileLogger.logger.warning("$LOG_TAG $this")
+            FileLogger.logger.warning(this)
         }
 
         mHome.mCameraStatus = ECameraStatus.TAKE_PHOTO_FAILURE
