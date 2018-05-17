@@ -17,7 +17,7 @@ import wxm.androidutil.Switcher.ACSwitcherActivity
 open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ContextUtil.instance.addActivity(this)
+        ContextUtil.addActivity(this)
     }
 
     override fun setupFragment(p0: Bundle?) {

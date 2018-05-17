@@ -77,14 +77,12 @@ class FrgJobShow : FrgSupportBaseAdv() {
         mTimer.schedule(object : TimerTask() {
             override fun run() = h.activity.runOnUiThread({ h.loadUI(null) })
         }, 100, 3000)
-    }
 
-    override fun loadUI(savedInstanceState: Bundle?) {
-        val dirs = FileUtil.getDirDirs(ContextUtil.instance.appPhotoRootDir!!, false)
+        val dirs = FileUtil.getDirDirs(ContextUtil.getPhotoRootDir(), false)
         ArrayList<HashMap<String, String>>().apply {
             ContextUtil.getCameraJobUtility().allData.filterNotNull().sortedBy { it._id }.forEach {
                 aliveCameraJob(this, it)
-                ContextUtil.instance.getCameraJobPhotoDir(it._id).let {
+                ContextUtil.getCameraJobDir(it._id).let {
                     dirs.remove(it)
                 }
             }
@@ -95,6 +93,9 @@ class FrgJobShow : FrgSupportBaseAdv() {
         }.let {
             updateData(it)
         }
+    }
+
+    override fun loadUI(savedInstanceState: Bundle?) {
     }
 
     /**
@@ -112,7 +113,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
     /// BEGIN PRIVATE
 
     private fun diedCameraJob(jobs: MutableList<HashMap<String, String>>, dir: String) {
-        val cj = ContextUtil.instance.getCameraJobFromPath(dir) ?: return
+        val cj = ContextUtil.getCameraJobFromDir(dir) ?: return
         HashMap<String, String>().let {
             it[KEY_JOB_NAME] = cj.name + "(已移除)"
             it[KEY_JOB_ACTIVE] = ""
@@ -214,7 +215,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
 
             val ibLook = v.findViewById<ImageButton>(R.id.ib_job_look)
             val ibSlide = v.findViewById<ImageButton>(R.id.ib_job_slide_look)
-            val pp = ContextUtil.instance.getCameraJobPhotoDir(Integer.parseInt(map[KEY_ID]))
+            val pp = ContextUtil.getCameraJobDir(Integer.parseInt(map[KEY_ID]))
             if (0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
                 ibLook.visibility = View.INVISIBLE
 
@@ -266,14 +267,14 @@ class FrgJobShow : FrgSupportBaseAdv() {
                 }
 
                 R.id.ib_job_look -> {
-                    JobGallery().apply {
-                        openGallery(activity, ContextUtil.instance.getCameraJobPhotoDir(id))
+                    ContextUtil.getCameraJobDir(id)?.let {
+                        JobGallery().openGallery(activity, it)
                     }
                 }
 
                 R.id.ib_job_slide_look -> {
                     Intent(activity, ACJobSlide::class.java).let {
-                        it.putExtra(EAction.LOAD_PHOTO_DIR.actName, ContextUtil.instance.getCameraJobPhotoDir(id))
+                        it.putExtra(EAction.LOAD_PHOTO_DIR.actName, ContextUtil.getCameraJobDir(id)!!)
                         startActivityForResult(it, 1)
                     }
                 }

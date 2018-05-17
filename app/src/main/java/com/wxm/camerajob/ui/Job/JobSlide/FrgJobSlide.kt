@@ -23,8 +23,8 @@ import java.util.TimerTask
 import kotterknife.bindView
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
 import wxm.androidutil.type.MySize
-import wxm.androidutil.util.ImageUtil
 import wxm.androidutil.util.UtilFun
+import wxm.androidutil.ImageUtility.ImageUtil
 
 /**
  * slide fragment for job

@@ -21,25 +21,12 @@ import wxm.androidutil.util.UtilFun
  * Created by wxm on 2016/8/12.
  */
 class DBOrmLiteHelper(context: Context) : OrmLiteSqliteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    private lateinit var mRDAOCameraJob: RuntimeExceptionDao<CameraJob, Int>
-    private lateinit var mRDAOCameraJobStatus: RuntimeExceptionDao<CameraJobStatus, Int>
-
-    internal val cameraJobREDao: RuntimeExceptionDao<CameraJob, Int>
-        get() {
-            return mRDAOCameraJob
-        }
-
-    internal val cameraJobStatusREDao: RuntimeExceptionDao<CameraJobStatus, Int>
-        get() {
-            return mRDAOCameraJobStatus
-        }
+    val cameraJobREDao: RuntimeExceptionDao<CameraJob, Int> = getRuntimeExceptionDao(CameraJob::class.java)
+    val cameraJobStatusREDao: RuntimeExceptionDao<CameraJobStatus, Int> = getRuntimeExceptionDao(CameraJobStatus::class.java)
 
     override fun onCreate(db: SQLiteDatabase, connectionSource: ConnectionSource) {
-        mRDAOCameraJob = getRuntimeExceptionDao(CameraJob::class.java)
-        mRDAOCameraJobStatus = getRuntimeExceptionDao(CameraJobStatus::class.java)
         createAndInitTable()
     }
-
 
     override fun onUpgrade(database: SQLiteDatabase,
                            connectionSource: ConnectionSource, oldVersion: Int, newVersion: Int) {

@@ -1,20 +1,11 @@
 package com.wxm.camerajob.hardware
 
 import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
 import android.util.Log
 
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
-import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.FileLogger
-
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 import wxm.androidutil.util.UtilFun
 
@@ -23,10 +14,9 @@ import wxm.androidutil.util.UtilFun
  * Created by WangXM on 2016/6/16.
  */
 class SilentCameraHelper {
+    private var mTPCBTakePhoto: TakePhotoCallBack? = null
 
-    private var mTPCBTakePhoto: takePhotoCallBack? = null
-
-    interface takePhotoCallBack {
+    interface TakePhotoCallBack {
         fun onTakePhotoSuccess(tp: TakePhotoParam)
         fun onTakePhotoFailed(tp: TakePhotoParam)
     }
@@ -35,7 +25,7 @@ class SilentCameraHelper {
      * set callback for take photo
      * @param tcb  callback holder
      */
-    fun setTakePhotoCallBack(tcb: takePhotoCallBack) {
+    fun setTakePhotoCallBack(tcb: TakePhotoCallBack) {
         mTPCBTakePhoto = tcb
     }
 
@@ -44,35 +34,26 @@ class SilentCameraHelper {
      * @param cp    for camera
      * @param para  for take photo
      */
-    fun TakePhoto(cp: CameraParam, para: TakePhotoParam) {
-        //new Thread(new TakePhotoRunner(cp, para), "CameraRunner").run();
+    fun takePhoto(cp: CameraParam, para: TakePhotoParam) {
         TakePhotoRunner(cp, para).run()
     }
-
 
     /**
      * do take photo
      */
-    private inner class TakePhotoRunner internal constructor(private val mSelfCameraParam: CameraParam, private val mSelfTPTakePhoto: TakePhotoParam) : Runnable {
-        private val mSCSelfCamera: SilentCamera
+    private inner class TakePhotoRunner
+        internal constructor(private val mSelfCameraParam: CameraParam, private val mSelfTPTakePhoto: TakePhotoParam)
+        : Runnable {
+        private val mSCSelfCamera: SilentCamera = SilentCameraNew()
 
         private val mTPCTake = object : SilentCamera.SilentCameraTakePhotoCallBack {
             override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                if (null != mTPCBTakePhoto)
-                    mTPCBTakePhoto!!.onTakePhotoSuccess(mSelfTPTakePhoto)
+                mTPCBTakePhoto?.onTakePhotoSuccess(mSelfTPTakePhoto)
             }
 
             override fun onTakePhotoFailed(tp: TakePhotoParam?) {
-                if (null != mTPCBTakePhoto)
-                    mTPCBTakePhoto!!.onTakePhotoFailed(mSelfTPTakePhoto)
+                mTPCBTakePhoto?.onTakePhotoFailed(mSelfTPTakePhoto)
             }
-        }
-
-        init {
-            mSCSelfCamera = if (ContextUtil.useNewCamera())
-                SilentCameraNew()
-            else
-                SilentCameraOld()
         }
 
         override fun run() {
@@ -80,17 +61,15 @@ class SilentCameraHelper {
                 mSelfCameraParam.mSessionHandler = Handler()
                 mSCSelfCamera.takePhoto(mSelfCameraParam, mSelfTPTakePhoto, mTPCTake)
             } catch (e: Throwable) {
-                e.printStackTrace()
-
-                val str_e = UtilFun.ThrowableToString(e)
-                Log.d(TAG, str_e)
-                FileLogger.logger.severe(str_e)
+                UtilFun.ThrowableToString(e).apply {
+                    Log.d(LOG_TAG, this)
+                    FileLogger.logger.severe("$LOG_TAG $this")
+                }
             }
-
         }
     }
 
     companion object {
-        private val TAG = "SilentCameraHelper"
+        private val LOG_TAG = ::SilentCameraHelper.javaClass.simpleName
     }
 }

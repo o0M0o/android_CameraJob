@@ -7,17 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Message
 import android.util.Log
+import com.wxm.camerajob.data.define.*
 
-import com.wxm.camerajob.data.define.CameraJob
-import com.wxm.camerajob.data.define.EJobStatus
-import com.wxm.camerajob.data.define.ETimeGap
-import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.FileLogger
 
-import java.util.Calendar
-
-import wxm.androidutil.util.UtilFun
-import java.lang.Math.min
+import java.util.*
 
 /**
  * wakeup app & set alarm for next wakeup
@@ -33,26 +28,15 @@ class AlarmReceiver : BroadcastReceiver() {
      */
     private val nextAlarmDelay: Long
         get() {
-            var ret: Long = 0
-            val ls_job = ContextUtil.getCameraJobUtility().allData
-            if (!UtilFun.ListIsNullOrEmpty(ls_job)) {
-                for (cj in ls_job) {
-                    if (cj.status.job_status == EJobStatus.RUN.status) {
-                        val et = ETimeGap.getETimeGap(cj.point)
-                        if (null != et) {
-                            val cur_ms = et.getDelay(Calendar.getInstance())
-                            ret = if (0L == ret) cur_ms else min(cur_ms, ret)
+            return LinkedList<Long>().apply {
+                ContextUtil.getCameraJobUtility().allData
+                        .filter { it.status.job_status == EJobStatus.RUN.status }
+                        .forEach {
+                            ETimeGap.getETimeGap(it.point)?.let {
+                                add(it.getDelay(Calendar.getInstance()))
+                            }
                         }
-                    }
-                }
-            }
-
-            if (0L == ret) {
-                val curms = System.currentTimeMillis()
-                ret = curms - curms % GlobalDef.INT_GLOBALJOB_PERIOD + GlobalDef.INT_GLOBALJOB_PERIOD
-            }
-
-            return ret
+            }.min() ?: GlobalDef.INT_GLOBALJOB_PERIOD.toLong()
         }
 
     /**
@@ -63,24 +47,23 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(arg0: Context, data: Intent) {
         try {
             // wakeup app
-            Message.obtain(ContextUtil.getMsgHandler(), WAKEUP.id, WAKEUP)
+            Message.obtain(ContextUtil.getMsgHandler(), EMsgType.WAKEUP.id, EMsgType.WAKEUP)
                     .sendToTarget()
 
             // set alarm
-            val ct = ContextUtil.instance
-            val intent = Intent(ct, AlarmReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(ct, 0, intent, 0)
-            val alarmManager = ContextUtil.instance.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-            alarmManager?.set(AlarmManager.RTC_WAKEUP, nextAlarmDelay, pendingIntent)
+            ContextUtil.appContext().let {
+                val intent = Intent(it, AlarmReceiver::class.java)
+                val pendingIntent = PendingIntent.getBroadcast(it, 0, intent, 0)
+                ContextUtil.getSystemService<AlarmManager>(Context.ALARM_SERVICE)!!
+                        .set(AlarmManager.RTC_WAKEUP, nextAlarmDelay, pendingIntent)
+            }
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e(TAG, e.toString())
+            Log.e(LOG_TAG, e.toString())
+            FileLogger.logger.severe(e.toString())
         }
-
     }
 
     companion object {
-        private val TAG = "AlarmReceiver"
+        private val LOG_TAG = ::AlarmReceiver.javaClass.simpleName
     }
 }

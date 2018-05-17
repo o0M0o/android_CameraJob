@@ -20,7 +20,7 @@ class TFSettingDirectory : TFSettingBase() {
 
     override fun initUI(savedInstanceState: Bundle?) {
         mTVShow.text = String.format(Locale.CHINA, "照片根目录 : %s",
-                ContextUtil.instance.appPhotoRootDir)
+                ContextUtil.getPhotoRootDir())
     }
 
     override fun updateSetting() {

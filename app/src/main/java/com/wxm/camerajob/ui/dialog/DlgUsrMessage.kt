@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import com.wxm.camerajob.R
-import com.wxm.camerajob.hardware.SIMCardInfo
 import com.wxm.camerajob.utility.AlertDlgUtility
 import com.wxm.camerajob.utility.ContextUtil
 import okhttp3.MediaType
@@ -23,6 +22,7 @@ import okhttp3.RequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import wxm.androidutil.Dialog.DlgOKOrNOBase
+import wxm.androidutil.util.SIMCardUtil
 import wxm.androidutil.util.UtilFun
 import wxm.androidutil.util.WRMsgHandler
 import java.io.IOException
@@ -81,9 +81,9 @@ class DlgUsrMessage : DlgOKOrNOBase() {
             }
 
             val msg = it
-            (if (ContextCompat.checkSelfPermission(ContextUtil.instance, READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(ContextUtil.instance, READ_SMS) == PackageManager.PERMISSION_GRANTED) {
-                SIMCardInfo(context).nativePhoneNumber
+            (if (ContextUtil.checkPermission(READ_PHONE_STATE)
+                    && ContextUtil.checkPermission(READ_SMS)) {
+                SIMCardUtil(context).nativePhoneNumber
             } else "null").let {
                 return sendMsgByHttpPost(it, msg)
             }

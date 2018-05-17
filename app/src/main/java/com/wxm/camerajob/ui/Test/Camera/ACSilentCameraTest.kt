@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.Test.Camera
 
 import android.annotation.TargetApi
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
@@ -24,7 +23,7 @@ import com.wxm.camerajob.hardware.SilentCameraHelper
 
 import java.lang.ref.WeakReference
 
-import wxm.androidutil.util.ImageUtil
+import wxm.androidutil.ImageUtility.ImageUtil
 import wxm.androidutil.util.UtilFun
 
 class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
@@ -58,7 +57,7 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
         mCLBlack = this.getColor(R.color.black)
 
         mSCHelper.setTakePhotoCallBack(
-                object : SilentCameraHelper.takePhotoCallBack {
+                object : SilentCameraHelper.TakePhotoCallBack {
                     override fun onTakePhotoSuccess(tp: TakePhotoParam) {
                         mSelfHandler!!.sendEmptyMessage(SELFMSGWHAT_TAKEPHOTO_SUCCESS)
                     }
@@ -84,10 +83,9 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
                 mBTCapture!!.isClickable = false
                 mBTCapture!!.setTextColor(mCLGrey)
 
-                val sp = ContextUtil.instance.appPhotoRootDir
-                mTPParam = TakePhotoParam(sp!!, "tmp.jpg", "1")
+                mTPParam = TakePhotoParam(ContextUtil.getPhotoRootDir(), "tmp.jpg", "1")
 
-                mSCHelper.TakePhoto(PreferencesUtil.loadCameraParam(), mTPParam)
+                mSCHelper.takePhoto(PreferencesUtil.loadCameraParam(), mTPParam!!)
             }
         }
     }

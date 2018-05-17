@@ -1,6 +1,7 @@
 package com.wxm.camerajob.alarm
 
 import android.annotation.TargetApi
+import android.app.Service
 import android.app.job.JobInfo
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
@@ -28,7 +29,7 @@ class CameraJobService : JobService() {
     @Override
     public void onCreate() {
         super.onCreate();
-        //Log.i(TAG, "JobService created");
+        //Log.i(LOG_TAG, "JobService created");
         //Context mCurContext = ContextUtil.Companion.getInstance();
     }
     */
@@ -46,7 +47,7 @@ class CameraJobService : JobService() {
         try {
             callback.send(m);
         } catch (RemoteException e) {
-            Log.e(TAG, "Error passing service object back to activity.");
+            Log.e(LOG_TAG, "Error passing service object back to activity.");
         }
         */
         return Service.START_NOT_STICKY
@@ -58,27 +59,25 @@ class CameraJobService : JobService() {
         // update the UI accordingly.
         jobParamsMap.add(params)
 
-        val m = Message.obtain(ContextUtil.getMsgHandler(),
-                EMsgType.WAKEUP.id, EMsgType.WAKEUP)
-        m.sendToTarget()
+        Message.obtain(ContextUtil.getMsgHandler(),
+                EMsgType.WAKEUP.id, EMsgType.WAKEUP).sendToTarget()
         return false
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
         // Stop tracking these job parameters, as we've 'finished' executing.
         jobParamsMap.remove(params)
-        //Log.i(TAG, "on stop job: " + params.getJobId());
+        //Log.i(LOG_TAG, "on stop job: " + params.getJobId());
         return true
     }
 
     /** Send job to the JobScheduler.  */
     fun scheduleJob(t: JobInfo) {
-        Log.d(TAG, "Scheduling job")
-        val tm = ContextUtil.instance.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        tm?.schedule(t)
+        Log.d(LOG_TAG, "Scheduling job")
+        ContextUtil.getSystemService<JobScheduler>(Context.JOB_SCHEDULER_SERVICE)!!.schedule(t)
     }
 
     companion object {
-        private val TAG = "CameraJobService"
+        private val LOG_TAG = ::CameraJobService.javaClass.simpleName
     }
 }

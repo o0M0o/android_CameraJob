@@ -164,47 +164,48 @@ class TFSettingCamera : TFSettingBase() {
 
         var mBackCameraID = ""
         var mFrontCameraID = ""
-        val manager = ContextUtil.instance.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        try {
-            val lsDpi = LinkedList<HashMap<String, String>>()
-            manager.cameraIdList.forEach {
-                val cameraId = it
-                lsDpi.clear()
-                manager.getCameraCharacteristics(it)?.let {
-                    it.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.let {
-                        lsDpi.addAll(it.getOutputSizes(ImageFormat.JPEG)
-                                .map { MySize(it.width, it.height) }
-                                .sortedWith(CompareSizesByArea())
-                                .map {
-                                    HashMap<String, String>().apply {
-                                        put(GlobalDef.STR_CAMERA_DPI, UtilFun.SizeToString(it))
+        ContextUtil.getCameraManager()?.let {
+            val manager = it
+            try {
+                val lsDpi = LinkedList<HashMap<String, String>>()
+                manager.cameraIdList.forEach {
+                    val cameraId = it
+                    lsDpi.clear()
+                    manager.getCameraCharacteristics(it)?.let {
+                        it.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.let {
+                            lsDpi.addAll(it.getOutputSizes(ImageFormat.JPEG)
+                                    .map { MySize(it.width, it.height) }
+                                    .sortedWith(CompareSizesByArea())
+                                    .map {
+                                        HashMap<String, String>().apply {
+                                            put(GlobalDef.STR_CAMERA_DPI, UtilFun.SizeToString(it))
+                                        }
                                     }
-                                }
-                        )
+                            )
+
+                            Unit
+                        }
+
+                        // 前后相机只采用第一个
+                        it.get(CameraCharacteristics.LENS_FACING)?.let {
+                            if (CameraCharacteristics.LENS_FACING_BACK == it && mBackCameraID.isEmpty()) {
+                                mBackCameraID = cameraId
+                                mLLBackCameraDpi.addAll(lsDpi)
+                            }
+
+                            if (CameraCharacteristics.LENS_FACING_FRONT == it && mFrontCameraID.isEmpty()) {
+                                mFrontCameraID = cameraId
+                                mLLFrontCameraDpi.addAll(lsDpi)
+                            }
+                        }
 
                         Unit
                     }
-
-                    // 前后相机只采用第一个
-                    it.get(CameraCharacteristics.LENS_FACING)?.let {
-                        if (CameraCharacteristics.LENS_FACING_BACK == it && mBackCameraID.isEmpty()) {
-                            mBackCameraID = cameraId
-                            mLLBackCameraDpi.addAll(lsDpi)
-                        }
-
-                        if (CameraCharacteristics.LENS_FACING_FRONT == it && mFrontCameraID.isEmpty()) {
-                            mFrontCameraID = cameraId
-                            mLLFrontCameraDpi.addAll(lsDpi)
-                        }
-                    }
-
-                    Unit
                 }
+            } catch (e: CameraAccessException) {
+                e.printStackTrace()
             }
-        } catch (e: CameraAccessException) {
-            e.printStackTrace()
         }
-
     }
 
     /**

@@ -24,7 +24,7 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ContextUtil.instance.addActivity(this)
+        ContextUtil.addActivity(this)
     }
 
     override fun leaveActivity() {

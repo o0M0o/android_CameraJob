@@ -20,7 +20,7 @@ object CameraJobUtility {
     fun createCameraJob(cj: CameraJob): Boolean {
         return ContextUtil.getCameraJobUtility().createData(cj).let {
             if (it) {
-                !UtilFun.StringIsNullOrEmpty(ContextUtil.instance.createCameraJobPhotoDir(cj))
+                !UtilFun.StringIsNullOrEmpty(ContextUtil.createJobDir(cj))
             } else it
         }
     }
@@ -40,7 +40,8 @@ object CameraJobUtility {
      */
     fun deleteCameraJob(cj_id: Int) {
         ContextUtil.getCameraJobUtility().removeData(cj_id)
-        val path = ContextUtil.instance.getCameraJobPhotoDir(cj_id)
-        FileUtil.DeleteDirectory(path)
+        ContextUtil.getCameraJobDir(cj_id)?.let {
+            FileUtil.DeleteDirectory(it)
+        }
     }
 }

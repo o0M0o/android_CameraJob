@@ -27,7 +27,7 @@ object PreferencesUtil {
      */
     fun loadCameraParam(): CameraParam {
         return CameraParam(null).apply {
-            ContextUtil.instance.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
+            ContextUtil.appContext().getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
                     Context.MODE_PRIVATE).let {
                 mFace = it.getInt(EProperty.PROPERTIES_CAMERA_FACE.paraName,
                         CameraCharacteristics.LENS_FACING_BACK)
@@ -48,7 +48,7 @@ object PreferencesUtil {
      * @param cp    camera parameter
      */
     fun saveCameraParam(cp: CameraParam) {
-        ContextUtil.instance.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
+        ContextUtil.appContext().getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
                 Context.MODE_PRIVATE).apply {
             edit().putInt(EProperty.PROPERTIES_CAMERA_FACE.paraName,
                     cp.mFace).apply()
@@ -73,7 +73,7 @@ object PreferencesUtil {
      * @return  if camera is set return true
      */
     fun checkCameraIsSet(): Boolean {
-        return ContextUtil.instance.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE)
+        return ContextUtil.appContext().getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE)
                 .getString(CAMERA_SET_FLAG, CAMERA_SET_FLAG_NOSET) == CAMERA_SET_FLAG_ISSET
     }
 
@@ -82,7 +82,7 @@ object PreferencesUtil {
      * @param isSet  flag for camera set
      */
     private fun setCameraSetFlag(isSet: Boolean) {
-        ContextUtil.instance.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE).edit()
+        ContextUtil.appContext().getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE).edit()
                 .putString(CAMERA_SET_FLAG, if (isSet) CAMERA_SET_FLAG_ISSET else CAMERA_SET_FLAG_NOSET)
                 .apply()
     }

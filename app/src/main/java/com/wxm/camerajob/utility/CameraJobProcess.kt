@@ -46,36 +46,40 @@ class CameraJobProcess {
      * @param lsJob    job need executed
      */
     private fun wakeupDuty(lsJob: LinkedList<CameraJob>) {
-        if(lsJob.isNotEmpty()) {
+        if (lsJob.isNotEmpty()) {
             lsJob.pop().let {
                 Log.i(LOG_TAG, "wakeup job : " + it.toString())
-                val param = TakePhotoParam(ContextUtil.instance.getCameraJobPhotoDir(it._id),
-                        String.format(Locale.CHINA, "%d_%s.jpg",
-                                it._id, CALENDAR_STR.format(System.currentTimeMillis())),
-                        Integer.toString(it._id))
+                val path = ContextUtil.getCameraJobDir(it._id)
+                if (null == path) {
+                    wakeupDuty(lsJob)
+                } else {
+                    val param = TakePhotoParam(path, String.format(Locale.CHINA, "%d_%s.jpg",
+                            it._id, CALENDAR_STR.format(System.currentTimeMillis())),
+                            Integer.toString(it._id))
 
-                SilentCameraHelper().let {
-                    it.setTakePhotoCallBack(object : SilentCameraHelper.takePhotoCallBack {
-                        override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                            Log.i(LOG_TAG, "take photo success, tag = " + tp.mTag)
+                    SilentCameraHelper().let {
+                        it.setTakePhotoCallBack(object : SilentCameraHelper.TakePhotoCallBack {
+                            override fun onTakePhotoSuccess(tp: TakePhotoParam) {
+                                Log.i(LOG_TAG, "take photo success, tag = " + tp.mTag)
 
-                            Message.obtain(ContextUtil.getMsgHandler(),
-                                    EMsgType.CAMERAJOB_TAKEPHOTO.id,
-                                    arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
-                            wakeupDuty(lsJob)
-                        }
-
-                        override fun onTakePhotoFailed(tp: TakePhotoParam) {
-                            "take photo failure, tag = ${tp.mTag}".let {
-                                Log.e(LOG_TAG, it)
-                                FileLogger.logger.severe(it)
+                                Message.obtain(ContextUtil.getMsgHandler(),
+                                        EMsgType.CAMERAJOB_TAKEPHOTO.id,
+                                        arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
+                                wakeupDuty(lsJob)
                             }
 
-                            wakeupDuty(lsJob)
-                        }
-                    })
+                            override fun onTakePhotoFailed(tp: TakePhotoParam) {
+                                "take photo failure, tag = ${tp.mTag}".let {
+                                    Log.e(LOG_TAG, it)
+                                    FileLogger.logger.severe(it)
+                                }
 
-                    it.TakePhoto(PreferencesUtil.loadCameraParam(), param)
+                                wakeupDuty(lsJob)
+                            }
+                        })
+
+                        it.takePhoto(PreferencesUtil.loadCameraParam(), param)
+                    }
                 }
             }
         }

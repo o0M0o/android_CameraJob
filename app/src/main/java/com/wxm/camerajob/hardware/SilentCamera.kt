@@ -1,20 +1,11 @@
 package com.wxm.camerajob.hardware
 
-import android.graphics.Bitmap
 import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
-
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
 import com.wxm.camerajob.utility.FileLogger
-
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.util.concurrent.Semaphore
-
-import wxm.androidutil.util.UtilFun
 
 
 /**
@@ -22,40 +13,25 @@ import wxm.androidutil.util.UtilFun
  * silent camera can get photo without sound
  * Created by WangXM on 2016/7/4.
  */
-internal abstract class SilentCamera {
-
-    var mSensorOrientation: Int = 0
-
+abstract class SilentCamera {
+    var mCamera: CameraHardWare? = null
     var mCameraStatus = ECameraStatus.NOT_OPEN
 
     var mTPParam: TakePhotoParam? = null
-    var mCParam: CameraParam
-    var mFlashSupported: Boolean = false
-    private val mOCCBOpen: SilentCameraOpenCameraCallBack?
+    var mCParam: CameraParam? = null
+
+
     private var mTPCBTakePhoto: SilentCameraTakePhotoCallBack? = null
 
-    internal interface SilentCameraOpenCameraCallBack {
+    interface SilentCameraOpenCameraCallBack {
         fun onOpenSuccess(cp: CameraParam)
         fun onOpenFailed(cp: CameraParam)
     }
 
-    internal interface SilentCameraTakePhotoCallBack {
+    interface SilentCameraTakePhotoCallBack {
         fun onTakePhotoSuccess(tp: TakePhotoParam)
         fun onTakePhotoFailed(tp: TakePhotoParam?)
     }
-
-    init {
-        mOCCBOpen = object : SilentCameraOpenCameraCallBack {
-            override fun onOpenSuccess(cp: CameraParam) {
-                capturePhoto()
-            }
-
-            override fun onOpenFailed(cp: CameraParam) {
-                takePhotoCallBack(false)
-            }
-        }
-    }
-
 
     /**
      * take photo
@@ -71,24 +47,25 @@ internal abstract class SilentCamera {
         openCamera()
     }
 
-
     /**
      * callback for open camera
      * @param ret  true if success
      */
     fun openCameraCallBack(ret: Boolean?) {
         if (ret!!) {
-            val l = "camera opened"
-            Log.i(TAG, l)
-            FileLogger.logger.info(l)
+            "camera opened".apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.logger.info(this)
+            }
 
-            mOCCBOpen?.onOpenSuccess(mCParam)
+            capturePhoto()
         } else {
-            val l = "camera open failed"
-            Log.i(TAG, l)
-            FileLogger.logger.info(l)
+            "camera open failed".apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.logger.info(this)
+            }
 
-            mOCCBOpen?.onOpenFailed(mCParam)
+            takePhotoCallBack(false)
         }
     }
 
@@ -96,96 +73,29 @@ internal abstract class SilentCamera {
      * callback for take photo
      * @param ret  true if success
      */
-    fun takePhotoCallBack(ret: Boolean?) {
-        val tag = if (mTPParam == null)
-            "null"
-        else
-            if (mTPParam!!.mTag == null) "null" else mTPParam!!.mTag
+    fun takePhotoCallBack(ret: Boolean) {
+        val tag = if (mTPParam == null) "null"
+        else mTPParam!!.mTag
 
         closeCamera()
-        if (ret!!) {
-            val l = ("take photo success, tag = " + tag
-                    + ", photofile = " + mTPParam!!.mFileName)
-            Log.i(TAG, l)
-            FileLogger.logger.info(l)
+        if (ret) {
+            ("take photo success, tag = $tag, photoFile = ${mTPParam!!.mFileName}").apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.logger.info(this)
+            }
 
-            if (null != mTPCBTakePhoto)
-                mTPCBTakePhoto!!.onTakePhotoSuccess(mTPParam)
+            mTPCBTakePhoto?.onTakePhotoSuccess(mTPParam!!)
         } else {
-            val l = ("take photo failed, tag = "
-                    + tag + ", camera_status = " + mCameraStatus.description)
-            Log.i(TAG, l)
-            FileLogger.logger.info(l)
-
-            if (null != mTPCBTakePhoto)
-                mTPCBTakePhoto!!.onTakePhotoFailed(mTPParam)
-        }
-    }
-
-    /**
-     * save photo data to file
-     * @param data          photo data
-     * @param fileDir       dir
-     * @param fileName      file paraName
-     * @return              true if success
-     */
-    fun savePhotoToFile(data: ByteArray, fileDir: String, fileName: String): Boolean {
-        var ret = false
-        var output: FileOutputStream? = null
-        val mf = File(fileDir, fileName)
-        try {
-            output = FileOutputStream(mf)
-            output.write(data)
-            ret = true
-        } catch (e: IOException) {
-            e.printStackTrace()
-            FileLogger.logger.severe(UtilFun.ExceptionToString(e))
-        } finally {
-            if (null != output) {
-                try {
-                    output.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    FileLogger.logger.severe(UtilFun.ExceptionToString(e))
-                }
-
+            ("take photo failed, tag = $tag, camera_status = ${mCameraStatus.description}").apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.logger.info(this)
             }
-        }
 
-        return ret
+            mTPCBTakePhoto?.onTakePhotoFailed(mTPParam)
+        }
     }
 
-    /**
-     * save bitmap as jpg file
-     * @param bm            bitmap data
-     * @param fileDir       jpg file dir
-     * @param fileName      jpg filename
-     * @return              true if success
-     */
-    fun saveBitmapToJPGFile(bm: Bitmap, fileDir: String, fileName: String): Boolean {
-        var ret = false
-        var output: FileOutputStream? = null
-        val mf = File(fileDir, fileName)
-        try {
-            output = FileOutputStream(mf)
-            ret = bm.compress(Bitmap.CompressFormat.JPEG, 85, output)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            FileLogger.logger.severe(UtilFun.ExceptionToString(e))
-        } finally {
-            if (null != output) {
-                try {
-                    output.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    FileLogger.logger.severe(UtilFun.ExceptionToString(e))
-                }
 
-            }
-        }
-
-        return ret
-    }
 
     /**
      * open camera
@@ -205,14 +115,21 @@ internal abstract class SilentCamera {
     internal abstract fun closeCamera()
 
     companion object {
-        private val TAG = "SilentCamera"
-        val ORIENTATIONS = SparseIntArray()
-
-        init {
-            ORIENTATIONS.append(Surface.ROTATION_0, 90)
-            ORIENTATIONS.append(Surface.ROTATION_90, 0)
-            ORIENTATIONS.append(Surface.ROTATION_180, 270)
-            ORIENTATIONS.append(Surface.ROTATION_270, 180)
+        private val LOG_TAG = this.javaClass.simpleName
+        val ORIENTATIONS = SparseIntArray().apply {
+            append(Surface.ROTATION_0, 90)
+            append(Surface.ROTATION_90, 0)
+            append(Surface.ROTATION_180, 270)
+            append(Surface.ROTATION_270, 180)
         }
     }
+}
+
+/**
+ * hardware for camera
+ */
+data class CameraHardWare(val mId: String) {
+    var mSensorOrientation: Int = 0
+    var mFace: Int = 0
+    var mFlashSupported: Boolean = false
 }

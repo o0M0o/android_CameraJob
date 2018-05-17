@@ -17,7 +17,7 @@ import wxm.androidutil.util.UtilFun
 class ACSetting : ACSwitcherActivity<FrgSetting>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ContextUtil.instance.addActivity(this)
+        ContextUtil.addActivity(this)
     }
 
     override fun setupFragment(p0: Bundle?) {

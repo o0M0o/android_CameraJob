@@ -49,7 +49,7 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ac_job_show)
-        ContextUtil.instance.addActivity(this)
+        ContextUtil.addActivity(this)
 
         ButterKnife.bind(this)
         initActivity()

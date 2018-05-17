@@ -27,7 +27,6 @@ class ACLoader : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ac_loader)
 
-        ContextUtil.instance.addActivity(this)
         mayRequestPermission()
     }
 
@@ -35,8 +34,10 @@ class ACLoader : AppCompatActivity() {
      * 跳转到工作首界面
      */
     private fun jumpWorkActivity() {
-        val it = Intent(this, ACJobShow::class.java)
-        startActivityForResult(it, 1)
+        ContextUtil.initUtil()
+        ContextUtil.addActivity(this)
+
+        startActivityForResult(Intent(this, ACJobShow::class.java), 1)
     }
 
     /**
@@ -85,7 +86,7 @@ class ACLoader : AppCompatActivity() {
                         AlertDialog.Builder(this).setTitle("警告").setMessage(it)
                                 .setCancelable(false)
                                 .setPositiveButton("离开应用")
-                                { _, _ -> ContextUtil.instance.onTerminate() }
+                                { _, _ -> finish() }
                                 .create().show()
                     }
 

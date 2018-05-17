@@ -8,12 +8,15 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import android.util.JsonReader
 import android.util.JsonWriter
 import android.util.Log
+import android.view.WindowManager
 import com.wxm.camerajob.alarm.AlarmReceiver
 import com.wxm.camerajob.data.db.CameraJobDBUtility
 import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
@@ -33,14 +36,13 @@ import java.util.*
  */
 class ContextUtil : Application() {
     private val activities = ArrayList<Activity>()
-    private var mAppRootDir: String? = null
+    private lateinit var mAppRootDir: String
 
     /**
      * get photo root directory
      * @return  photo root directory
      */
-    var appPhotoRootDir: String? = null
-        private set
+    private lateinit var mPhotoRootDir: String
 
     private lateinit var mMsgHandler: GlobalMsgHandler
     private lateinit var mJobProcessor: CameraJobProcess
@@ -65,11 +67,15 @@ class ContextUtil : Application() {
     override fun onCreate() {
         super.onCreate()
         Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler)
-        initAppContext()
     }
 
-    fun addActivity(activity: Activity) {
-        activities.add(activity)
+    override fun onTerminate() {
+        Log.i(TAG, "Application onTerminate")
+
+        super.onTerminate()
+
+        activities.forEach { it.finish() }
+        System.exit(0)
     }
 
     /**
@@ -87,23 +93,22 @@ class ContextUtil : Application() {
                 } else true
             }.let {
                 mAppRootDir = sdcardDir.path
-                appPhotoRootDir = if (it) path else sdcardDir.path
+                mPhotoRootDir = if (it) path else sdcardDir.path
             }
         } else {
             try {
-                val innerPath = ContextUtil.Companion.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                val rootPath = ContextUtil.Companion.instance.getExternalFilesDir(null)
+                val innerPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                val rootPath = getExternalFilesDir(null)
                 assert(innerPath != null && rootPath != null)
 
                 mAppRootDir = rootPath.path
-                appPhotoRootDir = innerPath.path
+                mPhotoRootDir = innerPath.path
             } catch (e: NullPointerException) {
-                FileLogger.logger.severe(UtilFun.ExceptionToString(e))
             }
         }
 
         // for db
-        DBOrmLiteHelper(ContextUtil.Companion.instance).let {
+        DBOrmLiteHelper(this).let {
             mCameraJobUtility = CameraJobDBUtility(it)
             mCameraJobStatusUtility = CameraJobStatusDBUtility(it)
         }
@@ -121,20 +126,6 @@ class ContextUtil : Application() {
         }
 
         Log.i(TAG, "Application created")
-        FileLogger.logger.info("Application created")
-    }
-
-    override fun onTerminate() {
-        Log.i(TAG, "Application onTerminate")
-        FileLogger.logger.info("Application Terminate")
-
-        super.onTerminate()
-
-        for (activity in activities) {
-            activity.finish()
-        }
-
-        System.exit(0)
     }
 
     /**
@@ -152,26 +143,18 @@ class ContextUtil : Application() {
      * @param cj    job
      * @return      photo directory for cj
      */
-    fun createCameraJobPhotoDir(cj: CameraJob): String {
-        File(appPhotoRootDir + "/" + cj._id).let {
+    private fun createCameraJobPhotoDir(cj: CameraJob): String? {
+        File(mPhotoRootDir + "/" + cj._id).let {
             if (!it.exists()) {
                 it.mkdirs()
             }
 
             if (it.exists()) {
-                FileWriter(File(it.path, INFO_FN)).let {
+                FileWriter(File(it.path, INFO_FN)).use {
                     try {
                         cj.writeToJson(JsonWriter(it))
                     } catch (e: IOException) {
                         e.printStackTrace()
-                        FileLogger.logger.severe(
-                                "write cameraJob(" + cj.toString() + ") to file failed")
-                    } finally {
-                        try {
-                            it.close()
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
                     }
 
                     Unit
@@ -181,7 +164,7 @@ class ContextUtil : Application() {
             }
         }
 
-        return ""
+        return null
     }
 
     /**
@@ -189,32 +172,14 @@ class ContextUtil : Application() {
      * @param path      directory path
      * @return          camera job
      */
-    fun getCameraJobFromPath(path: String): CameraJob? {
-        var ret: CameraJob? = null
-        val p = File(path, INFO_FN)
-        if (p.exists()) {
-            var fw: FileReader? = null
-            try {
-                fw = FileReader(p)
-                val jw = JsonReader(fw)
-                ret = CameraJob.readFromJson(jw)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                FileLogger.logger.severe("read camerajob form '"
-                        + path + "' failed")
-            } finally {
-                if (null != fw) {
-                    try {
-                        fw.close()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-
+    private fun getCameraJobFromPath(path: String): CameraJob? {
+        return File(path, INFO_FN).let {
+            if (it.exists()) {
+                FileReader(it).use {
+                    CameraJob.readFromJson(JsonReader(it))
                 }
-            }
+            } else null
         }
-
-        return ret
     }
 
     /**
@@ -222,9 +187,9 @@ class ContextUtil : Application() {
      * @param cj_id     id for camera job
      * @return          photo directory path for job or ""
      */
-    fun getCameraJobPhotoDir(cj_id: Int): String {
-        return File("$appPhotoRootDir/$cj_id").let {
-            if(it.exists()) it.path else ""
+    private fun getCameraJobPhotoDir(cj_id: Int): String? {
+        return File("$mPhotoRootDir/$cj_id").let {
+            if (it.exists()) it.path else null
         }
     }
 
@@ -233,8 +198,57 @@ class ContextUtil : Application() {
         private const val INFO_FN = "info.json"
         private const val SELF_PACKAGE_NAME = "com.wxm.camerajob"
 
-        lateinit var instance: ContextUtil
-            private set
+        private lateinit var instance: ContextUtil
+
+        fun appContext(): ContextUtil = instance
+
+        fun initUtil() {
+            instance.initAppContext()
+        }
+
+        fun leaveAPP() {
+            instance.onTerminate()
+        }
+
+        fun getAppRootDir(): String {
+            return instance.mAppRootDir
+        }
+
+        fun getPhotoRootDir(): String {
+            return instance.mPhotoRootDir
+        }
+
+        fun addActivity(activity: Activity) {
+            instance.apply {
+                activities.add(activity)
+            }
+        }
+
+        fun createJobDir(cj: CameraJob): String? {
+            return instance.createCameraJobPhotoDir(cj)
+        }
+
+        fun getCameraJobFromDir(path: String): CameraJob? {
+            return instance.getCameraJobFromPath(path)
+        }
+
+        fun getCameraJobDir(cj_id: Int): String? {
+            return instance.getCameraJobPhotoDir(cj_id)
+        }
+
+
+        fun <T> getSystemService(service: String): T? {
+            @Suppress("UNCHECKED_CAST")
+            return instance.getSystemService(service) as T
+        }
+
+        fun getWindowManager(): WindowManager? {
+            return getSystemService(Context.WINDOW_SERVICE)
+        }
+
+        fun getCameraManager(): CameraManager? {
+            return getSystemService(Context.CAMERA_SERVICE)
+        }
 
         fun getMsgHandler(): Handler {
             return UtilFun.cast<Handler>(instance.mMsgHandler)
@@ -250,6 +264,11 @@ class ContextUtil : Application() {
 
         fun getCameraJobStatusUtility(): CameraJobStatusDBUtility {
             return instance.mCameraJobStatusUtility
+        }
+
+        fun checkPermission(permission: String): Boolean {
+            return ContextCompat.checkSelfPermission(instance, permission) ==
+                    PackageManager.PERMISSION_GRANTED
         }
 
         /**

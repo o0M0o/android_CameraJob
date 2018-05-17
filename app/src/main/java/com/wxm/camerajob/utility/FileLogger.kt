@@ -2,6 +2,7 @@ package com.wxm.camerajob.utility
 
 import android.os.Environment
 import android.support.design.BuildConfig
+import android.util.Log
 import wxm.androidutil.util.UtilFun
 import java.io.File
 import java.io.IOException
@@ -10,26 +11,20 @@ import java.util.logging.*
 
 /**
  * log in file
- * Created by 123 on 2016/6/18.
+ * Created by WangXM on 2016/6/18.
  */
 class FileLogger private constructor() {
     private val mLogTag: String = "P" + System.currentTimeMillis() % 100000
     private lateinit var mLogger: Logger
 
     init {
-        val logFileName = if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            Environment.getExternalStorageDirectory().path + "/CameraJobLogs".let {
-                File(it).let {
+        val fn = String.format(Locale.CHINA, LOG_NAME, mLogTag)
+        val logFileName = "${ContextUtil.getAppRootDir()}/$fn".apply{
+            File(this).let {
                     if (!it.exists()) {
                         it.mkdirs()
                     }
                 }
-
-                "$it/$LOG_NAME"
-            }
-        } else {
-            val innerPath = ContextUtil.Companion.instance.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)!!
-            innerPath.path + "/" + LOG_NAME
         }
 
         try {
@@ -47,22 +42,22 @@ class FileLogger private constructor() {
                     }
                 }
 
-                mLogger = Logger.getLogger("camerajob_runlog")
+                mLogger = Logger.getLogger("cameraJobRunLog")
                 mLogger.addHandler(it)
             }
 
             @Suppress("ConstantConditionIf")
             mLogger.level = if (BuildConfig.DEBUG) Level.INFO else Level.WARNING
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.e(LOG_TAG, "create file for log failure", e)
         }
-
     }
 
     companion object {
-        private const val LOG_NAME = "camerajob_run_%g.log"
+        private val LOG_TAG = ::FileLogger.javaClass.simpleName
+        private const val LOG_NAME = "cameraJob_run_%s.log"
 
-        var instance: FileLogger = FileLogger()
+        private val instance: FileLogger = FileLogger()
         var logger: Logger = instance.mLogger
     }
 }

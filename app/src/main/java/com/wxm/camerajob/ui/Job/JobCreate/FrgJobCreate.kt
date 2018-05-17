@@ -288,7 +288,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             return position
         }
 
-        override fun getView(position: Int, view: View, arg2: ViewGroup): View? {
+        override fun getView(position: Int, view: View?, arg2: ViewGroup?): View? {
             val v = super.getView(position, view, arg2)
             if (null != v) {
                 v.setOnClickListener(this)
@@ -381,7 +381,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             return position
         }
 
-        override fun getView(position: Int, view: View, arg2: ViewGroup): View? {
+        override fun getView(position: Int, view: View?, arg2: ViewGroup?): View? {
             val v = super.getView(position, view, arg2)
             if (null != v) {
                 v.setOnClickListener(this)
