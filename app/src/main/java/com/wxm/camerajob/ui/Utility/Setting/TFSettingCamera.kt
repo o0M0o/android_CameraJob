@@ -217,7 +217,7 @@ class TFSettingCamera : TFSettingBase() {
 
         mAAPhotoSize!!.let {
             it.clear()
-            it.addAll(mLLBackCameraDpi.map { it[it[GlobalDef.STR_CAMERA_DPI]] })
+            it.addAll(mLLBackCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
             it.notifyDataSetChanged()
         }
 
@@ -234,7 +234,7 @@ class TFSettingCamera : TFSettingBase() {
 
         mAAPhotoSize!!.let {
             it.clear()
-            it.addAll(mLLFrontCameraDpi.map { it[it[GlobalDef.STR_CAMERA_DPI]] })
+            it.addAll(mLLFrontCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
             it.notifyDataSetChanged()
         }
 

@@ -189,10 +189,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
                 }
 
                 R.id.rl_preview -> {
-                    it.startActivityForResult(
-                            Intent(it, ACCameraPreview::class.java).apply {
-                                putExtra(EAction.LOAD_CAMERA_SETTING.actName, PreferencesUtil.loadCameraParam())
-                            }, 1)
+                    it.startActivityForResult(Intent(it, ACCameraPreview::class.java), 1)
                 }
 
                 in intArrayOf(R.id.iv_clock_start, R.id.iv_clock_end) -> {

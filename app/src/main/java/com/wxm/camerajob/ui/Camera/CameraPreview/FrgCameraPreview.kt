@@ -18,6 +18,7 @@ import android.widget.Toast
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.EAction
+import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.Base.AutoFitTextureView
 import com.wxm.camerajob.utility.AlertDlgUtility
 import kotterknife.bindView
@@ -193,7 +194,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     override fun getLayoutID(): Int = R.layout.frg_camera
 
     override fun initUI(savedInstanceState: Bundle?) {
-        mCPParam = activity.intent.getParcelableExtra(EAction.LOAD_CAMERA_SETTING.actName)
+        mCPParam = PreferencesUtil.loadCameraParam()
         mTextureView.surfaceTextureListener = mSurfaceTextureListener
     }
 
