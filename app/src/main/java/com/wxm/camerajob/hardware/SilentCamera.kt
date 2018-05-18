@@ -20,17 +20,11 @@ abstract class SilentCamera {
     var mTPParam: TakePhotoParam? = null
     var mCParam: CameraParam? = null
 
-
     private var mTPCBTakePhoto: SilentCameraTakePhotoCallBack? = null
-
-    interface SilentCameraOpenCameraCallBack {
-        fun onOpenSuccess(cp: CameraParam)
-        fun onOpenFailed(cp: CameraParam)
-    }
 
     interface SilentCameraTakePhotoCallBack {
         fun onTakePhotoSuccess(tp: TakePhotoParam)
-        fun onTakePhotoFailed(tp: TakePhotoParam?)
+        fun onTakePhotoFailed(tp: TakePhotoParam)
     }
 
     /**
@@ -51,8 +45,8 @@ abstract class SilentCamera {
      * callback for open camera
      * @param ret  true if success
      */
-    fun openCameraCallBack(ret: Boolean?) {
-        if (ret!!) {
+    fun openCameraCallBack(ret: Boolean) {
+        if (ret) {
             "camera opened".apply {
                 Log.i(LOG_TAG, this)
                 FileLogger.logger.info(this)
@@ -77,7 +71,6 @@ abstract class SilentCamera {
         val tag = if (mTPParam == null) "null"
         else mTPParam!!.mTag
 
-        closeCamera()
         if (ret) {
             ("take photo success, tag = $tag, photoFile = ${mTPParam!!.mFileName}").apply {
                 Log.i(LOG_TAG, this)
@@ -91,8 +84,9 @@ abstract class SilentCamera {
                 FileLogger.logger.info(this)
             }
 
-            mTPCBTakePhoto?.onTakePhotoFailed(mTPParam)
+            mTPCBTakePhoto?.onTakePhotoFailed(mTPParam!!)
         }
+        closeCamera()
     }
 
 
@@ -115,7 +109,7 @@ abstract class SilentCamera {
     internal abstract fun closeCamera()
 
     companion object {
-        private val LOG_TAG = this.javaClass.simpleName
+        private val LOG_TAG = ::SilentCameraNew.javaClass.simpleName
         val ORIENTATIONS = SparseIntArray().apply {
             append(Surface.ROTATION_0, 90)
             append(Surface.ROTATION_90, 0)

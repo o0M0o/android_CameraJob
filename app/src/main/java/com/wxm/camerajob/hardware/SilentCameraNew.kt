@@ -121,27 +121,23 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
     public override fun openCamera() {
         if (!setupCamera()) {
-            Log.w(LOG_TAG, "setup camera failure")
+            Log.e(LOG_TAG, "setup camera failure")
             openCameraCallBack(false)
             return
         }
 
         if (!ContextUtil.checkPermission(Manifest.permission.CAMERA)) {
-            Log.i(LOG_TAG, "need camera permission")
+            Log.e(LOG_TAG, "need camera permission")
             openCameraCallBack(false)
             return
         }
 
         try {
-            ContextUtil.getCameraManager()
-                    ?.openCamera(mCamera!!.mId, mCameraDeviceStateCallback, mCParam!!.mSessionHandler)
+            ContextUtil.getCameraManager()!!.openCamera(mCamera!!.mId, mCameraDeviceStateCallback, mCParam!!.mSessionHandler)
         } catch (e: Exception) {
+            Log.e(LOG_TAG, "", e)
+            FileLogger.logger.severe(e.toString())
             openCameraCallBack(false)
-
-            UtilFun.ThrowableToString(e).apply {
-                Log.e(LOG_TAG, this)
-                FileLogger.logger.severe(this)
-            }
         }
     }
 
@@ -153,10 +149,12 @@ class SilentCameraNew internal constructor() : SilentCamera() {
             ImageReader.newInstance(
                     mCParam!!.mPhotoSize.width, mCParam!!.mPhotoSize.height,
                     ImageFormat.JPEG, 2).let {
+                /*
                 it.setOnImageAvailableListener(
                         {
                             Log.i(LOG_TAG, "image already")
                         }, mCParam!!.mSessionHandler)
+                        */
 
                 mCameraDevice!!.createCaptureSession(listOf<Surface>(it.surface),
                         CaptureStateCallback(this, it), null)
@@ -169,13 +167,12 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     }
 
     public override fun closeCamera() {
-        mCaptureSession?.close()
         mCameraDevice?.close()
+        mCaptureSession?.close()
 
-        ("camera closed, paraTag = " + if (mTPParam == null) "null" else mTPParam!!.mTag).let {
-            Log.i(LOG_TAG, it)
-            FileLogger.logger.info(it)
-            Unit
+        ("camera closed, paraTag = " + if (mTPParam == null) "null" else mTPParam!!.mTag).apply {
+            Log.i(LOG_TAG, this)
+            FileLogger.logger.info(this)
         }
 
         mCameraStatus = ECameraStatus.NOT_OPEN
@@ -184,7 +181,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
-        internal val LOG_TAG = javaClass.simpleName
+        internal val LOG_TAG = ::SilentCameraNew.javaClass.simpleName
     }
 }
 

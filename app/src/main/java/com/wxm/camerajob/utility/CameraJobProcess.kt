@@ -3,6 +3,7 @@ package com.wxm.camerajob.utility
 import android.os.Message
 import android.util.Log
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.hardware.SilentCamera
 import com.wxm.camerajob.hardware.SilentCameraHelper
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,29 +58,25 @@ class CameraJobProcess {
                             it._id, CALENDAR_STR.format(System.currentTimeMillis())),
                             Integer.toString(it._id))
 
-                    SilentCameraHelper().let {
-                        it.setTakePhotoCallBack(object : SilentCameraHelper.TakePhotoCallBack {
-                            override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                                Log.i(LOG_TAG, "take photo success, tag = " + tp.mTag)
+                    SilentCameraHelper(object : SilentCamera.SilentCameraTakePhotoCallBack {
+                        override fun onTakePhotoFailed(tp: TakePhotoParam) {
+                            Log.i(LOG_TAG, "take photo success, tag = " + tp.mTag)
 
-                                Message.obtain(ContextUtil.getMsgHandler(),
-                                        EMsgType.CAMERAJOB_TAKEPHOTO.id,
-                                        arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
-                                wakeupDuty(lsJob)
-                            }
+                            Message.obtain(ContextUtil.getMsgHandler(),
+                                    EMsgType.CAMERAJOB_TAKEPHOTO.id,
+                                    arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
+                            wakeupDuty(lsJob)
+                        }
 
-                            override fun onTakePhotoFailed(tp: TakePhotoParam) {
-                                "take photo failure, tag = ${tp.mTag}".let {
+                        override fun onTakePhotoSuccess(tp: TakePhotoParam) {
+                            "take photo failure, tag = ${tp.mTag}".let {
                                     Log.e(LOG_TAG, it)
                                     FileLogger.logger.severe(it)
                                 }
 
                                 wakeupDuty(lsJob)
-                            }
-                        })
-
-                        it.takePhoto(PreferencesUtil.loadCameraParam(), param)
-                    }
+                        }
+                    }).takePhoto(PreferencesUtil.loadCameraParam(), param)
                 }
             }
         }

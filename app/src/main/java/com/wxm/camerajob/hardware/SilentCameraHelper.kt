@@ -13,22 +13,7 @@ import wxm.androidutil.util.UtilFun
  * helper for silent camera
  * Created by WangXM on 2016/6/16.
  */
-class SilentCameraHelper {
-    private var mTPCBTakePhoto: TakePhotoCallBack? = null
-
-    interface TakePhotoCallBack {
-        fun onTakePhotoSuccess(tp: TakePhotoParam)
-        fun onTakePhotoFailed(tp: TakePhotoParam)
-    }
-
-    /**
-     * set callback for take photo
-     * @param tcb  callback holder
-     */
-    fun setTakePhotoCallBack(tcb: TakePhotoCallBack) {
-        mTPCBTakePhoto = tcb
-    }
-
+class SilentCameraHelper(private val mTPCBTakePhoto: SilentCamera.SilentCameraTakePhotoCallBack) {
     /**
      * take photo
      * @param cp    for camera
@@ -46,20 +31,10 @@ class SilentCameraHelper {
         : Runnable {
         private val mSCSelfCamera: SilentCamera = SilentCameraNew()
 
-        private val mTPCTake = object : SilentCamera.SilentCameraTakePhotoCallBack {
-            override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                mTPCBTakePhoto?.onTakePhotoSuccess(mSelfTPTakePhoto)
-            }
-
-            override fun onTakePhotoFailed(tp: TakePhotoParam?) {
-                mTPCBTakePhoto?.onTakePhotoFailed(mSelfTPTakePhoto)
-            }
-        }
-
         override fun run() {
             try {
                 mSelfCameraParam.mSessionHandler = Handler()
-                mSCSelfCamera.takePhoto(mSelfCameraParam, mSelfTPTakePhoto, mTPCTake)
+                mSCSelfCamera.takePhoto(mSelfCameraParam, mSelfTPTakePhoto, mTPCBTakePhoto)
             } catch (e: Throwable) {
                 UtilFun.ThrowableToString(e).apply {
                     Log.d(LOG_TAG, this)

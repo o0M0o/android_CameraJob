@@ -24,16 +24,22 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         private const val COMPLETE_TAG = 2
     }
 
-    private var mWaitCount = 0
-
-    private fun checkAE(aeState: Int?) : Boolean  {
-        return aeState == null
-                    || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
-                    || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED
-                    || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
+    init {
+        mReader.setOnImageAvailableListener(
+                { reader -> processImage(reader.acquireNextImage()) },
+                mHome.mCParam!!.mSessionHandler)
     }
 
-    private fun processImage(ig: Image?)    {
+    private var mWaitCount = 0
+
+    private fun checkAE(aeState: Int?): Boolean {
+        return aeState == null
+                || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
+                || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED
+                || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
+    }
+
+    private fun processImage(ig: Image?) {
         if (null == ig) {
             mHome.takePhotoCallBack(false)
         } else {
@@ -45,19 +51,24 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                 }
             }
 
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size).apply {
-                ImageUtil.rotateBitmap(this, mHome.orientation, null)
-            }.let {
-                ImageUtil.saveBitmapToJPGFile(it, mHome.mTPParam!!.mPhotoFileDir, mHome.mTPParam!!.mFileName)
-            }.let {
-                mHome.mCameraStatus = if (it) ECameraStatus.TAKE_PHOTO_SUCCESS
+            try {
+                ImageUtil.rotateBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size),
+                        mHome.orientation, null)!!.let {
+                    ImageUtil.saveBitmapToJPGFile(it, mHome.mTPParam!!.mPhotoFileDir, mHome.mTPParam!!.mFileName)
+                }.let {
+                    mHome.mCameraStatus = if (it) ECameraStatus.TAKE_PHOTO_SUCCESS
                     else ECameraStatus.TAKE_PHOTO_FAILURE
-                mHome.takePhotoCallBack(it)
+                    mHome.takePhotoCallBack(it)
 
-                Unit
+                    Unit
+                }
+            } catch (e: Throwable) {
+                Log.e(LOG_TAG, "save file failure", e)
+                mHome.takePhotoCallBack(false)
             }
         }
     }
+
 
     /**
      * if use mCaptureSession.capture, then not need check AE_STATE
@@ -68,14 +79,26 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         mWaitCount++
         if (MAX_WAIT_TIMES < mWaitCount) {
             Log.e(LOG_TAG, "wait too many times")
-            processImage(mReader.acquireLatestImage())
+            //processImage(mReader.acquireLatestImage())
         } else {
             result.get(CaptureResult.CONTROL_AE_STATE).let {
                 Log.i(LOG_TAG, "tag = $tag ae = ${it?.toString() ?: "null"}, " +
                         "waitCount = $mWaitCount")
+                /*
                 if(checkAE(result.get(CaptureResult.CONTROL_AE_STATE))) {
-                    mReader.acquireLatestImage()?.let {
-                        processImage(it)
+                    mReader.acquireLatestImage().let {
+                        if(null != it) {
+                            processImage(it)    }
+                        else {
+                            Log.w(LOG_TAG, "ImageReader is empty!")
+                            try {
+                                Thread.sleep(250)
+                                //mHome.mCaptureSession!!.capture(mBuilder.build(), this, null)
+                            } catch (e: InterruptedException) {
+                                Log.e(LOG_TAG, "thread interrupted", e)
+                                mHome.takePhotoCallBack(false)
+                            }
+                        }
                     }
                 } else  {
                     Log.i(LOG_TAG, "wait image")
@@ -87,6 +110,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                         mHome.takePhotoCallBack(false)
                     }
                 }
+                */
 
                 Unit
             }

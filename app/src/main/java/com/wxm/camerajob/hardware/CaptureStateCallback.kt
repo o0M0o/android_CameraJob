@@ -36,7 +36,7 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
                 Unit
             }
         } catch (e: CameraAccessException) {
-            e.printStackTrace()
+            Log.e(LOG_TAG, "onConfigured", e)
             mHome.takePhotoCallBack(false)
         }
     }
@@ -44,5 +44,9 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
     override fun onConfigureFailed(session: CameraCaptureSession) {
         Log.e(SilentCameraNew.LOG_TAG, "onConfigureFailed, session : $session")
         mHome.takePhotoCallBack(false)
+    }
+
+    companion object {
+        private val LOG_TAG = ::CaptureStateCallback.javaClass.simpleName
     }
 }
