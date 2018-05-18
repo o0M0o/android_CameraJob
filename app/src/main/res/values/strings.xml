@@ -7,8 +7,8 @@
     <string name="cn_camera_setting">设置相机</string>
     <string name="cn_camera_test">测试相机</string>
     <string name="cn_silentcamera_test">测试静默相机</string>
-    <string name="cn_accept">接受</string>
-    <string name="cn_giveup">放弃</string>
+    <string name="accept">接受</string>
+    <string name="cancel">放弃</string>
     <string name="cn_leave">返回</string>
     <string name="cn_help">帮助</string>
     <string name="cn_setting">设定</string>
@@ -48,7 +48,13 @@
     <string name="hint_use_email_send">开启邮件推送照片</string>
 
     <string name="cn_save">保存</string>
-    <string name="job_name">任务名</string>
+    <string name="jobName">任务名</string>
+
+
+    <string name="hint">提示</string>
+    <string name="warn">警告</string>
+    <string name="error">错误</string>
+    <string name="info_need_stop_job">请先删除或暂停运行中任务!</string>
 
     <string name="cn_usr_message">请输入您的意见或建议</string>
     <!-- for send message -->

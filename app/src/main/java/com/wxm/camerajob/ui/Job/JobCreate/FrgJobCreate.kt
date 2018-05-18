@@ -2,27 +2,27 @@ package com.wxm.camerajob.ui.Job.JobCreate
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import android.support.annotation.IdRes
 import android.util.Log
 import android.view.View
 import android.widget.*
-import android.widget.SimpleAdapter.ViewBinder
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.ui.Base.EventHelper
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
-import com.wxm.camerajob.utility.AlertDlgUtility
 import com.wxm.camerajob.utility.CalendarUtility
+import com.wxm.camerajob.utility.DlgUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import wxm.androidutil.Dialog.DlgDatePicker
-import wxm.androidutil.Dialog.DlgOKOrNOBase
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
 import wxm.androidutil.MoreAdapter.MoreAdapter
 import wxm.androidutil.ViewHolder.ViewHolder
@@ -67,6 +67,8 @@ class FrgJobCreate : FrgSupportBaseAdv() {
         EventHelper.setOnClickOperator(view!!,
                 intArrayOf(R.id.iv_clock_start, R.id.iv_clock_end, R.id.rl_setting, R.id.rl_preview),
                 ::onClick)
+
+        autoScroll(R.id.rl_start_end_date)
     }
 
     /**
@@ -87,52 +89,54 @@ class FrgJobCreate : FrgSupportBaseAdv() {
      * @return  if parameter legal return job else return null
      */
     fun onAccept(): CameraJob? {
-        val job_name = mETJobName.text.toString()
-        val job_type = (mGVJobType.adapter as GVJobTypeAdapter).selectJobType
-        val job_point = if (job_type!!.isEmpty()) ""
+        val jobName = mETJobName.text.toString()
+        val jobType = (mGVJobType.adapter as GVJobTypeAdapter).selectJobType
+        val jobPoint = if (jobType!!.isEmpty()) ""
         else (mGVJobPoint.adapter as GVJobPointAdapter).selectJobPoint
 
-        val job_starttime = mTVJobStartDate.text.toString() + ":00"
-        val job_endtime = mTVJobEndDate.text.toString() + ":00"
+        val jobStartDate = mTVJobStartDate.text.toString() + ":00"
+        val jobEndDate = mTVJobEndDate.text.toString() + ":00"
 
-        if (job_name.isEmpty()) {
+        if (jobName.isEmpty()) {
             Log.i(LOG_TAG, "job name为空")
             mETJobName.requestFocus()
 
-            AlertDlgUtility.showAlert(activity, "警告", "请输入任务名!")
+            DlgUtility.showAlert(activity, R.string.warn, "请输入任务名!")
             return null
         }
 
-        if (job_type.isEmpty()) {
+        if (jobType.isEmpty()) {
             Log.i(LOG_TAG, "job type为空")
             mGVJobType.requestFocus()
 
-            AlertDlgUtility.showAlert(activity, "警告", "请选择任务类型!")
+            DlgUtility.showAlert(activity, R.string.warn, "请选择任务类型!")
             return null
         }
 
-        if (job_point!!.isEmpty()) {
+        if (jobPoint!!.isEmpty()) {
             Log.i(LOG_TAG, "job point为空")
             mGVJobPoint.requestFocus()
 
-            AlertDlgUtility.showAlert(activity, "警告", "请选择任务激活方式!")
+            DlgUtility.showAlert(activity, R.string.warn, "请选择任务激活方式!")
             return null
         }
 
-        val st = UtilFun.StringToTimestamp(job_starttime)
-        val et = UtilFun.StringToTimestamp(job_endtime)
+        val st = UtilFun.StringToTimestamp(jobStartDate)
+        val et = UtilFun.StringToTimestamp(jobEndDate)
         if (st >= et) {
-            val show = String.format("任务开始时间(%s)比结束时间(%s)晚", job_starttime, job_endtime)
-            Log.w(LOG_TAG, show)
+            String.format(Locale.CHINA, "任务开始时间(%s)比结束时间(%s)晚",
+                    jobStartDate, jobEndDate).apply {
+                Log.w(LOG_TAG, this)
+                DlgUtility.showAlert(activity, "警告", this)
+            }
 
-            AlertDlgUtility.showAlert(activity, "警告", show)
             return null
         }
 
         return CameraJob().apply {
-            name = job_name
-            type = job_type
-            point = job_point
+            name = jobName
+            type = jobType
+            point = jobPoint
             starttime = st
             endtime = et
             ts.time = System.currentTimeMillis()
@@ -155,7 +159,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
 
         // for job type & job point
         ArrayList<HashMap<String, String>>().apply {
-            addAll(resources.getStringArray(R.array.job_type)
+            addAll(resources.getStringArray(R.array.jobType)
                     .map { HashMap<String, String>().apply { put(KEY_JOB_TYPE, it) } })
         }.let {
             mGVJobType.adapter = GVJobTypeAdapter(it,
@@ -193,31 +197,56 @@ class FrgJobCreate : FrgSupportBaseAdv() {
                 }
 
                 in intArrayOf(R.id.iv_clock_start, R.id.iv_clock_end) -> {
+                    val title = if (R.id.iv_clock_start == v.id) "选择任务启动时间" else "选择任务结束时间"
                     (if (R.id.iv_clock_start == v.id) mTVJobStartDate else mTVJobEndDate).let {
-                        DlgDatePicker().apply {
-                            setInitDate(it.text.toString() + ":00")
-                            addDialogListener(object : DlgOKOrNOBase.DialogResultListener {
-                                override fun onDialogPositiveResult(dialog: DialogFragment) {
-                                    val curDate = (dialog as DlgDatePicker).curDate
-                                    if (!UtilFun.StringIsNullOrEmpty(curDate))
-                                        it.text = curDate.substring(0, 16)
+                        val cl = CalendarUtility.parseYearMonthDayHourMinuteStr(it.text)
+                        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                            val strDate = String.format(Locale.CHINA, "%04d-%02d-%02d",
+                                    year, month + 1, dayOfMonth)
 
-                                    it.requestFocus()
-                                }
-
-                                override fun onDialogNegativeResult(dialog: DialogFragment) {
-                                    it.requestFocus()
-                                }
-                            })
-
-                            show(fragmentManager,
-                                    if (R.id.iv_clock_start == v.id) "选择任务启动时间" else "选择任务结束时间")
+                            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                                it.text = String.format(Locale.CHINA, "%s %02d:%02d",
+                                        strDate, hourOfDay, minute)
+                                it.requestFocus()
+                            }.let {
+                                TimePickerDialog(context, it, cl.get(Calendar.HOUR_OF_DAY),
+                                        cl.get(Calendar.MINUTE), true)
+                                        .apply { setTitle(title) }
+                                        .show()
+                            }
+                        }.let {
+                            DatePickerDialog(context, it, cl.get(Calendar.YEAR), cl.get(Calendar.MONTH),
+                                    cl.get(Calendar.DAY_OF_MONTH))
+                                    .apply { setTitle(title) }
+                                    .show()
                         }
                     }
                 }
             }
 
             Unit
+        }
+    }
+
+    /**
+     * auto scroll to view [vw] with margin to top [topMargin]
+     */
+    private fun autoScroll(vw: Any, topMargin: Int = 60) {
+        val vwHome = view!!
+        { v: View, hasFocus: Boolean ->
+            vwHome.scrollY = if (hasFocus) {
+                Rect().apply { vwHome.getGlobalVisibleRect(this) }.top
+                        .let {
+                            Rect().apply { v.getGlobalVisibleRect(this) }
+                                    .top - it - topMargin
+                        }
+            } else 0
+        }.apply{
+            when(vw)    {
+                is Int -> vwHome.findViewById<View>(vw)!!.setOnFocusChangeListener(this)
+                is View -> vw.setOnFocusChangeListener(this)
+                else -> throw IllegalStateException("${vw.javaClass.name} not support scroll!")
+            }
         }
     }
 

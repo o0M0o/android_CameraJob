@@ -17,10 +17,9 @@ import android.view.TextureView
 import android.widget.Toast
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
-import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.Base.AutoFitTextureView
-import com.wxm.camerajob.utility.AlertDlgUtility
+import com.wxm.camerajob.utility.DlgUtility
 import kotterknife.bindView
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
 import wxm.androidutil.type.MySize
@@ -464,7 +463,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         } catch (e: NullPointerException) {
-            AlertDlgUtility.showAlert(activity, "Error", getString(R.string.camera_error))
+            DlgUtility.showAlert(activity, "Error", getString(R.string.camera_error))
         }
     }
 

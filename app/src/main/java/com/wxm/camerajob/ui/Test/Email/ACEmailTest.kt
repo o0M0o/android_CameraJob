@@ -12,7 +12,7 @@ import android.view.View
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.Base.SendEmailHelper
 import com.wxm.camerajob.ui.Base.SendEmailPara
-import com.wxm.camerajob.utility.AlertDlgUtility
+import com.wxm.camerajob.utility.DlgUtility
 import kotterknife.bindView
 
 import wxm.androidutil.util.UtilFun
@@ -98,37 +98,37 @@ class ACEmailTest : AppCompatActivity(), View.OnClickListener {
     private fun checkSendEmail(): Boolean {
         val szWarn = "警告"
         if (UtilFun.StringIsNullOrEmpty(mETEmailSender.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件发送方!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件发送方!")
             return false
         }
 
         if (UtilFun.StringIsNullOrEmpty(mETEmailSenderPWD.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件发送方登录密码!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件发送方登录密码!")
             return false
         }
 
         if (UtilFun.StringIsNullOrEmpty(mETEmailServerType.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件发送服务器协议类型!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件发送服务器协议类型!")
             return false
         }
 
         if (UtilFun.StringIsNullOrEmpty(mETEmailServerHost.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件发送服务器地址!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件发送服务器地址!")
             return false
         }
 
         if (UtilFun.StringIsNullOrEmpty(mETEmailReceiver.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件接收方!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件接收方!")
             return false
         }
 
         if (UtilFun.StringIsNullOrEmpty(mETEmailTitle.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件标题!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件标题!")
             return false
         }
 
         if (UtilFun.StringIsNullOrEmpty(mETEmailBody.text.toString())) {
-            AlertDlgUtility.showAlert(this, szWarn, "请输入邮件正文!")
+            DlgUtility.showAlert(this, szWarn, "请输入邮件正文!")
             return false
         }
 
@@ -142,11 +142,11 @@ class ACEmailTest : AppCompatActivity(), View.OnClickListener {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MSG_TYPE_SEND_EMAIL_SUCCESS -> {
-                    AlertDlgUtility.showAlert(mACHome, "提示", "邮件发送成功!")
+                    DlgUtility.showAlert(mACHome, "提示", "邮件发送成功!")
                 }
 
                 MSG_TYPE_SEND_EMAIL_FAILURE -> {
-                    AlertDlgUtility.showAlert(mACHome, "警告", "邮件发送失败!")
+                    DlgUtility.showAlert(mACHome, "警告", "邮件发送失败!")
                 }
 
                 else -> Log.e(LOG_TAG, "$msg can not process")

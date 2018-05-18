@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="job_type">
+    <string-array name="jobType">
         <item>每分钟</item>
         <item>每小时</item>
         <item>每天</item>

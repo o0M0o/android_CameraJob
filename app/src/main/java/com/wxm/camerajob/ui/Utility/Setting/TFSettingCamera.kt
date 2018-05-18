@@ -2,24 +2,23 @@ package com.wxm.camerajob.ui.Utility.Setting
 
 
 import android.annotation.TargetApi
-import android.content.Context
 import android.content.Intent
 import android.graphics.ImageFormat
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.*
-import butterknife.OnClick
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
+import com.wxm.camerajob.ui.Base.EventHelper
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview
+import com.wxm.camerajob.utility.DlgUtility
 import com.wxm.camerajob.utility.ContextUtil
 import kotterknife.bindView
 import wxm.androidutil.type.MySize
@@ -87,22 +86,9 @@ class TFSettingCamera : TFSettingBase() {
         if (ContextUtil.useNewCamera())
             loadCameraInfo()
 
-        // for camera preview
-        view!!.findViewById<View>(R.id.rl_switch)!!.let {
-            it.setOnClickListener { _ ->
-                if (0 < ContextUtil.getCameraJobUtility().getActiveJobCount()) {
-                    AlertDialog.Builder(context)
-                            .setTitle("无法进行预览")
-                            .setMessage("有任务在运行中，请删除或暂停任务后进行预览!")
-                            .create().show()
-                } else {
-                    Intent(activity, ACCameraPreview::class.java).let {
-                        it.putExtra(EAction.LOAD_CAMERA_SETTING.actName, curCameraParam)
-                        startActivityForResult(it, 1)
-                    }
-                }
-            }
-        }
+        EventHelper.setOnClickOperator(view!!,
+                intArrayOf(R.id.acrb_cs_backcamera, R.id.acrb_cs_frontcamera, R.id.rl_switch),
+                ::clickProcess)
 
         loadUI(savedInstanceState)
     }
@@ -121,10 +107,8 @@ class TFSettingCamera : TFSettingBase() {
         }
     }
 
-    @OnClick(R.id.acrb_cs_backcamera, R.id.acrb_cs_frontcamera)
-    fun onRadioButtonClick(v: View) {
-        val vid = v.id
-        when (vid) {
+    private fun clickProcess(v: View)   {
+        when(v.id)  {
             R.id.acrb_cs_backcamera -> {
                 mCPFront = curCameraParam.clone()
                 fillBackCamera()
@@ -137,6 +121,17 @@ class TFSettingCamera : TFSettingBase() {
                 fillFrontCamera()
 
                 isSettingDirty = true
+            }
+
+            R.id.rl_switch -> {
+                if (0 < ContextUtil.getCameraJobUtility().getActiveJobCount()) {
+                    DlgUtility.showAlert(context, R.string.warn, R.string.info_need_stop_job)
+                } else {
+                    Intent(activity, ACCameraPreview::class.java).let {
+                        it.putExtra(EAction.LOAD_CAMERA_SETTING.actName, curCameraParam)
+                        startActivityForResult(it, 1)
+                    }
+                }
             }
         }
     }

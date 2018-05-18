@@ -2,7 +2,6 @@ package com.wxm.camerajob.ui.Job.JobCreate
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -12,6 +11,7 @@ import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**
@@ -94,13 +94,13 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
     private fun checkCamera() {
         if (!PreferencesUtil.checkCameraIsSet()) {
             val home = this
-            AlertDialog.Builder(home)
-                    .setTitle("相机未设置，需要先设置相机")
-                    .setPositiveButton("确 定") { _, _ ->
-                        val data = Intent(home, ACCameraSetting::class.java)
-                        startActivityForResult(data, REQUEST_SET_CAMERA)
-                    }
-                    .create().show()
+            DlgUtility.showAlert(this, R.string.warn, "相机未设置，需要先设置相机",
+                    { dlg ->
+                        dlg.setPositiveButton("确 定") { _, _ ->
+                            val data = Intent(home, ACCameraSetting::class.java)
+                            startActivityForResult(data, REQUEST_SET_CAMERA)
+                        }
+                    })
         }
     }
 

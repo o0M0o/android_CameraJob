@@ -14,5 +14,5 @@
         android:icon="@drawable/ic_giveup_white"
         app:showAsAction="always"
         android:id="@+id/mi_giveup"
-        android:title="@string/cn_giveup" />
+        android:title="@string/cancel" />
 </menu>

@@ -6,11 +6,11 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.Job.JobShow.ACJobShow
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.DlgUtility
 import java.util.*
 
 /**
@@ -62,9 +62,9 @@ class ACLoader : AppCompatActivity() {
 
             it
         }.toTypedArray().let {
-            if(it.isEmpty()) {
+            if (it.isEmpty()) {
                 jumpWorkActivity()
-            } else  {
+            } else {
                 ActivityCompat.requestPermissions(this, it, REQUEST_ALL)
             }
 
@@ -83,11 +83,12 @@ class ACLoader : AppCompatActivity() {
                 if (grantResults[it] != PackageManager.PERMISSION_GRANTED) {
                     String.format(Locale.CHINA, "由于缺少必须的权限(%s)，本APP无法运行!",
                             permissions[it]).let {
-                        AlertDialog.Builder(this).setTitle("警告").setMessage(it)
-                                .setCancelable(false)
-                                .setPositiveButton("离开应用")
-                                { _, _ -> finish() }
-                                .create().show()
+                        DlgUtility.showAlert(this, R.string.warn, it,
+                                { builder ->
+                                    builder.setCancelable(false)
+                                    builder.setPositiveButton("离开应用")
+                                    { _, _ -> finish() }
+                                })
                     }
 
                     return

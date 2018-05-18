@@ -4,16 +4,14 @@ import android.Manifest.permission.READ_PHONE_STATE
 import android.Manifest.permission.READ_SMS
 import android.app.ProgressDialog
 import android.content.DialogInterface
-import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Message
 import android.support.design.widget.TextInputEditText
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import com.wxm.camerajob.R
-import com.wxm.camerajob.utility.AlertDlgUtility
+import com.wxm.camerajob.utility.DlgUtility
 import com.wxm.camerajob.utility.ContextUtil
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -62,8 +60,8 @@ class DlgUsrMessage : DlgOKOrNOBase() {
             mSZColAppName = it.getString(R.string.col_app_name)
             mSZColValAppName = it.getString(R.string.col_val_app_name)
             mSZUsrMessage = it.getString(R.string.cn_usr_message)
-            mSZAccept = it.getString(R.string.cn_accept)
-            mSZGiveUp = it.getString(R.string.cn_giveup)
+            mSZAccept = it.getString(R.string.accept)
+            mSZGiveUp = it.getString(R.string.cancel)
 
             Unit
         }
@@ -76,7 +74,7 @@ class DlgUsrMessage : DlgOKOrNOBase() {
     override fun checkBeforeOK(): Boolean {
         mETUsrMessage.text.toString().let {
             if (UtilFun.StringIsNullOrEmpty(it)) {
-                AlertDlgUtility.showAlert(activity, "警告", "消息不能为空")
+                DlgUtility.showAlert(activity, "警告", "消息不能为空")
                 return false
             }
 

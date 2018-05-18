@@ -2,13 +2,13 @@ package com.wxm.camerajob.ui.Camera.CameraSetting
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.ui.Utility.Setting.TFSettingCamera
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**
@@ -40,15 +40,16 @@ open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
                 val data = Intent()
                 hotFragment.let {
                     if (it.isSettingDirty) {
-                        AlertDialog.Builder(this)
-                                .setTitle("配置已经更改").setMessage("是否保存更改的配置?")
-                                .setPositiveButton("是") { _, _ ->
-                                    it.updateSetting()
-                                    setResult(GlobalDef.INTRET_CS_ACCEPT, data)
-                                    finish()
-                                }.setNegativeButton("否") { _, _ ->
-                                    leaveActivity()
-                                }.create().show()
+                        DlgUtility.showAlert(this, R.string.hint, "是否保存更改的配置?",
+                                { dlg ->
+                                    dlg.setPositiveButton("是") { _, _ ->
+                                        it.updateSetting()
+                                        setResult(GlobalDef.INTRET_CS_ACCEPT, data)
+                                        finish()
+                                    }.setNegativeButton("否") { _, _ ->
+                                        leaveActivity()
+                                    }
+                                })
                     } else {
                         finish()
                     }

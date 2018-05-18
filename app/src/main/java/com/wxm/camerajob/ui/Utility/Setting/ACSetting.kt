@@ -2,14 +2,13 @@ package com.wxm.camerajob.ui.Utility.Setting
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity
-import wxm.androidutil.util.UtilFun
 
 /**
  * for setting
@@ -40,15 +39,17 @@ class ACSetting : ACSwitcherActivity<FrgSetting>() {
                 if (FrgSetting.PAGE_IDX_MAIN != hotFragment.currentItem) {
                     hotFragment.currentPage!!.let {
                         if (it.isSettingDirty) {
-                            AlertDialog.Builder(this)
-                                    .setTitle("配置已经更改").setMessage("是否保存更改的配置?")
-                                    .setPositiveButton("是") { _, _ ->
-                                        it.updateSetting()
-                                        changePage(FrgSetting.PAGE_IDX_MAIN)
+                            DlgUtility.showAlert(this, R.string.warn, "是否保存更改的配置?",
+                                    { dlg ->
+                                        dlg.setPositiveButton("是") { _, _ ->
+                                            it.updateSetting()
+                                            changePage(FrgSetting.PAGE_IDX_MAIN)
+                                        }
+                                        dlg.setNegativeButton("否") { _, _ ->
+                                            changePage(FrgSetting.PAGE_IDX_MAIN)
+                                        }
                                     }
-                                    .setNegativeButton("否") { _, _ ->
-                                        changePage(FrgSetting.PAGE_IDX_MAIN) }
-                                    .create().show()
+                            )
                         } else {
                             changePage(FrgSetting.PAGE_IDX_MAIN)
                         }

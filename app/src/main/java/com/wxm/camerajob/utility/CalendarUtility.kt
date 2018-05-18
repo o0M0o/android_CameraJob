@@ -17,10 +17,10 @@ object CalendarUtility {
         return utility.format(cl.timeInMillis)
     }
 
-    private fun doParse(szCl: String, utility: SimpleDateFormat): Calendar    {
+    private fun doParse(szCl: CharSequence, utility: SimpleDateFormat): Calendar    {
         return Calendar.getInstance().apply {
             try {
-                timeInMillis = utility.parse(szCl).time
+                timeInMillis = utility.parse(szCl as? String ?: szCl.toString()).time
             } catch (e: ParseException) {
                 e.printStackTrace()
             }
@@ -48,7 +48,7 @@ object CalendarUtility {
      * get calendar from string [szCl]
      * example : [szCl] is '2018-05-15 12:00'
      */
-    fun parseYearMonthDayHourMinuteStr(szCl: String): Calendar    {
+    fun parseYearMonthDayHourMinuteStr(szCl: CharSequence): Calendar    {
         return doParse(szCl, SDF_YEAR_MONTH_DAY_HOUR_MINUTE)
     }
 
