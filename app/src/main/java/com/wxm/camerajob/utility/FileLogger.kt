@@ -1,10 +1,8 @@
 package com.wxm.camerajob.utility
 
-import android.os.Environment
 import android.support.design.BuildConfig
 import android.util.Log
 import wxm.androidutil.util.UtilFun
-import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.logging.*
@@ -18,17 +16,14 @@ class FileLogger private constructor() {
     private lateinit var mLogger: Logger
 
     init {
-        val fn = String.format(Locale.CHINA, LOG_NAME, mLogTag)
-        val logFileName = "${ContextUtil.getAppRootDir()}/$fn".apply{
-            File(this).let {
-                    if (!it.exists()) {
-                        it.mkdirs()
-                    }
-                }
-        }
+        Log.i(LOG_TAG, "init file logger")
 
         try {
-            FileHandler(logFileName, true).let {
+            val fn = String.format(Locale.CHINA, LOG_NAME, mLogTag).let {
+                "${ContextUtil.getLogRootDir()}/$it"
+            }
+
+            FileHandler(fn, true).let {
                 it.formatter = object : SimpleFormatter() {
                     override fun format(record: LogRecord): String {
                         return String.format(Locale.CHINA,

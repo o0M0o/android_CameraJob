@@ -127,11 +127,6 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
             GlobalDef.INTRET_CAMERAJOB_ACCEPT -> {
-                data.getParcelableExtra<CameraJob>(EAction.LOAD_JOB.actName).let {
-                    Log.d(LOG_TAG, "create cameraJob : $it ")
-                    CameraJobUtility.createCameraJob(it)
-                    Unit
-                }
             }
 
             GlobalDef.INTRET_CS_ACCEPT -> {

@@ -16,9 +16,11 @@ import android.widget.*
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.ui.Base.EventHelper
+import com.wxm.camerajob.ui.Base.IAcceptAble
 import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
 import com.wxm.camerajob.utility.CalendarUtility
+import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.DlgUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
@@ -35,7 +37,7 @@ import kotlin.collections.HashMap
  * Created by WangXM on 2016/10/14.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class FrgJobCreate : FrgSupportBaseAdv() {
+class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
     // for job setting
     private val mETJobName: EditText by bindView(R.id.acet_job_name)
     private val mTVJobStartDate: TextView by bindView(R.id.tv_date_start)
@@ -76,6 +78,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
      *
      * @param event    for preference
      */
+    @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPreferencesChangeEvent(event: PreferencesChangeEvent) {
         if (GlobalDef.STR_CAMERAPROPERTIES_NAME == event.attrName) {
@@ -83,12 +86,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
         }
     }
 
-    /**
-     * use input parameter create job
-     *
-     * @return  if parameter legal return job else return null
-     */
-    fun onAccept(): CameraJob? {
+    override fun onAccept(): Boolean {
         val jobName = mETJobName.text.toString()
         val jobType = (mGVJobType.adapter as GVJobTypeAdapter).selectJobType
         val jobPoint = if (jobType!!.isEmpty()) ""
@@ -102,7 +100,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             mETJobName.requestFocus()
 
             DlgUtility.showAlert(activity, R.string.warn, "请输入任务名!")
-            return null
+            return false
         }
 
         if (jobType.isEmpty()) {
@@ -110,7 +108,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             mGVJobType.requestFocus()
 
             DlgUtility.showAlert(activity, R.string.warn, "请选择任务类型!")
-            return null
+            return false
         }
 
         if (jobPoint!!.isEmpty()) {
@@ -118,7 +116,7 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             mGVJobPoint.requestFocus()
 
             DlgUtility.showAlert(activity, R.string.warn, "请选择任务激活方式!")
-            return null
+            return false
         }
 
         val st = UtilFun.StringToTimestamp(jobStartDate)
@@ -130,10 +128,10 @@ class FrgJobCreate : FrgSupportBaseAdv() {
                 DlgUtility.showAlert(activity, "警告", this)
             }
 
-            return null
+            return false
         }
 
-        return CameraJob().apply {
+        CameraJob().apply {
             name = jobName
             type = jobType
             point = jobPoint
@@ -141,8 +139,15 @@ class FrgJobCreate : FrgSupportBaseAdv() {
             endtime = et
             ts.time = System.currentTimeMillis()
             status.job_status = EJobStatus.RUN.status
+        }.let {
+            return CameraJobUtility.createCameraJob(it)
         }
     }
+
+    override fun onCancel(): Boolean {
+        return true
+    }
+
 
     /// BEGIN PRIVATE
 

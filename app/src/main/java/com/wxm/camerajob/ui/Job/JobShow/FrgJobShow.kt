@@ -24,6 +24,8 @@ import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
+import wxm.androidutil.MoreAdapter.MoreAdapter
+import wxm.androidutil.ViewHolder.ViewHolder
 import wxm.androidutil.util.FileUtil
 import wxm.androidutil.util.UtilFun
 import java.util.*
@@ -33,7 +35,7 @@ import java.util.*
  * fragment for show job
  * Created by WangXM on 2016/10/14.
  */
-class FrgJobShow : FrgSupportBaseAdv() {
+class FrgJobShow : FrgSupportBaseAdv()   {
     private val mLVJobs: ListView by bindView(R.id.aclv_start_jobs)
     private val mTimer: Timer = Timer()
 
@@ -68,16 +70,13 @@ class FrgJobShow : FrgSupportBaseAdv() {
     }
 
     override fun initUI(savedInstanceState: Bundle?) {
-        // for listview
-        mLVJobs.adapter = LVJobShowAdapter(context, ArrayList<HashMap<String, String>>(),
-                arrayOf(KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL),
-                intArrayOf(R.id.tv_job_name, R.id.tv_job_active, R.id.tv_job_detail))
-
         val h = this
         mTimer.schedule(object : TimerTask() {
-            override fun run() = h.activity.runOnUiThread({ h.loadUI(null) })
+            override fun run() = h.activity.runOnUiThread({ h.reloadUI() })
         }, 100, 3000)
+    }
 
+    override fun loadUI(savedInstanceState: Bundle?) {
         val dirs = FileUtil.getDirDirs(ContextUtil.getPhotoRootDir(), false)
         ArrayList<HashMap<String, String>>().apply {
             ContextUtil.getCameraJobUtility().allData.filterNotNull().sortedBy { it._id }.forEach {
@@ -91,27 +90,13 @@ class FrgJobShow : FrgSupportBaseAdv() {
                 diedCameraJob(this, it)
             }
         }.let {
-            updateData(it)
+            mLVJobs.adapter = LVJobShowAdapter(it,
+                    arrayOf(KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL),
+                    intArrayOf(R.id.tv_job_name, R.id.tv_job_active, R.id.tv_job_detail))
         }
     }
 
-    override fun loadUI(savedInstanceState: Bundle?) {
-    }
-
-    /**
-     * 更新数据
-     * @param lsData 新数据
-     */
-    private fun updateData(lsData: List<HashMap<String, String>>) {
-        mLVJobs.adapter = LVJobShowAdapter(context,
-                ArrayList<HashMap<String, String>>().apply { addAll(lsData) },
-                arrayOf(KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL),
-                intArrayOf(R.id.tv_job_name, R.id.tv_job_active, R.id.tv_job_detail))
-    }
-
-
     /// BEGIN PRIVATE
-
     private fun diedCameraJob(jobs: MutableList<HashMap<String, String>>, dir: String) {
         val cj = ContextUtil.getCameraJobFromDir(dir) ?: return
         HashMap<String, String>().let {
@@ -162,8 +147,8 @@ class FrgJobShow : FrgSupportBaseAdv() {
      * adapter for listview to show jobs status
      * Created by wxm on 2016/8/13.
      */
-    inner class LVJobShowAdapter internal constructor(context: Context, data: List<Map<String, *>>,
-                                                      from: Array<String>, to: IntArray) : SimpleAdapter(context, data, R.layout.li_job_show, from, to), View.OnClickListener {
+    inner class LVJobShowAdapter(data: List<Map<String, String>>, fromKey: Array<String?>, toId: IntArray)
+        : MoreAdapter(context, data, R.layout.li_job_show, fromKey, toId), View.OnClickListener {
         private var mRLCameraInfo: Array<RelativeLayout?> = arrayOfNulls(data.size)
 
         override fun notifyDataSetChanged() {
@@ -171,22 +156,19 @@ class FrgJobShow : FrgSupportBaseAdv() {
             mRLCameraInfo = arrayOfNulls(count)
         }
 
-        override fun getView(position: Int, view: View, arg2: ViewGroup): View? {
-            val v = super.getView(position, view, arg2)
-            if (null != v) {
-                initUI(v, position)
+        override fun loadView(pos: Int, vhHolder: ViewHolder) {
+            vhHolder.convertView.apply {
+                initUI(this, pos)
 
-                mRLCameraInfo[position] = v.findViewById(R.id.rl_camera_info)!!
-                fillCameraInfo(position)
+                mRLCameraInfo[pos] = findViewById(R.id.rl_camera_info)!!
+                fillCameraInfo(pos)
             }
-
-            return v
         }
 
         private fun initUI(v: View, position: Int) {
             val map = UtilFun.cast_t<HashMap<String, String>>(getItem(position))
 
-            // for imagebutton
+            // for imageButton
             val ibPlay = v.findViewById<ImageButton>(R.id.ib_job_run_or_pause)
             val ibDelete = v.findViewById<ImageButton>(R.id.ib_job_stop)
 

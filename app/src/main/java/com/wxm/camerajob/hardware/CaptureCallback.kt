@@ -74,7 +74,9 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                 Log.i(LOG_TAG, "tag = $tag ae = ${it?.toString() ?: "null"}, " +
                         "waitCount = $mWaitCount")
                 if(checkAE(result.get(CaptureResult.CONTROL_AE_STATE))) {
-                    processImage(mReader.acquireLatestImage())
+                    mReader.acquireLatestImage()?.let {
+                        processImage(it)
+                    }
                 } else  {
                     Log.i(LOG_TAG, "wait image")
                     try {

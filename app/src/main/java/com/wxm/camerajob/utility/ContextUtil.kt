@@ -37,12 +37,13 @@ import java.util.*
 class ContextUtil : Application() {
     private val activities = ArrayList<Activity>()
     private lateinit var mAppRootDir: String
+    private lateinit var mLogDir: String
 
     /**
      * get photo root directory
      * @return  photo root directory
      */
-    private lateinit var mPhotoRootDir: String
+    private lateinit var mPhotoDir: String
 
     private lateinit var mMsgHandler: GlobalMsgHandler
     private lateinit var mJobProcessor: CameraJobProcess
@@ -56,7 +57,7 @@ class ContextUtil : Application() {
      */
     private object UncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
         override fun uncaughtException(t: Thread?, e: Throwable?) {
-            Log.e(TAG, UtilFun.ThrowableToString(e))
+            Log.e(LOG_TAG, UtilFun.ThrowableToString(e))
         }
     }
 
@@ -70,7 +71,7 @@ class ContextUtil : Application() {
     }
 
     override fun onTerminate() {
-        Log.i(TAG, "Application onTerminate")
+        Log.i(LOG_TAG, "Application onTerminate")
 
         super.onTerminate()
 
@@ -84,27 +85,25 @@ class ContextUtil : Application() {
      * -- set alarm
      */
     private fun initAppContext() {
-        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-            val sdcardDir = Environment.getExternalStorageDirectory()
-            val path = sdcardDir.path + "/CameraJobPhotos"
-            File(path).let {
-                if (!it.exists()) {
-                    it.mkdirs()
-                } else true
-            }.let {
-                mAppRootDir = sdcardDir.path
-                mPhotoRootDir = if (it) path else sdcardDir.path
-            }
-        } else {
-            try {
-                val innerPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                val rootPath = getExternalFilesDir(null)
-                assert(innerPath != null && rootPath != null)
+        // for dir
+        mAppRootDir = filesDir.path
 
-                mAppRootDir = rootPath.path
-                mPhotoRootDir = innerPath.path
-            } catch (e: NullPointerException) {
-            }
+        val photoPath = "$mAppRootDir/photo"
+        File(photoPath).let {
+            if (!it.exists()) {
+                it.mkdirs()
+            } else true
+        }.let {
+            mPhotoDir = if (it) photoPath else mAppRootDir
+        }
+
+        val logPath = "$mAppRootDir/runLog"
+        File(logPath).let {
+            if (!it.exists()) {
+                it.mkdirs()
+            } else true
+        }.let {
+            mLogDir = if (it) logPath else mAppRootDir
         }
 
         // for db
@@ -125,7 +124,7 @@ class ContextUtil : Application() {
                     it)
         }
 
-        Log.i(TAG, "Application created")
+        Log.i(LOG_TAG, "Application created")
     }
 
     /**
@@ -144,7 +143,7 @@ class ContextUtil : Application() {
      * @return      photo directory for cj
      */
     private fun createCameraJobPhotoDir(cj: CameraJob): String? {
-        File(mPhotoRootDir + "/" + cj._id).let {
+        File(mPhotoDir + "/" + cj._id).let {
             if (!it.exists()) {
                 it.mkdirs()
             }
@@ -188,13 +187,13 @@ class ContextUtil : Application() {
      * @return          photo directory path for job or ""
      */
     private fun getCameraJobPhotoDir(cj_id: Int): String? {
-        return File("$mPhotoRootDir/$cj_id").let {
+        return File("$mPhotoDir/$cj_id").let {
             if (it.exists()) it.path else null
         }
     }
 
     companion object {
-        private val TAG = ::ContextUtil.javaClass.simpleName
+        private val LOG_TAG = ::ContextUtil.javaClass.simpleName
         private const val INFO_FN = "info.json"
         private const val SELF_PACKAGE_NAME = "com.wxm.camerajob"
 
@@ -210,12 +209,16 @@ class ContextUtil : Application() {
             instance.onTerminate()
         }
 
+        fun getLogRootDir(): String {
+            return instance.mLogDir
+        }
+
         fun getAppRootDir(): String {
             return instance.mAppRootDir
         }
 
         fun getPhotoRootDir(): String {
-            return instance.mPhotoRootDir
+            return instance.mPhotoDir
         }
 
         fun addActivity(activity: Activity) {
@@ -291,7 +294,7 @@ class ContextUtil : Application() {
             try {
                 verCode = context.packageManager.getPackageInfo(SELF_PACKAGE_NAME, 0).versionCode
             } catch (e: PackageManager.NameNotFoundException) {
-                Log.e(TAG, e.message)
+                Log.e(LOG_TAG, e.message)
             }
 
             return verCode
@@ -308,7 +311,7 @@ class ContextUtil : Application() {
             try {
                 verName = context.packageManager.getPackageInfo(SELF_PACKAGE_NAME, 0).versionName
             } catch (e: PackageManager.NameNotFoundException) {
-                Log.e(TAG, e.message)
+                Log.e(LOG_TAG, e.message)
             }
 
             return verName

@@ -10,6 +10,7 @@ import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
+import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity
@@ -44,14 +45,6 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
             GlobalDef.INTRET_CS_ACCEPT -> {
-                /*
-                if(REQUEST_SET_CAMERA == requestCode) {
-                    Message m = Message.obtain(GlobalContext.getMsgHandler(),
-                            GlobalDef.MSG_TYPE_CAMERA_MODIFY);
-                    m.obj = PreferencesUtil.loadCameraParam();
-                    m.sendToTarget();
-                }
-                */
             }
 
             GlobalDef.INTRET_CS_GIVEUP -> {
@@ -70,15 +63,15 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mi_accept -> {
-                hotFragment.onAccept()?.let {
-                    setResult(GlobalDef.INTRET_CAMERAJOB_ACCEPT,
-                            Intent().apply { putExtra(EAction.LOAD_JOB.actName, it) })
+                hotFragment.onAccept().let {
                     finish()
                 }
             }
 
             R.id.mi_giveup -> {
-                leaveActivity()
+                hotFragment.onCancel().let {
+                    leaveActivity()
+                }
             }
 
             else -> return super.onOptionsItemSelected(item)

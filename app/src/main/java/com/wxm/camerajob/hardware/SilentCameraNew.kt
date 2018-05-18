@@ -24,6 +24,33 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     internal var mCameraDevice: CameraDevice? = null
     internal var mCaptureSession: CameraCaptureSession? = null
 
+    /**
+     * get camera hardware setting
+     */
+    private val mHMCameraHardware = ArrayList<CameraHardWare>()
+    init {
+        ContextUtil.getCameraManager()?.let {
+            try {
+                val manager = it
+                it.cameraIdList.filterNotNull().forEach {
+                    val cc = manager.getCameraCharacteristics(it)
+                    mHMCameraHardware.add(CameraHardWare(it).apply {
+                        cc.get(CameraCharacteristics.LENS_FACING)?.let {
+                            mFace = it
+                        }
+
+                        mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 90
+                        mFlashSupported = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
+                    }
+                    )
+                }
+            } catch (e: CameraAccessException) {
+                Log.e(LOG_TAG, "get camera info failure", e)
+            }
+
+            Unit
+        }
+    }
 
     // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
     // We have to take that into account and rotate JPEG properly.
@@ -89,7 +116,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
      */
     private fun setupCamera(): Boolean {
         mCamera = mHMCameraHardware.find { it.mFace ==  mCParam!!.mFace }
-        return mCamera == null
+        return mCamera != null
     }
 
     public override fun openCamera() {
@@ -158,32 +185,6 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         internal val LOG_TAG = javaClass.simpleName
-
-        /**
-         * get camera hardware setting
-         */
-        private val mHMCameraHardware = ArrayList<CameraHardWare>()
-        init {
-            ContextUtil.getCameraManager()?.let {
-                try {
-                    val manager = it
-                    it.cameraIdList.filterNotNull().forEach {
-                        val cc = manager.getCameraCharacteristics(it)
-                        mHMCameraHardware.add(CameraHardWare(it).apply {
-                            cc.get(CameraCharacteristics.LENS_FACING)?.let {
-                                mFace = it
-                            }
-
-                            mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 90
-                            mFlashSupported = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
-                        }
-                        )
-                    }
-                } catch (e: CameraAccessException) {
-                    e.printStackTrace()
-                }
-            }
-        }
     }
 }
 
