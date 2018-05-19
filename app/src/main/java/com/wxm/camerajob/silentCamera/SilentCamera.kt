@@ -1,11 +1,17 @@
 package com.wxm.camerajob.hardware
 
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.os.Handler
 import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
+import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.FileLogger
+
+
 
 
 /**
@@ -14,18 +20,42 @@ import com.wxm.camerajob.utility.FileLogger
  * Created by WangXM on 2016/7/4.
  */
 abstract class SilentCamera {
-    var mCamera: CameraHardWare? = null
-    var mCameraStatus = ECameraStatus.NOT_OPEN
+    internal var mCameraStatus = ECameraStatus.NOT_OPEN
 
-    var mTPParam: TakePhotoParam? = null
-    var mCParam: CameraParam? = null
+    internal var mCamera: CameraHardWare? = null
+    internal lateinit var mTPParam: TakePhotoParam
+    internal lateinit var mCParam: CameraParam
+    private lateinit var mTPCBTakePhoto: TakePhotoCallBack
 
-    private var mTPCBTakePhoto: SilentCameraTakePhotoCallBack? = null
-
-    interface SilentCameraTakePhotoCallBack {
+    interface TakePhotoCallBack {
         fun onTakePhotoSuccess(tp: TakePhotoParam)
         fun onTakePhotoFailed(tp: TakePhotoParam)
     }
+
+    /**
+     * hardware for camera
+     */
+    internal data class CameraHardWare(val mId: String) {
+        var mSensorOrientation: Int = 0
+        var mFace: Int = 0
+        var mFlashSupported: Boolean = false
+    }
+
+    /**
+     * do take photo
+     */
+    private inner class TakePhotoRunner internal constructor() : Runnable {
+        override fun run() {
+            try {
+                mCParam.mSessionHandler = Handler()
+                openCamera()
+            } catch (e: Throwable) {
+                Log.e(LOG_TAG, "take photo failure", e)
+                FileLogger.getLogger().severe(e.toString())
+            }
+        }
+    }
+
 
     /**
      * take photo
@@ -33,30 +63,30 @@ abstract class SilentCamera {
      * @param tp        for photo
      * @param stp       call back holder
      */
-    fun takePhoto(cp: CameraParam, tp: TakePhotoParam, stp: SilentCameraTakePhotoCallBack) {
+    fun takePhoto(cp: CameraParam, tp: TakePhotoParam, stp: TakePhotoCallBack) {
         mCParam = cp
         mTPParam = tp
         mTPCBTakePhoto = stp
 
-        openCamera()
+        TakePhotoRunner().run()
     }
 
     /**
      * callback for open camera
      * @param ret  true if success
      */
-    fun openCameraCallBack(ret: Boolean) {
+    internal fun openCameraCallBack(ret: Boolean) {
         if (ret) {
             "camera opened".apply {
                 Log.i(LOG_TAG, this)
-                FileLogger.logger.info(this)
+                FileLogger.getLogger().info(this)
             }
 
             capturePhoto()
         } else {
             "camera open failed".apply {
                 Log.i(LOG_TAG, this)
-                FileLogger.logger.info(this)
+                FileLogger.getLogger().info(this)
             }
 
             takePhotoCallBack(false)
@@ -67,28 +97,26 @@ abstract class SilentCamera {
      * callback for take photo
      * @param ret  true if success
      */
-    fun takePhotoCallBack(ret: Boolean) {
-        val tag = if (mTPParam == null) "null"
-        else mTPParam!!.mTag
+    internal fun takePhotoCallBack(ret: Boolean) {
+        val tag = mTPParam.mTag
 
         if (ret) {
-            ("take photo success, tag = $tag, photoFile = ${mTPParam!!.mFileName}").apply {
+            ("take photo success, tag = $tag, photoFile = ${mTPParam.mFileName}").apply {
                 Log.i(LOG_TAG, this)
-                FileLogger.logger.info(this)
+                FileLogger.getLogger().info(this)
             }
 
-            mTPCBTakePhoto?.onTakePhotoSuccess(mTPParam!!)
+            mTPCBTakePhoto.onTakePhotoSuccess(mTPParam)
         } else {
             ("take photo failed, tag = $tag, camera_status = ${mCameraStatus.description}").apply {
                 Log.i(LOG_TAG, this)
-                FileLogger.logger.info(this)
+                FileLogger.getLogger().info(this)
             }
 
-            mTPCBTakePhoto?.onTakePhotoFailed(mTPParam!!)
+            mTPCBTakePhoto.onTakePhotoFailed(mTPParam)
         }
         closeCamera()
     }
-
 
 
     /**
@@ -119,11 +147,3 @@ abstract class SilentCamera {
     }
 }
 
-/**
- * hardware for camera
- */
-data class CameraHardWare(val mId: String) {
-    var mSensorOrientation: Int = 0
-    var mFace: Int = 0
-    var mFlashSupported: Boolean = false
-}

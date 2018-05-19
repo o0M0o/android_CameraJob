@@ -25,30 +25,24 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     internal var mCaptureSession: CameraCaptureSession? = null
 
     /**
-     * get camera hardware setting
+     * camera hardware
      */
-    private val mHMCameraHardware = ArrayList<CameraHardWare>()
-    init {
-        ContextUtil.getCameraManager()?.let {
+    private val mHMCameraHardware = ArrayList<CameraHardWare>().apply {
+        val lsCamera = this
+        ContextUtil.getCameraManager()?.apply {
             try {
-                val manager = it
-                it.cameraIdList.filterNotNull().forEach {
+                val manager = this
+                manager.cameraIdList.filterNotNull().forEach {
                     val cc = manager.getCameraCharacteristics(it)
-                    mHMCameraHardware.add(CameraHardWare(it).apply {
-                        cc.get(CameraCharacteristics.LENS_FACING)?.let {
-                            mFace = it
-                        }
-
+                    lsCamera.add(CameraHardWare(it).apply {
+                        mFace = cc.get(CameraCharacteristics.LENS_FACING) ?: 0
                         mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 90
                         mFlashSupported = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
-                    }
-                    )
+                    })
                 }
             } catch (e: CameraAccessException) {
-                Log.e(LOG_TAG, "get camera info failure", e)
+                Log.e(SilentCameraNew.LOG_TAG, "get camera info failure", e)
             }
-
-            Unit
         }
     }
 
@@ -78,9 +72,9 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
     private val mCameraDeviceStateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
-            "onOpened".let {
-                Log.i(LOG_TAG, it)
-                FileLogger.logger.info(it)
+            "onOpened".apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.getLogger().info(this)
             }
 
             mCameraDevice = camera
@@ -88,9 +82,9 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         }
 
         override fun onDisconnected(camera: CameraDevice) {
-            "onDisconnected".let {
-                Log.i(LOG_TAG, it)
-                FileLogger.logger.info(it)
+            "onDisconnected".apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.getLogger().info(this)
             }
 
             mCameraDevice = null
@@ -98,9 +92,9 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         }
 
         override fun onError(camera: CameraDevice, error: Int) {
-            "onError, error = $error".let {
-                Log.i(LOG_TAG, it)
-                FileLogger.logger.info(it)
+            "onError, error = $error".apply {
+                Log.i(LOG_TAG, this)
+                FileLogger.getLogger().info(this)
             }
 
             mCameraDevice = null
@@ -109,34 +103,26 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     }
 
 
-    /**
-     * setup camera before use it
-     * use camera face to find it's camera id
-     * @return      true if find
-     */
-    private fun setupCamera(): Boolean {
-        mCamera = mHMCameraHardware.find { it.mFace ==  mCParam!!.mFace }
-        return mCamera != null
-    }
-
-    public override fun openCamera() {
-        if (!setupCamera()) {
-            Log.e(LOG_TAG, "setup camera failure")
-            openCameraCallBack(false)
-            return
-        }
-
+    override fun openCamera() {
         if (!ContextUtil.checkPermission(Manifest.permission.CAMERA)) {
             Log.e(LOG_TAG, "need camera permission")
             openCameraCallBack(false)
             return
         }
 
+        mCamera = mHMCameraHardware.find { it.mFace ==  mCParam.mFace }
+        if (null == mCamera) {
+            Log.e(LOG_TAG, "setup camera failure")
+            openCameraCallBack(false)
+            return
+        }
+
         try {
-            ContextUtil.getCameraManager()!!.openCamera(mCamera!!.mId, mCameraDeviceStateCallback, mCParam!!.mSessionHandler)
+            ContextUtil.getCameraManager()!!
+                    .openCamera(mCamera!!.mId, mCameraDeviceStateCallback, mCParam.mSessionHandler)
         } catch (e: Exception) {
-            Log.e(LOG_TAG, "", e)
-            FileLogger.logger.severe(e.toString())
+            Log.e(LOG_TAG, "open camera failure", e)
+            FileLogger.getLogger().severe(e.toString())
             openCameraCallBack(false)
         }
     }
@@ -147,7 +133,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
         try {
             ImageReader.newInstance(
-                    mCParam!!.mPhotoSize.width, mCParam!!.mPhotoSize.height,
+                    mCParam.mPhotoSize.width, mCParam.mPhotoSize.height,
                     ImageFormat.JPEG, 2).let {
                 /*
                 it.setOnImageAvailableListener(
@@ -166,13 +152,13 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
     }
 
-    public override fun closeCamera() {
+    override fun closeCamera() {
         mCameraDevice?.close()
         mCaptureSession?.close()
 
-        ("camera closed, paraTag = " + if (mTPParam == null) "null" else mTPParam!!.mTag).apply {
+        ("camera closed, paraTag = ${mTPParam.mTag}").apply {
             Log.i(LOG_TAG, this)
-            FileLogger.logger.info(this)
+            FileLogger.getLogger().info(this)
         }
 
         mCameraStatus = ECameraStatus.NOT_OPEN

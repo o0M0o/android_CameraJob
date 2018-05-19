@@ -16,17 +16,14 @@ import android.view.MenuItem
 import butterknife.ButterKnife
 import com.wxm.camerajob.BuildConfig
 import com.wxm.camerajob.R
-import com.wxm.camerajob.data.define.CameraJob
-import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
 import com.wxm.camerajob.ui.Job.JobCreate.ACJobCreate
-import com.wxm.camerajob.ui.Test.Camera.ACCameraTest
-import com.wxm.camerajob.ui.Test.Camera.ACSilentCameraTest
+import com.wxm.camerajob.ui.Test.Camera.ACTestCamera
+import com.wxm.camerajob.ui.Test.SilentCamera.ACTestSilentCamera
 import com.wxm.camerajob.ui.Utility.Help.ACHelp
 import com.wxm.camerajob.ui.Utility.Setting.ACSetting
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage
-import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.ContextUtil
 import kotterknife.bindView
 import wxm.androidutil.Dialog.DlgOKOrNOBase
@@ -108,11 +105,11 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
             }
 
             R.id.mi_camera_test -> {
-                startActivityForResult(Intent(this, ACCameraTest::class.java), 1)
+                startActivityForResult(Intent(this, ACTestCamera::class.java), 1)
             }
 
             R.id.mi_silentcamera_test -> {
-                startActivityForResult(Intent(this, ACSilentCameraTest::class.java), 1)
+                startActivityForResult(Intent(this, ACTestSilentCamera::class.java), 1)
                 return super.onOptionsItemSelected(item)
             }
 

@@ -27,7 +27,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
     init {
         mReader.setOnImageAvailableListener(
                 { reader -> processImage(reader.acquireNextImage()) },
-                mHome.mCParam!!.mSessionHandler)
+                mHome.mCParam.mSessionHandler)
     }
 
     private var mWaitCount = 0
@@ -54,7 +54,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
             try {
                 ImageUtil.rotateBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size),
                         mHome.orientation, null)!!.let {
-                    ImageUtil.saveBitmapToJPGFile(it, mHome.mTPParam!!.mPhotoFileDir, mHome.mTPParam!!.mFileName)
+                    ImageUtil.saveBitmapToJPGFile(it, mHome.mTPParam.mPhotoFileDir, mHome.mTPParam.mFileName)
                 }.let {
                     mHome.mCameraStatus = if (it) ECameraStatus.TAKE_PHOTO_SUCCESS
                     else ECameraStatus.TAKE_PHOTO_FAILURE
@@ -136,7 +136,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         super.onCaptureFailed(session, request, failure)
         ("CaptureFailed, reason = ${failure.reason} ").apply {
             Log.d(LOG_TAG, this)
-            FileLogger.logger.warning(this)
+            FileLogger.getLogger().warning(this)
         }
 
         mHome.mCameraStatus = ECameraStatus.TAKE_PHOTO_FAILURE
