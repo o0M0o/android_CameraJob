@@ -5,7 +5,7 @@ import android.view.View
 
 import com.wxm.camerajob.R
 
-import com.wxm.camerajob.ui.Base.EventHelper
+import com.wxm.camerajob.ui.base.EventHelper
 
 /**
  * UI for main setting

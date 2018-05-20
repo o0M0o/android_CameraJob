@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Base
+package com.wxm.camerajob.ui.base
 
 import com.nostra13.universalimageloader.core.ImageLoader
 

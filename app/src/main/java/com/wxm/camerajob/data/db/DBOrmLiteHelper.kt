@@ -14,8 +14,6 @@ import com.wxm.camerajob.utility.FileLogger
 
 import java.sql.SQLException
 
-import wxm.androidutil.util.UtilFun
-
 /**
  * sqlite helper from app
  * Created by wxm on 2016/8/12.
@@ -40,7 +38,7 @@ class DBOrmLiteHelper(context: Context) : OrmLiteSqliteOpenHelper(context, DATAB
                     TableUtils.dropTable<CameraJob, Any>(connectionSource, CameraJob::class.java, false)
                     TableUtils.dropTable<CameraJobStatus, Any>(connectionSource, CameraJobStatus::class.java, false)
                 } catch (e: SQLException) {
-                    FileLogger.logger.severe(e.toString())
+                    FileLogger.getLogger().severe(e.toString())
                 }
 
                 createAndInitTable()

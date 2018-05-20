@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraManager
 import android.os.Build
-import android.os.Environment
 import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.util.JsonReader

@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Camera.CameraPreview
+package com.wxm.camerajob.ui.camera.preview
 
 import android.content.Intent
 import android.os.Build

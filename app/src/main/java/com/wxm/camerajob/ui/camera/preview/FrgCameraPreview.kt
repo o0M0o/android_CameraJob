@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Camera.CameraPreview
+package com.wxm.camerajob.ui.camera.preview
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -18,7 +18,7 @@ import android.widget.Toast
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.PreferencesUtil
-import com.wxm.camerajob.ui.Base.AutoFitTextureView
+import com.wxm.camerajob.ui.base.AutoFitTextureView
 import com.wxm.camerajob.utility.DlgUtility
 import kotterknife.bindView
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv

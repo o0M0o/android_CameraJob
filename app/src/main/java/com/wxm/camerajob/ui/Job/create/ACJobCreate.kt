@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Job.JobCreate
+package com.wxm.camerajob.ui.Job.create
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,11 +6,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
-import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
-import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
-import com.wxm.camerajob.utility.CameraJobUtility
+import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity

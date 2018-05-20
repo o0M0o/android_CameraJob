@@ -1,17 +1,12 @@
-package com.wxm.camerajob.hardware
+package com.wxm.camerajob.silentCamera
 
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraCharacteristics
 import android.os.Handler
-import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
-import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.FileLogger
-
-
+import com.wxm.camerajob.utility.log.TagLog
 
 
 /**
@@ -50,7 +45,7 @@ abstract class SilentCamera {
                 mCParam.mSessionHandler = Handler()
                 openCamera()
             } catch (e: Throwable) {
-                Log.e(LOG_TAG, "take photo failure", e)
+                TagLog.e("take photo failure", e)
                 FileLogger.getLogger().severe(e.toString())
             }
         }
@@ -78,14 +73,14 @@ abstract class SilentCamera {
     internal fun openCameraCallBack(ret: Boolean) {
         if (ret) {
             "camera opened".apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
             capturePhoto()
         } else {
             "camera open failed".apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
@@ -102,14 +97,14 @@ abstract class SilentCamera {
 
         if (ret) {
             ("take photo success, tag = $tag, photoFile = ${mTPParam.mFileName}").apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
             mTPCBTakePhoto.onTakePhotoSuccess(mTPParam)
         } else {
             ("take photo failed, tag = $tag, camera_status = ${mCameraStatus.description}").apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
@@ -137,7 +132,6 @@ abstract class SilentCamera {
     internal abstract fun closeCamera()
 
     companion object {
-        private val LOG_TAG = ::SilentCameraNew.javaClass.simpleName
         val ORIENTATIONS = SparseIntArray().apply {
             append(Surface.ROTATION_0, 90)
             append(Surface.ROTATION_90, 0)

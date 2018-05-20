@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Base
+package com.wxm.camerajob.ui.base
 
 /**
  * accept or cancel

@@ -59,7 +59,7 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         } catch (e: Exception) {
             Log.e(LOG_TAG, e.toString())
-            FileLogger.logger.severe(e.toString())
+            FileLogger.getLogger().severe(e.toString())
         }
     }
 

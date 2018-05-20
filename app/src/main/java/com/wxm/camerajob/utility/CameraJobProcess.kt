@@ -3,8 +3,8 @@ package com.wxm.camerajob.utility
 import android.os.Message
 import android.util.Log
 import com.wxm.camerajob.data.define.*
-import com.wxm.camerajob.hardware.SilentCamera
-import com.wxm.camerajob.hardware.SilentCameraHelper
+import com.wxm.camerajob.silentCamera.SilentCamera
+import com.wxm.camerajob.silentCamera.SilentCameraNew
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -58,7 +58,7 @@ class CameraJobProcess {
                             it._id, CALENDAR_STR.format(System.currentTimeMillis())),
                             Integer.toString(it._id))
 
-                    SilentCameraHelper(object : SilentCamera.SilentCameraTakePhotoCallBack {
+                    val cbTakePhoto = object : SilentCamera.TakePhotoCallBack {
                         override fun onTakePhotoFailed(tp: TakePhotoParam) {
                             Log.i(LOG_TAG, "take photo success, tag = " + tp.mTag)
 
@@ -69,14 +69,16 @@ class CameraJobProcess {
                         }
 
                         override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                            "take photo failure, tag = ${tp.mTag}".let {
-                                    Log.e(LOG_TAG, it)
-                                    FileLogger.logger.severe(it)
-                                }
+                            "take photo failure, tag = ${tp.mTag}".apply {
+                                Log.e(LOG_TAG, this)
+                                FileLogger.getLogger().severe(this)
+                            }
 
-                                wakeupDuty(lsJob)
+                            wakeupDuty(lsJob)
                         }
-                    }).takePhoto(PreferencesUtil.loadCameraParam(), param)
+                    }
+
+                    SilentCameraNew().takePhoto(PreferencesUtil.loadCameraParam(), param, cbTakePhoto)
                 }
             }
         }
@@ -84,7 +86,6 @@ class CameraJobProcess {
 
     companion object {
         private val LOG_TAG = ::CameraJobProcess.javaClass.simpleName
-
         private val CALENDAR_STR = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA)
     }
 }

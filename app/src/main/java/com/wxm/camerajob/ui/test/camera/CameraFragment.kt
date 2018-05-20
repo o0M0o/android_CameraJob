@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Test.Camera
+package com.wxm.camerajob.ui.test.camera
 
 import android.Manifest
 import android.annotation.TargetApi
@@ -25,7 +25,7 @@ import android.util.SparseIntArray
 import android.view.*
 import android.widget.Toast
 import com.wxm.camerajob.R
-import com.wxm.camerajob.ui.Base.AutoFitTextureView
+import com.wxm.camerajob.ui.base.AutoFitTextureView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

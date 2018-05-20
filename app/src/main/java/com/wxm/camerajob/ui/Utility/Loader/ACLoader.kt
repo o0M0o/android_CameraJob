@@ -8,7 +8,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.wxm.camerajob.R
-import com.wxm.camerajob.ui.Job.JobShow.ACJobShow
+import com.wxm.camerajob.ui.Job.show.ACJobShow
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.DlgUtility
 import java.util.*

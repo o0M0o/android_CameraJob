@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Job.JobSlide
+package com.wxm.camerajob.ui.Job.slide
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,7 +6,6 @@ import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import wxm.androidutil.Switcher.ACSwitcherActivity
 import wxm.androidutil.util.FileUtil
-import wxm.androidutil.util.UtilFun
 
 /**
  * slide show ui for job

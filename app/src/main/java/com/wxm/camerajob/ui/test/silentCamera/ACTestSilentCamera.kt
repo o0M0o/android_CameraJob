@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Test.Camera
+package com.wxm.camerajob.ui.test.silentCamera
 
 import android.content.Intent
 import android.graphics.Rect
@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -16,25 +15,28 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.data.define.TakePhotoParam
-import com.wxm.camerajob.hardware.SilentCamera
+import com.wxm.camerajob.silentCamera.SilentCamera
+import com.wxm.camerajob.silentCamera.SilentCameraNew
 import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.hardware.SilentCameraHelper
+import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 
 import java.lang.ref.WeakReference
 
 import wxm.androidutil.ImageUtility.ImageUtil
 
-class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
+class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
     private val mBTCapture: Button by bindView(R.id.acbt_capture)
     private val mIVPhoto: ImageView by bindView(R.id.aciv_photo)
     private val mSelfHandler: ACTestMsgHandler = ACTestMsgHandler(this)
-    private val mTPParam: TakePhotoParam = TakePhotoParam(ContextUtil.getPhotoRootDir(), "tmp.jpg", "1")
 
     private val mCLGrey: Int = ContextUtil.appContext().getColor(R.color.gray)
     private val mCLBlack: Int = ContextUtil.appContext().getColor(R.color.black)
 
-    private val mSCHelper = SilentCameraHelper(object : SilentCamera.SilentCameraTakePhotoCallBack {
+    private val mSilentCamera = SilentCameraNew()
+    private val mCameraParam = PreferencesUtil.loadCameraParam()
+    private val mTPParam = TakePhotoParam(ContextUtil.getPhotoRootDir(), "tmp.jpg", "1")
+    private val mCBTakePhoto = object : SilentCamera.TakePhotoCallBack {
         override fun onTakePhotoFailed(tp: TakePhotoParam) {
             mBTCapture.apply {
                 isClickable = true
@@ -52,7 +54,7 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
 
             mSelfHandler.sendEmptyMessage(MSG_TAKE_PHOTO_SUCCESS)
         }
-    })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +75,7 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.acbt_leave -> {
-                val data = Intent()
-                setResult(GlobalDef.INTRET_NOTCARE, data)
+                setResult(GlobalDef.INTRET_NOTCARE, Intent())
                 finish()
             }
 
@@ -84,13 +85,14 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
                     setTextColor(mCLBlack)
                 }
 
-                mSCHelper.takePhoto(PreferencesUtil.loadCameraParam(), mTPParam)
+                TagLog.i("start capture!")
+                mSilentCamera.takePhoto(mCameraParam, mTPParam, mCBTakePhoto)
             }
         }
     }
 
-    private class ACTestMsgHandler internal constructor(ac: ACSilentCameraTest) : Handler() {
-        private val mActivity: WeakReference<ACSilentCameraTest> = WeakReference(ac)
+    private class ACTestMsgHandler internal constructor(ac: ACTestSilentCamera) : Handler() {
+        private val mActivity: WeakReference<ACTestSilentCamera> = WeakReference(ac)
 
         override fun handleMessage(msg: Message) {
             val acHome = mActivity.get() ?: return
@@ -101,7 +103,7 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
 
                     acHome.mIVPhoto.getDrawingRect(Rect())
                     //MySize psz = new MySize(rt.width(), rt.height());
-                    //Log.i(LOG_TAG, "perfence size : " + psz);
+                    //TagLog.i(LOG_TAG, "perfence size : " + psz);
 
                     val fn = "${acHome.mTPParam.mPhotoFileDir}/${acHome.mTPParam.mFileName}"
                     ImageUtil.getLocalBitmap(fn).let {
@@ -118,14 +120,12 @@ class ACSilentCameraTest : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(acHome, "takePhoto failed", Toast.LENGTH_SHORT).show()
                 }
 
-                else -> Log.e(LOG_TAG, String.format("msg(%s) can not process", msg.toString()))
+                else -> TagLog.e("msg('$msg') can not process")
             }
         }
     }
 
     companion object {
-        private val LOG_TAG = ::ACSilentCameraTest.javaClass.simpleName
-
         private const val MSG_TAKE_PHOTO_SUCCESS = 1
         private const val MSG_TAKE_PHOTO_FAILED = 2
     }

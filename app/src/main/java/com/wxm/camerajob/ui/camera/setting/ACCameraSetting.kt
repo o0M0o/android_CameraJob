@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Camera.CameraSetting
+package com.wxm.camerajob.ui.camera.setting
 
 import android.content.Intent
 import android.os.Bundle

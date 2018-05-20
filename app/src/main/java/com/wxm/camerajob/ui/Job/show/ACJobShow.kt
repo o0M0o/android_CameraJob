@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Job.JobShow
+package com.wxm.camerajob.ui.Job.show
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -17,10 +17,10 @@ import butterknife.ButterKnife
 import com.wxm.camerajob.BuildConfig
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
-import com.wxm.camerajob.ui.Job.JobCreate.ACJobCreate
-import com.wxm.camerajob.ui.Test.Camera.ACTestCamera
-import com.wxm.camerajob.ui.Test.SilentCamera.ACTestSilentCamera
+import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
+import com.wxm.camerajob.ui.Job.create.ACJobCreate
+import com.wxm.camerajob.ui.test.camera.ACTestCamera
+import com.wxm.camerajob.ui.test.silentCamera.ACTestSilentCamera
 import com.wxm.camerajob.ui.Utility.Help.ACHelp
 import com.wxm.camerajob.ui.Utility.Setting.ACSetting
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage

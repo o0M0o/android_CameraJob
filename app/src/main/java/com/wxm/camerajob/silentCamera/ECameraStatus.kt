@@ -1,4 +1,4 @@
-package com.wxm.camerajob.hardware
+package com.wxm.camerajob.silentCamera
 
 /**
  * for camera status

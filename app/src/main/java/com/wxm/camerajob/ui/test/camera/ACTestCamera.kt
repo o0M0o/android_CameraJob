@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Test.Camera
+package com.wxm.camerajob.ui.test.camera
 
 import android.content.Intent
 import android.graphics.Color
@@ -12,7 +12,7 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import kotterknife.bindView
 
-class ACCameraTest : AppCompatActivity() {
+class ACTestCamera : AppCompatActivity() {
     private val mCameraFrag = CameraFragment.newInstance()
     private val mBtActiveFrontCamera: Button by bindView(R.id.acbt_test_frontcamera_active)
     private val mBtActiveBackCamera: Button by bindView(R.id.acbt_test_backcamera_active)

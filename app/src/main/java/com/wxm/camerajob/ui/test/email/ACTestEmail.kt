@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Test.Email
+package com.wxm.camerajob.ui.test.email
 
 import android.app.Activity
 import android.os.Bundle
@@ -10,14 +10,14 @@ import android.util.Log
 import android.view.View
 
 import com.wxm.camerajob.R
-import com.wxm.camerajob.ui.Base.SendEmailHelper
-import com.wxm.camerajob.ui.Base.SendEmailPara
+import com.wxm.camerajob.ui.base.SendEmailHelper
+import com.wxm.camerajob.ui.base.SendEmailPara
 import com.wxm.camerajob.utility.DlgUtility
 import kotterknife.bindView
 
 import wxm.androidutil.util.UtilFun
 
-class ACEmailTest : AppCompatActivity(), View.OnClickListener {
+class ACTestEmail : AppCompatActivity(), View.OnClickListener {
     // for setting
     private val mETEmailSender: TextInputEditText by bindView(R.id.et_email_sender)
     private val mETEmailSenderPWD: TextInputEditText by bindView(R.id.et_email_sender_pwd)

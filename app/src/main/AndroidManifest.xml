@@ -30,24 +30,24 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
-            android:name=".ui.Test.Camera.ACCameraTest"
+            android:name=".ui.test.camera.ACTestCamera"
             android:exported="true" />
 
         <activity
-            android:name=".ui.Job.JobCreate.ACJobCreate"
+            android:name=".ui.Job.create.ACJobCreate"
             android:label="@string/job_create"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Camera.CameraSetting.ACCameraSetting"
+            android:name=".ui.camera.setting.ACCameraSetting"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Test.Camera.ACSilentCameraTest"
+            android:name=".ui.test.silentCamera.ACTestSilentCamera"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Job.JobShow.ACJobShow"
+            android:name=".ui.Job.show.ACJobShow"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -57,7 +57,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Camera.CameraPreview.ACCameraPreview"
+            android:name=".ui.camera.preview.ACCameraPreview"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -66,11 +66,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Job.JobSlide.ACJobSlide"
+            android:name=".ui.Job.slide.ACJobSlide"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Test.Email.ACEmailTest"
+            android:name=".ui.test.email.ACTestEmail"
             android:exported="true"
             android:label="测试邮箱" />
 

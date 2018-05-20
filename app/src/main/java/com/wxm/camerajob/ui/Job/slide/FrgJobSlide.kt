@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Job.JobSlide
+package com.wxm.camerajob.ui.Job.slide
 
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable

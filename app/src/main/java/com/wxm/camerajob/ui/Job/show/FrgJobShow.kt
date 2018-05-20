@@ -1,22 +1,19 @@
 @file:Suppress("unused")
 
-package com.wxm.camerajob.ui.Job.JobShow
+package com.wxm.camerajob.ui.Job.show
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.RelativeLayout
-import android.widget.SimpleAdapter
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
-import com.wxm.camerajob.ui.Base.FrgCameraInfoHelper
-import com.wxm.camerajob.ui.Base.JobGallery
-import com.wxm.camerajob.ui.Job.JobSlide.ACJobSlide
+import com.wxm.camerajob.ui.base.FrgCameraInfoHelper
+import com.wxm.camerajob.ui.base.JobGallery
+import com.wxm.camerajob.ui.Job.slide.ACJobSlide
 import com.wxm.camerajob.utility.CalendarUtility
 import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.ContextUtil

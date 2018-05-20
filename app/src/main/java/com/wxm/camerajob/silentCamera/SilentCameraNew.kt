@@ -1,18 +1,15 @@
-package com.wxm.camerajob.hardware
+package com.wxm.camerajob.silentCamera
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.content.pm.PackageManager
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Build
-import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.Surface
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.FileLogger
-import wxm.androidutil.util.UtilFun
+import com.wxm.camerajob.utility.log.TagLog
 
 
 /**
@@ -41,7 +38,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
                     })
                 }
             } catch (e: CameraAccessException) {
-                Log.e(SilentCameraNew.LOG_TAG, "get camera info failure", e)
+                TagLog.e("get camera info failure", e)
             }
         }
     }
@@ -60,7 +57,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
             return ContextUtil.getWindowManager()!!.defaultDisplay.rotation.let {
                 if(null != mCamera) {
                     val ret = (SilentCamera.ORIENTATIONS.get(it) + mCamera!!.mSensorOrientation + 270) % 360
-                    Log.d(LOG_TAG, "Orientation : display = $it, " +
+                    TagLog.d("Orientation : display = $it, " +
                             "sensor = ${mCamera!!.mSensorOrientation}, ret = $ret")
 
                     ret
@@ -73,7 +70,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     private val mCameraDeviceStateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
             "onOpened".apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
@@ -83,7 +80,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
         override fun onDisconnected(camera: CameraDevice) {
             "onDisconnected".apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i( this)
                 FileLogger.getLogger().info(this)
             }
 
@@ -93,7 +90,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
         override fun onError(camera: CameraDevice, error: Int) {
             "onError, error = $error".apply {
-                Log.i(LOG_TAG, this)
+                TagLog.i( this)
                 FileLogger.getLogger().info(this)
             }
 
@@ -105,14 +102,14 @@ class SilentCameraNew internal constructor() : SilentCamera() {
 
     override fun openCamera() {
         if (!ContextUtil.checkPermission(Manifest.permission.CAMERA)) {
-            Log.e(LOG_TAG, "need camera permission")
+            TagLog.e( "need camera permission")
             openCameraCallBack(false)
             return
         }
 
         mCamera = mHMCameraHardware.find { it.mFace ==  mCParam.mFace }
         if (null == mCamera) {
-            Log.e(LOG_TAG, "setup camera failure")
+            TagLog.e( "setup camera failure")
             openCameraCallBack(false)
             return
         }
@@ -121,14 +118,14 @@ class SilentCameraNew internal constructor() : SilentCamera() {
             ContextUtil.getCameraManager()!!
                     .openCamera(mCamera!!.mId, mCameraDeviceStateCallback, mCParam.mSessionHandler)
         } catch (e: Exception) {
-            Log.e(LOG_TAG, "open camera failure", e)
+            TagLog.e( "open camera failure", e)
             FileLogger.getLogger().severe(e.toString())
             openCameraCallBack(false)
         }
     }
 
     override fun capturePhoto() {
-        Log.i(LOG_TAG, "start capture")
+        TagLog.i( "start capture")
         mCameraStatus = ECameraStatus.TAKE_PHOTO_START
 
         try {
@@ -138,7 +135,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
                 /*
                 it.setOnImageAvailableListener(
                         {
-                            Log.i(LOG_TAG, "image already")
+                            TagLog.i(LOG_TAG, "image already")
                         }, mCParam!!.mSessionHandler)
                         */
 
@@ -157,17 +154,11 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         mCaptureSession?.close()
 
         ("camera closed, paraTag = ${mTPParam.mTag}").apply {
-            Log.i(LOG_TAG, this)
+            TagLog.i( this)
             FileLogger.getLogger().info(this)
         }
 
         mCameraStatus = ECameraStatus.NOT_OPEN
-    }
-
-
-    companion object {
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        internal val LOG_TAG = ::SilentCameraNew.javaClass.simpleName
     }
 }
 

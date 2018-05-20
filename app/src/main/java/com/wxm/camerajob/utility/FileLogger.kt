@@ -19,20 +19,16 @@ class FileLogger private constructor() {
         Log.i(LOG_TAG, "init file logger")
 
         try {
-            val fn = String.format(Locale.CHINA, LOG_NAME, mLogTag).let {
-                "${ContextUtil.getLogRootDir()}/$it"
-            }
-
-            FileHandler(fn, true).let {
+            FileHandler(
+                    "${ContextUtil.getLogRootDir()}/${String.format(Locale.CHINA, LOG_NAME, mLogTag)}",
+                    true).let {
                 it.formatter = object : SimpleFormatter() {
                     override fun format(record: LogRecord): String {
                         return String.format(Locale.CHINA,
                                 "%s|%s|%s-%d|%s:%s|%s",
                                 UtilFun.MilliSecsToString(record.millis),
-                                record.level.name,
-                                mLogTag, record.threadID,
-                                record.sourceClassName,
-                                record.sourceMethodName,
+                                record.level.name, mLogTag, record.threadID,
+                                record.sourceClassName, record.sourceMethodName,
                                 formatMessage(record)) + System.lineSeparator()
                     }
                 }
@@ -53,6 +49,12 @@ class FileLogger private constructor() {
         private const val LOG_NAME = "cameraJob_run_%s.log"
 
         private val instance: FileLogger = FileLogger()
-        val logger: Logger = instance.mLogger
+
+        /**
+         * get logger to use
+         */
+        fun getLogger(): Logger {
+            return instance.mLogger
+        }
     }
 }

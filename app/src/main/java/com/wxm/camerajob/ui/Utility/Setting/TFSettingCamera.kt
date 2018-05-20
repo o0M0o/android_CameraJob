@@ -8,7 +8,6 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.*
 import com.wxm.camerajob.R
@@ -16,8 +15,8 @@ import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
-import com.wxm.camerajob.ui.Base.EventHelper
-import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview
+import com.wxm.camerajob.ui.base.EventHelper
+import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
 import com.wxm.camerajob.utility.DlgUtility
 import com.wxm.camerajob.utility.ContextUtil
 import kotterknife.bindView

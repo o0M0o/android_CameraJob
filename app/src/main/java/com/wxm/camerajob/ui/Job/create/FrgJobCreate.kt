@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Job.JobCreate
+package com.wxm.camerajob.ui.Job.create
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
@@ -9,16 +9,15 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.IdRes
 import android.util.Log
 import android.view.View
 import android.widget.*
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
-import com.wxm.camerajob.ui.Base.EventHelper
-import com.wxm.camerajob.ui.Base.IAcceptAble
-import com.wxm.camerajob.ui.Camera.CameraPreview.ACCameraPreview
-import com.wxm.camerajob.ui.Camera.CameraSetting.ACCameraSetting
+import com.wxm.camerajob.ui.base.EventHelper
+import com.wxm.camerajob.ui.base.IAcceptAble
+import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
+import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.utility.CalendarUtility
 import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.DlgUtility

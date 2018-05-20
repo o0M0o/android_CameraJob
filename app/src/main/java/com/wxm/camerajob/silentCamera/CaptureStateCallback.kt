@@ -1,4 +1,4 @@
-package com.wxm.camerajob.hardware
+package com.wxm.camerajob.silentCamera
 
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
@@ -6,6 +6,7 @@ import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CaptureRequest
 import android.media.ImageReader
 import android.util.Log
+import com.wxm.camerajob.utility.log.TagLog
 
 /**
  * @author      WangXM
@@ -16,7 +17,7 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
     : CameraCaptureSession.StateCallback()  {
 
     override fun onConfigured(session: CameraCaptureSession) {
-        Log.i(SilentCameraNew.LOG_TAG, "onConfigured")
+        TagLog.i("onConfigured")
         mHome.mCaptureSession = session
 
         // Auto focus should be continuous for camera preview.
@@ -36,17 +37,13 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
                 Unit
             }
         } catch (e: CameraAccessException) {
-            Log.e(LOG_TAG, "onConfigured", e)
+            TagLog.e("onConfigured", e)
             mHome.takePhotoCallBack(false)
         }
     }
 
     override fun onConfigureFailed(session: CameraCaptureSession) {
-        Log.e(SilentCameraNew.LOG_TAG, "onConfigureFailed, session : $session")
+        TagLog.e("onConfigureFailed, session : $session")
         mHome.takePhotoCallBack(false)
-    }
-
-    companion object {
-        private val LOG_TAG = ::CaptureStateCallback.javaClass.simpleName
     }
 }

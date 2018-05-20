@@ -1,12 +1,12 @@
-package com.wxm.camerajob.hardware
+package com.wxm.camerajob.silentCamera
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
-import android.util.Log
 import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.log.TagLog
 import wxm.androidutil.ImageUtility.ImageUtil
 
 /**
@@ -63,7 +63,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                     Unit
                 }
             } catch (e: Throwable) {
-                Log.e(LOG_TAG, "save file failure", e)
+                TagLog.e( "save file failure", e)
                 mHome.takePhotoCallBack(false)
             }
         }
@@ -78,11 +78,11 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
     private fun process(result: CaptureResult, tag: Int) {
         mWaitCount++
         if (MAX_WAIT_TIMES < mWaitCount) {
-            Log.e(LOG_TAG, "wait too many times")
+            TagLog.e("wait too many times")
             //processImage(mReader.acquireLatestImage())
         } else {
             result.get(CaptureResult.CONTROL_AE_STATE).let {
-                Log.i(LOG_TAG, "tag = $tag ae = ${it?.toString() ?: "null"}, " +
+                TagLog.i("tag = $tag ae = ${it?.toString() ?: "null"}, " +
                         "waitCount = $mWaitCount")
                 /*
                 if(checkAE(result.get(CaptureResult.CONTROL_AE_STATE))) {
@@ -90,23 +90,23 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                         if(null != it) {
                             processImage(it)    }
                         else {
-                            Log.w(LOG_TAG, "ImageReader is empty!")
+                            TagLog.w(LOG_TAG, "ImageReader is empty!")
                             try {
                                 Thread.sleep(250)
                                 //mHome.mCaptureSession!!.capture(mBuilder.build(), this, null)
                             } catch (e: InterruptedException) {
-                                Log.e(LOG_TAG, "thread interrupted", e)
+                                TagLog.e(LOG_TAG, "thread interrupted", e)
                                 mHome.takePhotoCallBack(false)
                             }
                         }
                     }
                 } else  {
-                    Log.i(LOG_TAG, "wait image")
+                    TagLog.i(LOG_TAG, "wait image")
                     try {
                         Thread.sleep(250)
                         //mHome.mCaptureSession!!.capture(mBuilder.build(), this, null)
                     } catch (e: InterruptedException) {
-                        Log.e(LOG_TAG, "thread interrupted", e)
+                        TagLog.e(LOG_TAG, "thread interrupted", e)
                         mHome.takePhotoCallBack(false)
                     }
                 }
@@ -135,7 +135,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                                  failure: CaptureFailure) {
         super.onCaptureFailed(session, request, failure)
         ("CaptureFailed, reason = ${failure.reason} ").apply {
-            Log.d(LOG_TAG, this)
+            TagLog.d( this)
             FileLogger.getLogger().warning(this)
         }
 
