@@ -1,11 +1,10 @@
 package com.wxm.camerajob.silentCamera
 
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraCaptureSession
-import android.hardware.camera2.CameraDevice
-import android.hardware.camera2.CaptureRequest
+import android.graphics.Rect
+import android.hardware.camera2.*
+import android.hardware.camera2.params.MeteringRectangle
 import android.media.ImageReader
-import android.util.Log
+import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
 
 /**
@@ -15,6 +14,7 @@ import com.wxm.camerajob.utility.log.TagLog
 class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
                                        private val mReader: ImageReader)
     : CameraCaptureSession.StateCallback()  {
+    private var mCaptureBuilder: CaptureRequest.Builder? = null
 
     override fun onConfigured(session: CameraCaptureSession) {
         TagLog.i("onConfigured")
@@ -22,17 +22,11 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
 
         // Auto focus should be continuous for camera preview.
         try {
-            mHome.mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)!!.let {
-                it.addTarget(mReader.surface)
-                it.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+            mHome.mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG)!!.let {
+                setUpCaptureBuilder(it)
+                mCaptureBuilder = it
 
-                // Use the same AE and AF modes as the preview.
-                it.set(CaptureRequest.CONTROL_AE_MODE,
-                        if (mHome.mCamera!!.mFlashSupported) CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH
-                        else CaptureRequest.CONTROL_AE_MODE_ON)
-                it.set(CaptureRequest.JPEG_ORIENTATION, mHome.orientation)
-
-                session.capture(it.build(), CaptureCallback(mHome, mReader), null)
+                doCapture(null)
 
                 Unit
             }
@@ -42,8 +36,40 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
         }
     }
 
+    fun doCapture(callBack:CaptureCallback? = null) {
+        try {
+            val cb = callBack ?: CaptureCallback(mHome, mReader, this)
+            mHome.mCaptureSession!!.capture(mCaptureBuilder!!.build(), cb, null)
+        } catch (e: Throwable)  {
+            TagLog.e("doCapture failure", e)
+            mHome.takePhotoCallBack(false)
+        }
+    }
+
     override fun onConfigureFailed(session: CameraCaptureSession) {
         TagLog.e("onConfigureFailed, session : $session")
         mHome.takePhotoCallBack(false)
+    }
+
+    private fun setUpCaptureBuilder(builder:CaptureRequest.Builder) {
+        builder.addTarget(mReader.surface)
+        builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
+
+        //设置连续帧
+        //设置每秒30帧
+        mHome.mCamera!!.mCharacteristics.let {
+            it.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES)?.let {
+                builder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, it[it.size - 1])
+            }
+        }
+
+        ContextUtil.getWindowManager()!!.defaultDisplay.rotation.let {
+            builder.set(CaptureRequest.JPEG_ORIENTATION, SilentCameraNew.ORIENTATIONS.get(it))
+        }
+        builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+        builder.set(CaptureRequest.CONTROL_AE_MODE,
+                if (mHome.mCamera!!.mFlashSupported) CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH
+                else CaptureRequest.CONTROL_AE_MODE_ON)
     }
 }

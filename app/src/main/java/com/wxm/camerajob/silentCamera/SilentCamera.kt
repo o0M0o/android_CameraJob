@@ -1,5 +1,6 @@
 package com.wxm.camerajob.silentCamera
 
+import android.hardware.camera2.CameraCharacteristics
 import android.os.Handler
 import android.util.SparseIntArray
 import android.view.Surface
@@ -30,14 +31,16 @@ abstract class SilentCamera {
     /**
      * hardware for camera
      */
-    internal data class CameraHardWare(val mId: String) {
-        var mSensorOrientation: Int = 0
-        var mFace: Int = 0
-        var mFlashSupported: Boolean = false
+    internal data class CameraHardWare(val mId: String, val mCharacteristics: CameraCharacteristics) {
+        val mFace: Int = mCharacteristics.get(CameraCharacteristics.LENS_FACING)
+                        ?: CameraCharacteristics.LENS_FACING_EXTERNAL
+        val mSensorOrientation: Int = mCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 0
+        val mFlashSupported: Boolean = mCharacteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
     }
 
     /**
      * do take photo
+     * can run it in other thread
      */
     private inner class TakePhotoRunner internal constructor() : Runnable {
         override fun run() {
@@ -51,7 +54,6 @@ abstract class SilentCamera {
         }
     }
 
-
     /**
      * take photo
      * @param cp        for camera
@@ -62,31 +64,11 @@ abstract class SilentCamera {
         mCParam = cp
         mTPParam = tp
         mTPCBTakePhoto = stp
+        mCamera = null
 
         TakePhotoRunner().run()
     }
 
-    /**
-     * callback for open camera
-     * @param ret  true if success
-     */
-    internal fun openCameraCallBack(ret: Boolean) {
-        if (ret) {
-            "camera opened".apply {
-                TagLog.i(this)
-                FileLogger.getLogger().info(this)
-            }
-
-            capturePhoto()
-        } else {
-            "camera open failed".apply {
-                TagLog.i(this)
-                FileLogger.getLogger().info(this)
-            }
-
-            takePhotoCallBack(false)
-        }
-    }
 
     /**
      * callback for take photo
@@ -94,20 +76,22 @@ abstract class SilentCamera {
      */
     internal fun takePhotoCallBack(ret: Boolean) {
         val tag = mTPParam.mTag
-
         if (ret) {
             ("take photo success, tag = $tag, photoFile = ${mTPParam.mFileName}").apply {
                 TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
+            mCameraStatus = ECameraStatus.TAKE_PHOTO_SUCCESS
             mTPCBTakePhoto.onTakePhotoSuccess(mTPParam)
         } else {
+
             ("take photo failed, tag = $tag, camera_status = ${mCameraStatus.description}").apply {
                 TagLog.i(this)
                 FileLogger.getLogger().info(this)
             }
 
+            mCameraStatus = ECameraStatus.TAKE_PHOTO_FAILURE
             mTPCBTakePhoto.onTakePhotoFailed(mTPParam)
         }
         closeCamera()
@@ -121,23 +105,10 @@ abstract class SilentCamera {
     internal abstract fun openCamera()
 
     /**
-     * take photo
-     * use callback to get result
-     */
-    internal abstract fun capturePhoto()
-
-    /**
      * close camera
      */
     internal abstract fun closeCamera()
 
-    companion object {
-        val ORIENTATIONS = SparseIntArray().apply {
-            append(Surface.ROTATION_0, 90)
-            append(Surface.ROTATION_90, 0)
-            append(Surface.ROTATION_180, 270)
-            append(Surface.ROTATION_270, 180)
-        }
-    }
+
 }
 

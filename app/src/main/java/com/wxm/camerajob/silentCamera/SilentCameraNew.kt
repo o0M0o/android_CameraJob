@@ -6,6 +6,7 @@ import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Build
+import android.util.SparseIntArray
 import android.view.Surface
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.FileLogger
@@ -28,14 +29,8 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         val lsCamera = this
         ContextUtil.getCameraManager()?.apply {
             try {
-                val manager = this
-                manager.cameraIdList.filterNotNull().forEach {
-                    val cc = manager.getCameraCharacteristics(it)
-                    lsCamera.add(CameraHardWare(it).apply {
-                        mFace = cc.get(CameraCharacteristics.LENS_FACING) ?: 0
-                        mSensorOrientation = cc.get(CameraCharacteristics.SENSOR_ORIENTATION) ?: 90
-                        mFlashSupported = cc.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
-                    })
+                cameraIdList.filterNotNull().forEach {
+                    lsCamera.add(CameraHardWare(it, getCameraCharacteristics(it)))
                 }
             } catch (e: CameraAccessException) {
                 TagLog.e("get camera info failure", e)
@@ -56,7 +51,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         get() {
             return ContextUtil.getWindowManager()!!.defaultDisplay.rotation.let {
                 if(null != mCamera) {
-                    val ret = (SilentCamera.ORIENTATIONS.get(it) + mCamera!!.mSensorOrientation + 270) % 360
+                    val ret = (ORIENTATIONS.get(it) + mCamera!!.mSensorOrientation + 270) % 360
                     TagLog.d("Orientation : display = $it, " +
                             "sensor = ${mCamera!!.mSensorOrientation}, ret = $ret")
 
@@ -66,39 +61,6 @@ class SilentCameraNew internal constructor() : SilentCamera() {
                 }
             }
         }
-
-    private val mCameraDeviceStateCallback = object : CameraDevice.StateCallback() {
-        override fun onOpened(camera: CameraDevice) {
-            "onOpened".apply {
-                TagLog.i(this)
-                FileLogger.getLogger().info(this)
-            }
-
-            mCameraDevice = camera
-            openCameraCallBack(true)
-        }
-
-        override fun onDisconnected(camera: CameraDevice) {
-            "onDisconnected".apply {
-                TagLog.i( this)
-                FileLogger.getLogger().info(this)
-            }
-
-            mCameraDevice = null
-            openCameraCallBack(false)
-        }
-
-        override fun onError(camera: CameraDevice, error: Int) {
-            "onError, error = $error".apply {
-                TagLog.i( this)
-                FileLogger.getLogger().info(this)
-            }
-
-            mCameraDevice = null
-            openCameraCallBack(false)
-        }
-    }
-
 
     override fun openCamera() {
         if (!ContextUtil.checkPermission(Manifest.permission.CAMERA)) {
@@ -115,8 +77,39 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         }
 
         try {
-            ContextUtil.getCameraManager()!!
-                    .openCamera(mCamera!!.mId, mCameraDeviceStateCallback, mCParam.mSessionHandler)
+            ContextUtil.getCameraManager()!!.openCamera(mCamera!!.mId,
+                    object : CameraDevice.StateCallback() {
+                        override fun onOpened(camera: CameraDevice) {
+                            "onOpened".apply {
+                                TagLog.i(this)
+                                FileLogger.getLogger().info(this)
+                            }
+
+                            mCameraDevice = camera
+                            openCameraCallBack(true)
+                        }
+
+                        override fun onDisconnected(camera: CameraDevice) {
+                            "onDisconnected".apply {
+                                TagLog.i( this)
+                                FileLogger.getLogger().info(this)
+                            }
+
+                            mCameraDevice = null
+                            openCameraCallBack(false)
+                        }
+
+                        override fun onError(camera: CameraDevice, error: Int) {
+                            "onError, error = $error".apply {
+                                TagLog.i( this)
+                                FileLogger.getLogger().info(this)
+                            }
+
+                            mCameraDevice = null
+                            openCameraCallBack(false)
+                        }
+                    },
+                    mCParam.mSessionHandler)
         } catch (e: Exception) {
             TagLog.e( "open camera failure", e)
             FileLogger.getLogger().severe(e.toString())
@@ -124,21 +117,13 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         }
     }
 
-    override fun capturePhoto() {
+    private fun capturePhoto() {
         TagLog.i( "start capture")
         mCameraStatus = ECameraStatus.TAKE_PHOTO_START
 
         try {
-            ImageReader.newInstance(
-                    mCParam.mPhotoSize.width, mCParam.mPhotoSize.height,
-                    ImageFormat.JPEG, 2).let {
-                /*
-                it.setOnImageAvailableListener(
-                        {
-                            TagLog.i(LOG_TAG, "image already")
-                        }, mCParam!!.mSessionHandler)
-                        */
-
+            ImageReader.newInstance(mCParam.mPhotoSize.width, mCParam.mPhotoSize.height,
+                    ImageFormat.JPEG, 5).let {
                 mCameraDevice!!.createCaptureSession(listOf<Surface>(it.surface),
                         CaptureStateCallback(this, it), null)
             }
@@ -150,15 +135,45 @@ class SilentCameraNew internal constructor() : SilentCamera() {
     }
 
     override fun closeCamera() {
-        mCameraDevice?.close()
-        mCaptureSession?.close()
-
         ("camera closed, paraTag = ${mTPParam.mTag}").apply {
             TagLog.i( this)
             FileLogger.getLogger().info(this)
         }
 
+        mCameraDevice?.close()
+        mCaptureSession?.close()
         mCameraStatus = ECameraStatus.NOT_OPEN
+    }
+
+    /**
+     * callback for open camera
+     * @param ret  true if success
+     */
+    private fun openCameraCallBack(ret: Boolean) {
+        if (ret) {
+            "camera opened".apply {
+                TagLog.i(this)
+                FileLogger.getLogger().info(this)
+            }
+
+            capturePhoto()
+        } else {
+            "camera open failed".apply {
+                TagLog.i(this)
+                FileLogger.getLogger().info(this)
+            }
+
+            takePhotoCallBack(false)
+        }
+    }
+
+    companion object {
+        val ORIENTATIONS = SparseIntArray().apply {
+            append(Surface.ROTATION_0, 90)
+            append(Surface.ROTATION_90, 0)
+            append(Surface.ROTATION_180, 270)
+            append(Surface.ROTATION_270, 180)
+        }
     }
 }
 
