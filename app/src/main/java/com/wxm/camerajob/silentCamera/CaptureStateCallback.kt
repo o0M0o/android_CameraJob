@@ -1,8 +1,6 @@
 package com.wxm.camerajob.silentCamera
 
-import android.graphics.Rect
 import android.hardware.camera2.*
-import android.hardware.camera2.params.MeteringRectangle
 import android.media.ImageReader
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
@@ -13,7 +11,7 @@ import com.wxm.camerajob.utility.log.TagLog
  */
 class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
                                        private val mReader: ImageReader)
-    : CameraCaptureSession.StateCallback()  {
+    : CameraCaptureSession.StateCallback() {
     private var mCaptureBuilder: CaptureRequest.Builder? = null
 
     override fun onConfigured(session: CameraCaptureSession) {
@@ -36,11 +34,13 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
         }
     }
 
-    fun doCapture(callBack:CaptureCallback? = null) {
+    fun doCapture(callBack: CaptureCallback? = null) {
         try {
+            //mReader.acquireLatestImage()?.use { TagLog.i("discard image = $it")  }
+
             val cb = callBack ?: CaptureCallback(mHome, mReader, this)
             mHome.mCaptureSession!!.capture(mCaptureBuilder!!.build(), cb, null)
-        } catch (e: Throwable)  {
+        } catch (e: Throwable) {
             TagLog.e("doCapture failure", e)
             mHome.takePhotoCallBack(false)
         }
@@ -51,8 +51,13 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
         mHome.takePhotoCallBack(false)
     }
 
-    private fun setUpCaptureBuilder(builder:CaptureRequest.Builder) {
+    private fun setUpCaptureBuilder(builder: CaptureRequest.Builder) {
         builder.addTarget(mReader.surface)
+        builder.set(CaptureRequest.JPEG_ORIENTATION,
+                getJPGOrientation(mHome.mCamera!!.mFace == CameraCharacteristics.LENS_FACING_FRONT,
+                        mHome.mCamera!!.mSensorOrientation,
+                        ContextUtil.getWindowManager()!!.defaultDisplay.rotation))
+
         builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
 
         //设置连续帧
@@ -63,13 +68,25 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
             }
         }
 
-        ContextUtil.getWindowManager()!!.defaultDisplay.rotation.let {
-            builder.set(CaptureRequest.JPEG_ORIENTATION, SilentCameraNew.ORIENTATIONS.get(it))
-        }
         builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
-        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
         builder.set(CaptureRequest.CONTROL_AE_MODE,
                 if (mHome.mCamera!!.mFlashSupported) CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH
                 else CaptureRequest.CONTROL_AE_MODE_ON)
+    }
+
+    private fun getJPGOrientation(facingFront: Boolean, sensorOrientation: Int, deviceOrientation: Int): Int {
+        if (deviceOrientation == android.view.OrientationEventListener.ORIENTATION_UNKNOWN)
+            return 0
+
+        // Round device orientation to a multiple of 90
+        var dOrientation = (deviceOrientation + 45) / 90 * 90;
+
+        // Reverse device orientation for front-facing cameras
+        if (facingFront) dOrientation = -dOrientation;
+
+        // Calculate desired JPEG orientation relative to camera orientation to make
+        // the image upright relative to the device orientation
+        return (sensorOrientation + dOrientation + 360) % 360
     }
 }

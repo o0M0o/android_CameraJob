@@ -52,11 +52,13 @@ class SilentCameraNew internal constructor() : SilentCamera() {
             return ContextUtil.getWindowManager()!!.defaultDisplay.rotation.let {
                 if(null != mCamera) {
                     val ret = (ORIENTATIONS.get(it) + mCamera!!.mSensorOrientation + 270) % 360
-                    TagLog.d("Orientation : display = $it, " +
+                    TagLog.i("Orientation : display = $it, " +
                             "sensor = ${mCamera!!.mSensorOrientation}, ret = $ret")
 
                     ret
                 } else  {
+                    TagLog.i("Orientation : display = $it, ret = $it")
+
                     it
                 }
             }

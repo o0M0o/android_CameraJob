@@ -19,21 +19,23 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
                                   private val mDoCapture: CaptureStateCallback)
     : CameraCaptureSession.CaptureCallback() {
     companion object {
-        private const val MAX_WAIT_TIMES = 5
+        private const val MAX_WAIT_TIMES = 10
+        private const val MAX_SUCCESS_TIMES = 4
     }
 
-    private var mStateOk = false
+    private var mSuccessCount = 0
     private var mWaitCount = 0
     private val mAEArray = intArrayOf(
             CameraMetadata.CONTROL_AE_STATE_LOCKED, CameraMetadata.CONTROL_AE_STATE_CONVERGED,
             CameraMetadata.CONTROL_AE_STATE_PRECAPTURE, CameraMetadata.CONTROL_AE_STATE_FLASH_REQUIRED)
 
     private val mAFArray = intArrayOf(
-            CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED, CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED)
+            CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED, CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED,
+            CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED)
 
     init {
         mReader.setOnImageAvailableListener({ reader ->
-            TagLog.i("reader is ok")
+            TagLog.i("image is ok")
         }, null)
     }
 
@@ -44,24 +46,17 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         mWaitCount++
         if (MAX_WAIT_TIMES < mWaitCount) {
             TagLog.e("wait too many times")
-            mHome.takePhotoCallBack(false)
+            saveImage()
         } else {
-            mStateOk = checkState(result)
-            if (mStateOk) {
-                TagLog.i("camera status is ok")
-                getLastImage(1000).let {
-                    if (null != it) {
-                        TagLog.i("get image success")
-                        it.use { processImage(it) }
-                    } else {
-                        TagLog.i("get image failure")
-                        mHome.takePhotoCallBack(false)
-                    }
-
-                    Unit
+            if (checkState(result)) {
+                if(MAX_SUCCESS_TIMES > mSuccessCount)  {
+                    mDoCapture.doCapture(this)
+                } else  {
+                    saveImage()
                 }
+
+                mSuccessCount++
             } else {
-                TagLog.i("camera status not ok")
                 mDoCapture.doCapture(this)
             }
         }
@@ -80,24 +75,37 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         mHome.takePhotoCallBack(false)
     }
 
-    private fun getLastImage(timeOut: Long): Image? {
-        return mReader.acquireLatestImage().let {
+    private fun saveImage() {
+        mReader.acquireLatestImage().let {
             if(null != it) {
-                return it
+                it
             } else    {
-                Thread.sleep(timeOut)
+                TagLog.i("first get image failure")
+                Thread.sleep(200)
                 mReader.acquireLatestImage()
             }
+        }.let {
+            if (null != it) {
+                mSuccessCount = 0
+                TagLog.i("get image success")
+                it.use { processImage(it) }
+            } else {
+                TagLog.i("get image failure")
+                mHome.takePhotoCallBack(false)
+            }
+
+            Unit
         }
     }
-
 
     private fun checkState(result: TotalCaptureResult): Boolean {
         val af = result.get(CaptureResult.CONTROL_AF_STATE)
         val ae = result.get(CaptureResult.CONTROL_AE_STATE)
-        TagLog.i("afState = ${af ?: "null"}, aeState = ${ae ?: "null"}")
-        return (if (null == ae) false else mAEArray.contains(ae)) ||
-                (if (null == af) false else mAFArray.contains(af))
+        return ((if (null == ae) false else mAEArray.contains(ae)) &&
+                (if (null == af) false else mAFArray.contains(af))).apply {
+                    TagLog.i("afState = ${af ?: "null"}, aeState = ${ae ?: "null"}, " +
+                            "state = ${ if(this) "ok" else "not_ok" }")
+                }
     }
 
 
@@ -111,8 +119,7 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
         }
 
         try {
-            ImageUtil.rotateBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size),
-                    mHome.orientation, null)!!.let {
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!.let {
                 ImageUtil.saveBitmapToJPGFile(it, mHome.mTPParam.mPhotoFileDir, mHome.mTPParam.mFileName)
             }.let {
                 mHome.takePhotoCallBack(it)

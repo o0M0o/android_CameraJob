@@ -8,6 +8,7 @@ import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
 import com.wxm.camerajob.utility.FileLogger
 import com.wxm.camerajob.utility.log.TagLog
+import java.util.*
 
 
 /**
@@ -43,13 +44,24 @@ abstract class SilentCamera {
      * can run it in other thread
      */
     private inner class TakePhotoRunner internal constructor() : Runnable {
+        private val mTimer = java.util.Timer()
+
         override fun run() {
             try {
+                mTimer.schedule(object : TimerTask()    {
+                    override fun run() {
+                        closeCamera()
+                    }
+                }, 5000)
+
                 mCParam.mSessionHandler = Handler()
                 openCamera()
             } catch (e: Throwable) {
                 TagLog.e("take photo failure", e)
                 FileLogger.getLogger().severe(e.toString())
+            } finally {
+                mTimer.cancel()
+                closeCamera()
             }
         }
     }

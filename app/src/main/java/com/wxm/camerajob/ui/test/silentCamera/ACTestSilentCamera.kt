@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
@@ -20,10 +19,8 @@ import com.wxm.camerajob.silentCamera.SilentCameraNew
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
-
-import java.lang.ref.WeakReference
-
 import wxm.androidutil.ImageUtility.ImageUtil
+import java.lang.ref.WeakReference
 
 class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
     private val mBTCapture: Button by bindView(R.id.acbt_capture)
@@ -102,10 +99,8 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(acHome, "takePhoto ok", Toast.LENGTH_SHORT).show()
 
                     acHome.mIVPhoto.getDrawingRect(Rect())
-                    //MySize psz = new MySize(rt.width(), rt.height());
-                    //TagLog.i(LOG_TAG, "perfence size : " + psz);
-
                     val fn = "${acHome.mTPParam.mPhotoFileDir}/${acHome.mTPParam.mFileName}"
+                    //ImageUtil.getRotatedLocalBitmap(fn).let {
                     ImageUtil.getLocalBitmap(fn).let {
                         if (null != it) {
                             acHome.mIVPhoto.setImageBitmap(it)
