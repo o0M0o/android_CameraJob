@@ -11,6 +11,7 @@ import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.log.TagLog
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**
@@ -52,7 +53,7 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
             }
 
             else -> {
-                Log.i(LOG_TAG, "不处理的 resultCode = $resultCode")
+                TagLog.i("不处理的 resultCode = $resultCode")
             }
         }
     }

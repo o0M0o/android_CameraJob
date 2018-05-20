@@ -11,6 +11,7 @@ import com.j256.ormlite.table.TableUtils
 import com.wxm.camerajob.data.define.CameraJob
 import com.wxm.camerajob.data.define.CameraJobStatus
 import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.log.TagLog
 
 import java.sql.SQLException
 
@@ -51,7 +52,7 @@ class DBOrmLiteHelper(context: Context) : OrmLiteSqliteOpenHelper(context, DATAB
             TableUtils.createTable(connectionSource, CameraJob::class.java)
             TableUtils.createTable(connectionSource, CameraJobStatus::class.java)
         } catch (e: SQLException) {
-            Log.e(LOG_TAG, "Can't create database", e)
+            TagLog.e("Can't create database", e)
             throw RuntimeException(e)
         }
 

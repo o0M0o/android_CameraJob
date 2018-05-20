@@ -1,6 +1,7 @@
 package com.wxm.camerajob.ui.base
 
 import android.util.Log
+import com.wxm.camerajob.utility.log.TagLog
 import java.util.*
 import javax.activation.CommandMap
 import javax.activation.MailcapCommandMap
@@ -35,7 +36,7 @@ class SendEmailHelper : javax.mail.Authenticator() {
                     mSEPara!!.mIFOnResult!!.onSendFailure()
                 }
             } catch (e: Exception) {
-                Log.e(LOG_TAG, e.message)
+                TagLog.e("send email failure", e)
             }
         }
         thread.start()

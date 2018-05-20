@@ -13,6 +13,7 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.base.SendEmailHelper
 import com.wxm.camerajob.ui.base.SendEmailPara
 import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 
 import wxm.androidutil.util.UtilFun
@@ -149,7 +150,7 @@ class ACTestEmail : AppCompatActivity(), View.OnClickListener {
                     DlgUtility.showAlert(mACHome, "警告", "邮件发送失败!")
                 }
 
-                else -> Log.e(LOG_TAG, "$msg can not process")
+                else -> TagLog.e("$msg can not process")
             }
         }
 

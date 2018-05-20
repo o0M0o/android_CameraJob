@@ -20,6 +20,7 @@ import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.base.AutoFitTextureView
 import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
 import wxm.androidutil.type.MySize
@@ -403,7 +404,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                         Surface.ROTATION_0, Surface.ROTATION_180 -> mSensorOrientation == 90 || mSensorOrientation == 270
                         Surface.ROTATION_90, Surface.ROTATION_270 -> mSensorOrientation == 0 || mSensorOrientation == 180
                         else -> {
-                            Log.e(LOG_TAG, "Display rotation is invalid: $it")
+                            TagLog.e("Display rotation is invalid: $it")
                             false
                         }
                     }
@@ -550,7 +551,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 bigEnough.size > 0 -> Collections.min(bigEnough, CompareSizesByArea())
                 notBigEnough.size > 0 -> Collections.max(notBigEnough, CompareSizesByArea())
                 else -> {
-                    Log.e(LOG_TAG, "Couldn't find any suitable preview size")
+                    TagLog.e("Couldn't find any suitable preview size")
                     choices[0]
                 }
             }

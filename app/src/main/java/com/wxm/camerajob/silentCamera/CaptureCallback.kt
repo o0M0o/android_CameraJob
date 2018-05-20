@@ -33,12 +33,6 @@ class CaptureCallback constructor(private val mHome: SilentCameraNew,
             CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED, CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED,
             CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED)
 
-    init {
-        mReader.setOnImageAvailableListener({ reader ->
-            TagLog.i("image is ok")
-        }, null)
-    }
-
     override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest,
                                     result: TotalCaptureResult) {
         super.onCaptureCompleted(session, request, result)

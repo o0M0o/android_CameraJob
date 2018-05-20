@@ -21,6 +21,7 @@ import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.utility.CalendarUtility
 import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -95,7 +96,6 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         val jobEndDate = mTVJobEndDate.text.toString() + ":00"
 
         if (jobName.isEmpty()) {
-            Log.i(LOG_TAG, "job name为空")
             mETJobName.requestFocus()
 
             DlgUtility.showAlert(activity, R.string.warn, "请输入任务名!")
@@ -103,7 +103,6 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         }
 
         if (jobType.isEmpty()) {
-            Log.i(LOG_TAG, "job type为空")
             mGVJobType.requestFocus()
 
             DlgUtility.showAlert(activity, R.string.warn, "请选择任务类型!")
@@ -111,7 +110,6 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         }
 
         if (jobPoint!!.isEmpty()) {
-            Log.i(LOG_TAG, "job point为空")
             mGVJobPoint.requestFocus()
 
             DlgUtility.showAlert(activity, R.string.warn, "请选择任务激活方式!")
@@ -123,7 +121,6 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         if (st >= et) {
             String.format(Locale.CHINA, "任务开始时间(%s)比结束时间(%s)晚",
                     jobStartDate, jobEndDate).apply {
-                Log.w(LOG_TAG, this)
                 DlgUtility.showAlert(activity, "警告", this)
             }
 
@@ -355,8 +352,7 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
                     }
                 }
             } catch (e: Resources.NotFoundException) {
-                Log.e(LOG_TAG, "Not find string array for '$hv'")
-                e.printStackTrace()
+                TagLog.e("Not find string array for '$hv'", e)
             }
         }
     }

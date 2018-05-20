@@ -17,6 +17,7 @@ import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType
 import com.wxm.camerajob.utility.UILImageLoader
+import com.wxm.camerajob.utility.log.TagLog
 import org.xutils.x
 import java.io.File
 
@@ -36,7 +37,7 @@ class JobGallery {
     private val mResultCallback = object : GalleryFinal.OnHanlderResultCallback {
         override fun onHanlderSuccess(reqeustCode: Int, resultList: List<PhotoInfo>?) {
             if (resultList != null) {
-                Log.i(LOG_TAG, "open gallery success")
+                TagLog.i("open gallery success")
             }
         }
 

@@ -67,10 +67,14 @@ class FrgJobShow : FrgSupportBaseAdv()   {
     }
 
     override fun initUI(savedInstanceState: Bundle?) {
+        /*
         val h = this
         mTimer.schedule(object : TimerTask() {
             override fun run() = h.activity.runOnUiThread({ h.reloadUI() })
         }, 100, 3000)
+        */
+
+        loadUI(savedInstanceState)
     }
 
     override fun loadUI(savedInstanceState: Bundle?) {

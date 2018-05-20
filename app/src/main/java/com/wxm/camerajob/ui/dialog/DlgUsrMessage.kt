@@ -13,6 +13,7 @@ import android.view.View
 import com.wxm.camerajob.R
 import com.wxm.camerajob.utility.DlgUtility
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.log.TagLog
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -180,14 +181,12 @@ class DlgUsrMessage : DlgOKOrNOBase() {
                     home.mPDDlg.progress = home.mProgressStatus
                 }
 
-                else -> Log.e(LOG_TAG, "$m can not process")
+                else -> TagLog.e( "$m can not process")
             }
         }
     }
 
     companion object {
-        private val LOG_TAG = ::LocalMsgHandler.javaClass.simpleName
-
         // for progress dialog when send http post
         private val PROGRESS_DIALOG = 0x112
         private val MSG_PROGRESS_UPDATE = 0x111

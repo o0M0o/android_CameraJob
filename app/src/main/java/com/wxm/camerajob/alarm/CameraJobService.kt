@@ -14,6 +14,7 @@ import android.util.Log
 
 import com.wxm.camerajob.data.define.EMsgType
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.log.TagLog
 
 import java.util.LinkedList
 
@@ -29,7 +30,7 @@ class CameraJobService : JobService() {
     @Override
     public void onCreate() {
         super.onCreate();
-        //Log.i(LOG_TAG, "JobService created");
+        //TagLog.i(LOG_TAG, "JobService created");
         //Context mCurContext = ContextUtil.Companion.getInstance();
     }
     */
@@ -47,7 +48,7 @@ class CameraJobService : JobService() {
         try {
             callback.send(m);
         } catch (RemoteException e) {
-            Log.e(LOG_TAG, "Error passing service object back to activity.");
+            TagLog.e(LOG_TAG, "Error passing service object back to activity.");
         }
         */
         return Service.START_NOT_STICKY
@@ -67,17 +68,13 @@ class CameraJobService : JobService() {
     override fun onStopJob(params: JobParameters): Boolean {
         // Stop tracking these job parameters, as we've 'finished' executing.
         jobParamsMap.remove(params)
-        //Log.i(LOG_TAG, "on stop job: " + params.getJobId());
+        //TagLog.i(LOG_TAG, "on stop job: " + params.getJobId());
         return true
     }
 
     /** Send job to the JobScheduler.  */
     fun scheduleJob(t: JobInfo) {
-        Log.d(LOG_TAG, "Scheduling job")
+        TagLog.d("Scheduling job")
         ContextUtil.getSystemService<JobScheduler>(Context.JOB_SCHEDULER_SERVICE)!!.schedule(t)
-    }
-
-    companion object {
-        private val LOG_TAG = ::CameraJobService.javaClass.simpleName
     }
 }

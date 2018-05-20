@@ -26,6 +26,7 @@ import android.view.*
 import android.widget.Toast
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.base.AutoFitTextureView
+import com.wxm.camerajob.utility.log.TagLog
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -384,7 +385,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
                     Surface.ROTATION_90, Surface.ROTATION_270 -> if (mSensorOrientation == 0 || mSensorOrientation == 180) {
                         swappedDimensions = true
                     }
-                    else -> Log.e(LOG_TAG, "Display rotation is invalid: $displayRotation")
+                    else -> TagLog.e("Display rotation is invalid: $displayRotation")
                 }
 
                 val displaySize = Point()
@@ -641,7 +642,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
                                                 request: CaptureRequest,
                                                 result: TotalCaptureResult) {
                     showToast("Saved: " + mFile!!)
-                    Log.d(LOG_TAG, mFile!!.toString())
+                    TagLog.d(mFile!!.toString())
                     unlockFocus()
                 }
             }.let {
@@ -870,7 +871,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
                 bigEnough.size > 0 -> Collections.min(bigEnough, CompareSizesByArea())
                 notBigEnough.size > 0 -> Collections.max(notBigEnough, CompareSizesByArea())
                 else -> {
-                    Log.e(LOG_TAG, "Couldn't find any suitable preview size")
+                    TagLog.e("Couldn't find any suitable preview size")
                     choices[0]
                 }
             }

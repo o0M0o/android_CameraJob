@@ -11,6 +11,7 @@ import com.wxm.camerajob.data.define.*
 
 import com.wxm.camerajob.utility.ContextUtil
 import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.log.TagLog
 
 import java.util.*
 
@@ -58,7 +59,7 @@ class AlarmReceiver : BroadcastReceiver() {
                         .set(AlarmManager.RTC_WAKEUP, nextAlarmDelay, pendingIntent)
             }
         } catch (e: Exception) {
-            Log.e(LOG_TAG, e.toString())
+            TagLog.e("receive alarm failure", e)
             FileLogger.getLogger().severe(e.toString())
         }
     }

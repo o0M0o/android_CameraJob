@@ -10,20 +10,19 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import butterknife.ButterKnife
 import com.wxm.camerajob.BuildConfig
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.ui.Job.create.ACJobCreate
-import com.wxm.camerajob.ui.test.camera.ACTestCamera
-import com.wxm.camerajob.ui.test.silentCamera.ACTestSilentCamera
 import com.wxm.camerajob.ui.Utility.Help.ACHelp
 import com.wxm.camerajob.ui.Utility.Setting.ACSetting
+import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage
+import com.wxm.camerajob.ui.test.camera.ACTestCamera
+import com.wxm.camerajob.ui.test.silentCamera.ACTestSilentCamera
 import com.wxm.camerajob.utility.ContextUtil
 import kotterknife.bindView
 import wxm.androidutil.Dialog.DlgOKOrNOBase
@@ -61,7 +60,7 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         setSupportActionBar(mTBNav)
 
         ActionBarDrawerToggle(this, mDLOuterLayout, mTBNav,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close).apply{
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close).apply {
             mDLOuterLayout.addDrawerListener(this)
             syncState()
         }
@@ -89,6 +88,11 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        mFRGJobShow.reloadUI()
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -119,26 +123,8 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         return true
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
-            GlobalDef.INTRET_CAMERAJOB_ACCEPT -> {
-            }
-
-            GlobalDef.INTRET_CS_ACCEPT -> {
-            }
-
-            else -> {
-                Log.v(LOG_TAG, "not match resultCode = $resultCode")
-            }
-        }
-    }
-
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.nav_help -> {
                 val d = Intent(this, ACHelp::class.java)
                 d.putExtra(GlobalDef.STR_HELP_TYPE, GlobalDef.STR_HELP_MAIN)
@@ -164,17 +150,15 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
      * 给作者留言
      */
     private fun contactWriter() {
-        val dlg = DlgUsrMessage()
-        dlg.addDialogListener(object : DlgOKOrNOBase.DialogResultListener {
-            override fun onDialogPositiveResult(dialogFragment: DialogFragment) {}
+        DlgUsrMessage().let {
+            it.addDialogListener(object : DlgOKOrNOBase.DialogResultListener {
+                override fun onDialogPositiveResult(dialogFragment: DialogFragment) {}
+                override fun onDialogNegativeResult(dialogFragment: DialogFragment) {}
+            })
 
-            override fun onDialogNegativeResult(dialogFragment: DialogFragment) {}
-        })
+            it.show(supportFragmentManager, "send message")
+            Unit
+        }
 
-        dlg.show(supportFragmentManager, "send message")
-    }
-
-    companion object {
-        private val LOG_TAG = ::ACJobShow.javaClass.simpleName
     }
 }
