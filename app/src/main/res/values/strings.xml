@@ -16,9 +16,9 @@
     <string name="cn_sharemy">分享此应用</string>
     <string name="cn_contact_writer">联系作者</string>
 
-    <string name="cn_unknown_photofile">未知照片</string>
+    <string name="unknown_photo">未知照片</string>
 
-    <string name="cnhint_camerajob_name">任务名称(英文/数字)</string>
+    <string name="hint_camera_job_name">任务名称(英文/数字)</string>
     <string name="hint_job_time_start">任务开始时间</string>
     <string name="hint_job_time_finish">任务完成时间</string>
 
@@ -56,8 +56,15 @@
     <string name="error">错误</string>
     <string name="info_need_stop_job">请先删除或暂停运行中任务!</string>
 
-    <string name="cn_usr_message">请输入您的意见或建议</string>
+    <!-- format for string -->
+    <string name="fs_job_type">%s/%s</string>
+    <string name="fs_start_end_date">%s - %s</string>
+    <string name="fs_date">%s</string>
+    <string name="fs_photo_count">已拍摄 %d张</string>
+    <string name="fs_photo_last">最后拍摄时间 : %s</string>
+
     <!-- for send message -->
+    <string name="cn_usr_message">请输入您的意见或建议</string>
     <string name="url_post_send_message">
         http://www.wxmandriodapp.com:8080/KeepAccountServer/def/UMUtility
     </string>

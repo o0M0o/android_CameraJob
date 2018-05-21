@@ -9,9 +9,14 @@ import java.util.*
  * @author      WangXM
  * @version     create：2018/5/15
  */
-object CalendarUtility {
-    private val SDF_FULL = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-    private val SDF_YEAR_MONTH_DAY_HOUR_MINUTE = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA)
+class CalendarUtility(private val mFormatter: SimpleDateFormat) {
+    companion object {
+        val SDF_FULL = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+        val SDF_YEAR_MONTH_DAY_HOUR_MINUTE = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA)
+
+        val Full = CalendarUtility(SDF_FULL)
+        val YearMonthDayHourMinute = CalendarUtility(SDF_YEAR_MONTH_DAY_HOUR_MINUTE)
+    }
 
     private fun doFormat(cl: Calendar, utility: SimpleDateFormat): String    {
         return utility.format(cl.timeInMillis)
@@ -28,52 +33,26 @@ object CalendarUtility {
     }
 
     /**
-     * get partly string for timeInMillis [cl]
-     * example : result is '2018-05-15 12:00'
+     * get date string for [cl]
      */
-    fun getYearMonthDayHourMinuteStr(cl: Any): String    {
+    fun getStr(cl: Any): String    {
         Calendar.getInstance(Locale.CHINA).apply {
             timeInMillis = when (cl) {
                 is Long -> cl
                 is Calendar -> cl.timeInMillis
                 is Timestamp -> cl.time
+                is Date -> cl.time
                 else -> 0L
             }
         }.let {
-            return doFormat(it, SDF_YEAR_MONTH_DAY_HOUR_MINUTE)
+            return doFormat(it, mFormatter)
         }
     }
 
     /**
      * get calendar from string [szCl]
-     * example : [szCl] is '2018-05-15 12:00'
      */
-    fun parseYearMonthDayHourMinuteStr(szCl: CharSequence): Calendar    {
-        return doParse(szCl, SDF_YEAR_MONTH_DAY_HOUR_MINUTE)
-    }
-
-    /**
-     * get partly string for timeInMillis [cl]
-     * example : result is '2018-05-15 12:00'
-     */
-    fun getFullStr(cl: Any): String    {
-        Calendar.getInstance(Locale.CHINA).apply {
-            timeInMillis = when (cl) {
-                is Long -> cl
-                is Calendar -> cl.timeInMillis
-                is Timestamp -> cl.time
-                else -> 0L
-            }
-        }.let {
-            return doFormat(it, SDF_FULL)
-        }
-    }
-
-    /**
-     * get calendar from string [szCl]
-     * example : [szCl] is '2018-05-15 12:00:00'
-     */
-    fun parseFullStr(szCl: String): Calendar    {
-        return doParse(szCl, SDF_FULL)
+    fun parseStr(szCl: CharSequence): Calendar    {
+        return doParse(szCl, mFormatter)
     }
 }

@@ -5,18 +5,20 @@ package com.wxm.camerajob.ui.Job.show
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.support.annotation.StringRes
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.RelativeLayout
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.ui.Job.slide.ACJobSlide
 import com.wxm.camerajob.ui.base.FrgCameraInfoHelper
 import com.wxm.camerajob.ui.base.JobGallery
-import com.wxm.camerajob.ui.Job.slide.ACJobSlide
 import com.wxm.camerajob.utility.CalendarUtility
 import com.wxm.camerajob.utility.CameraJobUtility
 import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -32,7 +34,7 @@ import java.util.*
  * fragment for show job
  * Created by WangXM on 2016/10/14.
  */
-class FrgJobShow : FrgSupportBaseAdv()   {
+class FrgJobShow : FrgSupportBaseAdv() {
     private val mLVJobs: ListView by bindView(R.id.aclv_start_jobs)
     private val mTimer: Timer = Timer()
 
@@ -45,8 +47,10 @@ class FrgJobShow : FrgSupportBaseAdv()   {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDBDataChangeEvent(event: DBDataChangeEvent) {
-        (if (DBDataChangeEvent.EVENT_CREATE == event.eventType) 1200 else 0).toLong().let {
-            Handler().postDelayed({ this.reloadUI() }, it)
+        if(isVisible) {
+            (if (DBDataChangeEvent.EVENT_CREATE == event.eventType) 1200 else 0).toLong().let {
+                Handler().postDelayed({ this.reloadUI() }, it)
+            }
         }
     }
 
@@ -67,13 +71,6 @@ class FrgJobShow : FrgSupportBaseAdv()   {
     }
 
     override fun initUI(savedInstanceState: Bundle?) {
-        /*
-        val h = this
-        mTimer.schedule(object : TimerTask() {
-            override fun run() = h.activity.runOnUiThread({ h.reloadUI() })
-        }, 100, 3000)
-        */
-
         loadUI(savedInstanceState)
     }
 
@@ -92,8 +89,12 @@ class FrgJobShow : FrgSupportBaseAdv()   {
             }
         }.let {
             mLVJobs.adapter = LVJobShowAdapter(it,
-                    arrayOf(KEY_JOB_NAME, KEY_JOB_ACTIVE, KEY_JOB_DETAIL),
-                    intArrayOf(R.id.tv_job_name, R.id.tv_job_active, R.id.tv_job_detail))
+                    arrayOf(KEY_JOB_NAME,
+                            KEY_JOB_TYPE, KEY_JOB_START_END_DATE,
+                            KEY_PHOTO_COUNT, KEY_PHOTO_LAST_TIME),
+                    intArrayOf(R.id.tv_job_name,
+                            R.id.tv_job_type, R.id.tv_job_date,
+                            R.id.tv_phtot_count, R.id.tv_photo_last_time))
         }
     }
 
@@ -102,8 +103,10 @@ class FrgJobShow : FrgSupportBaseAdv()   {
         val cj = ContextUtil.getCameraJobFromDir(dir) ?: return
         HashMap<String, String>().let {
             it[KEY_JOB_NAME] = cj.name + "(已移除)"
-            it[KEY_JOB_ACTIVE] = ""
-            it[KEY_JOB_DETAIL] = "可查看已拍摄图片\n可移除本任务文件"
+            it[KEY_JOB_TYPE] = ""
+            it[KEY_JOB_START_END_DATE] = ""
+            it[KEY_PHOTO_COUNT] = "可查看已拍摄图片"
+            it[KEY_PHOTO_LAST_TIME] = "可移除此任务"
             it[KEY_ID] = Integer.toString(cj._id)
             it[KEY_STATUS] = EJobStatus.STOP.status
             it[KEY_TYPE] = DIED_JOB
@@ -114,26 +117,25 @@ class FrgJobShow : FrgSupportBaseAdv()   {
     }
 
     private fun aliveCameraJob(jobs: MutableList<HashMap<String, String>>, cj: CameraJob) {
-        val at = String.format(Locale.CHINA, "%s/%s\n%s -\n%s",
-                cj.type, cj.point,
-                CalendarUtility.getYearMonthDayHourMinuteStr(cj.starttime.time),
-                CalendarUtility.getYearMonthDayHourMinuteStr(cj.endtime.time))
-
-        val status = if (cj.status.job_status == EJobStatus.RUN.status) "运行" else "暂停"
-        val jobName = "${cj.name}($status)"
-
-        val detail = if (0 != cj.status.job_photo_count) {
-            String.format(Locale.CHINA, "已拍摄 : %d\n%s",
-                    cj.status.job_photo_count, UtilFun.TimestampToString(cj.status.ts))
-        } else {
-            String.format(Locale.CHINA, "已拍摄 : %d",
-                    cj.status.job_photo_count)
+        val at = CalendarUtility.YearMonthDayHourMinute.let {
+            context.getString(R.string.fs_start_end_date, it.getStr(cj.starttime), it.getStr(cj.endtime))
         }
+
+        val jobName = (if (cj.status.job_status == EJobStatus.RUN.status) "运行" else "暂停").let {
+            "${cj.name}($it)"
+        }
+
+        val detail = if (0 != cj.status.job_photo_count)
+            context.getString(R.string.fs_photo_last, CalendarUtility.Full.getStr(cj.status.ts))
+        else ""
+
 
         HashMap<String, String>().let {
             it[KEY_JOB_NAME] = jobName
-            it[KEY_JOB_ACTIVE] = at
-            it[KEY_JOB_DETAIL] = detail
+            it[KEY_JOB_TYPE] = context.getString(R.string.fs_job_type, cj.type, cj.point)
+            it[KEY_JOB_START_END_DATE] = at
+            it[KEY_PHOTO_COUNT] = context.getString(R.string.fs_photo_count, cj.status.job_photo_count)
+            it[KEY_PHOTO_LAST_TIME] = detail
             it[KEY_ID] = Integer.toString(cj._id)
             it[KEY_STATUS] = cj.status.job_status!!
             it[KEY_TYPE] = ALIVE_JOB
@@ -158,20 +160,17 @@ class FrgJobShow : FrgSupportBaseAdv()   {
         }
 
         override fun loadView(pos: Int, vhHolder: ViewHolder) {
-            vhHolder.convertView.apply {
-                initUI(this, pos)
-
-                mRLCameraInfo[pos] = findViewById(R.id.rl_camera_info)!!
-                fillCameraInfo(pos)
+            val map = UtilFun.cast_t<HashMap<String, String>>(getItem(pos))
+            initButton(vhHolder, map)
+            vhHolder.getView<RelativeLayout>(R.id.rl_camera_info)!!.let {
+                mRLCameraInfo[pos] = it
+                fillCameraInfo(it, map)
             }
         }
 
-        private fun initUI(v: View, position: Int) {
-            val map = UtilFun.cast_t<HashMap<String, String>>(getItem(position))
-
-            // for imageButton
-            val ibPlay = v.findViewById<ImageButton>(R.id.ib_job_run_or_pause)
-            val ibDelete = v.findViewById<ImageButton>(R.id.ib_job_stop)
+        private fun initButton(vhHolder: ViewHolder, map: Map<String, String>) {
+            val ibPlay: ImageButton = vhHolder.getView(R.id.ib_job_run_or_pause)
+            val ibDelete: ImageButton = vhHolder.getView(R.id.ib_job_stop)
 
             when (map[KEY_STATUS]) {
                 EJobStatus.RUN.status -> {
@@ -196,10 +195,10 @@ class FrgJobShow : FrgSupportBaseAdv()   {
 
             ibDelete.setOnClickListener(this)
 
-            val ibLook = v.findViewById<ImageButton>(R.id.ib_job_look)
-            val ibSlide = v.findViewById<ImageButton>(R.id.ib_job_slide_look)
-            val pp = ContextUtil.getCameraJobDir(Integer.parseInt(map[KEY_ID]))
-            if (0 == FileUtil.getDirFilesCount(pp, "jpg", false)) {
+            val ibLook: ImageButton = vhHolder.getView(R.id.ib_job_look)
+            val ibSlide: ImageButton = vhHolder.getView(R.id.ib_job_slide_look)
+            if (0 == FileUtil.getDirFilesCount(ContextUtil.getCameraJobDir(Integer.parseInt(map[KEY_ID])),
+                            "jpg", false)) {
                 ibLook.visibility = View.INVISIBLE
 
                 ibSlide.visibility = View.INVISIBLE
@@ -212,12 +211,18 @@ class FrgJobShow : FrgSupportBaseAdv()   {
             }
         }
 
-        private fun fillCameraInfo(pos: Int) {
-            mRLCameraInfo[pos]?.let {
-                it.findViewById<RelativeLayout>(R.id.rl_preview).visibility = View.INVISIBLE
-                it.findViewById<View>(R.id.rl_setting).visibility = View.INVISIBLE
+        private fun fillCameraInfo(rl: RelativeLayout, map: Map<String, String>) {
+            map[KEY_JOB_TYPE].isNullOrBlank().let {
+                if (it) {
+                    rl.visibility = View.GONE
+                } else {
+                    rl.visibility = View.VISIBLE
 
-                FrgCameraInfoHelper.refillLayout(it, PreferencesUtil.loadCameraParam())
+                    rl.findViewById<RelativeLayout>(R.id.rl_preview).visibility = View.INVISIBLE
+                    rl.findViewById<View>(R.id.rl_setting).visibility = View.INVISIBLE
+
+                    FrgCameraInfoHelper.refillLayout(rl, PreferencesUtil.loadCameraParam())
+                }
             }
         }
 
@@ -271,7 +276,13 @@ class FrgJobShow : FrgSupportBaseAdv()   {
 
         const val KEY_JOB_NAME = "job_name"
         const val KEY_JOB_DETAIL = "job_detail"
-        const val KEY_JOB_ACTIVE = "job_active"
+
+        const val KEY_JOB_TYPE = "job_type"
+        const val KEY_JOB_START_END_DATE = "job_start_end_date"
+
+        const val KEY_PHOTO_COUNT = "key_photo_count"
+        const val KEY_PHOTO_LAST_TIME = "key_photo_last_time"
+
         const val KEY_STATUS = "key_status"
         const val KEY_TYPE = "key_type"
         const val KEY_ID = "key_id"

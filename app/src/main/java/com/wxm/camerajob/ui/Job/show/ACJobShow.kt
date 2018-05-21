@@ -90,7 +90,6 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         mFRGJobShow.reloadUI()
     }
 

@@ -121,7 +121,7 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         if (st >= et) {
             String.format(Locale.CHINA, "任务开始时间(%s)比结束时间(%s)晚",
                     jobStartDate, jobEndDate).apply {
-                DlgUtility.showAlert(activity, "警告", this)
+                DlgUtility.showAlert(activity, R.string.warn, this)
             }
 
             return false
@@ -154,8 +154,8 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         // 任务默认开始时间是“当前时间"
         // 任务默认结束时间是“一周”
         System.currentTimeMillis().let {
-            mTVJobStartDate.text = CalendarUtility.getYearMonthDayHourMinuteStr(it)
-            mTVJobEndDate.text = CalendarUtility.getYearMonthDayHourMinuteStr(it + 1000 * 3600 * 24 * 7)
+            mTVJobStartDate.text = CalendarUtility.YearMonthDayHourMinute.getStr(it)
+            mTVJobEndDate.text = CalendarUtility.YearMonthDayHourMinute.getStr(it + 1000 * 3600 * 24 * 7)
         }
 
         // for job type & job point
@@ -200,7 +200,7 @@ class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
                 in intArrayOf(R.id.iv_clock_start, R.id.iv_clock_end) -> {
                     val title = if (R.id.iv_clock_start == v.id) "选择任务启动时间" else "选择任务结束时间"
                     (if (R.id.iv_clock_start == v.id) mTVJobStartDate else mTVJobEndDate).let {
-                        val cl = CalendarUtility.parseYearMonthDayHourMinuteStr(it.text)
+                        val cl = CalendarUtility.YearMonthDayHourMinute.parseStr(it.text)
                         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                             val strDate = String.format(Locale.CHINA, "%04d-%02d-%02d",
                                     year, month + 1, dayOfMonth)

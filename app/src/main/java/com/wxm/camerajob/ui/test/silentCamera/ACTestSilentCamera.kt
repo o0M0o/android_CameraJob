@@ -30,7 +30,6 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
     private val mCLGrey: Int = ContextUtil.appContext().getColor(R.color.gray)
     private val mCLBlack: Int = ContextUtil.appContext().getColor(R.color.black)
 
-    private val mSilentCamera = SilentCameraNew()
     private val mCameraParam = PreferencesUtil.loadCameraParam()
     private val mTPParam = TakePhotoParam(ContextUtil.getPhotoRootDir(), "tmp.jpg", "1")
     private val mCBTakePhoto = object : SilentCamera.TakePhotoCallBack {
@@ -83,7 +82,7 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
                 }
 
                 TagLog.i("start capture!")
-                mSilentCamera.takePhoto(mCameraParam, mTPParam, mCBTakePhoto)
+                SilentCamera.takePhoto(mCameraParam, mTPParam, mCBTakePhoto)
             }
         }
     }

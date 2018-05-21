@@ -28,6 +28,8 @@
         layout="@layout/frg_job_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_below="@id/iv_line2" />
 
     <ImageView
@@ -45,6 +47,8 @@
         layout="@layout/frg_camera_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_below="@id/iv_line1"
         android:paddingTop="6dp" />
 

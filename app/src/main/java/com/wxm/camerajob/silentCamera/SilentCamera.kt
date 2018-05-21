@@ -22,7 +22,7 @@ abstract class SilentCamera {
     internal var mCamera: CameraHardWare? = null
     internal lateinit var mTPParam: TakePhotoParam
     internal lateinit var mCParam: CameraParam
-    private lateinit var mTPCBTakePhoto: TakePhotoCallBack
+    internal lateinit var mTPCBTakePhoto: TakePhotoCallBack
 
     interface TakePhotoCallBack {
         fun onTakePhotoSuccess(tp: TakePhotoParam)
@@ -67,22 +67,6 @@ abstract class SilentCamera {
     }
 
     /**
-     * take photo
-     * @param cp        for camera
-     * @param tp        for photo
-     * @param stp       call back holder
-     */
-    fun takePhoto(cp: CameraParam, tp: TakePhotoParam, stp: TakePhotoCallBack) {
-        mCParam = cp
-        mTPParam = tp
-        mTPCBTakePhoto = stp
-        mCamera = null
-
-        TakePhotoRunner().run()
-    }
-
-
-    /**
      * callback for take photo
      * @param ret  true if success
      */
@@ -121,6 +105,25 @@ abstract class SilentCamera {
      */
     internal abstract fun closeCamera()
 
+    companion object {
+        private val instance = SilentCameraNew()
 
+        /**
+         * take photo
+         * @param cp        for camera
+         * @param tp        for photo
+         * @param stp       call back holder
+         */
+        fun takePhoto(cp: CameraParam, tp: TakePhotoParam, stp: TakePhotoCallBack) {
+            instance.apply {
+                mCParam = cp
+                mTPParam = tp
+                mTPCBTakePhoto = stp
+                mCamera = null
+
+                TakePhotoRunner().run()
+            }
+        }
+    }
 }
 

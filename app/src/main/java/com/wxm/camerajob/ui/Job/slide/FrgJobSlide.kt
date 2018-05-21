@@ -6,25 +6,14 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.BaseAdapter
-import android.widget.FrameLayout
-import android.widget.Gallery
-import android.widget.ImageSwitcher
-import android.widget.ImageView
-import android.widget.TextView
-
+import android.widget.*
 import com.wxm.camerajob.R
-
-import java.util.LinkedList
-import java.util.Locale
-import java.util.Timer
-import java.util.TimerTask
-
 import kotterknife.bindView
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
+import wxm.androidutil.ImageUtility.ImageUtil
 import wxm.androidutil.type.MySize
 import wxm.androidutil.util.UtilFun
-import wxm.androidutil.ImageUtility.ImageUtil
+import java.util.*
 
 /**
  * slide fragment for job
@@ -70,14 +59,14 @@ class FrgJobSlide : FrgSupportBaseAdv() {
 
         mTimer.schedule(object : TimerTask() {
             override fun run() {
-                activity.runOnUiThread({
-                    if (!isVisible)
-                        return@runOnUiThread
-
-                    val nextPos = (mGYPhotos.selectedItemPosition + 1) % mLLPhotoFN.size
-                    mGYPhotos.setSelection(nextPos)
-                    toPosition(nextPos)
-                })
+                if (isVisible) {
+                    activity.runOnUiThread({
+                        ((mGYPhotos.selectedItemPosition + 1) % mLLPhotoFN.size).let {
+                            mGYPhotos.setSelection(it)
+                            toPosition(it)
+                        }
+                    })
+                }
             }
         }, 300, 1500)
 

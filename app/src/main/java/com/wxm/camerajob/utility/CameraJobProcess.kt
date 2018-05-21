@@ -54,31 +54,24 @@ class CameraJobProcess {
                 if (null == path) {
                     wakeupDuty(lsJob)
                 } else {
-                    val param = TakePhotoParam(path, String.format(Locale.CHINA, "%d_%s.jpg",
-                            it._id, CALENDAR_STR.format(System.currentTimeMillis())),
+                    val param = TakePhotoParam(path, String.format(Locale.CHINA, "%s.jpg",
+                            CALENDAR_STR.format(System.currentTimeMillis())),
                             Integer.toString(it._id))
 
                     val cbTakePhoto = object : SilentCamera.TakePhotoCallBack {
                         override fun onTakePhotoFailed(tp: TakePhotoParam) {
-                            Log.i(LOG_TAG, "take photo success, tag = " + tp.mTag)
+                            wakeupDuty(lsJob)
+                        }
 
+                        override fun onTakePhotoSuccess(tp: TakePhotoParam) {
                             Message.obtain(ContextUtil.getMsgHandler(),
                                     EMsgType.CAMERAJOB_TAKEPHOTO.id,
                                     arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
                             wakeupDuty(lsJob)
                         }
-
-                        override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                            "take photo failure, tag = ${tp.mTag}".apply {
-                                Log.e(LOG_TAG, this)
-                                FileLogger.getLogger().severe(this)
-                            }
-
-                            wakeupDuty(lsJob)
-                        }
                     }
 
-                    SilentCameraNew().takePhoto(PreferencesUtil.loadCameraParam(), param, cbTakePhoto)
+                    SilentCamera.takePhoto(PreferencesUtil.loadCameraParam(), param, cbTakePhoto)
                 }
             }
         }
