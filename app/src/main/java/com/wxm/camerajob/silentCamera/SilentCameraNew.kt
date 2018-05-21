@@ -8,8 +8,8 @@ import android.media.ImageReader
 import android.os.Build
 import android.util.SparseIntArray
 import android.view.Surface
-import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.utility.log.FileLogger
 import com.wxm.camerajob.utility.log.TagLog
 
 

@@ -1,7 +1,8 @@
-package com.wxm.camerajob.utility
+package com.wxm.camerajob.utility.log
 
 import android.support.design.BuildConfig
 import android.util.Log
+import com.wxm.camerajob.utility.context.ContextUtil
 import wxm.androidutil.util.UtilFun
 import java.io.IOException
 import java.util.*

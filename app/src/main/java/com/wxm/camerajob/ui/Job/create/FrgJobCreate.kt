@@ -9,7 +9,6 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import com.wxm.camerajob.R
@@ -19,8 +18,8 @@ import com.wxm.camerajob.ui.base.IAcceptAble
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.utility.CalendarUtility
-import com.wxm.camerajob.utility.CameraJobUtility
-import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.job.CameraJobUtility
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
 import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe

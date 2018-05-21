@@ -1,10 +1,10 @@
-package com.wxm.camerajob.ui.Utility.Setting
+package com.wxm.camerajob.ui.utility.Setting
 
 
 import android.os.Bundle
 import android.widget.TextView
 import com.wxm.camerajob.R
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 import kotterknife.bindView
 import java.util.*
 

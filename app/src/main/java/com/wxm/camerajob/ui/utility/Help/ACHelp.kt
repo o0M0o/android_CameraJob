@@ -1,9 +1,9 @@
-package com.wxm.camerajob.ui.Utility.Help
+package com.wxm.camerajob.ui.utility.Help
 
 import android.content.Intent
 import android.os.Bundle
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**

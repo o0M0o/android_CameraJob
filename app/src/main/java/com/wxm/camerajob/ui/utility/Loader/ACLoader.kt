@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Utility.Loader
+package com.wxm.camerajob.ui.utility.Loader
 
 import android.Manifest.permission.*
 import android.content.Intent
@@ -9,8 +9,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.Job.show.ACJobShow
-import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
 import java.util.*
 
 /**

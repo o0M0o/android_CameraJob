@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Utility.Help
+package com.wxm.camerajob.ui.utility.Help
 
 import android.os.Bundle
 import wxm.androidutil.FrgWebView.FrgSupportWebView

@@ -8,11 +8,10 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Message
 import android.support.design.widget.TextInputEditText
-import android.util.Log
 import android.view.View
 import com.wxm.camerajob.R
-import com.wxm.camerajob.utility.DlgUtility
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
+import com.wxm.camerajob.utility.context.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
 import okhttp3.MediaType
 import okhttp3.OkHttpClient

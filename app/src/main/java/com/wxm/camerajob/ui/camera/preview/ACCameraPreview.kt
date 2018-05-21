@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 
 import wxm.androidutil.Switcher.ACSwitcherActivity
 

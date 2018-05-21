@@ -2,7 +2,6 @@ package com.wxm.camerajob.data.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.dao.RuntimeExceptionDao
@@ -10,7 +9,7 @@ import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 import com.wxm.camerajob.data.define.CameraJob
 import com.wxm.camerajob.data.define.CameraJobStatus
-import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.log.FileLogger
 import com.wxm.camerajob.utility.log.TagLog
 
 import java.sql.SQLException

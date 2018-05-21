@@ -1,10 +1,12 @@
-package com.wxm.camerajob.utility
+package com.wxm.camerajob.utility.job
 
 import android.os.Handler
 import android.os.Message
 import android.util.Log
+import com.wxm.camerajob.alarm.AlarmReceiver
 
 import com.wxm.camerajob.data.define.EMsgType
+import com.wxm.camerajob.utility.context.ContextUtil
 
 import java.util.Calendar
 
@@ -14,6 +16,7 @@ import wxm.androidutil.util.UtilFun
  * global msg handler
  * Created by wxm on 2016/6/10.
  */
+@Suppress("UNUSED_PARAMETER")
 internal class GlobalMsgHandler : Handler() {
     override fun handleMessage(msg: Message) {
         EMsgType.getEMsgType(msg.what)?.let {
@@ -30,10 +33,12 @@ internal class GlobalMsgHandler : Handler() {
         }
     }
 
-    private fun onWakeup(@Suppress("UNUSED_PARAMETER") msg: Message) {
+    private fun onWakeup(msg: Message) {
         ContextUtil.getCameraJobUtility().allData.let {
             ContextUtil.getJobProcess().processorWakeup(it)
         }
+
+        AlarmReceiver.triggerAlarm()
     }
 
     private fun onQueryCameraJob(msg: Message) {

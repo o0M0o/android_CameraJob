@@ -6,13 +6,12 @@ import android.os.Handler
 import android.os.Message
 import android.support.design.widget.TextInputEditText
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.base.SendEmailHelper
 import com.wxm.camerajob.ui.base.SendEmailPara
-import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
 import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 

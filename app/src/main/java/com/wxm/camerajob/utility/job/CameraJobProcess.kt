@@ -1,10 +1,10 @@
-package com.wxm.camerajob.utility
+package com.wxm.camerajob.utility.job
 
 import android.os.Message
 import android.util.Log
 import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.silentCamera.SilentCameraNew
+import com.wxm.camerajob.utility.context.ContextUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,7 +13,6 @@ import java.util.*
  * Created by 123 on 2016/6/13.
  */
 class CameraJobProcess {
-
     /**
      * wakeup to process job
      */

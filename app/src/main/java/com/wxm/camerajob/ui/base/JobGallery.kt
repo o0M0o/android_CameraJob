@@ -3,7 +3,6 @@ package com.wxm.camerajob.ui.base
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import android.widget.Toast
 import cn.finalteam.galleryfinal.CoreConfig
 import cn.finalteam.galleryfinal.FunctionConfig
@@ -16,7 +15,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType
-import com.wxm.camerajob.utility.UILImageLoader
+import com.wxm.camerajob.ui.utility.Loader.UILImageLoader
 import com.wxm.camerajob.utility.log.TagLog
 import org.xutils.x
 import java.io.File

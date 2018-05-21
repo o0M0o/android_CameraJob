@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
-        android:name=".utility.ContextUtil"
+        android:name=".utility.context.ContextUtil"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_camera_labe1_big"
@@ -53,7 +53,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Utility.Help.ACHelp"
+            android:name=".ui.utility.Help.ACHelp"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
@@ -62,7 +62,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ui.Utility.Setting.ACSetting"
+            android:name=".ui.utility.Setting.ACSetting"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
@@ -75,7 +75,7 @@
             android:label="测试邮箱" />
 
         <activity
-            android:name=".ui.Utility.Loader.ACLoader"
+            android:name=".ui.utility.Loader.ACLoader"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

@@ -5,7 +5,6 @@ package com.wxm.camerajob.ui.Job.show
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.StringRes
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ListView
@@ -16,9 +15,8 @@ import com.wxm.camerajob.ui.Job.slide.ACJobSlide
 import com.wxm.camerajob.ui.base.FrgCameraInfoHelper
 import com.wxm.camerajob.ui.base.JobGallery
 import com.wxm.camerajob.utility.CalendarUtility
-import com.wxm.camerajob.utility.CameraJobUtility
-import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.utility.log.TagLog
+import com.wxm.camerajob.utility.job.CameraJobUtility
+import com.wxm.camerajob.utility.context.ContextUtil
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -36,7 +34,6 @@ import java.util.*
  */
 class FrgJobShow : FrgSupportBaseAdv() {
     private val mLVJobs: ListView by bindView(R.id.aclv_start_jobs)
-    private val mTimer: Timer = Timer()
 
     override fun isUseEventBus(): Boolean = true
     override fun getLayoutID(): Int = R.layout.vw_job_show
@@ -47,11 +44,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDBDataChangeEvent(event: DBDataChangeEvent) {
-        if(isVisible) {
-            (if (DBDataChangeEvent.EVENT_CREATE == event.eventType) 1200 else 0).toLong().let {
-                Handler().postDelayed({ this.reloadUI() }, it)
-            }
-        }
+        reloadUI()
     }
 
     /**
@@ -63,11 +56,6 @@ class FrgJobShow : FrgSupportBaseAdv() {
         if (GlobalDef.STR_CAMERAPROPERTIES_NAME == event.attrName) {
             reloadUI()
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mTimer.cancel()
     }
 
     override fun initUI(savedInstanceState: Bundle?) {
@@ -206,8 +194,9 @@ class FrgJobShow : FrgSupportBaseAdv() {
                 ibLook.visibility = View.VISIBLE
                 ibLook.setOnClickListener(this)
 
-                ibSlide.visibility = View.VISIBLE
-                ibSlide.setOnClickListener(this)
+                ibSlide.visibility = View.INVISIBLE
+                //ibSlide.visibility = View.VISIBLE
+                //ibSlide.setOnClickListener(this)
             }
         }
 

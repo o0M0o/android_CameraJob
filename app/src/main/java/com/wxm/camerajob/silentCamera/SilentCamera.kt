@@ -2,11 +2,9 @@ package com.wxm.camerajob.silentCamera
 
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Handler
-import android.util.SparseIntArray
-import android.view.Surface
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
-import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.log.FileLogger
 import com.wxm.camerajob.utility.log.TagLog
 import java.util.*
 

@@ -14,24 +14,21 @@ enum class ETimeGap private constructor(
             { cr -> 3 >= cr.get(Calendar.SECOND) % 5 },
             { cr ->
                 cr.get(Calendar.SECOND).let {
-                    if (it == 5) 5 * GlobalDef.MS_SECOND.toLong()
-                    else (5 - it % 5) * GlobalDef.MS_SECOND.toLong()
+                    (5 - it % 5) * GlobalDef.MS_SECOND.toLong()
                 }
             }),
     GAP_FIFTEEN_SECOND("15秒",
             { cr -> GlobalDef.GLOBALJOB_CHECKPERIOD > cr.get(Calendar.SECOND) % 15 },
             { cr ->
                 cr.get(Calendar.SECOND).let {
-                    if (it == 15) 15 * GlobalDef.MS_SECOND.toLong()
-                    else (15 - it % 15) * GlobalDef.MS_SECOND.toLong()
+                    (15 - it % 15) * GlobalDef.MS_SECOND.toLong()
                 }
             }),
     GAP_THIRTY_SECOND("30秒",
             { cr -> GlobalDef.GLOBALJOB_CHECKPERIOD > cr.get(Calendar.SECOND) % 30 },
             { cr ->
                 cr.get(Calendar.SECOND).let {
-                    if (30 == it) 30 * GlobalDef.MS_SECOND.toLong()
-                    else (30 - it.toLong() % 30) * GlobalDef.MS_SECOND
+                    (30 - it.toLong() % 30) * GlobalDef.MS_SECOND
                 }
             }),
 

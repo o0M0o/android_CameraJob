@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Utility.Setting
+package com.wxm.camerajob.ui.utility.Setting
 
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
 

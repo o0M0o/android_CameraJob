@@ -15,8 +15,7 @@ import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.data.define.TakePhotoParam
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.silentCamera.SilentCameraNew
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 import wxm.androidutil.ImageUtility.ImageUtil

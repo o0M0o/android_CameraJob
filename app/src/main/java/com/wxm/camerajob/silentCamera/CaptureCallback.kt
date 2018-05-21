@@ -5,10 +5,9 @@ import android.graphics.BitmapFactory
 import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
-import com.wxm.camerajob.utility.FileLogger
+import com.wxm.camerajob.utility.log.FileLogger
 import com.wxm.camerajob.utility.log.TagLog
 import wxm.androidutil.ImageUtility.ImageUtil
-import java.util.*
 
 /**
  * @author      WangXM

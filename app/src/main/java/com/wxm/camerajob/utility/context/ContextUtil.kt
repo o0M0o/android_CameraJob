@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility
+package com.wxm.camerajob.utility.context
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -22,6 +22,8 @@ import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
 import com.wxm.camerajob.data.db.DBOrmLiteHelper
 import com.wxm.camerajob.data.define.CameraJob
 import com.wxm.camerajob.data.define.GlobalDef
+import com.wxm.camerajob.utility.job.CameraJobProcess
+import com.wxm.camerajob.utility.job.GlobalMsgHandler
 import wxm.androidutil.util.UtilFun
 import java.io.File
 import java.io.FileReader

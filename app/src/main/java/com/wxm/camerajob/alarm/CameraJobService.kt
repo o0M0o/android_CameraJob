@@ -10,10 +10,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Message
-import android.util.Log
 
 import com.wxm.camerajob.data.define.EMsgType
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
 
 import java.util.LinkedList
@@ -60,8 +59,10 @@ class CameraJobService : JobService() {
         // update the UI accordingly.
         jobParamsMap.add(params)
 
+        /*
         Message.obtain(ContextUtil.getMsgHandler(),
                 EMsgType.WAKEUP.id, EMsgType.WAKEUP).sendToTarget()
+                */
         return false
     }
 

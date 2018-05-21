@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
@@ -40,13 +41,13 @@
 
     <RelativeLayout
         android:id="@+id/rl_line"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:layout_below="@id/rl_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_name"
+        android:paddingBottom="6dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="6dp">
 
         <ImageView
             android:id="@+id/iv_line1"
@@ -55,41 +56,49 @@
             android:background="@color/grey_1" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/rl_type"
-        android:paddingTop="8dp"
-        android:paddingBottom="12dp"
-        android:layout_below="@id/rl_line"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_line"
+        android:paddingBottom="12dp"
+        android:paddingTop="8dp">
+
         <ImageView
             android:id="@+id/iv_active"
             android:layout_width="42dp"
             android:layout_height="42dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
             android:padding="3dp"
-            android:src="@drawable/ic_active" />
+            android:src="@drawable/ic_active"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <GridView
             android:id="@+id/gv_job_type"
-            android:layout_toEndOf="@id/iv_active"
-            android:layout_marginStart="12dp"
-            android:layout_alignParentTop="true"
-            android:numColumns="3"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="8dp"
             android:horizontalSpacing="4dp"
-            android:layout_width="match_parent"
-            android:layout_height="26dp" />
+            android:numColumns="3"
+            app:layout_constraintBottom_toTopOf="@id/gv_job_point"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_active"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <GridView
             android:id="@+id/gv_job_point"
-            android:layout_toEndOf="@id/iv_active"
-            android:layout_marginStart="12dp"
+            android:layout_width="0dp"
+            android:layout_height="28dp"
             android:layout_below="@id/gv_job_type"
-            android:layout_marginTop="8dp"
-            android:numColumns="5"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
             android:horizontalSpacing="4dp"
-            android:layout_width="match_parent"
-            android:layout_height="24dp" />
-    </RelativeLayout>
+            android:numColumns="5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_active"
+            app:layout_constraintTop_toBottomOf="@id/gv_job_type" />
+    </android.support.constraint.ConstraintLayout>
 </RelativeLayout>

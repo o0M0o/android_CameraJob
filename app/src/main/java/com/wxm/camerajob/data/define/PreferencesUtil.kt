@@ -3,7 +3,7 @@ package com.wxm.camerajob.data.define
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 
 import org.greenrobot.eventbus.EventBus
 

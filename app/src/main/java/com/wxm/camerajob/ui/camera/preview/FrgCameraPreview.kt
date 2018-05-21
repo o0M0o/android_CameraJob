@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.support.annotation.RequiresApi
-import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
@@ -19,7 +18,7 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.base.AutoFitTextureView
-import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
 import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
 import wxm.androidutil.FrgUtility.FrgSupportBaseAdv

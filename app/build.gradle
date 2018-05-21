@@ -23,8 +23,8 @@ android {
         applicationId "com.wxm.camerajob"
         minSdkVersion 24
         targetSdkVersion 26
-        versionCode 9
-        versionName "1.09"
+        versionCode 10
+        versionName "1.10"
     }
     buildTypes {
         release {
@@ -55,11 +55,11 @@ android {
     }
 
     productFlavors {
-        YYB_DOFCalculator{
+        YYB_CameraJob{
             signingConfig signingConfigs.YYBKey
         }
 
-        KuAn_DOFCalculator{
+        KuAn_CameraJob{
             signingConfig signingConfigs.KuAnKey
         }
     }

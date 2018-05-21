@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Utility.Setting
+package com.wxm.camerajob.ui.utility.Setting
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**

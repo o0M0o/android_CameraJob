@@ -6,9 +6,9 @@ import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.ui.Utility.Setting.TFSettingCamera
-import com.wxm.camerajob.utility.ContextUtil
-import com.wxm.camerajob.utility.DlgUtility
+import com.wxm.camerajob.ui.utility.Setting.TFSettingCamera
+import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**
@@ -37,21 +37,18 @@ open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mi_accept -> {
-                val data = Intent()
                 hotFragment.let {
                     if (it.isSettingDirty) {
                         DlgUtility.showAlert(this, R.string.hint, "是否保存更改的配置?",
                                 { dlg ->
                                     dlg.setPositiveButton("是") { _, _ ->
                                         it.updateSetting()
-                                        setResult(GlobalDef.INTRET_CS_ACCEPT, data)
-                                        finish()
-                                    }.setNegativeButton("否") { _, _ ->
                                         leaveActivity()
+                                    }.setNegativeButton("否") { _, _ ->
                                     }
                                 })
                     } else {
-                        finish()
+                        leaveActivity()
                     }
                 }
             }

@@ -2,7 +2,7 @@ package com.wxm.camerajob.silentCamera
 
 import android.hardware.camera2.*
 import android.media.ImageReader
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.utility.context.ContextUtil
 import com.wxm.camerajob.utility.log.TagLog
 
 /**

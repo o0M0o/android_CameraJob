@@ -1,6 +1,7 @@
-package com.wxm.camerajob.utility
+package com.wxm.camerajob.utility.job
 
 import com.wxm.camerajob.data.define.CameraJob
+import com.wxm.camerajob.utility.context.ContextUtil
 
 import wxm.androidutil.util.FileUtil
 import wxm.androidutil.util.UtilFun

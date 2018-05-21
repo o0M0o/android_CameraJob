@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.Utility.Setting
+package com.wxm.camerajob.ui.utility.Setting
 
 
 import android.annotation.TargetApi
@@ -17,8 +17,8 @@ import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.base.EventHelper
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
-import com.wxm.camerajob.utility.DlgUtility
-import com.wxm.camerajob.utility.ContextUtil
+import com.wxm.camerajob.ui.utility.dialog.DlgUtility
+import com.wxm.camerajob.utility.context.ContextUtil
 import kotterknife.bindView
 import wxm.androidutil.type.MySize
 import wxm.androidutil.util.UtilFun
