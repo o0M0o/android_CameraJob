@@ -21,26 +21,23 @@ class TFSettingMain : TFSettingBase() {
                 ::onRelativeLayoutClick)
     }
 
-    fun onRelativeLayoutClick(v: View) {
-        val vid = v.id
-        when (vid) {
+    private fun onRelativeLayoutClick(v: View) {
+        when (v.id) {
             R.id.rl_setting_check_version -> {
-                toPageByIdx(FrgSetting.PAGE_IDX_CHECK_VERSION)
+                (activity as ACSetting).switchToPageByType(TFSettingCheckVersion::class.java.name)
             }
 
             R.id.rl_setting_directory -> {
-                toPageByIdx(FrgSetting.PAGE_IDX_DIRECTORY)
+                (activity as ACSetting).switchToPageByType(TFSettingDirectory::class.java.name)
             }
 
             R.id.rl_setting_camera -> {
-                toPageByIdx(FrgSetting.PAGE_IDX_CAMERA)
+                (activity as ACSetting).switchToPageByType(TFSettingCamera::class.java.name)
             }
         }
     }
 
     override fun updateSetting() {
-        if (isSettingDirty) {
-            isSettingDirty = false
-        }
+        isSettingDirty = false
     }
 }

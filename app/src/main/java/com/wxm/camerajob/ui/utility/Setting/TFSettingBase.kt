@@ -15,23 +15,6 @@ abstract class TFSettingBase : FrgSupportBaseAdv() {
         protected set
 
     /**
-     * 得到ACSetting
-     * @return  若成功返回结果，否则返回null
-     */
-    private val rootActivity: ACSetting
-        get() {
-            return activity as ACSetting
-        }
-
-    /**
-     * 切换页面
-     * @param idx  新页面的idx
-     */
-    fun toPageByIdx(idx: Int) {
-        rootActivity.changePage(idx)
-    }
-
-    /**
      * 保存页面所管理的配置
      */
     abstract fun updateSetting()

@@ -7,8 +7,8 @@ import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.ui.utility.Setting.TFSettingCamera
-import com.wxm.camerajob.utility.context.ContextUtil
 import com.wxm.camerajob.ui.utility.dialog.DlgUtility
+import com.wxm.camerajob.utility.context.ContextUtil
 import wxm.androidutil.Switcher.ACSwitcherActivity
 
 /**
@@ -35,26 +35,26 @@ open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val home = this
         when (item.itemId) {
             R.id.mi_accept -> {
-                hotFragment.let {
-                    if (it.isSettingDirty) {
-                        DlgUtility.showAlert(this, R.string.hint, "是否保存更改的配置?",
-                                { dlg ->
-                                    dlg.setPositiveButton("是") { _, _ ->
-                                        it.updateSetting()
-                                        leaveActivity()
-                                    }.setNegativeButton("否") { _, _ ->
-                                    }
-                                })
-                    } else {
-                        leaveActivity()
-                    }
+                val hf = hotFragment!!
+                if (hf.isSettingDirty) {
+                    DlgUtility.showAlert(this, R.string.hint, "是否保存更改的配置?",
+                            { dlg ->
+                                dlg.setPositiveButton("是") { _, _ ->
+                                    hf.updateSetting()
+                                    home.leaveActivity()
+                                }.setNegativeButton("否") { _, _ ->
+                                }
+                            })
+                } else {
+                    home.leaveActivity()
                 }
             }
 
             R.id.mi_giveup -> {
-                leaveActivity()
+                home.leaveActivity()
             }
 
             else -> return super.onOptionsItemSelected(item)

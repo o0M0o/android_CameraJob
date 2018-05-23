@@ -36,8 +36,6 @@ class TFSettingCamera : TFSettingBase() {
     private val mSWAutoFlash: Switch by bindView(R.id.acsw_cs_autoflash)
     private val mSPPhotoSize: Spinner by bindView(R.id.acsp_cs_dpi)
 
-    private var mAAPhotoSize: ArrayAdapter<String>? = null
-
     private val mLLBackCameraDpi: LinkedList<HashMap<String, String>> = LinkedList()
     private val mLLFrontCameraDpi: LinkedList<HashMap<String, String>> = LinkedList()
 
@@ -72,8 +70,7 @@ class TFSettingCamera : TFSettingBase() {
             it.setOnCheckedChangeListener { _, _ -> isSettingDirty = true }
         }
 
-        mAAPhotoSize = ArrayAdapter(context, R.layout.li_photo_size, R.id.ItemPhotoSize)
-        mSPPhotoSize.adapter = mAAPhotoSize
+        //mSPPhotoSize.adapter = ArrayAdapter<String>(context, R.layout.li_photo_size, R.id.ItemPhotoSize)
         mSPPhotoSize.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 isSettingDirty = true
@@ -137,9 +134,7 @@ class TFSettingCamera : TFSettingBase() {
 
     override fun updateSetting() {
         if (isSettingDirty) {
-            val cp = curCameraParam
-            PreferencesUtil.saveCameraParam(cp)
-
+            PreferencesUtil.saveCameraParam(curCameraParam)
             isSettingDirty = false
         }
     }
@@ -156,6 +151,8 @@ class TFSettingCamera : TFSettingBase() {
             }
         }
 
+        mLLBackCameraDpi.clear()
+        mLLFrontCameraDpi.clear()
         var mBackCameraID = ""
         var mFrontCameraID = ""
         ContextUtil.getCameraManager()?.let {
@@ -209,10 +206,8 @@ class TFSettingCamera : TFSettingBase() {
         mRBBackCamera.isChecked = true
         mRBFrontCamera.isChecked = false
 
-        mAAPhotoSize!!.let {
-            it.clear()
-            it.addAll(mLLBackCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
-            it.notifyDataSetChanged()
+        mSPPhotoSize.adapter = ArrayAdapter<String>(context, R.layout.li_photo_size, R.id.ItemPhotoSize).apply{
+            addAll(mLLBackCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
         }
 
         fillOthers(mCPBack)
@@ -226,10 +221,8 @@ class TFSettingCamera : TFSettingBase() {
         mRBBackCamera.isChecked = false
         mRBFrontCamera.isChecked = true
 
-        mAAPhotoSize!!.let {
-            it.clear()
-            it.addAll(mLLFrontCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
-            it.notifyDataSetChanged()
+        mSPPhotoSize.adapter = ArrayAdapter<String>(context, R.layout.li_photo_size, R.id.ItemPhotoSize).apply{
+            addAll(mLLFrontCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
         }
 
         fillOthers(mCPFront)
@@ -240,7 +233,7 @@ class TFSettingCamera : TFSettingBase() {
      * @param cp 填充参数
      */
     private fun fillOthers(cp: CameraParam) {
-        mAAPhotoSize!!.getPosition(cp.mPhotoSize.toString()).let {
+        (mSPPhotoSize.adapter as ArrayAdapter<String>).getPosition(cp.mPhotoSize.toString()).let {
             mSPPhotoSize.setSelection(if (-1 == it) 0 else it)
         }
 
