@@ -5,8 +5,7 @@ package com.wxm.camerajob.ui.base
  * Created by 123 on 2016/11/10.
  */
 class SendEmailPara {
-
-    var mIFOnResult: onSendEmailResult? = null
+    var mIFOnResult: SendEmailResult? = null
 
     var mSendUsr: String? = null
     var mSendPWD: String? = null
@@ -17,7 +16,7 @@ class SendEmailPara {
     var mEmailTitle: String? = null
     var mEmailBody: String? = null
 
-    interface onSendEmailResult {
+    interface SendEmailResult {
         fun onSendFailure()
         fun onSendSuccess()
     }

@@ -1,10 +1,11 @@
 package com.wxm.camerajob.utility.log
 
-import android.support.design.BuildConfig
 import android.util.Log
-import com.wxm.camerajob.utility.context.ContextUtil
-import wxm.androidutil.util.UtilFun
+import com.wxm.camerajob.BuildConfig
+import com.wxm.camerajob.utility.AppUtil
+import wxm.androidutil.time.toFullTag
 import java.io.IOException
+import java.sql.Timestamp
 import java.util.*
 import java.util.logging.*
 
@@ -21,13 +22,13 @@ class FileLogger private constructor() {
 
         try {
             FileHandler(
-                    "${ContextUtil.getLogRootDir()}/${String.format(Locale.CHINA, LOG_NAME, mLogTag)}",
+                    "${AppUtil.getLogRootDir()}/${String.format(Locale.CHINA, LOG_NAME, mLogTag)}",
                     true).let {
                 it.formatter = object : SimpleFormatter() {
                     override fun format(record: LogRecord): String {
                         return String.format(Locale.CHINA,
                                 "%s|%s|%s-%d|%s:%s|%s",
-                                UtilFun.MilliSecsToString(record.millis),
+                                Timestamp(record.millis).toFullTag(),
                                 record.level.name, mLogTag, record.threadID,
                                 record.sourceClassName, record.sourceMethodName,
                                 formatMessage(record)) + System.lineSeparator()

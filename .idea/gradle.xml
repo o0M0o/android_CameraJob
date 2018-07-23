@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/androidutil" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/galleryfinal" />
+            <option value="$PROJECT_DIR$/uilib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -8,9 +8,10 @@ import android.media.ImageReader
 import android.os.Build
 import android.util.SparseIntArray
 import android.view.Surface
-import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.utility.AppUtil
 import com.wxm.camerajob.utility.log.FileLogger
-import com.wxm.camerajob.utility.log.TagLog
+import wxm.androidutil.app.AppBase
+import wxm.androidutil.log.TagLog
 
 
 /**
@@ -27,7 +28,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
      */
     private val mHMCameraHardware = ArrayList<CameraHardWare>().apply {
         val lsCamera = this
-        ContextUtil.getCameraManager()?.apply {
+        AppUtil.getCameraManager()?.apply {
             try {
                 cameraIdList.filterNotNull().forEach {
                     lsCamera.add(CameraHardWare(it, getCameraCharacteristics(it)))
@@ -49,7 +50,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
      */
     internal val orientation: Int
         get() {
-            return ContextUtil.getWindowManager()!!.defaultDisplay.rotation.let {
+            return AppUtil.getWindowManager()!!.defaultDisplay.rotation.let {
                 if(null != mCamera) {
                     val ret = (ORIENTATIONS.get(it) + mCamera!!.mSensorOrientation + 270) % 360
                     TagLog.i("Orientation : display = $it, " +
@@ -65,7 +66,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         }
 
     override fun openCamera() {
-        if (!ContextUtil.checkPermission(Manifest.permission.CAMERA)) {
+        if (!AppBase.checkPermission(Manifest.permission.CAMERA)) {
             TagLog.e( "need camera permission")
             openCameraCallBack(false)
             return
@@ -79,7 +80,7 @@ class SilentCameraNew internal constructor() : SilentCamera() {
         }
 
         try {
-            ContextUtil.getCameraManager()!!.openCamera(mCamera!!.mId,
+            AppUtil.getCameraManager()!!.openCamera(mCamera!!.mId,
                     object : CameraDevice.StateCallback() {
                         override fun onOpened(camera: CameraDevice) {
                             "onOpened".apply {

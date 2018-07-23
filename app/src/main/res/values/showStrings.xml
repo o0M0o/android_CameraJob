@@ -1,0 +1,42 @@
+<resources>
+    <!-- for UI -->
+    <string name="cn_setting">设定</string>
+    <string name="cn_add_job">添加任务</string>
+    <string name="cn_job_show">查看任务</string>
+
+    <string name="dlg_info">信息</string>
+    <string name="hint">提示</string>
+    <string name="warn">警告</string>
+    <string name="error">错误</string>
+    <string name="info_need_stop_job">请先删除或暂停运行中任务!</string>
+
+    <string name="cn_preview">预览</string>
+    <string name="cn_sure">确认</string>
+    <string name="accept">接受</string>
+    <string name="cn_cancel">放弃</string>
+
+    <string name="cn_save">保存</string>
+    <string name="jobName">任务名</string>
+
+    <string name="setting_changed">配置已经修改!</string>
+    <string name="setting_camera">相机设定</string>
+    <string name="setting_directory">目录设置</string>
+    <string name="setting_version">检查版本</string>
+    <string name="setting_email_author">联系作者</string>
+
+    <string name="gap_minute">每分钟</string>
+    <string name="gap_hour">每小时</string>
+    <string name="gap_day">每天</string>
+
+    <!-- for activity label -->
+    <string name="label_welcome">欢迎</string>
+    <string name="label_job_detail">任务详情</string>
+
+    <!-- format for string -->
+    <string name="fs_job_type">%s/%s</string>
+    <string name="fs_start_end_date">%s - %s</string>
+    <string name="fs_date">%s</string>
+    <string name="fs_photo_count">已拍摄 %d张</string>
+    <string name="fs_photo_last">最后拍摄时间 : %s</string>
+    <string name="desc_job_picture">picture for job</string>
+</resources>

@@ -10,16 +10,16 @@ import android.os.Message
 import android.support.design.widget.TextInputEditText
 import android.view.View
 import com.wxm.camerajob.R
-import com.wxm.camerajob.ui.utility.dialog.DlgUtility
-import com.wxm.camerajob.utility.context.ContextUtil
-import com.wxm.camerajob.utility.log.TagLog
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONException
 import org.json.JSONObject
-import wxm.androidutil.Dialog.DlgOKOrNOBase
+import wxm.androidutil.app.AppBase
+import wxm.androidutil.log.TagLog
+import wxm.androidutil.ui.dialog.DlgAlert
+import wxm.androidutil.ui.dialog.DlgOKOrNOBase
 import wxm.androidutil.util.SIMCardUtil
 import wxm.androidutil.util.UtilFun
 import wxm.androidutil.util.WRMsgHandler
@@ -53,7 +53,7 @@ class DlgUsrMessage : DlgOKOrNOBase() {
     override fun initDlgView(savedInstanceState: Bundle?) {
         mETUsrMessage = findDlgChildView(R.id.et_usr_message)!!
 
-        context.resources.let {
+        context!!.resources.let {
             mSZUrlPost = it.getString(R.string.url_post_send_message)
             mSZColUsr = it.getString(R.string.col_usr)
             mSZColMsg = it.getString(R.string.col_message)
@@ -61,7 +61,7 @@ class DlgUsrMessage : DlgOKOrNOBase() {
             mSZColValAppName = it.getString(R.string.col_val_app_name)
             mSZUsrMessage = it.getString(R.string.cn_usr_message)
             mSZAccept = it.getString(R.string.accept)
-            mSZGiveUp = it.getString(R.string.cancel)
+            mSZGiveUp = it.getString(R.string.cn_cancel)
 
             Unit
         }
@@ -74,16 +74,14 @@ class DlgUsrMessage : DlgOKOrNOBase() {
     override fun checkBeforeOK(): Boolean {
         mETUsrMessage.text.toString().let {
             if (UtilFun.StringIsNullOrEmpty(it)) {
-                DlgUtility.showAlert(activity, "警告", "消息不能为空")
+                DlgAlert.showAlert(activity!!, "警告", "消息不能为空")
                 return false
             }
 
-            val msg = it
-            (if (ContextUtil.checkPermission(READ_PHONE_STATE)
-                    && ContextUtil.checkPermission(READ_SMS)) {
+            return (if (AppBase.checkPermission(READ_PHONE_STATE) && AppBase.checkPermission(READ_SMS)) {
                 SIMCardUtil(context).nativePhoneNumber
-            } else "null").let {
-                return sendMsgByHttpPost(it, msg)
+            } else "null").let {pn ->
+                sendMsgByHttpPost(pn, it)
             }
         }
     }
@@ -135,7 +133,7 @@ class DlgUsrMessage : DlgOKOrNOBase() {
                 val body = JSONObject().apply {
                     put(mSZColUsr, mSZUsr)
                     put(mSZColMsg, mSZMsg)
-                    put(mSZColAppName, "$mSZColValAppName-${ContextUtil.getVerName(context)}")
+                    put(mSZColAppName, "$mSZColValAppName-${AppBase.getVerName()}")
                 }.let {
                     RequestBody.create(JSON, it.toString())
                 }

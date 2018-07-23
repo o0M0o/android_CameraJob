@@ -8,11 +8,13 @@ import android.util.JsonWriter
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
+import wxm.androidutil.db.IDBRow
+import wxm.androidutil.time.toFullTag
+import wxm.androidutil.time.toTimestamp
 
 import java.io.IOException
 import java.sql.Timestamp
 
-import wxm.androidutil.DBHelper.IDBRow
 import wxm.androidutil.util.UtilFun
 
 /**
@@ -109,8 +111,8 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
             jw.name("Name").value(name)
             jw.name("Type").value(type)
             jw.name("Point").value(point)
-            jw.name("Starttime").value(UtilFun.TimestampToString(starttime))
-            jw.name("Endtime").value(UtilFun.TimestampToString(endtime))
+            jw.name("Starttime").value(starttime.toFullTag())
+            jw.name("Endtime").value(endtime.toFullTag())
             jw.endObject()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -156,8 +158,8 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
                         "Name" -> ret.name = jr.nextString()
                         "Type" -> ret.type = jr.nextString()
                         "Point" -> ret.point = jr.nextString()
-                        "Starttime" -> ret.starttime = UtilFun.StringToTimestamp(jr.nextString())
-                        "Endtime" -> ret.endtime = UtilFun.StringToTimestamp(jr.nextString())
+                        "Starttime" -> ret.starttime = jr.nextString().toTimestamp()
+                        "Endtime" -> ret.endtime = jr.nextString().toTimestamp()
                         else -> jr.skipValue()
                     }
                 }

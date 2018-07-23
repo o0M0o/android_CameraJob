@@ -7,11 +7,8 @@
     <string name="cn_camera_setting">设置相机</string>
     <string name="cn_camera_test">测试相机</string>
     <string name="cn_silentcamera_test">测试静默相机</string>
-    <string name="accept">接受</string>
-    <string name="cancel">放弃</string>
     <string name="cn_leave">返回</string>
     <string name="cn_help">帮助</string>
-    <string name="cn_setting">设定</string>
     <string name="cn_other">其它</string>
     <string name="cn_sharemy">分享此应用</string>
     <string name="cn_contact_writer">联系作者</string>
@@ -23,6 +20,7 @@
     <string name="hint_job_time_finish">任务完成时间</string>
 
     <string name="contact_email">fly_in_wind@qq.com</string>
+    <string name="contact_title">关于应用《定时相机》</string>
     <string name="contact_studio">oko studio</string>
 
     <string name="navigation_drawer_open">打开导航绘图</string>
@@ -36,10 +34,7 @@
     <string name="cn_autoflash">自动闪光灯</string>
     <string name="cn_flash_no">不使用闪光灯</string>
     <string name="camera_preview">相机预览</string>
-    <string name="setting_camera">相机设定</string>
-    <string name="setting_directory">目录设置</string>
-    <string name="setting_version">检查版本</string>
-    <string name="cn_preview">预览</string>
+
 
     <string name="job_create">新建任务</string>
     <string name="job_edit">编辑任务</string>
@@ -47,21 +42,7 @@
     <string name="hint_sender_email_usr_name">发送邮件用户名</string>
     <string name="hint_use_email_send">开启邮件推送照片</string>
 
-    <string name="cn_save">保存</string>
-    <string name="jobName">任务名</string>
 
-
-    <string name="hint">提示</string>
-    <string name="warn">警告</string>
-    <string name="error">错误</string>
-    <string name="info_need_stop_job">请先删除或暂停运行中任务!</string>
-
-    <!-- format for string -->
-    <string name="fs_job_type">%s/%s</string>
-    <string name="fs_start_end_date">%s - %s</string>
-    <string name="fs_date">%s</string>
-    <string name="fs_photo_count">已拍摄 %d张</string>
-    <string name="fs_photo_last">最后拍摄时间 : %s</string>
 
     <!-- for send message -->
     <string name="cn_usr_message">请输入您的意见或建议</string>

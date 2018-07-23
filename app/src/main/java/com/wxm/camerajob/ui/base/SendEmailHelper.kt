@@ -1,7 +1,6 @@
 package com.wxm.camerajob.ui.base
 
-import android.util.Log
-import com.wxm.camerajob.utility.log.TagLog
+import wxm.androidutil.log.TagLog
 import java.util.*
 import javax.activation.CommandMap
 import javax.activation.MailcapCommandMap
@@ -56,14 +55,14 @@ class SendEmailHelper : javax.mail.Authenticator() {
     private fun initContext(): Boolean {
         // for system property
         val mAttr = System.getProperties().let {
-            it["mail.smtp.host"] = mSEPara!!.mSendServerHost
-            it["mail.smtp.auth"] = "true"
-            it["mail.debug"] = "true"
+            it[MAIL_HOST] = mSEPara!!.mSendServerHost
+            it[MAIL_AUTH] = "true"
+            it[MAIL_DEBUG] = "true"
+            it[MAIL_PORT] = "465"
 
-            it["mail.smtp.socketFactory.port"] = "465"
-            it["mail.smtp.port"] = "465"
-            it["mail.smtp.socketFactory.class"] = "javax.net.ssl.SSLSocketFactory"
-            it["mail.smtp.socketFactory.fallback"] = "false"
+            it[MAIL_SOCKETFACTORY_PORT] = "465"
+            it[MAIL_SOCKETFACTORY_CLASS] = "javax.net.ssl.SSLSocketFactory"
+            it[MAIL_SOCKETFACTORY_FALLBACK] = "false"
 
             it
         }
@@ -85,17 +84,15 @@ class SendEmailHelper : javax.mail.Authenticator() {
         // for email info
         try {
             // setup message body
-            MimeMultipart().apply {
-                addBodyPart(MimeBodyPart().apply { setText(mSEPara!!.mEmailBody) })
-            }.let {
-                mMMMsg!!.apply {
-                    subject = mSEPara!!.mEmailTitle
-                    setFrom(InternetAddress(mSEPara!!.mSendUsr))
-                    setRecipients(Message.RecipientType.TO, InternetAddress.parse(mSEPara!!.mRecvUsr))
-                    sentDate = Date()
-                    setContent(it)
-                    saveChanges()
-                }
+            mMMMsg!!.apply {
+                subject = mSEPara!!.mEmailTitle
+                setFrom(InternetAddress(mSEPara!!.mSendUsr))
+                setRecipients(Message.RecipientType.TO, InternetAddress.parse(mSEPara!!.mRecvUsr))
+                sentDate = Date()
+                setContent(MimeMultipart().apply {
+                    addBodyPart(MimeBodyPart().apply { setText(mSEPara!!.mEmailBody) })
+                })
+                saveChanges()
             }
         } catch (e: MessagingException) {
             e.printStackTrace()
@@ -106,7 +103,14 @@ class SendEmailHelper : javax.mail.Authenticator() {
     }
 
     companion object {
-        private val LOG_TAG = ::SendEmailHelper.javaClass.simpleName
+        private const val MAIL_HOST = "mail.smtp.host"
+        private const val MAIL_AUTH = "mail.smtp.auth"
+        private const val MAIL_DEBUG = "mail.debug"
+
+        private const val MAIL_PORT = "mail.smtp.port"
+        private const val MAIL_SOCKETFACTORY_PORT = "mail.smtp.socketFactory.port"
+        private const val MAIL_SOCKETFACTORY_CLASS = "mail.smtp.socketFactory.port"
+        private const val MAIL_SOCKETFACTORY_FALLBACK = "mail.smtp.socketFactory.fallback"
     }
 }
 

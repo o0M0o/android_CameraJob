@@ -19,14 +19,13 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.support.v13.app.FragmentCompat
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.util.Size
 import android.util.SparseIntArray
 import android.view.*
 import android.widget.Toast
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.base.AutoFitTextureView
-import com.wxm.camerajob.utility.log.TagLog
+import wxm.androidutil.log.TagLog
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -278,7 +277,7 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
         //initLooper();
         //initUIAndListener(v);
-        return inflater.inflate(R.layout.frg_camera, null)
+        return inflater.inflate(R.layout.ac_camera, null)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

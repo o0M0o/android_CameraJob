@@ -11,11 +11,9 @@ import android.view.View
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.base.SendEmailHelper
 import com.wxm.camerajob.ui.base.SendEmailPara
-import com.wxm.camerajob.ui.utility.dialog.DlgUtility
-import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
-
-import wxm.androidutil.util.UtilFun
+import wxm.androidutil.log.TagLog
+import wxm.androidutil.ui.dialog.DlgAlert
 
 class ACTestEmail : AppCompatActivity(), View.OnClickListener {
     // for setting
@@ -77,7 +75,7 @@ class ACTestEmail : AppCompatActivity(), View.OnClickListener {
             mEmailTitle = mETEmailTitle.text.toString()
             mEmailBody = mETEmailBody.text.toString()
 
-            mIFOnResult = object : SendEmailPara.onSendEmailResult {
+            mIFOnResult = object : SendEmailPara.SendEmailResult {
                 override fun onSendFailure() {
                     mMHHandler.sendEmptyMessage(MSG_TYPE_SEND_EMAIL_FAILURE)
                 }
@@ -97,38 +95,38 @@ class ACTestEmail : AppCompatActivity(), View.OnClickListener {
      */
     private fun checkSendEmail(): Boolean {
         val szWarn = "警告"
-        if (UtilFun.StringIsNullOrEmpty(mETEmailSender.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件发送方!")
+        if (mETEmailSender.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件发送方!")
             return false
         }
 
-        if (UtilFun.StringIsNullOrEmpty(mETEmailSenderPWD.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件发送方登录密码!")
+        if (mETEmailSenderPWD.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件发送方登录密码!")
             return false
         }
 
-        if (UtilFun.StringIsNullOrEmpty(mETEmailServerType.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件发送服务器协议类型!")
+        if (mETEmailServerType.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件发送服务器协议类型!")
             return false
         }
 
-        if (UtilFun.StringIsNullOrEmpty(mETEmailServerHost.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件发送服务器地址!")
+        if (mETEmailServerHost.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件发送服务器地址!")
             return false
         }
 
-        if (UtilFun.StringIsNullOrEmpty(mETEmailReceiver.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件接收方!")
+        if (mETEmailReceiver.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件接收方!")
             return false
         }
 
-        if (UtilFun.StringIsNullOrEmpty(mETEmailTitle.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件标题!")
+        if (mETEmailTitle.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件标题!")
             return false
         }
 
-        if (UtilFun.StringIsNullOrEmpty(mETEmailBody.text.toString())) {
-            DlgUtility.showAlert(this, szWarn, "请输入邮件正文!")
+        if (mETEmailBody.text.isNullOrEmpty()) {
+            DlgAlert.showAlert(this, szWarn, "请输入邮件正文!")
             return false
         }
 
@@ -142,11 +140,11 @@ class ACTestEmail : AppCompatActivity(), View.OnClickListener {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MSG_TYPE_SEND_EMAIL_SUCCESS -> {
-                    DlgUtility.showAlert(mACHome, "提示", "邮件发送成功!")
+                    DlgAlert.showAlert(mACHome, "提示", "邮件发送成功!")
                 }
 
                 MSG_TYPE_SEND_EMAIL_FAILURE -> {
-                    DlgUtility.showAlert(mACHome, "警告", "邮件发送失败!")
+                    DlgAlert.showAlert(mACHome, "警告", "邮件发送失败!")
                 }
 
                 else -> TagLog.e("$msg can not process")

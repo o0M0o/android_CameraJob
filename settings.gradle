@@ -1,1 +1,1 @@
-include ':app', ':galleryfinal', ':androidutil'
+include ':app', ':galleryfinal', ':androidutil', ':uilib'

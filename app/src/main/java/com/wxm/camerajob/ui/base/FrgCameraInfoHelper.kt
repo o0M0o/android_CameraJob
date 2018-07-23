@@ -1,9 +1,11 @@
 package com.wxm.camerajob.ui.base
 
 import android.widget.RelativeLayout
-import android.widget.TextView
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
+import wxm.androidutil.improve.doJudge
+import wxm.androidutil.improve.let1
+import wxm.androidutil.ui.view.ViewHelper
 
 /**
  * help class for camera info
@@ -16,23 +18,16 @@ object FrgCameraInfoHelper {
      * @param cp    data for redraw
      */
     fun refillLayout(rl: RelativeLayout, cp: CameraParam) {
-        if (R.id.rl_camera_info != rl.id)
-            return
-
-        val mTVCameraFace = rl.findViewById<TextView>(R.id.tv_camera_face)
-        val mTVCameraDpi = rl.findViewById<TextView>(R.id.tv_camera_dpi)
-        val mTVCameraFlash = rl.findViewById<TextView>(R.id.tv_camera_flash)
-        val mTVCameraFocus = rl.findViewById<TextView>(R.id.tv_camera_focus)
-
-        val ct = rl.context
-        mTVCameraFace.text = ct.getString(
-                if (CameraParam.LENS_FACING_BACK == cp.mFace) R.string.cn_backcamera
-                else R.string.cn_frontcamera)
-
-        mTVCameraDpi.text = cp.mPhotoSize.toString()
-        mTVCameraFlash.text = ct.getString(if (cp.mAutoFlash) R.string.cn_autoflash
-        else R.string.cn_flash_no)
-        mTVCameraFocus.text = ct.getString(if (cp.mAutoFocus) R.string.cn_autofocus
-        else R.string.cn_focus_no)
+        if (R.id.rl_camera_info == rl.id) {
+            ViewHelper(rl).let1 {
+                it.setText(R.id.tv_camera_face, (CameraParam.LENS_FACING_BACK == cp.mFace)
+                        .doJudge(R.string.cn_backcamera, R.string.cn_frontcamera))
+                it.setText(R.id.tv_camera_dpi, cp.mPhotoSize.toString())
+                it.setText(R.id.tv_camera_flash, cp.mAutoFlash
+                        .doJudge(R.string.cn_autoflash, R.string.cn_flash_no))
+                it.setText(R.id.tv_camera_focus, cp.mAutoFocus
+                        .doJudge(R.string.cn_autofocus, R.string.cn_focus_no))
+            }
+        }
     }
 }

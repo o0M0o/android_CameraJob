@@ -6,10 +6,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.ui.utility.Setting.TFSettingCamera
-import com.wxm.camerajob.ui.utility.dialog.DlgUtility
-import com.wxm.camerajob.utility.context.ContextUtil
-import wxm.androidutil.Switcher.ACSwitcherActivity
+import com.wxm.camerajob.ui.setting.TFSettingCamera
+import com.wxm.camerajob.utility.AppUtil
+import wxm.androidutil.ui.activity.ACSwitcherActivity
+import wxm.androidutil.ui.dialog.DlgAlert
 
 /**
  * UI for camera setting
@@ -17,16 +17,12 @@ import wxm.androidutil.Switcher.ACSwitcherActivity
 open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ContextUtil.addActivity(this)
-    }
-
-    override fun setupFragment(p0: Bundle?) {
-        addFragment(TFSettingCamera())
+        AppUtil.addActivity(this)
     }
 
     override fun leaveActivity() {
         setResult(GlobalDef.INTRET_CS_GIVEUP, Intent())
-        finish()
+        super.leaveActivity()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -35,26 +31,25 @@ open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val home = this
         when (item.itemId) {
             R.id.mi_accept -> {
                 val hf = hotFragment!!
                 if (hf.isSettingDirty) {
-                    DlgUtility.showAlert(this, R.string.hint, "是否保存更改的配置?",
-                            { dlg ->
-                                dlg.setPositiveButton("是") { _, _ ->
-                                    hf.updateSetting()
-                                    home.leaveActivity()
-                                }.setNegativeButton("否") { _, _ ->
-                                }
-                            })
+                    DlgAlert.showAlert(this, R.string.hint, "是否保存更改的配置?"
+                    ) { dlg ->
+                        dlg.setPositiveButton("是") { _, _ ->
+                            hf.updateSetting()
+                            leaveActivity()
+                        }.setNegativeButton("否") { _, _ ->
+                        }
+                    }
                 } else {
-                    home.leaveActivity()
+                    leaveActivity()
                 }
             }
 
             R.id.mi_giveup -> {
-                home.leaveActivity()
+                leaveActivity()
             }
 
             else -> return super.onOptionsItemSelected(item)

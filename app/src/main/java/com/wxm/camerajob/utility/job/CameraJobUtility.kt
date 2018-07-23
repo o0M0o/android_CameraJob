@@ -1,7 +1,7 @@
 package com.wxm.camerajob.utility.job
 
 import com.wxm.camerajob.data.define.CameraJob
-import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.utility.AppUtil
 
 import wxm.androidutil.util.FileUtil
 import wxm.androidutil.util.UtilFun
@@ -19,9 +19,9 @@ object CameraJobUtility {
      * @return      true if success else false
      */
     fun createCameraJob(cj: CameraJob): Boolean {
-        return ContextUtil.getCameraJobUtility().createData(cj).let {
+        return AppUtil.getCameraJobUtility().createData(cj).let {
             if (it) {
-                !UtilFun.StringIsNullOrEmpty(ContextUtil.createJobDir(cj))
+                !UtilFun.StringIsNullOrEmpty(AppUtil.createJobDir(cj))
             } else it
         }
     }
@@ -32,7 +32,7 @@ object CameraJobUtility {
      * @param cj_id   id for job
      */
     fun removeCameraJob(cj_id: Int) {
-        ContextUtil.getCameraJobUtility().removeData(cj_id)
+        AppUtil.getCameraJobUtility().removeData(cj_id)
     }
 
     /**
@@ -40,9 +40,9 @@ object CameraJobUtility {
      * @param cj_id   id for job
      */
     fun deleteCameraJob(cj_id: Int) {
-        ContextUtil.getCameraJobUtility().removeData(cj_id)
-        ContextUtil.getCameraJobDir(cj_id)?.let {
-            FileUtil.DeleteDirectory(it)
+        AppUtil.getCameraJobUtility().removeData(cj_id)
+        AppUtil.getCameraJobDir(cj_id)?.let {
+            FileUtil.deleteDirectory(it)
         }
     }
 }

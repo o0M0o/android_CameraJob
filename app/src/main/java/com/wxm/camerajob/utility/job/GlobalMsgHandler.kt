@@ -6,7 +6,7 @@ import android.util.Log
 import com.wxm.camerajob.alarm.AlarmReceiver
 
 import com.wxm.camerajob.data.define.EMsgType
-import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.utility.AppUtil
 
 import java.util.Calendar
 
@@ -34,8 +34,8 @@ internal class GlobalMsgHandler : Handler() {
     }
 
     private fun onWakeup(msg: Message) {
-        ContextUtil.getCameraJobUtility().allData.let {
-            ContextUtil.getJobProcess().processorWakeup(it)
+        AppUtil.getCameraJobUtility().allData.let {
+            AppUtil.getJobProcess().processorWakeup(it)
         }
 
         AlarmReceiver.triggerAlarm()
@@ -43,7 +43,7 @@ internal class GlobalMsgHandler : Handler() {
 
     private fun onQueryCameraJob(msg: Message) {
         val h = msg.obj as Handler
-        ContextUtil.getCameraJobUtility().allData?.let {
+        AppUtil.getCameraJobUtility().allData?.let {
             if(it.isNotEmpty()) {
                 Message.obtain(h, EMsgType.REPLAY.id, it).let {
                     it.arg1 = EMsgType.CAMERAJOB_QUERY.id
@@ -58,12 +58,12 @@ internal class GlobalMsgHandler : Handler() {
             val jobId = UtilFun.cast<Int>(it[0])
             val photoCount = UtilFun.cast<Int>(it[1])
 
-            ContextUtil.getCameraJobUtility().getData(jobId)?.let {
+            AppUtil.getCameraJobUtility().getData(jobId)?.let {
                 it.status.let {
                     it.job_photo_count = it.job_photo_count + photoCount
                     it.ts.time = Calendar.getInstance().timeInMillis
 
-                    ContextUtil.getCameraJobStatusUtility().modifyData(it)
+                    AppUtil.getCameraJobStatusUtility().modifyData(it)
                 }
             }
 

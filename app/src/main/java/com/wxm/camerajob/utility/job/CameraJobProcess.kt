@@ -4,7 +4,7 @@ import android.os.Message
 import android.util.Log
 import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.utility.AppUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,7 +49,7 @@ class CameraJobProcess {
         if (lsJob.isNotEmpty()) {
             lsJob.pop().let {
                 Log.i(LOG_TAG, "wakeup job : " + it.toString())
-                val path = ContextUtil.getCameraJobDir(it._id)
+                val path = AppUtil.getCameraJobDir(it._id)
                 if (null == path) {
                     wakeupDuty(lsJob)
                 } else {
@@ -63,7 +63,7 @@ class CameraJobProcess {
                         }
 
                         override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                            Message.obtain(ContextUtil.getMsgHandler(),
+                            Message.obtain(AppUtil.getMsgHandler(),
                                     EMsgType.CAMERAJOB_TAKEPHOTO.id,
                                     arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
                             wakeupDuty(lsJob)

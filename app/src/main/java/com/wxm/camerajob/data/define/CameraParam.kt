@@ -99,7 +99,7 @@ class CameraParam : Parcelable, Cloneable {
             }
 
             override fun newArray(size: Int): Array<CameraParam> {
-                return Array(size, {CameraParam(null)})
+                return Array(size) {CameraParam(null)}
             }
         }
     }

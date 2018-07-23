@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.support.annotation.RequiresApi
-import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
@@ -18,11 +17,12 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.ui.base.AutoFitTextureView
-import com.wxm.camerajob.ui.utility.dialog.DlgUtility
-import com.wxm.camerajob.utility.log.TagLog
 import kotterknife.bindView
-import wxm.androidutil.FrgUtility.FrgSupportBaseAdv
+import wxm.androidutil.improve.let1
+import wxm.androidutil.log.TagLog
 import wxm.androidutil.type.MySize
+import wxm.androidutil.ui.dialog.DlgAlert
+import wxm.androidutil.ui.frg.FrgSupportBaseAdv
 import wxm.androidutil.util.UtilFun
 import java.util.*
 import java.util.concurrent.Semaphore
@@ -68,7 +68,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
             mCameraOpenCloseLock.release()
             camera.close()
             mCameraDevice = null
-            activity.finish()
+            activity!!.finish()
         }
     }
 
@@ -190,7 +190,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     }
 
     override fun isUseEventBus(): Boolean = false
-    override fun getLayoutID(): Int = R.layout.frg_camera
+    override fun getLayoutID(): Int = R.layout.ac_camera
 
     override fun initUI(savedInstanceState: Bundle?) {
         mCPParam = PreferencesUtil.loadCameraParam()
@@ -213,7 +213,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         // a camera and start preview from here (otherwise, we wait until the surface is ready in
         // the SurfaceTextureListener).
         if (mTextureView.isAvailable) {
-            val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+            val manager = activity!!.getSystemService(Context.CAMERA_SERVICE) as CameraManager
             try {
                 manager.getCameraCharacteristics(mCameraId!!).get(CameraCharacteristics.LENS_FACING)?.let {
                     openCamera(it, mTextureView.width, mTextureView.height)
@@ -303,7 +303,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 throw RuntimeException("Time out waiting to lock camera opening.")
             }
 
-            (activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager)
+            (activity!!.getSystemService(Context.CAMERA_SERVICE) as CameraManager)
                     .openCamera(mCameraId!!, mCameraDeviceStateCallback, mBackgroundHandler)
         } catch (e: CameraAccessException) {
             e.printStackTrace()
@@ -347,7 +347,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         if (null == mPreviewSize)
             return
 
-        val rotation = activity.windowManager.defaultDisplay.rotation
+        val rotation = activity!!.windowManager.defaultDisplay.rotation
         val matrix = Matrix()
         val viewRect = RectF(0f, 0f, viewWidth.toFloat(), viewHeight.toFloat())
         val bufferRect = RectF(0f, 0f, mPreviewSize!!.height.toFloat(), mPreviewSize!!.width.toFloat())
@@ -376,7 +376,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setUpCameraOutputs(face: Int, width: Int, height: Int) {
-        val manager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        val manager = activity!!.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         try {
             manager.cameraIdList.filter {
                 manager.getCameraCharacteristics(it).let {
@@ -398,7 +398,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 val mLargestSize = Collections.max(lsSize, CompareSizesByArea())
 
                 val mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)!!
-                val swappedDimensions = activity.windowManager.defaultDisplay.rotation.let {
+                val swappedDimensions = activity!!.windowManager.defaultDisplay.rotation.let {
                     when (it) {
                         Surface.ROTATION_0, Surface.ROTATION_180 -> mSensorOrientation == 90 || mSensorOrientation == 270
                         Surface.ROTATION_90, Surface.ROTATION_270 -> mSensorOrientation == 0 || mSensorOrientation == 180
@@ -409,42 +409,42 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                     }
                 }
 
-                val displaySize = Point().apply {
-                    activity.windowManager.defaultDisplay.getSize(this)
-                }
+                Point().apply {
+                    activity!!.windowManager.defaultDisplay.getSize(this)
+                }.let1 {
+                    var maxPreviewWidth: Int
+                    var maxPreviewHeight: Int
+                    val rotatedPreviewWidth: Int
+                    val rotatedPreviewHeight: Int
+                    if (swappedDimensions) {
+                        rotatedPreviewWidth = height
+                        rotatedPreviewHeight = width
+                        maxPreviewWidth = it.y
+                        maxPreviewHeight = it.x
+                    } else {
+                        rotatedPreviewWidth = width
+                        rotatedPreviewHeight = height
+                        maxPreviewWidth = it.x
+                        maxPreviewHeight = it.y
+                    }
 
-                val rotatedPreviewWidth: Int
-                val rotatedPreviewHeight: Int
-                var maxPreviewWidth: Int
-                var maxPreviewHeight: Int
-                if (swappedDimensions) {
-                    rotatedPreviewWidth = height
-                    rotatedPreviewHeight = width
-                    maxPreviewWidth = displaySize.y
-                    maxPreviewHeight = displaySize.x
-                } else {
-                    rotatedPreviewWidth = width
-                    rotatedPreviewHeight = height
-                    maxPreviewWidth = displaySize.x
-                    maxPreviewHeight = displaySize.y
-                }
+                    maxPreviewWidth = Math.min(MAX_PREVIEW_WIDTH, maxPreviewWidth)
+                    maxPreviewHeight = Math.min(MAX_PREVIEW_HEIGHT, maxPreviewHeight)
 
-                maxPreviewWidth = Math.min(MAX_PREVIEW_WIDTH, maxPreviewWidth)
-                maxPreviewHeight = Math.min(MAX_PREVIEW_HEIGHT, maxPreviewHeight)
-
-                val lsSTSize = map.getOutputSizes(SurfaceTexture::class.java).filterNotNull()
-                        .map { MySize(it.width, it.height) }.let {
-                            ArrayList<MySize>().apply {
-                                addAll(it)
+                    val lsSTSize = map.getOutputSizes(SurfaceTexture::class.java).filterNotNull()
+                            .map { MySize(it.width, it.height) }.let {
+                                ArrayList<MySize>().apply {
+                                    addAll(it)
+                                }
                             }
-                        }
 
-                // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
-                // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
-                // garbage capture data.
-                mPreviewSize = chooseOptimalSize(lsSTSize.toTypedArray(),
-                        rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
-                        maxPreviewHeight, mLargestSize)
+                    // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
+                    // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
+                    // garbage capture data.
+                    mPreviewSize = chooseOptimalSize(lsSTSize.toTypedArray(),
+                            rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
+                            maxPreviewHeight, mLargestSize)
+                }
 
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 resources.configuration.orientation.let {
@@ -463,7 +463,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         } catch (e: NullPointerException) {
-            DlgUtility.showAlert(activity, "Error", getString(R.string.camera_error))
+            DlgAlert.showAlert(activity!!, "Error", getString(R.string.camera_error))
         }
     }
 
@@ -483,16 +483,13 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
      * @param text The message to show
      */
     private fun showToast(text: String) {
-        activity.let {
+        activity!!.let {
             it.runOnUiThread({ Toast.makeText(it, text, Toast.LENGTH_SHORT).show() })
         }
     }
+    /// END PRIVATE
 
     companion object {
-        private val LOG_TAG = ::FrgCameraPreview.javaClass.simpleName
-        private const val FRAGMENT_DIALOG = "dialog"
-
-        private val ORIENTATIONS = SparseIntArray()
         private const val STATE_PREVIEW = 0
         private const val STATE_WAITING_LOCK = 1
         private const val STATE_WAITING_PRECAPTURE = 2
@@ -556,6 +553,4 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
             }
         }
     }
-    /// END PRIVATE
-
 }

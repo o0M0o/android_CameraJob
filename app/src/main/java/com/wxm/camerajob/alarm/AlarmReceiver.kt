@@ -10,9 +10,11 @@ import com.wxm.camerajob.data.define.EJobStatus
 import com.wxm.camerajob.data.define.EMsgType
 import com.wxm.camerajob.data.define.ETimeGap
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.context.ContextUtil
+import com.wxm.camerajob.utility.AppUtil
 import com.wxm.camerajob.utility.log.FileLogger
-import com.wxm.camerajob.utility.log.TagLog
+import wxm.androidutil.app.AppBase
+import wxm.androidutil.improve.let1
+import wxm.androidutil.log.TagLog
 import java.util.*
 
 /**
@@ -28,7 +30,7 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(arg0: Context, data: Intent) {
         try {
             TagLog.i("receive alarm")
-            Message.obtain(ContextUtil.getMsgHandler(), EMsgType.WAKEUP.id, EMsgType.WAKEUP)
+            Message.obtain(AppUtil.getMsgHandler(), EMsgType.WAKEUP.id, EMsgType.WAKEUP)
                     .sendToTarget()
         } catch (e: Exception) {
             TagLog.e("receive alarm failure", e)
@@ -49,7 +51,7 @@ class AlarmReceiver : BroadcastReceiver() {
             var ret = GlobalDef.INT_GLOBALJOB_PERIOD.toLong()
             try {
                 ret = LinkedList<Long>().apply {
-                    ContextUtil.getCameraJobUtility().allData
+                    AppUtil.getCameraJobUtility().allData
                             .filter { it.status.job_status == EJobStatus.RUN.status }
                             .forEach {
                                 ETimeGap.getETimeGap(it.point)?.let {
@@ -66,12 +68,13 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         fun triggerAlarm() {
-            val am = ContextUtil.getSystemService<AlarmManager>(Context.ALARM_SERVICE)!!
-            val ct = ContextUtil.appContext()
-            PendingIntent.getBroadcast(ct, 0, Intent(ct, AlarmReceiver::class.java), 0)!!
-                    .let {
-                        am.set(AlarmManager.RTC_WAKEUP, getAlarmDelay(), it)
-                    }
+            AppUtil.self.let1 {
+                PendingIntent.getBroadcast(it, 0, Intent(it, AlarmReceiver::class.java), 0)!!
+                        .let1 {
+                            AppBase.getSystemService<AlarmManager>(Context.ALARM_SERVICE)!!
+                                    .set(AlarmManager.RTC_WAKEUP, getAlarmDelay(), it)
+                        }
+            }
         }
     }
 }

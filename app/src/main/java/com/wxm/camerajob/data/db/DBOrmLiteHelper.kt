@@ -10,7 +10,7 @@ import com.j256.ormlite.table.TableUtils
 import com.wxm.camerajob.data.define.CameraJob
 import com.wxm.camerajob.data.define.CameraJobStatus
 import com.wxm.camerajob.utility.log.FileLogger
-import com.wxm.camerajob.utility.log.TagLog
+import wxm.androidutil.log.TagLog
 
 import java.sql.SQLException
 

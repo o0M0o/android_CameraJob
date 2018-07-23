@@ -2,8 +2,8 @@ package com.wxm.camerajob.silentCamera
 
 import android.hardware.camera2.*
 import android.media.ImageReader
-import com.wxm.camerajob.utility.context.ContextUtil
-import com.wxm.camerajob.utility.log.TagLog
+import com.wxm.camerajob.utility.AppUtil
+import wxm.androidutil.log.TagLog
 
 /**
  * @author      WangXM
@@ -56,7 +56,7 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
         builder.set(CaptureRequest.JPEG_ORIENTATION,
                 getJPGOrientation(mHome.mCamera!!.mFace == CameraCharacteristics.LENS_FACING_FRONT,
                         mHome.mCamera!!.mSensorOrientation,
-                        ContextUtil.getWindowManager()!!.defaultDisplay.rotation))
+                        AppUtil.getWindowManager()!!.defaultDisplay.rotation))
 
         builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
 

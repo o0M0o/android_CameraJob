@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fl_page"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/cl_act"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_act"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <wxm.uilib.IconButton.IconButton
+            android:id="@+id/ib_job_show"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:padding="2dp"
+            app:ibActName="@string/cn_job_show"
+            app:ibActNameSize="12sp"
+            app:ibColorCold="@color/text_fit"
+            app:ibColorHot="@color/red_ff725f"
+            app:ibIcon="@drawable/ic_job_show"
+            app:ibIconHeight="24dp"
+            app:ibIconWidth="24dp"
+            app:ibOrientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <wxm.uilib.IconButton.IconButton
+            android:id="@+id/ib_add_job"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/act_shape"
+            android:padding="2dp"
+            app:ibActName="@string/cn_add_job"
+            app:ibActNameSize="12sp"
+            app:ibColorCold="@color/text_fit"
+            app:ibColorHot="@color/red_ff725f"
+            app:ibIcon="@drawable/ic_add"
+            app:ibIconHeight="26dp"
+            app:ibIconWidth="26dp"
+            app:ibOrientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ib_job_show"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <wxm.uilib.IconButton.IconButton
+            android:id="@+id/ib_setting"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:padding="2dp"
+            app:ibActName="@string/cn_setting"
+            app:ibActNameSize="12sp"
+            app:ibColorCold="@color/text_fit"
+            app:ibColorHot="@color/red_ff725f"
+            app:ibIcon="@drawable/ic_help"
+            app:ibIconHeight="26dp"
+            app:ibIconWidth="26dp"
+            app:ibOrientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ib_add_job"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

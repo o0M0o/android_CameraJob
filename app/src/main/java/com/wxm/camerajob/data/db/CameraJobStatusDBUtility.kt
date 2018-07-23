@@ -5,8 +5,7 @@ import com.wxm.camerajob.data.define.CameraJobStatus
 import com.wxm.camerajob.data.define.DBDataChangeEvent
 
 import org.greenrobot.eventbus.EventBus
-
-import wxm.androidutil.DBHelper.DBUtilityBase
+import wxm.androidutil.db.DBUtilityBase
 
 
 /**
@@ -14,8 +13,6 @@ import wxm.androidutil.DBHelper.DBUtilityBase
  * Created by 123 on 2016/6/16.
  */
 class CameraJobStatusDBUtility(private val mHelper: DBOrmLiteHelper) : DBUtilityBase<CameraJobStatus, Int>() {
-
-
     override fun onDataModify(list: List<Int>) {
         DBDataChangeEvent(DBDataChangeEvent.DATA_JOB_STATUS,
                 DBDataChangeEvent.EVENT_MODIFY).let {

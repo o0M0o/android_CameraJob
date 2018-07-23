@@ -6,7 +6,7 @@ import com.wxm.camerajob.data.define.DBDataChangeEvent
 import com.wxm.camerajob.data.define.EJobStatus
 
 import org.greenrobot.eventbus.EventBus
-import wxm.androidutil.DBHelper.DBUtilityBase
+import wxm.androidutil.db.DBUtilityBase
 
 /**
  * database class for CameraJob

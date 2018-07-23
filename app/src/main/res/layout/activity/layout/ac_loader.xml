@@ -4,6 +4,6 @@
     android:id="@+id/ac_loader"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.utility.Loader.ACLoader">
+    tools:context=".ui.loader.ACLoader">
 
 </android.support.constraint.ConstraintLayout>

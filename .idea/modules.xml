@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/androidutil/androidutil.iml" filepath="$PROJECT_DIR$/androidutil/androidutil.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/galleryfinal/galleryfinal.iml" filepath="$PROJECT_DIR$/galleryfinal/galleryfinal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/uilib/uilib.iml" filepath="$PROJECT_DIR$/uilib/uilib.iml" />
     </modules>
   </component>
 </project>

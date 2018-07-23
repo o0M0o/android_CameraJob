@@ -6,13 +6,13 @@ import android.os.Parcelable
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
+import wxm.androidutil.db.IDBRow
 
 import java.sql.Timestamp
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-import wxm.androidutil.DBHelper.IDBRow
 
 /**
  * status for camera job
@@ -101,7 +101,7 @@ class CameraJobStatus : Parcelable, Cloneable, IDBRow<Int> {
             }
 
             override fun newArray(size: Int): Array<CameraJobStatus> {
-                return Array(size, {CameraJobStatus()})
+                return Array(size) {CameraJobStatus()}
             }
         }
     }

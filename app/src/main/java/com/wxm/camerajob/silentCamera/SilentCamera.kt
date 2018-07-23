@@ -5,7 +5,7 @@ import android.os.Handler
 import com.wxm.camerajob.data.define.CameraParam
 import com.wxm.camerajob.data.define.TakePhotoParam
 import com.wxm.camerajob.utility.log.FileLogger
-import com.wxm.camerajob.utility.log.TagLog
+import wxm.androidutil.log.TagLog
 import java.util.*
 
 

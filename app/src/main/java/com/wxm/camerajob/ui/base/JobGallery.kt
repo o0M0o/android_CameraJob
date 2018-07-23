@@ -15,9 +15,9 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType
-import com.wxm.camerajob.ui.utility.Loader.UILImageLoader
-import com.wxm.camerajob.utility.log.TagLog
 import org.xutils.x
+import wxm.androidutil.improve.let1
+import wxm.androidutil.log.TagLog
 import java.io.File
 
 
@@ -27,7 +27,6 @@ import java.io.File
  */
 class JobGallery {
     companion object {
-        private val LOG_TAG = ::JobGallery.javaClass.simpleName
         private const val REQUEST_CODE_GALLERY = 1001
     }
 
@@ -53,17 +52,8 @@ class JobGallery {
     fun openGallery(ac: Activity, photoDir: String) {
         mHolder = ac
 
-        val funConfigBuilder = FunctionConfig.Builder().apply {
-            setMutiSelectMaxSize(8)
-            setEnablePreview(true)
-        }
-
         //funConfigBuilder.setSelected(mPhotoList);//添加过滤集合
-        val funConfig = funConfigBuilder.build()
-        val imageLoader: cn.finalteam.galleryfinal.ImageLoader
-        imageLoader = UILImageLoader()
-        CoreConfig.Builder(mHolder, imageLoader, ThemeConfig.DEFAULT)
-                .setFunctionConfig(funConfig)
+        CoreConfig.Builder(mHolder, UILImageLoader(), ThemeConfig.DEFAULT)
                 .setPauseOnScrollListener(UILPauseOnScrollListener(false, true))
                 .setNoAnimcation(false)
                 .setShowPhotoFolder(File(photoDir))
@@ -71,7 +61,11 @@ class JobGallery {
                     GalleryFinal.init(it)
                 }
 
-        GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY, funConfig, mResultCallback)
+        GalleryFinal.openGalleryMuti(REQUEST_CODE_GALLERY,
+                FunctionConfig.Builder().apply {
+                    setMutiSelectMaxSize(8)
+                    setEnablePreview(true)
+                }.build(), mResultCallback)
 
         initImageLoader(mHolder)
         initFresco()
@@ -84,16 +78,17 @@ class JobGallery {
         // or you can create default configuration by
         //  ImageLoaderConfiguration.createDefault(this);
         // method.
-        val config = ImageLoaderConfiguration.Builder(context!!)
-        config.threadPriority(Thread.NORM_PRIORITY - 2)
-        config.denyCacheImageMultipleSizesInMemory()
-        config.diskCacheFileNameGenerator(Md5FileNameGenerator())
-        config.diskCacheSize(50 * 1024 * 1024) // 50 MiB
-        config.tasksProcessingOrder(QueueProcessingType.LIFO)
-        config.writeDebugLogs() // Remove for release app
-
-        // Initialize ImageLoader with configuration.
-        ImageLoader.getInstance().init(config.build())
+        ImageLoaderConfiguration.Builder(context!!).apply {
+            threadPriority(Thread.NORM_PRIORITY - 2)
+            denyCacheImageMultipleSizesInMemory()
+            diskCacheFileNameGenerator(Md5FileNameGenerator())
+            diskCacheSize(50 * 1024 * 1024) // 50 MiB
+            tasksProcessingOrder(QueueProcessingType.LIFO)
+            writeDebugLogs() // Remove for release app
+        }.let1 {
+            // Initialize ImageLoader with configuration.
+            ImageLoader.getInstance().init(it.build())
+        }
     }
 
 

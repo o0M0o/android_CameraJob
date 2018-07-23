@@ -15,10 +15,11 @@ import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.define.PreferencesUtil
 import com.wxm.camerajob.data.define.TakePhotoParam
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.utility.context.ContextUtil
-import com.wxm.camerajob.utility.log.TagLog
+import com.wxm.camerajob.utility.AppUtil
 import kotterknife.bindView
-import wxm.androidutil.ImageUtility.ImageUtil
+import wxm.androidutil.app.AppBase
+import wxm.androidutil.image.ImageUtil
+import wxm.androidutil.log.TagLog
 import java.lang.ref.WeakReference
 
 class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
@@ -26,26 +27,22 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
     private val mIVPhoto: ImageView by bindView(R.id.aciv_photo)
     private val mSelfHandler: ACTestMsgHandler = ACTestMsgHandler(this)
 
-    private val mCLGrey: Int = ContextUtil.appContext().getColor(R.color.gray)
-    private val mCLBlack: Int = ContextUtil.appContext().getColor(R.color.black)
+    private val mCLGrey: Int = AppBase.getColor(R.color.gray)
+    private val mCLBlack: Int = AppBase.getColor(R.color.black)
 
     private val mCameraParam = PreferencesUtil.loadCameraParam()
-    private val mTPParam = TakePhotoParam(ContextUtil.getPhotoRootDir(), "tmp.jpg", "1")
+    private val mTPParam = TakePhotoParam(AppUtil.getPhotoRootDir(), "tmp.jpg", "1")
     private val mCBTakePhoto = object : SilentCamera.TakePhotoCallBack {
         override fun onTakePhotoFailed(tp: TakePhotoParam) {
-            mBTCapture.apply {
-                isClickable = true
-                setTextColor(mCLBlack)
-            }
+            mBTCapture.isClickable = true
+            mBTCapture.setTextColor(mCLBlack)
 
             mSelfHandler.sendEmptyMessage(MSG_TAKE_PHOTO_FAILED)
         }
 
         override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-            mBTCapture.apply {
-                isClickable = true
-                setTextColor(mCLBlack)
-            }
+            mBTCapture.isClickable = true
+            mBTCapture.setTextColor(mCLBlack)
 
             mSelfHandler.sendEmptyMessage(MSG_TAKE_PHOTO_SUCCESS)
         }
@@ -58,13 +55,10 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
         mIVPhoto.scaleType = ImageView.ScaleType.FIT_CENTER
 
         findViewById<View>(R.id.acbt_leave).setOnClickListener(this)
+        mBTCapture.setOnClickListener(this)
 
-        val home = this
-        mBTCapture.apply {
-            setOnClickListener(home)
-            isClickable = true
-            setTextColor(mCLBlack)
-        }
+        mBTCapture.isClickable = true
+        mBTCapture.setTextColor(mCLBlack)
     }
 
     override fun onClick(v: View) {
@@ -75,10 +69,8 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.acbt_capture -> {
-                mBTCapture.apply {
-                    isClickable = true
-                    setTextColor(mCLBlack)
-                }
+                mBTCapture.isClickable = true
+                mBTCapture.setTextColor(mCLBlack)
 
                 TagLog.i("start capture!")
                 SilentCamera.takePhoto(mCameraParam, mTPParam, mCBTakePhoto)
@@ -91,7 +83,6 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
 
         override fun handleMessage(msg: Message) {
             val acHome = mActivity.get() ?: return
-
             when (msg.what) {
                 MSG_TAKE_PHOTO_SUCCESS -> {
                     Toast.makeText(acHome, "takePhoto ok", Toast.LENGTH_SHORT).show()

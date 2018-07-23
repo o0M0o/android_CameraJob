@@ -17,12 +17,12 @@ android {
         }
     }
 
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.wxm.camerajob"
         minSdkVersion 24
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 10
         versionName "1.10"
     }
@@ -47,6 +47,7 @@ android {
                             'src/main/res',
                             'src/main/res/layout/activity',
                             'src/main/res/layout/fragment',
+                            'src/main/res/layout/page',
                             'src/main/res/layout/dialog',
                             'src/main/res/layout/item',
                             'src/main/res/layout'
@@ -96,14 +97,14 @@ dependencies {
     implementation files('libs/extend_libs/javamail/activation.jar')
     implementation files('libs/extend_libs/javamail/additionnal.jar')
     implementation files('libs/extend_libs/javamail/mail.jar')
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-v13:26.1.0'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v13:27.1.1'
     implementation 'org.apache.logging.log4j:log4j:2.6.1'
     implementation 'com.facebook.fresco:fresco:0.12.0'
 
-    implementation 'com.jakewharton:butterknife:8.8.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     implementation 'org.greenrobot:eventbus:3.1.1'
 
@@ -117,11 +118,13 @@ dependencies {
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation 'org.xutils:xutils:3.3.36'
     implementation 'cn.finalteam:toolsfinal:1.1.4'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'org.jetbrains:annotations:15.0'
 
     implementation project(':galleryfinal')
     implementation project(':androidutil')
+    implementation project(':uilib')
+    implementation 'com.android.support:cardview-v7:27.1.1'
 }
 
 configurations.all {
