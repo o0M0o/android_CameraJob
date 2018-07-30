@@ -29,7 +29,7 @@ class AlarmReceiver : BroadcastReceiver() {
      */
     override fun onReceive(arg0: Context, data: Intent) {
         try {
-            TagLog.i("receive alarm")
+            //TagLog.i("receive alarm")
             Message.obtain(AppUtil.getMsgHandler(), EMsgType.WAKEUP.id, EMsgType.WAKEUP)
                     .sendToTarget()
         } catch (e: Exception) {

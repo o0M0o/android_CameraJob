@@ -4,19 +4,12 @@ package com.wxm.camerajob.ui.welcome.page
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageButton
 import android.widget.ListView
-import android.widget.RelativeLayout
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
-import com.wxm.camerajob.ui.job.slide.ACJobSlide
-import com.wxm.camerajob.ui.base.FrgCameraInfoHelper
-import com.wxm.camerajob.ui.base.JobGallery
 import com.wxm.camerajob.ui.base.PageBase
 import com.wxm.camerajob.ui.job.detail.ACJobDetail
 import com.wxm.camerajob.utility.AppUtil
-import com.wxm.camerajob.utility.job.CameraJobUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -27,7 +20,6 @@ import wxm.androidutil.ui.frg.FrgSupportBaseAdv
 import wxm.androidutil.ui.moreAdapter.MoreAdapter
 import wxm.androidutil.ui.view.ViewHolder
 import wxm.androidutil.util.FileUtil
-import wxm.androidutil.util.UtilFun
 import java.util.*
 
 
@@ -93,20 +85,27 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(REQUEST_JOB_DETAIL == requestCode)   {
+            reloadUI()
+        }
+    }
+
     /// BEGIN PRIVATE
     private fun diedCameraJob(jobs: MutableList<HashMap<String, String>>, dir: String) {
         val cj = AppUtil.getCameraJobFromDir(dir) ?: return
-        HashMap<String, String>().let1 {
-            it[KEY_JOB_NAME] = cj.name + "(已移除)"
-            it[KEY_JOB_TYPE] = ""
-            it[KEY_JOB_START_END_DATE] = ""
-            it[KEY_PHOTO_COUNT] = "可查看已拍摄图片"
-            it[KEY_PHOTO_LAST_TIME] = "可移除此任务"
-            it[KEY_ID] = Integer.toString(cj._id)
-            it[KEY_STATUS] = EJobStatus.STOP.status
-            it[KEY_TYPE] = DIED_JOB
-            jobs.add(it)
-        }
+        jobs.add(HashMap<String, String>().apply {
+            put(KEY_JOB_NAME, cj.name + "(已移除)")
+            put(KEY_JOB_TYPE, "")
+            put(KEY_JOB_START_END_DATE, "")
+            put(KEY_PHOTO_COUNT, "可查看已拍摄图片")
+            put(KEY_PHOTO_LAST_TIME, "可移除此任务")
+            put(KEY_ID, Integer.toString(cj._id))
+            put(KEY_STATUS, EJobStatus.STOP.status)
+            put(KEY_TYPE, DIED_JOB)
+            put(KEY_JOB_DIR, dir)
+        })
     }
 
     private fun aliveCameraJob(jobs: MutableList<HashMap<String, String>>, cj: CameraJob) {
@@ -141,13 +140,13 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
             vhHolder.convertView.setOnClickListener {
                 mFrgHome.startActivityForResult(
                         Intent(mContext, ACJobDetail::class.java).apply {
-                            if(ALIVE_JOB == hm[KEY_TYPE])   {
+                            if (ALIVE_JOB == hm[KEY_TYPE]) {
                                 putExtra(ACJobDetail.KEY_JOB_ID, Integer.parseInt(hm[KEY_ID]!!))
-                            } else  {
-                                putExtra(ACJobDetail.KEY_JOB_DIR, Integer.parseInt(hm[KEY_JOB_DIR]!!))
+                            } else {
+                                putExtra(ACJobDetail.KEY_JOB_DIR, hm[KEY_JOB_DIR])
                             }
                         },
-                        1)
+                        REQUEST_JOB_DETAIL)
             }
         }
     }
@@ -169,6 +168,8 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
         const val KEY_TYPE = "key_type"
         const val KEY_ID = "key_id"
         const val KEY_JOB_DIR = "job_dir"
+
+        private const val REQUEST_JOB_DETAIL = 999
     }
 }
 

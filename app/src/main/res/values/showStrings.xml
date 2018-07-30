@@ -5,9 +5,11 @@
     <string name="cn_job_show">查看任务</string>
 
     <string name="dlg_info">信息</string>
-    <string name="hint">提示</string>
-    <string name="warn">警告</string>
-    <string name="error">错误</string>
+    <string name="dlg_hint">提示</string>
+    <string name="dlg_warn">警告</string>
+    <string name="dlg_error">错误</string>
+    <string name="info_remove_job">是否移除任务!</string>
+    <string name="info_delete_job">是否删除任务文件！</string>
     <string name="info_need_stop_job">请先删除或暂停运行中任务!</string>
 
     <string name="cn_preview">预览</string>

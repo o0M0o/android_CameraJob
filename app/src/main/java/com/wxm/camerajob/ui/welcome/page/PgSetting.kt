@@ -61,7 +61,7 @@ class PgSetting : FrgSupportSwitcher<TFSettingBase>(), PageBase {
         val hp = hotPage
         if(hp !== mPGMain)    {
             if(hp.isSettingDirty) {
-                DlgAlert.showAlert(context!!, R.string.hint, R.string.setting_changed
+                DlgAlert.showAlert(context!!, R.string.dlg_hint, R.string.setting_changed
                 ) { db ->
                     db.setPositiveButton(R.string.accept) { _, _ ->
                         hp.updateSetting()

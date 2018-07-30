@@ -35,7 +35,7 @@ open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
             R.id.mi_accept -> {
                 val hf = hotFragment!!
                 if (hf.isSettingDirty) {
-                    DlgAlert.showAlert(this, R.string.hint, "是否保存更改的配置?"
+                    DlgAlert.showAlert(this, R.string.dlg_hint, "是否保存更改的配置?"
                     ) { dlg ->
                         dlg.setPositiveButton("是") { _, _ ->
                             hf.updateSetting()

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wxm.camerajob.ui.extend.scaleLayout.ScaleLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/gi_pic"
     android:orientation="vertical">
 
     <ImageView
@@ -11,4 +11,4 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/desc_job_picture" />
 
-</android.support.constraint.ConstraintLayout>
+</com.wxm.camerajob.ui.extend.scaleLayout.ScaleLayout>

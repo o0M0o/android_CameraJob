@@ -80,7 +80,7 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
      */
     private fun checkCamera() {
         if (!PreferencesUtil.checkCameraIsSet()) {
-            DlgAlert.showAlert(this, R.string.warn, "相机未设置，需要先设置相机"
+            DlgAlert.showAlert(this, R.string.dlg_warn, "相机未设置，需要先设置相机"
             ) { dlg ->
                 dlg.setPositiveButton("确 定") { _, _ ->
                     startActivityForResult(Intent(this, ACCameraSetting::class.java),

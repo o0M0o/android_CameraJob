@@ -52,7 +52,7 @@ class FrgJobSlide : FrgSupportBaseAdv() {
             // 设置保持纵横比居中缩放图像
             // 设置imageView的宽高
             ImageView(activity).apply {
-                scaleType = ImageView.ScaleType.FIT_CENTER
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                         FrameLayout.LayoutParams.WRAP_CONTENT)
             }
@@ -86,10 +86,10 @@ class FrgJobSlide : FrgSupportBaseAdv() {
     fun toPosition(position: Int) {
         mISPhoto.setImageDrawable(UtilFun.cast_t<Drawable>(mGYPhotos.adapter.getItem(position)))
 
-        val fn = mLLPhotoFN[position]
-        (fn.lastIndexOf("/") + 1).let {
+        mLLPhotoFN[position].let1 { fn ->
             mTVTag.text = String.format(Locale.CHINA, "%d/%d (%s)",
-                    position + 1, mLLPhotoFN.size, fn.substring(it, fn.length))
+                    position + 1, mLLPhotoFN.size,
+                    fn.substring(fn.lastIndexOf("/") + 1, fn.length))
         }
     }
     /// END PRIVATE
@@ -122,7 +122,7 @@ class FrgJobSlide : FrgSupportBaseAdv() {
         /**
          * 获得当前选项的视图
          */
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             return ImageView(activity).apply {
                 layoutParams = Gallery.LayoutParams(400, ViewGroup.LayoutParams.MATCH_PARENT)
                 scaleType = ImageView.ScaleType.FIT_CENTER
@@ -140,7 +140,7 @@ class FrgJobSlide : FrgSupportBaseAdv() {
 
     companion object {
         private val GALLERY_SIZE = MySize(200, 150)
-        private val SHOW_SIZE = MySize(1000, 750)
+        private val SHOW_SIZE = MySize(1024, 1024)
 
         fun newInstance(photos: List<String>): FrgJobSlide {
             return FrgJobSlide().apply { mLLPhotoFN.addAll(photos) }

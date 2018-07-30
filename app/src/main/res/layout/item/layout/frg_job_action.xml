@@ -4,42 +4,42 @@
     android:id="@+id/ll_button"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:ignore="ContentDescription"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:ignore="ContentDescription">
 
     <ImageButton
         android:id="@+id/ib_job_slide_look"
-        android:layout_centerVertical="true"
         android:layout_width="42dp"
         android:layout_height="42dp"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="24dp"
         android:layout_toStartOf="@+id/ib_job_look"
         android:background="@drawable/ic_slide" />
 
     <ImageButton
         android:id="@+id/ib_job_look"
-        android:layout_centerVertical="true"
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="24dp"
         android:layout_toStartOf="@+id/ib_job_run_or_pause"
         android:background="@drawable/ic_pic" />
 
     <ImageButton
         android:id="@+id/ib_job_run_or_pause"
-        android:layout_centerVertical="true"
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="24dp"
         android:layout_toStartOf="@+id/ib_job_stop"
         android:background="@drawable/ic_pause" />
 
     <ImageButton
         android:id="@+id/ib_job_stop"
-        android:layout_centerVertical="true"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="12dp"
         android:background="@drawable/ic_stop" />
 

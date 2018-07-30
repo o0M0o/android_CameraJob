@@ -10,6 +10,7 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.welcome.ACWelcome
 import com.wxm.camerajob.utility.AppUtil
 import wxm.androidutil.app.AppBase
+import wxm.androidutil.improve.doJudge
 import wxm.androidutil.improve.let1
 import wxm.androidutil.ui.dialog.DlgAlert
 import java.util.*
@@ -45,26 +46,26 @@ class ACLoader : AppCompatActivity() {
      * 申请APP需要的权限
      */
     private fun mayRequestPermission() {
-        ArrayList<String>().let {
+        ArrayList<String>().apply {
             if (!AppBase.checkPermission(WRITE_EXTERNAL_STORAGE)) {
-                it.add(WRITE_EXTERNAL_STORAGE)
+                add(WRITE_EXTERNAL_STORAGE)
             }
 
             if (!AppBase.checkPermission(CAMERA)) {
-                it.add(CAMERA)
+                add(CAMERA)
             }
 
             if (!AppBase.checkPermission(WAKE_LOCK)) {
-                it.add(WAKE_LOCK)
+                add(WAKE_LOCK)
             }
-
-            it
-        }.toTypedArray().let1 {
-            if (it.isEmpty()) {
-                jumpWorkActivity()
-            } else {
-                ActivityCompat.requestPermissions(this, it, REQUEST_ALL)
-            }
+        }.let1 {
+            it.isEmpty().doJudge(
+                    { jumpWorkActivity() },
+                    {
+                        ActivityCompat.requestPermissions(this,
+                                it.toTypedArray(), REQUEST_ALL)
+                    }
+            )
         }
     }
 
@@ -77,7 +78,7 @@ class ACLoader : AppCompatActivity() {
         if (requestCode == REQUEST_ALL) {
             grantResults.indices.forEach {
                 if (grantResults[it] != PackageManager.PERMISSION_GRANTED) {
-                    DlgAlert.showAlert(this, R.string.warn,
+                    DlgAlert.showAlert(this, R.string.dlg_warn,
                             "由于缺少必须的权限(${permissions[it]})，本APP无法运行!")
                     { builder ->
                         builder.setCancelable(false)

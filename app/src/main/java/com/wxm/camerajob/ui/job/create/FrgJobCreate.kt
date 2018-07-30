@@ -98,21 +98,21 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         val jobName = mETJobName.text.toString()
         if (jobName.isEmpty()) {
             mETJobName.requestFocus()
-            DlgAlert.showAlert(context!!, R.string.warn, "请输入任务名!")
+            DlgAlert.showAlert(context!!, R.string.dlg_warn, "请输入任务名!")
             return false
         }
 
         val jobPoint = (mGVJobPoint.adapter as GVJobPointAdapter).selectJobPoint
         if (jobPoint!!.isEmpty()) {
             mGVJobPoint.requestFocus()
-            DlgAlert.showAlert(context!!, R.string.warn, "请选择任务激活方式!")
+            DlgAlert.showAlert(context!!, R.string.dlg_warn, "请选择任务激活方式!")
             return false
         }
 
         val st = mTVJobStartDate.text.toString().toTimestamp()
         val et = mTVJobEndDate.text.toString().toTimestamp()
         if (st >= et) {
-            DlgAlert.showAlert(context!!, R.string.warn,
+            DlgAlert.showAlert(context!!, R.string.dlg_warn,
                     "任务开始时间(${mTVJobStartDate.text})比结束时间(${mTVJobEndDate.text})晚")
             return false
         }

@@ -48,7 +48,7 @@ class ACSetting : ACSwitcherActivity<TFSettingBase>() {
             R.id.mi_save -> {
                 if (mTFMain !== hotFragment) {
                     if (hotFragment.isSettingDirty) {
-                        DlgAlert.showAlert(this, R.string.warn, "是否保存更改的配置?"
+                        DlgAlert.showAlert(this, R.string.dlg_warn, "是否保存更改的配置?"
                         ) { dlg ->
                             dlg.setPositiveButton("是") { _, _ ->
                                 hotFragment.updateSetting()

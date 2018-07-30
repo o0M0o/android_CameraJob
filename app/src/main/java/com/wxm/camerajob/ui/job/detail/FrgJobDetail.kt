@@ -1,25 +1,38 @@
-@file:Suppress("unused")
-
 package com.wxm.camerajob.ui.job.detail
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Bundle
+import android.view.View
+import android.widget.GridView
+import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.ListView
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.ui.base.JobGallery
+import com.wxm.camerajob.ui.job.slide.ACJobSlide
 import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.utility.job.CameraJobUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import wxm.androidutil.image.ImageUtil
+import wxm.androidutil.improve.doJudge
 import wxm.androidutil.improve.let1
-import wxm.androidutil.improve.setImagePath
 import wxm.androidutil.time.CalendarUtility
+import wxm.androidutil.type.MySize
+import wxm.androidutil.ui.dialog.DlgAlert
 import wxm.androidutil.ui.frg.FrgSupportBaseAdv
 import wxm.androidutil.ui.moreAdapter.MoreAdapter
 import wxm.androidutil.ui.view.ViewHelper
 import wxm.androidutil.ui.view.ViewHolder
 import wxm.androidutil.util.FileUtil
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.util.*
+import kotlin.collections.HashMap
 
 
 /**
@@ -27,14 +40,20 @@ import java.util.*
  * Created by WangXM on 2016/10/14.
  */
 class FrgJobDetail : FrgSupportBaseAdv() {
-    private val mLVJobs: ListView by bindView(R.id.gv_pic)
+    private val mGVPic: GridView by bindView(R.id.gv_pic)
+
+    private val mIBDelete: ImageButton by bindView(R.id.ib_job_stop)
+    private val mIBPlay: ImageButton by bindView(R.id.ib_job_run_or_pause)
+    private val mIBLook: ImageButton by bindView(R.id.ib_job_look)
+    private val mIBSlide: ImageButton by bindView(R.id.ib_job_slide_look)
 
     override fun isUseEventBus(): Boolean = true
     override fun getLayoutID(): Int = R.layout.pg_job_detail
 
     private var mJobID = GlobalDef.INT_INVALID_ID
-    private var mJobPath: String? = ""
-    private val mJobPics = LinkedList<String>()
+    private var mJobPath: String = ""
+
+    private val mJobHMap = HashMap<String, String>()
 
     /**
      * 数据库内数据变化处理器
@@ -47,46 +66,137 @@ class FrgJobDetail : FrgSupportBaseAdv() {
 
     override fun initUI(savedInstanceState: Bundle?) {
         arguments!!.let1 {
-            mJobID = it.getInt(ACJobDetail.KEY_JOB_ID)
-            mJobPath = it.getString(ACJobDetail.KEY_JOB_DIR)
+            mJobID = it.getInt(ACJobDetail.KEY_JOB_ID, GlobalDef.INT_INVALID_ID)
+            mJobPath = it.getString(ACJobDetail.KEY_JOB_DIR, "")
 
-            assert(GlobalDef.INT_INVALID_ID != mJobID || !mJobPath.isNullOrEmpty())
+            assert(GlobalDef.INT_INVALID_ID != mJobID || !mJobPath.isEmpty())
         }
 
         loadUI(savedInstanceState)
     }
 
     override fun loadUI(savedInstanceState: Bundle?) {
-        if(GlobalDef.INT_INVALID_ID != mJobID)  {
+        // for job
+        if (GlobalDef.INT_INVALID_ID != mJobID) {
             mJobPath = AppUtil.getCameraJobDir(mJobID)!!
             AppUtil.getCameraJobUtility().getData(mJobID)!!.let1 {
                 aliveCameraJob(it)
             }
-        } else  {
-            diedCameraJob(mJobPath!!)
+        } else {
+            diedCameraJob(mJobPath)
         }
 
-        mJobPics.addAll(FileUtil.getDirFiles(mJobPath!!, "jpg", false))
+        // for buttons
+        arrayOf(mIBDelete, mIBPlay, mIBLook, mIBSlide).forEach {
+            it.setOnClickListener(::onIBClick)
+        }
+        refreshButton()
+
+        // for job pics
+        val pic = FileUtil.getDirFiles(mJobPath!!, "jpg", false)
+        mGVPic.adapter = GVPicAdapter(LinkedList<HashMap<String, String>>().apply {
+            addAll(pic.map { HashMap<String, String>().apply { put(KEY_PIC_PATH, it) } })
+        })
     }
 
     /// BEGIN PRIVATE
-    private fun diedCameraJob(dir: String) {
-        val cj = AppUtil.getCameraJobFromDir(dir) ?: return
-        HashMap<String, String>().let1 {
-            it[KEY_JOB_NAME] = cj.name + "(已移除)"
-            it[KEY_JOB_TYPE] = ""
-            it[KEY_JOB_START_END_DATE] = ""
-            it[KEY_PHOTO_COUNT] = "可查看已拍摄图片"
-            it[KEY_PHOTO_LAST_TIME] = "可移除此任务"
-            it[KEY_ID] = Integer.toString(cj._id)
-            it[KEY_STATUS] = EJobStatus.STOP.status
-            it[KEY_TYPE] = DIED_JOB
+    private fun onIBClick(v: View) {
+        val id = Integer.parseInt(mJobHMap[KEY_ID])
+        when (v.id) {
+            R.id.ib_job_stop -> {
+                if (ALIVE_JOB == mJobHMap[KEY_TYPE]) {
+                    DlgAlert.showAlert(context!!, R.string.dlg_warn, R.string.info_remove_job) {
+                        it.setPositiveButton(R.string.cn_sure) { _, _ ->
+                            CameraJobUtility.removeCameraJob(id)
 
-            doShow(it)
+                            mJobHMap[KEY_TYPE] = DIED_JOB
+                            mJobID = GlobalDef.INT_INVALID_ID
+
+                            reloadUI()
+                        }
+                    }
+
+                } else {
+                    DlgAlert.showAlert(context!!, R.string.dlg_warn, R.string.info_delete_job) {
+                        it.setPositiveButton(R.string.cn_sure) { _, _ ->
+                            CameraJobUtility.deleteCameraJob(id)
+                            activity!!.finish()
+                        }
+                    }
+                }
+            }
+
+            R.id.ib_job_run_or_pause -> {
+                AppUtil.getCameraJobUtility().getData(id)?.let1 { cj ->
+                    cj.status.let1 {
+                        it.job_status = (it.job_status == EJobStatus.PAUSE.status)
+                                .doJudge(EJobStatus.RUN.status, EJobStatus.PAUSE.status)
+                        AppUtil.getCameraJobStatusUtility().modifyData(it)
+                    }
+                    reloadUI()
+                }
+            }
+
+            R.id.ib_job_look -> {
+                AppUtil.getCameraJobDir(id)?.let {
+                    JobGallery().openGallery(activity!!, it)
+                }
+            }
+
+            R.id.ib_job_slide_look -> {
+                Intent(activity, ACJobSlide::class.java).let {
+                    it.putExtra(EAction.LOAD_PHOTO_DIR.actName, AppUtil.getCameraJobDir(id)!!)
+                    startActivityForResult(it, 1)
+                }
+            }
+        }
+
+        refreshButton()
+    }
+
+    private fun refreshButton() {
+        when (mJobHMap[KEY_STATUS]) {
+            EJobStatus.RUN.status -> {
+                mIBPlay.visibility = View.VISIBLE
+                mIBPlay.setBackgroundResource(R.drawable.ic_pause)
+            }
+            EJobStatus.PAUSE.status -> {
+                mIBPlay.visibility = View.VISIBLE
+                mIBPlay.setBackgroundResource(R.drawable.ic_start)
+            }
+            else -> {
+                mIBPlay.visibility = View.GONE
+            }
+        }
+
+        if (0 == FileUtil.getDirFilesCount(AppUtil.getCameraJobDir(Integer.parseInt(mJobHMap[KEY_ID]))!!,
+                        "jpg", false)) {
+            mIBLook.visibility = View.GONE
+            mIBSlide.visibility = View.GONE
+        } else {
+            mIBLook.visibility = View.VISIBLE
+            mIBSlide.visibility = View.VISIBLE
         }
     }
 
+
+    private fun diedCameraJob(dir: String) {
+        mJobHMap.clear()
+        val cj = AppUtil.getCameraJobFromDir(dir) ?: return
+        mJobHMap[KEY_JOB_NAME] = cj.name + "(已移除)"
+        mJobHMap[KEY_JOB_TYPE] = ""
+        mJobHMap[KEY_JOB_START_END_DATE] = ""
+        mJobHMap[KEY_PHOTO_COUNT] = "可查看已拍摄图片"
+        mJobHMap[KEY_PHOTO_LAST_TIME] = "可移除此任务"
+        mJobHMap[KEY_ID] = Integer.toString(cj._id)
+        mJobHMap[KEY_STATUS] = EJobStatus.STOP.status
+        mJobHMap[KEY_TYPE] = DIED_JOB
+
+        doShow()
+    }
+
     private fun aliveCameraJob(cj: CameraJob) {
+        mJobHMap.clear()
         val at = CalendarUtility.YearMonthDayHourMinute.let {
             context!!.getString(R.string.fs_start_end_date, it.format(cj.starttime), it.format(cj.endtime))
         }
@@ -99,46 +209,93 @@ class FrgJobDetail : FrgSupportBaseAdv() {
             context!!.getString(R.string.fs_photo_last, CalendarUtility.Full.format(cj.status.ts))
         else ""
 
-        HashMap<String, String>().let1 {
-            it[KEY_JOB_NAME] = jobName
-            it[KEY_JOB_TYPE] = context!!.getString(R.string.fs_job_type, cj.type, cj.point)
-            it[KEY_JOB_START_END_DATE] = at
-            it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.status.job_photo_count)
-            it[KEY_PHOTO_LAST_TIME] = detail
-            it[KEY_ID] = Integer.toString(cj._id)
-            it[KEY_STATUS] = cj.status.job_status!!
-            it[KEY_TYPE] = ALIVE_JOB
+        mJobHMap[KEY_JOB_NAME] = jobName
+        mJobHMap[KEY_JOB_TYPE] = context!!.getString(R.string.fs_job_type, cj.type, cj.point)
+        mJobHMap[KEY_JOB_START_END_DATE] = at
+        mJobHMap[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.status.job_photo_count)
+        mJobHMap[KEY_PHOTO_LAST_TIME] = detail
+        mJobHMap[KEY_ID] = Integer.toString(cj._id)
+        mJobHMap[KEY_STATUS] = cj.status.job_status!!
+        mJobHMap[KEY_TYPE] = ALIVE_JOB
 
-            doShow(it)
-        }
+        doShow()
     }
 
-    private fun doShow(hm: Map<String, String>) {
+    private fun doShow() {
         ViewHelper(view!!).let1 {
-            it.setText(R.id.tv_job_name, hm[KEY_JOB_NAME]!!)
-            it.setText(R.id.tv_job_type, hm[KEY_JOB_TYPE]!!)
-            it.setText(R.id.tv_job_date, hm[KEY_JOB_START_END_DATE]!!)
-            it.setText(R.id.tv_phtot_count, hm[KEY_PHOTO_COUNT]!!)
-            it.setText(R.id.tv_photo_last_time, hm[KEY_PHOTO_LAST_TIME]!!)
+            it.setText(R.id.tv_job_name, mJobHMap[KEY_JOB_NAME]!!)
+            it.setText(R.id.tv_job_type, mJobHMap[KEY_JOB_TYPE]!!)
+            it.setText(R.id.tv_job_date, mJobHMap[KEY_JOB_START_END_DATE]!!)
+            it.setText(R.id.tv_phtot_count, mJobHMap[KEY_PHOTO_COUNT]!!)
+            it.setText(R.id.tv_photo_last_time, mJobHMap[KEY_PHOTO_LAST_TIME]!!)
         }
     }
+
+    private fun loadBitMapForGV(path: String): Bitmap {
+        val bitmap = decodeFile(path)!!
+        val degree = ImageUtil.readPictureDegree(path)
+        return Matrix().let {
+            val w = bitmap.width
+            val h = bitmap.height
+            if (0 != degree) {
+                it.setRotate(degree.toFloat(), (w / 2).toFloat(), (h / 2).toFloat())
+                Bitmap.createBitmap(bitmap, 0, 0, w, h, it, true)!!
+            } else  {
+                bitmap
+            }
+        }
+    }
+
+    private fun decodeFile(f: String): Bitmap? {
+        try {
+            // decode image size
+            val o = BitmapFactory.Options()
+            o.inJustDecodeBounds = true
+            BitmapFactory.decodeStream(FileInputStream(f), null, o)
+
+            // Find the correct scale value. It should be the power of 2.
+            val REQUIRED_SIZE = 70
+            var width_tmp = o.outWidth
+            var height_tmp = o.outHeight
+            var scale = 1
+            while (true) {
+                if (width_tmp / 2 < REQUIRED_SIZE || height_tmp / 2 < REQUIRED_SIZE)
+                    break
+
+                width_tmp /= 2
+                height_tmp /= 2
+                scale *= 2
+            }
+
+            // decode with inSampleSize
+            val o2 = BitmapFactory.Options()
+            o2.inSampleSize = scale
+            return BitmapFactory.decodeStream(FileInputStream(f), null, o2)
+        } catch (e: FileNotFoundException) {
+        }
+
+        return null
+    }
+
     /// END PRIVATE
 
     /**
      * adapter for listview to show jobs status
      * Created by wxm on 2016/8/13.
      */
-    inner class LVJobShowAdapter(data: List<Map<String, String>>)
+    inner class GVPicAdapter(data: List<Map<String, String>>)
         : MoreAdapter(context!!, data, R.layout.gi_pic) {
         override fun loadView(pos: Int, vhHolder: ViewHolder) {
             @Suppress("UNCHECKED_CAST")
-            val hm = (getItem(pos) as Map<String, String>)[KEY_PIC_PATH]!!
-            vhHolder.getView<ImageView>(R.id.iv_pic)!!.setImagePath(hm)
+            val path = (getItem(pos) as Map<String, String>)[KEY_PIC_PATH]!!
+            vhHolder.getView<ImageView>(R.id.iv_pic)!!
+                    .setImageBitmap(loadBitMapForGV(path))
         }
     }
 
     companion object {
         private const val KEY_PIC_PATH = "pic_path"
+        private val GALLERY_SIZE = MySize(150, 150)
 
         const val ALIVE_JOB = "alive"
         const val DIED_JOB = "died"
