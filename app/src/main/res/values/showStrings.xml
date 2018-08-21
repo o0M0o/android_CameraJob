@@ -25,10 +25,13 @@
     <string name="setting_directory">目录设置</string>
     <string name="setting_version">检查版本</string>
     <string name="setting_email_author">联系作者</string>
+    <string name="setting_suggestion">提交建议/意见</string>
 
     <string name="gap_minute">每分钟</string>
     <string name="gap_hour">每小时</string>
     <string name="gap_day">每天</string>
+
+    <string name="info_permission">本应用缺少权限(%s)!</string>
 
     <!-- for activity label -->
     <string name="label_welcome">欢迎</string>

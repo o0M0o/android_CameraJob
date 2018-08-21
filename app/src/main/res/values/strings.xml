@@ -35,22 +35,22 @@
     <string name="cn_flash_no">不使用闪光灯</string>
     <string name="camera_preview">相机预览</string>
 
-
     <string name="job_create">新建任务</string>
     <string name="job_edit">编辑任务</string>
     <string name="hint_sender_email_address">发送邮箱地址</string>
     <string name="hint_sender_email_usr_name">发送邮件用户名</string>
     <string name="hint_use_email_send">开启邮件推送照片</string>
 
-
-
     <!-- for send message -->
+    <string name="usr_message_title">意见/建议反馈</string>
+    <string name="cn_reply_address">回复地址(邮件地址/手机号/其它)</string>
     <string name="cn_usr_message">请输入您的意见或建议</string>
     <string name="url_post_send_message">
         http://www.wxmandriodapp.com:8080/KeepAccountServer/def/UMUtility
     </string>
     <string name="col_usr">usr</string>
-    <string name="col_message">message</string>
-    <string name="col_app_name">app_name</string>
+    <string name="col_message">msg</string>
+    <string name="col_app_name">appName</string>
+    <string name="col_reply_address">replyAddress</string>
     <string name="col_val_app_name">CameraJob</string>
 </resources>

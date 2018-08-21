@@ -41,10 +41,12 @@ android {
 
             buildConfigField "Boolean", "ThrowDebugException", "false"
             buildConfigField "Boolean", "TestCamera", "false"
+            buildConfigField "String", "UsrMsgUrl", "http://192.168.0.196:8080/api/usrMsg"
         }
         debug {
             buildConfigField "Boolean", "ThrowDebugException", "true"
             buildConfigField "Boolean", "TestCamera", "true"
+            buildConfigField "String", "UsrMsgUrl", "\"http://192.168.0.196:7070/api/usrMsg\""
         }
     }
 

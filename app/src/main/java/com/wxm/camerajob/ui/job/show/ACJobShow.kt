@@ -158,6 +158,5 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
             it.show(supportFragmentManager, "send message")
             Unit
         }
-
     }
 }

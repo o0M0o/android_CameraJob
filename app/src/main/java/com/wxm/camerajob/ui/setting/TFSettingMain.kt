@@ -3,13 +3,16 @@ package com.wxm.camerajob.ui.setting
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 import android.view.View
 
 import com.wxm.camerajob.R
 import com.wxm.camerajob.event.ChangePage
+import com.wxm.camerajob.ui.dialog.DlgUsrMessage
 import org.greenrobot.eventbus.EventBus
 import wxm.androidutil.improve.let1
 import wxm.androidutil.ui.dialog.DlgAlert
+import wxm.androidutil.ui.dialog.DlgOKOrNOBase
 import wxm.androidutil.ui.view.EventHelper
 
 
@@ -23,7 +26,8 @@ class TFSettingMain : TFSettingBase() {
 
     override fun initUI(savedInstanceState: Bundle?) {
         EventHelper.setOnClickOperator(view!!,
-                intArrayOf(R.id.rl_setting_check_version, R.id.rl_setting_directory, R.id.rl_setting_camera),
+                intArrayOf(R.id.rl_setting_check_version, R.id.rl_setting_directory,
+                        R.id.rl_setting_camera, R.id.rl_setting_suggestion),
                 ::onRelativeLayoutClick)
     }
 
@@ -50,6 +54,18 @@ class TFSettingMain : TFSettingBase() {
                     }
                     b.setNegativeButton(getString(R.string.cn_cancel)) {_, _ ->
                     }
+                }
+            }
+
+            R.id.rl_setting_suggestion -> {
+                DlgUsrMessage().let {
+                    it.addDialogListener(object : DlgOKOrNOBase.DialogResultListener {
+                        override fun onDialogPositiveResult(dialogFragment: DialogFragment) {}
+                        override fun onDialogNegativeResult(dialogFragment: DialogFragment) {}
+                    })
+
+                    it.show(activity!!.supportFragmentManager, "send message")
+                    Unit
                 }
             }
         }
