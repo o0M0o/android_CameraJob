@@ -1,7 +1,8 @@
-package com.wxm.camerajob.silentCamera
+package com.wxm.camerajob.silentCamera.define
 
 import android.hardware.camera2.*
 import android.media.ImageReader
+import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.utility.AppUtil
 import wxm.androidutil.log.TagLog
 
@@ -9,8 +10,8 @@ import wxm.androidutil.log.TagLog
  * @author      WangXM
  * @version     create：2018/5/16
  */
-class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
-                                       private val mReader: ImageReader)
+internal class CaptureStateCallback constructor(private val mHome: SilentCamera,
+                                                private val mReader: ImageReader)
     : CameraCaptureSession.StateCallback() {
     private var mCaptureBuilder: CaptureRequest.Builder? = null
 
@@ -36,8 +37,6 @@ class CaptureStateCallback constructor(private val mHome: SilentCameraNew,
 
     fun doCapture(callBack: CaptureCallback? = null) {
         try {
-            //mReader.acquireLatestImage()?.use { TagLog.i("discard image = $it")  }
-
             val cb = callBack ?: CaptureCallback(mHome, mReader, this)
             mHome.mCaptureSession!!.capture(mCaptureBuilder!!.build(), cb, null)
         } catch (e: Throwable) {

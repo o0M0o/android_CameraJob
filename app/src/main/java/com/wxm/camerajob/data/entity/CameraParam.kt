@@ -1,4 +1,4 @@
-package com.wxm.camerajob.data.define
+package com.wxm.camerajob.data.entity
 
 import android.hardware.camera2.CameraCharacteristics
 import android.os.Handler
@@ -12,7 +12,7 @@ import wxm.androidutil.type.MySize
 
 /**
  * parameter for camera
- * Created by 123 on 2016/6/17.
+ * Created by WangXM on 2016/6/17.
  */
 class CameraParam : Parcelable, Cloneable {
     private var mWaitMSecs: Long = 0
@@ -99,7 +99,7 @@ class CameraParam : Parcelable, Cloneable {
             }
 
             override fun newArray(size: Int): Array<CameraParam> {
-                return Array(size) {CameraParam(null)}
+                return Array(size) { CameraParam(null) }
             }
         }
     }

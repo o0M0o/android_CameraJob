@@ -12,6 +12,10 @@ import android.view.View
 import android.widget.*
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.data.entity.CameraJob
+import com.wxm.camerajob.data.entity.CameraParam
+import com.wxm.camerajob.preference.PreferencesChangeEvent
+import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.base.IAcceptAble
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting

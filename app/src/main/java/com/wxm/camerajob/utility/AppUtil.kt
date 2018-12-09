@@ -6,20 +6,17 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.os.Handler
-import android.support.v4.content.ContextCompat
 import android.util.JsonReader
 import android.util.JsonWriter
-import android.util.Log
 import android.view.WindowManager
 import com.wxm.camerajob.alarm.AlarmReceiver
 import com.wxm.camerajob.data.db.CameraJobDBUtility
 import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
 import com.wxm.camerajob.data.db.DBOrmLiteHelper
-import com.wxm.camerajob.data.define.CameraJob
+import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.utility.job.CameraJobProcess
 import com.wxm.camerajob.utility.job.GlobalMsgHandler
@@ -36,7 +33,7 @@ import java.util.*
 
 /**
  * get global context
- * Created by 123 on 2016/5/7.
+ * Created by WangXM on 2016/5/7.
  */
 class AppUtil : AppBase() {
     private val activities = ArrayList<Activity>()

@@ -12,8 +12,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.data.define.PreferencesUtil
-import com.wxm.camerajob.data.define.TakePhotoParam
+import com.wxm.camerajob.preference.PreferencesUtil
+import com.wxm.camerajob.silentCamera.TakePhotoParam
+import com.wxm.camerajob.silentCamera.ITakePhoto
 import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.utility.AppUtil
 import kotterknife.bindView
@@ -32,7 +33,7 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
 
     private val mCameraParam = PreferencesUtil.loadCameraParam()
     private val mTPParam = TakePhotoParam(AppUtil.getPhotoRootDir(), "tmp.jpg", "1")
-    private val mCBTakePhoto = object : SilentCamera.TakePhotoCallBack {
+    private val mCBTakePhoto = object : ITakePhoto {
         override fun onTakePhotoFailed(tp: TakePhotoParam) {
             mBTCapture.isClickable = true
             mBTCapture.setTextColor(mCLBlack)

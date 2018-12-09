@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMultipart
 
 /**
  * helper for send email
- * Created by 123 on 2016/11/10.
+ * Created by WangXM on 2016/11/10.
  */
 class SendEmailHelper : javax.mail.Authenticator() {
     private var mSEPara: SendEmailPara? = null

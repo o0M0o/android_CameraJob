@@ -1,4 +1,4 @@
-package com.wxm.camerajob.data.define
+package com.wxm.camerajob.data.entity
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -15,16 +15,13 @@ import wxm.androidutil.time.toTimestamp
 import java.io.IOException
 import java.sql.Timestamp
 
-import wxm.androidutil.util.UtilFun
-
 /**
  * job for take picture
  * Created by wxm on 2016/6/11.
  */
 @DatabaseTable(tableName = "tbCameraJob")
 class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
-
-    @DatabaseField(generatedId = true, columnName = "_id", dataType = DataType.INTEGER)
+    @DatabaseField(generatedId = true, columnName = FIELD_ID, dataType = DataType.INTEGER)
     var _id: Int = 0
 
     @DatabaseField(columnName = "paraName", canBeNull = false, dataType = DataType.STRING)
@@ -39,6 +36,10 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
     @DatabaseField(columnName = "status_id", foreign = true, foreignAutoCreate = true,
             foreignColumnName = CameraJobStatus.FIELD_ID, canBeNull = false)
     var status: CameraJobStatus = CameraJobStatus()
+
+    @DatabaseField(columnName = "cameraSetting_id", foreign = true, foreignAutoCreate = true,
+            foreignColumnName = CameraSetting.FIELD_ID, canBeNull = false)
+    var cameraSetting: CameraSetting = CameraSetting()
 
     @DatabaseField(columnName = "endtime", canBeNull = false, dataType = DataType.TIME_STAMP)
     var endtime: Timestamp = Timestamp(System.currentTimeMillis())
@@ -59,6 +60,7 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
             it.type = type
             it.point = point
             it.endtime = endtime
+            it.cameraSetting = cameraSetting
             it.starttime = starttime
             it.ts = ts
 
@@ -85,6 +87,7 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
         out.writeLong(starttime.time)
         out.writeLong(endtime.time)
         out.writeLong(ts.time)
+        cameraSetting.writeToParcel(out, flags)
         status.writeToParcel(out, flags)
     }
 
@@ -139,7 +142,7 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
             }
 
             override fun newArray(size: Int): Array<CameraJob> {
-                return Array(size, {CameraJob()})
+                return Array(size, { CameraJob() })
             }
         }
 

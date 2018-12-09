@@ -1,7 +1,10 @@
-package com.wxm.camerajob.data.define
+package com.wxm.camerajob.preference
 
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
+import com.wxm.camerajob.data.entity.CameraParam
+import com.wxm.camerajob.data.define.EProperty
+import com.wxm.camerajob.data.define.GlobalDef
 
 import com.wxm.camerajob.utility.AppUtil
 
@@ -11,7 +14,7 @@ import wxm.androidutil.type.MySize
 
 /**
  * for preference manage
- * Created by 123 on 2016/6/18.
+ * Created by WangXM on 2016/6/18.
  */
 object PreferencesUtil {
     private const val CAMERA_SET = "camera_set"

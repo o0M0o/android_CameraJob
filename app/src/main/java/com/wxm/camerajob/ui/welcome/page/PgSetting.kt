@@ -3,7 +3,7 @@ package com.wxm.camerajob.ui.welcome.page
 
 import android.os.Bundle
 import com.wxm.camerajob.R
-import com.wxm.camerajob.event.ChangePage
+import com.wxm.camerajob.ui.base.event.ChangePage
 import com.wxm.camerajob.ui.base.PageBase
 import com.wxm.camerajob.ui.setting.*
 import org.greenrobot.eventbus.Subscribe

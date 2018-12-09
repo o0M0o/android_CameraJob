@@ -7,7 +7,7 @@ import android.support.v4.app.DialogFragment
 import android.view.View
 
 import com.wxm.camerajob.R
-import com.wxm.camerajob.event.ChangePage
+import com.wxm.camerajob.ui.base.event.ChangePage
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage
 import org.greenrobot.eventbus.EventBus
 import wxm.androidutil.improve.let1

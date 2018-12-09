@@ -1,4 +1,4 @@
-package com.wxm.camerajob.data.define
+package com.wxm.camerajob.data.entity
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -6,6 +6,7 @@ import android.os.Parcelable
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
+import com.wxm.camerajob.data.define.EJobStatus
 import wxm.androidutil.db.IDBRow
 
 import java.sql.Timestamp
@@ -101,7 +102,7 @@ class CameraJobStatus : Parcelable, Cloneable, IDBRow<Int> {
             }
 
             override fun newArray(size: Int): Array<CameraJobStatus> {
-                return Array(size) {CameraJobStatus()}
+                return Array(size) { CameraJobStatus() }
             }
         }
     }

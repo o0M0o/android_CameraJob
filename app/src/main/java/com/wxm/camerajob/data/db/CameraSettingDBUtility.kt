@@ -1,8 +1,7 @@
 package com.wxm.camerajob.data.db
 
 import com.j256.ormlite.dao.RuntimeExceptionDao
-import com.wxm.camerajob.data.entity.CameraJob
-import com.wxm.camerajob.data.define.EJobStatus
+import com.wxm.camerajob.data.entity.CameraSetting
 
 import org.greenrobot.eventbus.EventBus
 import wxm.androidutil.db.DBUtilityBase
@@ -11,17 +10,10 @@ import wxm.androidutil.db.DBUtilityBase
  * database class for CameraJob
  * Created by WangXM on 2016/6/16.
  */
-class CameraJobDBUtility(private val mHelper: DBOrmLiteHelper) : DBUtilityBase<CameraJob, Int>() {
-    /**
-     * get amount for activity jobs
-     * @return  amount for live jobs
-     */
-    fun getActiveJobCount(): Int {
-        return allData.filter { it.status.job_status == EJobStatus.RUN.status }.count()
-    }
-
-    override fun getDBHelper(): RuntimeExceptionDao<CameraJob, Int> {
-        return mHelper.cameraJobREDao
+class CameraSettingDBUtility(private val mHelper: DBOrmLiteHelper)
+    : DBUtilityBase<CameraSetting, Int>() {
+    override fun getDBHelper(): RuntimeExceptionDao<CameraSetting, Int> {
+        return mHelper.cameraSettingREDao
     }
 
     override fun onDataModify(md: List<Int>) {

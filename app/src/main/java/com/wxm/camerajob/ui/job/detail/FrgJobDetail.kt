@@ -10,7 +10,9 @@ import android.widget.GridView
 import android.widget.ImageButton
 import android.widget.ImageView
 import com.wxm.camerajob.R
+import com.wxm.camerajob.data.db.DBDataChangeEvent
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.ui.base.JobGallery
 import com.wxm.camerajob.ui.job.slide.ACJobSlide
 import com.wxm.camerajob.utility.AppUtil

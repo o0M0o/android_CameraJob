@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.data.define.PreferencesUtil
+import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.utility.AppUtil
 import wxm.androidutil.log.TagLog

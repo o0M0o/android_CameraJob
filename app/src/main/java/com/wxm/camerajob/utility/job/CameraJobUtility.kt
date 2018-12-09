@@ -1,6 +1,6 @@
 package com.wxm.camerajob.utility.job
 
-import com.wxm.camerajob.data.define.CameraJob
+import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.utility.AppUtil
 
 import wxm.androidutil.util.FileUtil
@@ -9,7 +9,7 @@ import wxm.androidutil.util.UtilFun
 
 /**
  * helper for job
- * Created by 123 on 2016/11/9.
+ * Created by WangXM on 2016/11/9.
  */
 object CameraJobUtility {
     /**

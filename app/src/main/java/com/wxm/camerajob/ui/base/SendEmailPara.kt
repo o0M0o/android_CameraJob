@@ -2,7 +2,7 @@ package com.wxm.camerajob.ui.base
 
 /**
  * parameter for send email
- * Created by 123 on 2016/11/10.
+ * Created by WangXM on 2016/11/10.
  */
 class SendEmailPara {
     var mIFOnResult: SendEmailResult? = null

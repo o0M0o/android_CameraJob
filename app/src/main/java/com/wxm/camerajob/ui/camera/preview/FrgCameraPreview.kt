@@ -14,8 +14,8 @@ import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
 import com.wxm.camerajob.R
-import com.wxm.camerajob.data.define.CameraParam
-import com.wxm.camerajob.data.define.PreferencesUtil
+import com.wxm.camerajob.data.entity.CameraParam
+import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.base.AutoFitTextureView
 import kotterknife.bindView
 import wxm.androidutil.improve.let1

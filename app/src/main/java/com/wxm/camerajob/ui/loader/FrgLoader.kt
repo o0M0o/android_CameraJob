@@ -10,6 +10,7 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.welcome.ACWelcome
 import com.wxm.camerajob.utility.AppUtil
 import kotterknife.bindView
+import okhttp3.internal.Util.contains
 import wxm.androidutil.app.AppBase
 import wxm.androidutil.improve.doJudge
 import wxm.androidutil.improve.let1
@@ -50,9 +51,15 @@ class FrgLoader : FrgSupportBaseAdv() {
             if (!AppBase.checkPermission(Manifest.permission.WAKE_LOCK)) {
                 add(Manifest.permission.WAKE_LOCK)
             }
-        }.let1 {
-            if(it.isNotEmpty())    {
-                mTVInfo.text = getString(R.string.info_permission, it.first())
+        }.let1 { arrIt ->
+            if(arrIt.isNotEmpty())    {
+                when {
+                    arrIt.first().contains("CAMERA") -> "相机"
+                    arrIt.first().contains("STORAGE") -> "读写数据"
+                    else ->  arrIt.first()
+                }.let1 {
+                    mTVInfo.text = getString(R.string.info_permission, it)
+                }
             } else  {
                 (activity as ACLoader).jumpWorkActivity()
             }

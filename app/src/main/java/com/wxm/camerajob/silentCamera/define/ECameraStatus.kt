@@ -1,9 +1,9 @@
-package com.wxm.camerajob.silentCamera
+package com.wxm.camerajob.silentCamera.define
 
 /**
  * for camera status
  */
-enum class ECameraStatus private constructor(val description: String) {
+enum class ECameraStatus(val description: String) {
     NOT_OPEN("not_open"),
     OPEN("open"),
     TAKE_PHOTO_START("take_photo_start"),

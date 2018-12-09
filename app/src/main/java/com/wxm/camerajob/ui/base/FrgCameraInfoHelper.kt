@@ -2,14 +2,14 @@ package com.wxm.camerajob.ui.base
 
 import android.widget.RelativeLayout
 import com.wxm.camerajob.R
-import com.wxm.camerajob.data.define.CameraParam
+import com.wxm.camerajob.data.entity.CameraParam
 import wxm.androidutil.improve.doJudge
 import wxm.androidutil.improve.let1
 import wxm.androidutil.ui.view.ViewHelper
 
 /**
  * help class for camera info
- * Created by 123 on 2016/11/9.
+ * Created by WangXM on 2016/11/9.
  */
 object FrgCameraInfoHelper {
     /**

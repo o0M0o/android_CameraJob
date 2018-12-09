@@ -3,14 +3,18 @@ package com.wxm.camerajob.utility.job
 import android.os.Message
 import android.util.Log
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.data.entity.CameraJob
+import com.wxm.camerajob.preference.PreferencesUtil
+import com.wxm.camerajob.silentCamera.ITakePhoto
 import com.wxm.camerajob.silentCamera.SilentCamera
+import com.wxm.camerajob.silentCamera.TakePhotoParam
 import com.wxm.camerajob.utility.AppUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * process camera job
- * Created by 123 on 2016/6/13.
+ * Created by WangXM on 2016/6/13.
  */
 class CameraJobProcess {
     /**
@@ -57,7 +61,7 @@ class CameraJobProcess {
                             CALENDAR_STR.format(System.currentTimeMillis())),
                             Integer.toString(it._id))
 
-                    val cbTakePhoto = object : SilentCamera.TakePhotoCallBack {
+                    val cbTakePhoto = object : ITakePhoto {
                         override fun onTakePhotoFailed(tp: TakePhotoParam) {
                             wakeupDuty(lsJob)
                         }

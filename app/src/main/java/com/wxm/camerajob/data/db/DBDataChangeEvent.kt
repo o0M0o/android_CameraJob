@@ -1,4 +1,4 @@
-package com.wxm.camerajob.data.define
+package com.wxm.camerajob.data.db
 
 /**
  * event for data change in db

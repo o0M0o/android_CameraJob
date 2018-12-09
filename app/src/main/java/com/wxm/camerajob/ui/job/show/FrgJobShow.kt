@@ -6,7 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ListView
 import com.wxm.camerajob.R
+import com.wxm.camerajob.data.db.DBDataChangeEvent
 import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.data.entity.CameraJob
+import com.wxm.camerajob.preference.PreferencesChangeEvent
 import com.wxm.camerajob.ui.job.detail.ACJobDetail
 import com.wxm.camerajob.utility.AppUtil
 import kotterknife.bindView

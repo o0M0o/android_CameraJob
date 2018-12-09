@@ -23,7 +23,7 @@ import java.io.File
 
 /**
  * gallery for job
- * Created by 123 on 2016/8/14.
+ * Created by WangXM on 2016/8/14.
  */
 class JobGallery {
     companion object {

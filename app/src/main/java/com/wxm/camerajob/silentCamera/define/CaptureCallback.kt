@@ -1,10 +1,11 @@
-package com.wxm.camerajob.silentCamera
+package com.wxm.camerajob.silentCamera.define
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.hardware.camera2.*
 import android.media.Image
 import android.media.ImageReader
+import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.utility.log.FileLogger
 import wxm.androidutil.image.ImageUtil
 import wxm.androidutil.log.TagLog
@@ -13,9 +14,9 @@ import wxm.androidutil.log.TagLog
  * @author      WangXM
  * @version     create：2018/5/16
  */
-class CaptureCallback constructor(private val mHome: SilentCameraNew,
-                                  private val mReader: ImageReader,
-                                  private val mDoCapture: CaptureStateCallback)
+internal class CaptureCallback constructor(private val mHome: SilentCamera,
+                                           private val mReader: ImageReader,
+                                           private val mDoCapture: CaptureStateCallback)
     : CameraCaptureSession.CaptureCallback() {
     companion object {
         private const val MAX_WAIT_TIMES = 10
