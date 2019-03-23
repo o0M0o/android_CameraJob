@@ -87,20 +87,18 @@ class CameraParam : Parcelable, Cloneable {
         }
     }
 
-    companion object {
+    companion object CREATOR : Parcelable.Creator<CameraParam> {
         const val LENS_FACING_BACK = 1
         const val LENS_FACING_FRONT = 0
 
         private const val WAIT_MSECS = 8000
 
-        val CREATOR: Parcelable.Creator<CameraParam> = object : Parcelable.Creator<CameraParam> {
-            override fun createFromParcel(`in`: Parcel): CameraParam {
-                return CameraParam(`in`)
-            }
+        override fun createFromParcel(parcel: Parcel): CameraParam {
+            return CameraParam(parcel)
+        }
 
-            override fun newArray(size: Int): Array<CameraParam> {
-                return Array(size) { CameraParam(null) }
-            }
+        override fun newArray(size: Int): Array<CameraParam?> {
+            return arrayOfNulls(size)
         }
     }
 }

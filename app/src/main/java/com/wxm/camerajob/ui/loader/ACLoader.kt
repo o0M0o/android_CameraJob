@@ -2,9 +2,8 @@ package com.wxm.camerajob.ui.loader
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.welcome.ACWelcome
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.ui.activity.ACSwitcherActivity
 
 /**
@@ -31,8 +30,8 @@ class ACLoader : ACSwitcherActivity<FrgLoader>()    {
      * jump to work ui
      */
     fun jumpWorkActivity() {
-        AppUtil.initUtil()
-        AppUtil.addActivity(this)
+        App.initUtil()
+        App.addActivity(this)
 
         startActivityForResult(Intent(this, ACWelcome::class.java), 1)
     }

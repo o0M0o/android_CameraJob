@@ -92,18 +92,15 @@ class CameraJobStatus : Parcelable, Cloneable, IDBRow<Int> {
         _id = integer
     }
 
-    companion object {
+    companion object CREATOR : Parcelable.Creator<CameraJobStatus> {
         const val FIELD_ID = "_id"
 
+        override fun createFromParcel(parcel: Parcel): CameraJobStatus {
+            return CameraJobStatus(parcel)
+        }
 
-        val CREATOR: Parcelable.Creator<CameraJobStatus> = object : Parcelable.Creator<CameraJobStatus> {
-            override fun createFromParcel(inSteam : Parcel): CameraJobStatus {
-                return CameraJobStatus(inSteam)
-            }
-
-            override fun newArray(size: Int): Array<CameraJobStatus> {
-                return Array(size) { CameraJobStatus() }
-            }
+        override fun newArray(size: Int): Array<CameraJobStatus?> {
+            return arrayOfNulls(size)
         }
     }
 }

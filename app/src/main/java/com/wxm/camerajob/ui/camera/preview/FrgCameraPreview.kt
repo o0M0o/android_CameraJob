@@ -230,11 +230,6 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         */
     }
 
-    protected fun leaveActivity() {
-        closeCamera()
-        stopBackgroundThread()
-    }
-
     /// BEGIN PRIVATE
     /**
      * Starts a background thread and its [Handler].
@@ -272,14 +267,18 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 it.setDefaultBufferSize(mPreviewSize!!.width, mPreviewSize!!.height)
 
                 // This is the output Surface we need to start preview.
-                Surface(it).let {
+                val sf = Surface(it)
+                try {
                     // We set up a CaptureRequest.Builder with the output Surface.
                     mPreviewRequestBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-                    mPreviewRequestBuilder!!.addTarget(it)
+                    mPreviewRequestBuilder!!.addTarget(sf)
 
                     // Here, we create a CameraCaptureSession for camera preview.
-                    mCameraDevice!!.createCaptureSession(listOf(it),
+                    mCameraDevice!!.createCaptureSession(listOf(sf),
                             mSessionStateCallback, null)
+
+                } finally {
+                    sf.release()
                 }
             }
         } catch (e: CameraAccessException) {
@@ -379,31 +378,27 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         val manager = activity!!.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         try {
             manager.cameraIdList.filter {
-                manager.getCameraCharacteristics(it).let {
-                    null != it
-                            && face == it.get(CameraCharacteristics.LENS_FACING)
-                            && null != it.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-                }
+                val cc = manager.getCameraCharacteristics(it)
+                null != cc
+                        && face == cc.get(CameraCharacteristics.LENS_FACING)
+                        && null != cc.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
             }.forEach {
                 val characteristics = manager.getCameraCharacteristics(it)
                 val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
 
-                val lsSize = ArrayList<MySize>().apply {
-                    addAll(map.getOutputSizes(ImageFormat.JPEG)
-                            .filterNotNull().map { MySize(it.width, it.height) })
-                }
-
+                val lsSize = map.getOutputSizes(ImageFormat.JPEG)
+                        .filterNotNull().map {sz -> MySize(sz.width, sz.height) }
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
                 val mLargestSize = Collections.max(lsSize, CompareSizesByArea())
 
                 val mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)!!
-                val swappedDimensions = activity!!.windowManager.defaultDisplay.rotation.let {
-                    when (it) {
+                val swappedDimensions = activity!!.windowManager.defaultDisplay.rotation.let { r ->
+                    when (r) {
                         Surface.ROTATION_0, Surface.ROTATION_180 -> mSensorOrientation == 90 || mSensorOrientation == 270
                         Surface.ROTATION_90, Surface.ROTATION_270 -> mSensorOrientation == 0 || mSensorOrientation == 180
                         else -> {
-                            TagLog.e("Display rotation is invalid: $it")
+                            TagLog.e("Display rotation is invalid: $r")
                             false
                         }
                     }
@@ -411,7 +406,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
 
                 Point().apply {
                     activity!!.windowManager.defaultDisplay.getSize(this)
-                }.let1 {
+                }.let1 {pt ->
                     var maxPreviewWidth: Int
                     var maxPreviewHeight: Int
                     val rotatedPreviewWidth: Int
@@ -419,40 +414,36 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                     if (swappedDimensions) {
                         rotatedPreviewWidth = height
                         rotatedPreviewHeight = width
-                        maxPreviewWidth = it.y
-                        maxPreviewHeight = it.x
+                        maxPreviewWidth = pt.y
+                        maxPreviewHeight = pt.x
                     } else {
                         rotatedPreviewWidth = width
                         rotatedPreviewHeight = height
-                        maxPreviewWidth = it.x
-                        maxPreviewHeight = it.y
+                        maxPreviewWidth = pt.x
+                        maxPreviewHeight = pt.y
                     }
 
                     maxPreviewWidth = Math.min(MAX_PREVIEW_WIDTH, maxPreviewWidth)
                     maxPreviewHeight = Math.min(MAX_PREVIEW_HEIGHT, maxPreviewHeight)
 
-                    val lsSTSize = map.getOutputSizes(SurfaceTexture::class.java).filterNotNull()
-                            .map { MySize(it.width, it.height) }.let {
-                                ArrayList<MySize>().apply {
-                                    addAll(it)
-                                }
-                            }
+                    val lsSTSize = map.getOutputSizes(SurfaceTexture::class.java)
+                            .filterNotNull()
+                            .map { sf -> MySize(sf.width, sf.height) }
+                            .toTypedArray()
 
                     // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                     // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                     // garbage capture data.
-                    mPreviewSize = chooseOptimalSize(lsSTSize.toTypedArray(),
+                    mPreviewSize = chooseOptimalSize(lsSTSize,
                             rotatedPreviewWidth, rotatedPreviewHeight, maxPreviewWidth,
                             maxPreviewHeight, mLargestSize)
                 }
 
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
-                resources.configuration.orientation.let {
-                    if (it == Configuration.ORIENTATION_LANDSCAPE) {
-                        mTextureView.setAspectRatio(mPreviewSize!!.width, mPreviewSize!!.height)
-                    } else {
-                        mTextureView.setAspectRatio(mPreviewSize!!.height, mPreviewSize!!.width)
-                    }
+                if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    mTextureView.setAspectRatio(mPreviewSize!!.width, mPreviewSize!!.height)
+                } else {
+                    mTextureView.setAspectRatio(mPreviewSize!!.height, mPreviewSize!!.width)
                 }
 
                 // Check if the flash is supported.
@@ -484,7 +475,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
      */
     private fun showToast(text: String) {
         activity!!.let {
-            it.runOnUiThread({ Toast.makeText(it, text, Toast.LENGTH_SHORT).show() })
+            it.runOnUiThread { Toast.makeText(it, text, Toast.LENGTH_SHORT).show() }
         }
     }
     /// END PRIVATE
@@ -494,7 +485,6 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         private const val STATE_WAITING_LOCK = 1
         private const val STATE_WAITING_PRECAPTURE = 2
         private const val STATE_WAITING_NON_PRECAPTURE = 3
-        private const val STATE_PICTURE_TAKEN = 4
 
         /**
          * Max preview width that is guaranteed by Camera2 API
@@ -502,10 +492,6 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
          */
         private const val MAX_PREVIEW_WIDTH = 1920
         private const val MAX_PREVIEW_HEIGHT = 1080
-
-        fun newInstance(): FrgCameraPreview {
-            return FrgCameraPreview()
-        }
 
         /**
          * Given `choices` of `Size`s supported by a camera, choose the smallest one that

@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.ui.activity.ACSwitcherActivity
 import wxm.androidutil.ui.dialog.DlgAlert
 
@@ -21,7 +21,7 @@ class ACSetting : ACSwitcherActivity<TFSettingBase>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppUtil.addActivity(this)
+        App.addActivity(this)
     }
 
     override fun setupFragment(): MutableList<TFSettingBase> {
@@ -75,15 +75,5 @@ class ACSetting : ACSwitcherActivity<TFSettingBase>() {
         }
 
         return true
-    }
-
-    fun switchToPageByType(pageType: String) {
-        when(pageType)  {
-            TFSettingMain::class.java.name -> switchToFragment(mTFMain)
-            TFSettingCheckVersion::class.java.name -> switchToFragment(mTFVer)
-            TFSettingDirectory::class.java.name -> switchToFragment(mTFDir)
-            TFSettingCamera::class.java.name -> switchToFragment(mTFCamera)
-            else -> switchToFragment(mTFMain)
-        }
     }
 }

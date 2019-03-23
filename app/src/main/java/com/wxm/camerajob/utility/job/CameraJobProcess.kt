@@ -2,13 +2,15 @@ package com.wxm.camerajob.utility.job
 
 import android.os.Message
 import android.util.Log
-import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.data.define.EJobStatus
+import com.wxm.camerajob.data.define.EMsgType
+import com.wxm.camerajob.data.define.ETimeGap
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.silentCamera.ITakePhoto
 import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.silentCamera.TakePhotoParam
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,11 +35,10 @@ class CameraJobProcess {
      */
     private fun checkJobWakeup(cj: CameraJob): Boolean {
         if (cj.status.job_status == EJobStatus.RUN.status) {
-            System.currentTimeMillis().let {
-                if (it in cj.starttime.time..(cj.endtime.time - 1)) {
-                    ETimeGap.values().find { cj.point == it.gapName }?.let {
-                        return it.isArrive(Calendar.getInstance())
-                    }
+            val cur = System.currentTimeMillis()
+            if (cur in cj.starttime.time..(cj.endtime.time - 1)) {
+                ETimeGap.values().find { cj.point == it.gapName }?.let {
+                    return it.isArrive(Calendar.getInstance())
                 }
             }
         }
@@ -53,7 +54,7 @@ class CameraJobProcess {
         if (lsJob.isNotEmpty()) {
             lsJob.pop().let {
                 Log.i(LOG_TAG, "wakeup job : " + it.toString())
-                val path = AppUtil.getCameraJobDir(it._id)
+                val path = App.getCameraJobDir(it._id)
                 if (null == path) {
                     wakeupDuty(lsJob)
                 } else {
@@ -67,7 +68,7 @@ class CameraJobProcess {
                         }
 
                         override fun onTakePhotoSuccess(tp: TakePhotoParam) {
-                            Message.obtain(AppUtil.getMsgHandler(),
+                            Message.obtain(App.getMsgHandler(),
                                     EMsgType.CAMERAJOB_TAKEPHOTO.id,
                                     arrayOf<Any>(Integer.parseInt(tp.mTag), 1)).sendToTarget()
                             wakeupDuty(lsJob)

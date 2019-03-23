@@ -302,10 +302,11 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
         // the SurfaceTextureListener).
         if (mTextureView!!.isAvailable) {
             try {
-                (activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager).let {
-                    it.getCameraCharacteristics(mCameraId!!).get(CameraCharacteristics.LENS_FACING)?.let {
-                        openCamera(it, mTextureView!!.width, mTextureView!!.height)
-                    }
+                val cm = activity.getSystemService(Context.CAMERA_SERVICE)
+                        as CameraManager
+                cm.getCameraCharacteristics(mCameraId!!)
+                        .get(CameraCharacteristics.LENS_FACING)?.let {
+                    openCamera(it, mTextureView!!.width, mTextureView!!.height)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -785,7 +786,6 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     companion object {
         private val ORIENTATIONS = SparseIntArray()
         private const val REQUEST_CAMERA_PERMISSION = 1
-        private val LOG_TAG = ::CameraFragment.javaClass.simpleName
         private const val FRAGMENT_DIALOG = "dialog"
 
         /**

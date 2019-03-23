@@ -23,7 +23,7 @@ import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage
 import com.wxm.camerajob.ui.test.camera.ACTestCamera
 import com.wxm.camerajob.ui.test.silentCamera.ACTestSilentCamera
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import kotterknife.bindView
 import wxm.androidutil.ui.dialog.DlgOKOrNOBase
 
@@ -45,7 +45,7 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ac_job_show)
-        AppUtil.addActivity(this)
+        App.addActivity(this)
 
         ButterKnife.bind(this)
         initActivity()
@@ -69,7 +69,6 @@ class ACJobShow : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        // TODO Auto-generated method stub
         super.onConfigurationChanged(newConfig)
         mFRGJobShow.reloadUI()
     }

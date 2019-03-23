@@ -16,7 +16,7 @@ import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.silentCamera.TakePhotoParam
 import com.wxm.camerajob.silentCamera.ITakePhoto
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import kotterknife.bindView
 import wxm.androidutil.app.AppBase
 import wxm.androidutil.image.ImageUtil
@@ -28,11 +28,10 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
     private val mIVPhoto: ImageView by bindView(R.id.aciv_photo)
     private val mSelfHandler: ACTestMsgHandler = ACTestMsgHandler(this)
 
-    private val mCLGrey: Int = AppBase.getColor(R.color.gray)
     private val mCLBlack: Int = AppBase.getColor(R.color.black)
 
     private val mCameraParam = PreferencesUtil.loadCameraParam()
-    private val mTPParam = TakePhotoParam(AppUtil.getPhotoRootDir(), "tmp.jpg", "1")
+    private val mTPParam = TakePhotoParam(App.getPhotoRootDir(), "tmp.jpg", "1")
     private val mCBTakePhoto = object : ITakePhoto {
         override fun onTakePhotoFailed(tp: TakePhotoParam) {
             mBTCapture.isClickable = true

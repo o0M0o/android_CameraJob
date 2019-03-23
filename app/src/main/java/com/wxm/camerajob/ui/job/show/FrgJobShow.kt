@@ -11,7 +11,7 @@ import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.preference.PreferencesChangeEvent
 import com.wxm.camerajob.ui.job.detail.ACJobDetail
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -59,11 +59,11 @@ class FrgJobShow : FrgSupportBaseAdv() {
     }
 
     override fun loadUI(savedInstanceState: Bundle?) {
-        val dirs = FileUtil.getDirDirs(AppUtil.getPhotoRootDir(), false)
+        val dirs = FileUtil.getDirDirs(App.getPhotoRootDir(), false)
         ArrayList<HashMap<String, String>>().apply {
-            AppUtil.getCameraJobUtility().allData.filterNotNull().sortedBy { it._id }.forEach {
+            App.getCameraJobUtility().allData.filterNotNull().sortedBy { it._id }.forEach {
                 aliveCameraJob(this, it)
-                AppUtil.getCameraJobDir(it._id).let {
+                App.getCameraJobDir(it._id).let {
                     dirs.remove(it)
                 }
             }
@@ -84,7 +84,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
 
     /// BEGIN PRIVATE
     private fun diedCameraJob(jobs: MutableList<HashMap<String, String>>, dir: String) {
-        val cj = AppUtil.getCameraJobFromDir(dir) ?: return
+        val cj = App.getCameraJobFromDir(dir) ?: return
         HashMap<String, String>().let1 {
             it[KEY_JOB_NAME] = cj.name + "(已移除)"
             it[KEY_JOB_TYPE] = ""

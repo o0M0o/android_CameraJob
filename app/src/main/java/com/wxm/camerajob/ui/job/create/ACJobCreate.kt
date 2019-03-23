@@ -8,7 +8,7 @@ import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.log.TagLog
 import wxm.androidutil.ui.activity.ACSwitcherActivity
 import wxm.androidutil.ui.dialog.DlgAlert
@@ -19,7 +19,7 @@ import wxm.androidutil.ui.dialog.DlgAlert
 class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppUtil.addActivity(this)
+        App.addActivity(this)
     }
 
     override fun leaveActivity() {
@@ -63,9 +63,7 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
             }
 
             R.id.mi_giveup -> {
-                hotFragment.onCancel().let {
-                    leaveActivity()
-                }
+                leaveActivity()
             }
 
             else -> return super.onOptionsItemSelected(item)

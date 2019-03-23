@@ -15,8 +15,8 @@ import com.wxm.camerajob.data.define.*
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.ui.base.JobGallery
 import com.wxm.camerajob.ui.job.slide.ACJobSlide
-import com.wxm.camerajob.utility.AppUtil
-import com.wxm.camerajob.utility.job.CameraJobUtility
+import com.wxm.camerajob.App
+import com.wxm.camerajob.data.utility.CameraJobUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,7 +24,6 @@ import wxm.androidutil.image.ImageUtil
 import wxm.androidutil.improve.doJudge
 import wxm.androidutil.improve.let1
 import wxm.androidutil.time.CalendarUtility
-import wxm.androidutil.type.MySize
 import wxm.androidutil.ui.dialog.DlgAlert
 import wxm.androidutil.ui.frg.FrgSupportBaseAdv
 import wxm.androidutil.ui.moreAdapter.MoreAdapter
@@ -61,6 +60,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
      * 数据库内数据变化处理器
      * @param event     事件
      */
+    @Suppress("unused", "UNUSED_PARAMETER")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDBDataChangeEvent(event: DBDataChangeEvent) {
         reloadUI()
@@ -80,8 +80,8 @@ class FrgJobDetail : FrgSupportBaseAdv() {
     override fun loadUI(savedInstanceState: Bundle?) {
         // for job
         if (GlobalDef.INT_INVALID_ID != mJobID) {
-            mJobPath = AppUtil.getCameraJobDir(mJobID)!!
-            AppUtil.getCameraJobUtility().getData(mJobID)!!.let1 {
+            mJobPath = App.getCameraJobDir(mJobID)!!
+            App.getCameraJobUtility().getData(mJobID)!!.let1 {
                 aliveCameraJob(it)
             }
         } else {
@@ -95,7 +95,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
         refreshButton()
 
         // for job pics
-        val pic = FileUtil.getDirFiles(mJobPath!!, "jpg", false)
+        val pic = FileUtil.getDirFiles(mJobPath, "jpg", false)
         mGVPic.adapter = GVPicAdapter(LinkedList<HashMap<String, String>>().apply {
             addAll(pic.map { HashMap<String, String>().apply { put(KEY_PIC_PATH, it) } })
         })
@@ -109,7 +109,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
                 if (ALIVE_JOB == mJobHMap[KEY_TYPE]) {
                     DlgAlert.showAlert(context!!, R.string.dlg_warn, R.string.info_remove_job) {
                         it.setPositiveButton(R.string.cn_sure) { _, _ ->
-                            CameraJobUtility.removeCameraJob(id)
+                            App.getCameraJobHelper().removeCameraJob(id)
 
                             mJobHMap[KEY_TYPE] = DIED_JOB
                             mJobID = GlobalDef.INT_INVALID_ID
@@ -121,7 +121,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
                 } else {
                     DlgAlert.showAlert(context!!, R.string.dlg_warn, R.string.info_delete_job) {
                         it.setPositiveButton(R.string.cn_sure) { _, _ ->
-                            CameraJobUtility.deleteCameraJob(id)
+                            App.getCameraJobHelper().deleteCameraJob(id)
                             activity!!.finish()
                         }
                     }
@@ -129,25 +129,25 @@ class FrgJobDetail : FrgSupportBaseAdv() {
             }
 
             R.id.ib_job_run_or_pause -> {
-                AppUtil.getCameraJobUtility().getData(id)?.let1 { cj ->
+                App.getCameraJobUtility().getData(id)?.let1 { cj ->
                     cj.status.let1 {
                         it.job_status = (it.job_status == EJobStatus.PAUSE.status)
                                 .doJudge(EJobStatus.RUN.status, EJobStatus.PAUSE.status)
-                        AppUtil.getCameraJobStatusUtility().modifyData(it)
+                        App.getCameraJobStatusUtility().modifyData(it)
                     }
                     reloadUI()
                 }
             }
 
             R.id.ib_job_look -> {
-                AppUtil.getCameraJobDir(id)?.let {
+                App.getCameraJobDir(id)?.let {
                     JobGallery().openGallery(activity!!, it)
                 }
             }
 
             R.id.ib_job_slide_look -> {
                 Intent(activity, ACJobSlide::class.java).let {
-                    it.putExtra(EAction.LOAD_PHOTO_DIR.actName, AppUtil.getCameraJobDir(id)!!)
+                    it.putExtra(EAction.LOAD_PHOTO_DIR.actName, App.getCameraJobDir(id)!!)
                     startActivityForResult(it, 1)
                 }
             }
@@ -171,7 +171,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
             }
         }
 
-        if (0 == FileUtil.getDirFilesCount(AppUtil.getCameraJobDir(Integer.parseInt(mJobHMap[KEY_ID]))!!,
+        if (0 == FileUtil.getDirFilesCount(App.getCameraJobDir(Integer.parseInt(mJobHMap[KEY_ID]))!!,
                         "jpg", false)) {
             mIBLook.visibility = View.GONE
             mIBSlide.visibility = View.GONE
@@ -184,7 +184,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
 
     private fun diedCameraJob(dir: String) {
         mJobHMap.clear()
-        val cj = AppUtil.getCameraJobFromDir(dir) ?: return
+        val cj = App.getCameraJobFromDir(dir) ?: return
         mJobHMap[KEY_JOB_NAME] = cj.name + "(已移除)"
         mJobHMap[KEY_JOB_TYPE] = ""
         mJobHMap[KEY_JOB_START_END_DATE] = ""
@@ -256,16 +256,16 @@ class FrgJobDetail : FrgSupportBaseAdv() {
             BitmapFactory.decodeStream(FileInputStream(f), null, o)
 
             // Find the correct scale value. It should be the power of 2.
-            val REQUIRED_SIZE = 70
-            var width_tmp = o.outWidth
-            var height_tmp = o.outHeight
+            val requiredSize = 70
+            var widthTmp = o.outWidth
+            var heightTmp = o.outHeight
             var scale = 1
             while (true) {
-                if (width_tmp / 2 < REQUIRED_SIZE || height_tmp / 2 < REQUIRED_SIZE)
+                if (widthTmp / 2 < requiredSize || heightTmp / 2 < requiredSize)
                     break
 
-                width_tmp /= 2
-                height_tmp /= 2
+                widthTmp /= 2
+                heightTmp /= 2
                 scale *= 2
             }
 
@@ -297,13 +297,11 @@ class FrgJobDetail : FrgSupportBaseAdv() {
 
     companion object {
         private const val KEY_PIC_PATH = "pic_path"
-        private val GALLERY_SIZE = MySize(150, 150)
 
         const val ALIVE_JOB = "alive"
         const val DIED_JOB = "died"
 
         const val KEY_JOB_NAME = "job_name"
-        const val KEY_JOB_DETAIL = "job_detail"
 
         const val KEY_JOB_TYPE = "job_type"
         const val KEY_JOB_START_END_DATE = "job_start_end_date"

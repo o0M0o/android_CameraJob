@@ -1,7 +1,9 @@
-package com.wxm.camerajob.utility.job
+package com.wxm.camerajob.data.utility
 
 import com.wxm.camerajob.data.entity.CameraJob
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
+import com.wxm.camerajob.data.db.CameraJobDBUtility
+import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
 
 import wxm.androidutil.util.FileUtil
 import wxm.androidutil.util.UtilFun
@@ -11,7 +13,8 @@ import wxm.androidutil.util.UtilFun
  * helper for job
  * Created by WangXM on 2016/11/9.
  */
-object CameraJobUtility {
+class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility,
+                       private val mCameraJobStatusUtility: CameraJobStatusDBUtility) {
     /**
      * create camera job
      * first create job directory, then create job
@@ -19,9 +22,9 @@ object CameraJobUtility {
      * @return      true if success else false
      */
     fun createCameraJob(cj: CameraJob): Boolean {
-        return AppUtil.getCameraJobUtility().createData(cj).let {
+        return mCameraJobUtility.createData(cj).let {
             if (it) {
-                !UtilFun.StringIsNullOrEmpty(AppUtil.createJobDir(cj))
+                !UtilFun.StringIsNullOrEmpty(App.createJobDir(cj))
             } else it
         }
     }
@@ -32,7 +35,7 @@ object CameraJobUtility {
      * @param cj_id   id for job
      */
     fun removeCameraJob(cj_id: Int) {
-        AppUtil.getCameraJobUtility().removeData(cj_id)
+        mCameraJobUtility.removeData(cj_id)
     }
 
     /**
@@ -40,8 +43,8 @@ object CameraJobUtility {
      * @param cj_id   id for job
      */
     fun deleteCameraJob(cj_id: Int) {
-        AppUtil.getCameraJobUtility().removeData(cj_id)
-        AppUtil.getCameraJobDir(cj_id)?.let {
+        mCameraJobUtility.removeData(cj_id)
+        App.getCameraJobDir(cj_id)?.let {
             FileUtil.deleteDirectory(it)
         }
     }

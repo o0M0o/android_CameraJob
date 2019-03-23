@@ -51,19 +51,6 @@ class FrgWelcome : FrgSupportSwitcher<FrgSupportBaseAdv>() {
         }
     }
 
-    fun leaveFrg(): Boolean {
-        if ((hotPage as PageBase).leavePage()) {
-            if (hotPage is PgJobShow) {
-                return true
-            } else {
-                switchToHotPage(view!!.findViewById(R.id.ib_job_show))
-            }
-
-        }
-
-        return false
-    }
-
     private fun switchToHotPage(v: View)    {
         (v as IconButton).let1 {
             if (!it.isHot) {

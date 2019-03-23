@@ -4,7 +4,7 @@ package com.wxm.camerajob.ui.setting
 import android.os.Bundle
 import android.widget.TextView
 import com.wxm.camerajob.R
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import kotterknife.bindView
 import java.util.*
 
@@ -20,7 +20,7 @@ class TFSettingDirectory : TFSettingBase() {
 
     override fun initUI(savedInstanceState: Bundle?) {
         mTVShow.text = String.format(Locale.CHINA, "照片根目录 : %s",
-                AppUtil.getPhotoRootDir())
+                App.getPhotoRootDir())
     }
 
     override fun updateSetting() {

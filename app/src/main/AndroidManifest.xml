@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
-        android:name=".utility.AppUtil"
+        android:name=".App"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_camera_labe1_big"

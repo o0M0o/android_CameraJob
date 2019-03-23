@@ -1,4 +1,4 @@
-package com.wxm.camerajob.ui.base.event
+package com.wxm.camerajob.ui.event
 
 /**
  * @author      WangXM

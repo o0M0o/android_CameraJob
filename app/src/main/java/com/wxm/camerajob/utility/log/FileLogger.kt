@@ -2,7 +2,7 @@ package com.wxm.camerajob.utility.log
 
 import android.util.Log
 import com.wxm.camerajob.BuildConfig
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.time.toFullTag
 import java.io.IOException
 import java.sql.Timestamp
@@ -22,7 +22,7 @@ class FileLogger private constructor() {
 
         try {
             FileHandler(
-                    "${AppUtil.getLogRootDir()}/${String.format(Locale.CHINA, LOG_NAME, mLogTag)}",
+                    "${App.getLogRootDir()}/${String.format(Locale.CHINA, LOG_NAME, mLogTag)}",
                     true).let {
                 it.formatter = object : SimpleFormatter() {
                     override fun format(record: LogRecord): String {

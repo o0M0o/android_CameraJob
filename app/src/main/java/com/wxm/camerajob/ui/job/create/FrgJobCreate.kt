@@ -10,8 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import com.wxm.camerajob.App
 import com.wxm.camerajob.R
-import com.wxm.camerajob.data.define.*
+import com.wxm.camerajob.data.define.EJobStatus
+import com.wxm.camerajob.data.define.ETimeGap
+import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.data.entity.CameraParam
 import com.wxm.camerajob.preference.PreferencesChangeEvent
@@ -19,7 +22,7 @@ import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.base.IAcceptAble
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
-import com.wxm.camerajob.utility.job.CameraJobUtility
+import com.wxm.camerajob.data.utility.CameraJobUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -130,7 +133,7 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
             ts.time = System.currentTimeMillis()
             status.job_status = EJobStatus.RUN.status
         }.let {
-            return CameraJobUtility.createCameraJob(it)
+            return App.getCameraJobHelper().createCameraJob(it)
         }
     }
 
@@ -140,7 +143,7 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
 
     /// BEGIN PRIVATE
 
-    private fun loadJobPoint()    {
+    private fun loadJobPoint() {
         ArrayList<String>().apply {
             when {
                 mRBMinute.isChecked -> {
@@ -165,8 +168,8 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         }.let1 {
             if (it.isNotEmpty()) {
                 mGVJobPoint.adapter = GVJobPointAdapter(
-                        ArrayList<Map<String, String>>().apply {
-                            addAll(it.map { HashMap<String, String>().apply { put(KEY_JOB_POINT, it) } })
+                        it.map { jp ->
+                            HashMap<String, String>().apply { put(KEY_JOB_POINT, jp) }
                         },
                         arrayOf(KEY_JOB_POINT),
                         intArrayOf(R.id.tv_job_point))
@@ -232,25 +235,25 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
 
                 in intArrayOf(R.id.iv_clock_start, R.id.iv_clock_end) -> {
                     val title = if (R.id.iv_clock_start == v.id) "选择任务启动时间" else "选择任务结束时间"
-                    (if (R.id.iv_clock_start == v.id) mTVJobStartDate else mTVJobEndDate).let {
-                        val cl = CalendarUtility.YearMonthDayHourMinute.parse(it.text)
+                    (if (R.id.iv_clock_start == v.id) mTVJobStartDate else mTVJobEndDate).let {tv ->
+                        val cl = CalendarUtility.YearMonthDayHourMinute.parse(tv.text)
                         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                             val strDate = String.format(Locale.CHINA, "%04d-%02d-%02d",
                                     year, month + 1, dayOfMonth)
 
                             TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                                it.text = String.format(Locale.CHINA, "%s %02d:%02d",
+                                tv.text = String.format(Locale.CHINA, "%s %02d:%02d",
                                         strDate, hourOfDay, minute)
-                                it.requestFocus()
+                                tv.requestFocus()
                             }.let {
                                 TimePickerDialog(context, it, cl.get(Calendar.HOUR_OF_DAY),
                                         cl.get(Calendar.MINUTE), true)
                                         .apply { setTitle(title) }
                                         .show()
                             }
-                        }.let {
-                            DatePickerDialog(context, it, cl.get(Calendar.YEAR), cl.get(Calendar.MONTH),
-                                    cl.get(Calendar.DAY_OF_MONTH))
+                        }.let {ol ->
+                            DatePickerDialog(context, ol,
+                                    cl.get(Calendar.YEAR), cl.get(Calendar.MONTH), cl.get(Calendar.DAY_OF_MONTH))
                                     .apply { setTitle(title) }
                                     .show()
                         }
@@ -325,7 +328,7 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
 
         override fun loadView(pos: Int, vhHolder: ViewHolder) {
             vhHolder.convertView!!.let1 {
-                it.setOnClickListener {v ->
+                it.setOnClickListener { v ->
                     mGVJobPoint.getPositionForView(v).let {
                         if (mLastSelected != it) {
                             mLastSelected = it

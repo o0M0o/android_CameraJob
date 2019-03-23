@@ -20,7 +20,7 @@ import java.sql.Timestamp
  * Created by wxm on 2016/6/11.
  */
 @DatabaseTable(tableName = "tbCameraJob")
-class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
+class CameraJob : Cloneable, IDBRow<Int> {
     @DatabaseField(generatedId = true, columnName = FIELD_ID, dataType = DataType.INTEGER)
     var _id: Int = 0
 
@@ -75,22 +75,6 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
     }
 
     // for parcel
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(out: Parcel, flags: Int) {
-        out.writeInt(_id)
-        out.writeString(name)
-        out.writeString(type)
-        out.writeString(point)
-        out.writeLong(starttime.time)
-        out.writeLong(endtime.time)
-        out.writeLong(ts.time)
-        cameraSetting.writeToParcel(out, flags)
-        status.writeToParcel(out, flags)
-    }
-
     constructor(inSteam: Parcel) {
         ts = Timestamp(0)
         starttime = Timestamp(0)
@@ -135,16 +119,6 @@ class CameraJob : Parcelable, Cloneable, IDBRow<Int> {
 
     companion object {
         const val FIELD_ID = "_id"
-
-        val CREATOR: Parcelable.Creator<CameraJob> = object : Parcelable.Creator<CameraJob> {
-            override fun createFromParcel(inSteam: Parcel): CameraJob {
-                return CameraJob(inSteam)
-            }
-
-            override fun newArray(size: Int): Array<CameraJob> {
-                return Array(size, { CameraJob() })
-            }
-        }
 
         fun readFromJson(jr: JsonReader): CameraJob? {
             var ret: CameraJob? = null

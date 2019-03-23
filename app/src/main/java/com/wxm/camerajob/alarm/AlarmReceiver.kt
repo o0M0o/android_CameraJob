@@ -10,10 +10,9 @@ import com.wxm.camerajob.data.define.EJobStatus
 import com.wxm.camerajob.data.define.EMsgType
 import com.wxm.camerajob.data.define.ETimeGap
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import com.wxm.camerajob.utility.log.FileLogger
 import wxm.androidutil.app.AppBase
-import wxm.androidutil.improve.let1
 import wxm.androidutil.log.TagLog
 import java.util.*
 
@@ -30,7 +29,7 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(arg0: Context, data: Intent) {
         try {
             //TagLog.i("receive alarm")
-            Message.obtain(AppUtil.getMsgHandler(), EMsgType.WAKEUP.id, EMsgType.WAKEUP)
+            Message.obtain(App.getMsgHandler(), EMsgType.WAKEUP.id, EMsgType.WAKEUP)
                     .sendToTarget()
         } catch (e: Exception) {
             TagLog.e("receive alarm failure", e)
@@ -51,15 +50,15 @@ class AlarmReceiver : BroadcastReceiver() {
             var ret = GlobalDef.INT_GLOBALJOB_PERIOD.toLong()
             try {
                 ret = LinkedList<Long>().apply {
-                    AppUtil.getCameraJobUtility().allData
+                    App.getCameraJobUtility().allData
                             .filter { it.status.job_status == EJobStatus.RUN.status }
                             .forEach {
-                                ETimeGap.getETimeGap(it.point)?.let {
-                                    add(it.getDelay(Calendar.getInstance()))
+                                ETimeGap.getETimeGap(it.point)?.let { eg ->
+                                    add(eg.getDelay(Calendar.getInstance()))
                                 }
                             }
                 }.min() ?: GlobalDef.INT_GLOBALJOB_PERIOD.toLong()
-            } catch (e: Exception)  {
+            } catch (e: Exception) {
                 TagLog.e("getAlarmDelay failure", e)
                 FileLogger.getLogger().severe(e.toString())
             }
@@ -68,13 +67,12 @@ class AlarmReceiver : BroadcastReceiver() {
         }
 
         fun triggerAlarm() {
-            AppUtil.self.let1 {
-                PendingIntent.getBroadcast(it, 0, Intent(it, AlarmReceiver::class.java), 0)!!
-                        .let1 {
-                            AppBase.getSystemService<AlarmManager>(Context.ALARM_SERVICE)!!
-                                    .set(AlarmManager.RTC_WAKEUP, getAlarmDelay(), it)
-                        }
-            }
+            val app = App.self
+            val pi = PendingIntent.getBroadcast(app, 0,
+                    Intent(app, AlarmReceiver::class.java), 0)!!
+
+            AppBase.getSystemService<AlarmManager>(Context.ALARM_SERVICE)!!
+                    .set(AlarmManager.RTC_WAKEUP, getAlarmDelay(), pi)
         }
     }
 }

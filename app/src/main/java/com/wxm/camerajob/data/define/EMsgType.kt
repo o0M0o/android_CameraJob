@@ -4,7 +4,7 @@ package com.wxm.camerajob.data.define
  * msg type
  * Created by WangXM on 2018/2/19.
  */
-enum class EMsgType private constructor(
+enum class EMsgType(
         /**
          * get type paraName
          * @return  type paraName

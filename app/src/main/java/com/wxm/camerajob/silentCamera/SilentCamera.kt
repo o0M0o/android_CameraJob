@@ -13,7 +13,7 @@ import com.wxm.camerajob.data.entity.CameraParam
 import com.wxm.camerajob.silentCamera.define.CameraHardWare
 import com.wxm.camerajob.silentCamera.define.CaptureStateCallback
 import com.wxm.camerajob.silentCamera.define.ECameraStatus
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import com.wxm.camerajob.utility.log.FileLogger
 import wxm.androidutil.app.AppBase
 import wxm.androidutil.improve.let1
@@ -52,7 +52,7 @@ class SilentCamera {
      */
     internal val orientation: Int
         get() {
-            return AppUtil.getWindowManager()!!.defaultDisplay.rotation.let {
+            return App.getWindowManager()!!.defaultDisplay.rotation.let {
                 if(null != mCamera) {
                     val ret = (SilentCamera.ORIENTATIONS.get(it) + mCamera!!.mSensorOrientation + 270) % 360
                     TagLog.i("Orientation : display = $it, " +
@@ -70,7 +70,7 @@ class SilentCamera {
     init {
         mHMCameraHardware = ArrayList<CameraHardWare>().apply {
             val lsCamera = this
-            AppUtil.getCameraManager()?.apply {
+            App.getCameraManager()?.apply {
                 try {
                     cameraIdList.filterNotNull().forEach {
                         lsCamera.add(CameraHardWare(it, getCameraCharacteristics(it)))
@@ -101,7 +101,7 @@ class SilentCamera {
         }
 
         try {
-            AppUtil.getCameraManager()!!.openCamera(mCamera!!.mId,
+            App.getCameraManager()!!.openCamera(mCamera!!.mId,
                     object : CameraDevice.StateCallback() {
                         override fun onOpened(camera: CameraDevice) {
                             "onOpened".let1 {

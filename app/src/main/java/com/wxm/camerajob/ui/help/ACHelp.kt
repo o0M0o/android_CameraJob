@@ -3,7 +3,7 @@ package com.wxm.camerajob.ui.help
 import android.content.Intent
 import android.os.Bundle
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.ui.activity.ACSwitcherActivity
 
 /**
@@ -22,7 +22,7 @@ class ACHelp : ACSwitcherActivity<FrgHelp>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppUtil.addActivity(this)
+        App.addActivity(this)
     }
 
     override fun leaveActivity() {

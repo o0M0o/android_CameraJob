@@ -1,18 +1,12 @@
 package com.wxm.camerajob.ui.loader
 
 import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.widget.TextView
 import com.wxm.camerajob.R
-import com.wxm.camerajob.ui.welcome.ACWelcome
-import com.wxm.camerajob.utility.AppUtil
 import kotterknife.bindView
-import okhttp3.internal.Util.contains
 import wxm.androidutil.app.AppBase
-import wxm.androidutil.improve.doJudge
 import wxm.androidutil.improve.let1
 import wxm.androidutil.ui.frg.FrgSupportBaseAdv
 import java.util.ArrayList
@@ -29,7 +23,7 @@ class FrgLoader : FrgSupportBaseAdv() {
     override fun getLayoutID(): Int = R.layout.pg_loader
 
     override fun initUI(savedInstanceState: Bundle?) {
-        mBTRequest.setOnClickListener { _ ->
+        mBTRequest.setOnClickListener {
             mayRequestPermission()
         }
 

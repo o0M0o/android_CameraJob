@@ -1,4 +1,4 @@
-package com.wxm.camerajob.utility
+package com.wxm.camerajob
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -18,6 +18,7 @@ import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
 import com.wxm.camerajob.data.db.DBOrmLiteHelper
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.data.define.GlobalDef
+import com.wxm.camerajob.data.utility.CameraJobUtility
 import com.wxm.camerajob.utility.job.CameraJobProcess
 import com.wxm.camerajob.utility.job.GlobalMsgHandler
 import wxm.androidutil.app.AppBase
@@ -35,7 +36,7 @@ import java.util.*
  * get global context
  * Created by WangXM on 2016/5/7.
  */
-class AppUtil : AppBase() {
+class App : AppBase() {
     private val activities = ArrayList<Activity>()
     private lateinit var mAppRootDir: String
     private lateinit var mLogDir: String
@@ -52,6 +53,8 @@ class AppUtil : AppBase() {
     // for db
     private lateinit var mCameraJobUtility: CameraJobDBUtility
     private lateinit var mCameraJobStatusUtility: CameraJobStatusDBUtility
+    private lateinit var mCameraJobHelper: CameraJobUtility
+
 
     override fun onTerminate() {
         TagLog.i("Application onTerminate")
@@ -71,14 +74,14 @@ class AppUtil : AppBase() {
         mAppRootDir = filesDir.path
 
         "$mAppRootDir/photo".let1 {
-            mPhotoDir = File(it).let {
-                it.exists().doJudge(true, it.mkdirs())
+            mPhotoDir = File(it).let { pf ->
+                pf.exists().doJudge(true, pf.mkdirs())
             }.doJudge(it, mAppRootDir)
         }
 
         "$mAppRootDir/runLog".let1 {
-            mLogDir = File(it).let {
-                it.exists().doJudge(true, it.mkdirs())
+            mLogDir = File(it).let {pf ->
+                pf.exists().doJudge(true, pf.mkdirs())
             }.doJudge(it, mAppRootDir)
         }
 
@@ -86,13 +89,14 @@ class AppUtil : AppBase() {
         DBOrmLiteHelper(this).let {
             mCameraJobUtility = CameraJobDBUtility(it)
             mCameraJobStatusUtility = CameraJobStatusDBUtility(it)
+            mCameraJobHelper = CameraJobUtility(mCameraJobUtility, mCameraJobStatusUtility)
         }
 
         // for job
         mMsgHandler = GlobalMsgHandler()
         mJobProcessor = CameraJobProcess()
 
-        // 设置闹钟
+        // set alarm
         PendingIntent.getBroadcast(this, 0,
                 Intent(this, AlarmReceiver::class.java), 0).let {
             (getSystemService(Context.ALARM_SERVICE) as AlarmManager).set(AlarmManager.RTC_WAKEUP,
@@ -103,36 +107,19 @@ class AppUtil : AppBase() {
         TagLog.i("Application created")
     }
 
-    /**
-     * Check if this device has a camera
-    private fun checkCameraHardware(context: Context): Boolean {
-        // this device has a camera
-        // no camera on this device
-        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA)
-    }
-     */
-
     companion object {
         private const val INFO_FN = "info.json"
 
         @Suppress("MemberVisibilityCanBePrivate")
-        val self: AppUtil
-            get() = (AppBase.appContext() as AppUtil)
+        val self: App
+            get() = (AppBase.appContext() as App)
 
         fun initUtil() {
             self.initAppContext()
         }
 
-        fun leaveAPP() {
-            self.onTerminate()
-        }
-
         fun getLogRootDir(): String {
             return self.mLogDir
-        }
-
-        fun getAppRootDir(): String {
-            return self.mAppRootDir
         }
 
         fun getPhotoRootDir(): String {
@@ -156,9 +143,9 @@ class AppUtil : AppBase() {
                 }
 
                 if (it.exists()) {
-                    FileWriter(File(it.path, INFO_FN)).use {
+                    FileWriter(File(it.path, INFO_FN)).use { fw ->
                         try {
-                            cj.writeToJson(JsonWriter(it))
+                            cj.writeToJson(JsonWriter(fw))
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
@@ -221,6 +208,10 @@ class AppUtil : AppBase() {
 
         fun getCameraJobStatusUtility(): CameraJobStatusDBUtility {
             return self.mCameraJobStatusUtility
+        }
+
+        fun getCameraJobHelper(): CameraJobUtility  {
+            return self.mCameraJobHelper;
         }
 
         /**

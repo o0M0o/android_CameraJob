@@ -7,7 +7,7 @@ import android.view.MenuItem
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.ui.setting.TFSettingCamera
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.ui.activity.ACSwitcherActivity
 import wxm.androidutil.ui.dialog.DlgAlert
 
@@ -17,7 +17,7 @@ import wxm.androidutil.ui.dialog.DlgAlert
 open class ACCameraSetting : ACSwitcherActivity<TFSettingCamera>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppUtil.addActivity(this)
+        App.addActivity(this)
     }
 
     override fun leaveActivity() {

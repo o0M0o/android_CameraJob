@@ -3,7 +3,7 @@ package com.wxm.camerajob.silentCamera.define
 import android.hardware.camera2.*
 import android.media.ImageReader
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.log.TagLog
 
 /**
@@ -55,17 +55,17 @@ internal class CaptureStateCallback constructor(private val mHome: SilentCamera,
         builder.set(CaptureRequest.JPEG_ORIENTATION,
                 getJPGOrientation(mHome.mCamera!!.mFace == CameraCharacteristics.LENS_FACING_FRONT,
                         mHome.mCamera!!.mSensorOrientation,
-                        AppUtil.getWindowManager()!!.defaultDisplay.rotation))
+                        App.getWindowManager()!!.defaultDisplay.rotation))
 
         builder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
 
         //设置连续帧
         //设置每秒30帧
-        mHome.mCamera!!.mCharacteristics.let {
-            it.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES)?.let {
+        mHome.mCamera!!.mCharacteristics
+            .get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES)
+            ?.let {
                 builder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, it[it.size - 1])
             }
-        }
 
         builder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
         builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
@@ -79,10 +79,10 @@ internal class CaptureStateCallback constructor(private val mHome: SilentCamera,
             return 0
 
         // Round device orientation to a multiple of 90
-        var dOrientation = (deviceOrientation + 45) / 90 * 90;
+        var dOrientation = (deviceOrientation + 45) / 90 * 90
 
         // Reverse device orientation for front-facing cameras
-        if (facingFront) dOrientation = -dOrientation;
+        if (facingFront) dOrientation = -dOrientation
 
         // Calculate desired JPEG orientation relative to camera orientation to make
         // the image upright relative to the device orientation

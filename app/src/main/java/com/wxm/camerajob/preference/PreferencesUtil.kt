@@ -6,7 +6,7 @@ import com.wxm.camerajob.data.entity.CameraParam
 import com.wxm.camerajob.data.define.EProperty
 import com.wxm.camerajob.data.define.GlobalDef
 
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 
 import org.greenrobot.eventbus.EventBus
 
@@ -29,7 +29,7 @@ object PreferencesUtil {
      */
     fun loadCameraParam(): CameraParam {
         return CameraParam(null).apply {
-            AppUtil.self.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
+            App.self.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
                     Context.MODE_PRIVATE).let {
                 mFace = it.getInt(EProperty.PROPERTIES_CAMERA_FACE.paraName,
                         CameraCharacteristics.LENS_FACING_BACK)
@@ -50,7 +50,7 @@ object PreferencesUtil {
      * @param cp    camera parameter
      */
     fun saveCameraParam(cp: CameraParam) {
-        AppUtil.self.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
+        App.self.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
                 Context.MODE_PRIVATE).apply {
             edit().putInt(EProperty.PROPERTIES_CAMERA_FACE.paraName,
                     cp.mFace).apply()
@@ -75,7 +75,7 @@ object PreferencesUtil {
      * @return  if camera is set return true
      */
     fun checkCameraIsSet(): Boolean {
-        return AppUtil.self.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE)
+        return App.self.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE)
                 .getString(CAMERA_SET_FLAG, CAMERA_SET_FLAG_NOSET) == CAMERA_SET_FLAG_ISSET
     }
 
@@ -84,7 +84,7 @@ object PreferencesUtil {
      * @param isSet  flag for camera set
      */
     private fun setCameraSetFlag(isSet: Boolean) {
-        AppUtil.self.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE).edit()
+        App.self.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE).edit()
                 .putString(CAMERA_SET_FLAG, if (isSet) CAMERA_SET_FLAG_ISSET else CAMERA_SET_FLAG_NOSET)
                 .apply()
     }

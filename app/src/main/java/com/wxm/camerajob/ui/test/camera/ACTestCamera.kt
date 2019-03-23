@@ -35,7 +35,7 @@ class ACTestCamera : AppCompatActivity() {
         mBtActiveFrontCamera.setTextColor(Color.GRAY)
         mBtActiveBackCamera.setTextColor(Color.GRAY)
 
-        mBtActiveFrontCamera.setOnClickListener { _ ->
+        mBtActiveFrontCamera.setOnClickListener {
             mCameraFrag.activeFrontCamera()
             activeButton(mBtCameraClose, true)
             activeButton(mBtTakePhoto, true)
@@ -44,7 +44,7 @@ class ACTestCamera : AppCompatActivity() {
             mBtActiveBackCamera.setTextColor(Color.GRAY)
         }
 
-        mBtActiveBackCamera.setOnClickListener { _ ->
+        mBtActiveBackCamera.setOnClickListener {
             mCameraFrag.activeBackCamera()
             activeButton(mBtCameraClose, true)
             activeButton(mBtTakePhoto, true)

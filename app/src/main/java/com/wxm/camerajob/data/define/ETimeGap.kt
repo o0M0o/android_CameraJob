@@ -6,7 +6,7 @@ import java.util.*
  * time gap for camera job
  * Created by WangXM on 2018/2/19.
  */
-enum class ETimeGap private constructor(
+enum class ETimeGap(
         val gapName: String,
         private val funArrive: (Calendar) -> Boolean,
         private val funDelay: (Calendar) -> Long) {

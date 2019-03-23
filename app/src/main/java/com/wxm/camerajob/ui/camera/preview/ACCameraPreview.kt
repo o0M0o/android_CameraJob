@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.support.annotation.RequiresApi
 
 import com.wxm.camerajob.data.define.GlobalDef
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import wxm.androidutil.ui.activity.ACSwitcherActivity
 
 
@@ -17,7 +17,7 @@ import wxm.androidutil.ui.activity.ACSwitcherActivity
 class ACCameraPreview : ACSwitcherActivity<FrgCameraPreview>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AppUtil.addActivity(this)
+        App.addActivity(this)
     }
 
     override fun leaveActivity() {

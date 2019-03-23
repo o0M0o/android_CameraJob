@@ -8,6 +8,7 @@ import android.media.ImageReader
 import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.utility.log.FileLogger
 import wxm.androidutil.image.ImageUtil
+import wxm.androidutil.improve.let1
 import wxm.androidutil.log.TagLog
 
 /**
@@ -76,19 +77,18 @@ internal class CaptureCallback constructor(private val mHome: SilentCamera,
             } else    {
                 TagLog.i("first get image failure")
                 Thread.sleep(200)
+
                 mReader.acquireLatestImage()
             }
-        }.let {
-            if (null != it) {
+        }.let1 {ig ->
+            if (null != ig) {
                 mSuccessCount = 0
                 TagLog.i("get image success")
-                it.use { processImage(it) }
+                ig.use { processImage(it) }
             } else {
                 TagLog.i("get image failure")
                 mHome.takePhotoCallBack(false)
             }
-
-            Unit
         }
     }
 

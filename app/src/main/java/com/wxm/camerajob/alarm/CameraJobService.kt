@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 
-import com.wxm.camerajob.utility.AppUtil
 import wxm.androidutil.app.AppBase
 import wxm.androidutil.log.TagLog
 
@@ -29,7 +28,7 @@ class CameraJobService : JobService() {
     public void onCreate() {
         super.onCreate();
         //TagLog.i(LOG_TAG, "JobService created");
-        //Context mCurContext = AppUtil.Companion.getInstance();
+        //Context mCurContext = App.Companion.getInstance();
     }
     */
 
@@ -59,7 +58,7 @@ class CameraJobService : JobService() {
         jobParamsMap.add(params)
 
         /*
-        Message.obtain(AppUtil.getMsgHandler(),
+        Message.obtain(App.getMsgHandler(),
                 EMsgType.WAKEUP.id, EMsgType.WAKEUP).sendToTarget()
                 */
         return false
@@ -72,9 +71,4 @@ class CameraJobService : JobService() {
         return true
     }
 
-    /** Send job to the JobScheduler.  */
-    fun scheduleJob(t: JobInfo) {
-        TagLog.d("Scheduling job")
-        AppBase.getSystemService<JobScheduler>(Context.JOB_SCHEDULER_SERVICE)!!.schedule(t)
-    }
 }

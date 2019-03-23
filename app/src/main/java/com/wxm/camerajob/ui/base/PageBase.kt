@@ -16,10 +16,9 @@ interface PageBase  {
      */
     fun leavePage(): Boolean
 
+    @Suppress("unused")
     fun doLogout(ac:Activity) {
-        ac.let1 {
-            it.setResult(GlobalDef.INTRET_USR_LOGOUT, Intent())
-            it.finish()
-        }
+        ac.setResult(GlobalDef.INTRET_USR_LOGOUT, Intent())
+        ac.finish()
     }
 }

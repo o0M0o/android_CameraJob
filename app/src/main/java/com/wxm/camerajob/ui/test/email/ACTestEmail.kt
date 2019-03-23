@@ -150,10 +150,6 @@ class ACTestEmail : AppCompatActivity(), View.OnClickListener {
                 else -> TagLog.e("$msg can not process")
             }
         }
-
-        companion object {
-            private val LOG_TAG = ::ACSendMailMsgHandler.javaClass.simpleName
-        }
     }
 
     companion object {

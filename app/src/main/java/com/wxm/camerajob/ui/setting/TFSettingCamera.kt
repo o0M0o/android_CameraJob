@@ -16,7 +16,7 @@ import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
-import com.wxm.camerajob.utility.AppUtil
+import com.wxm.camerajob.App
 import kotterknife.bindView
 import wxm.androidutil.type.MySize
 import wxm.androidutil.ui.dialog.DlgAlert
@@ -78,7 +78,7 @@ class TFSettingCamera : TFSettingBase() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        if (AppUtil.useNewCamera())
+        if (App.useNewCamera())
             loadCameraInfo()
 
         EventHelper.setOnClickOperator(view!!,
@@ -119,7 +119,7 @@ class TFSettingCamera : TFSettingBase() {
             }
 
             R.id.rl_switch -> {
-                if (0 < AppUtil.getCameraJobUtility().getActiveJobCount()) {
+                if (0 < App.getCameraJobUtility().getActiveJobCount()) {
                     DlgAlert.showAlert(context!!, R.string.dlg_warn, R.string.info_need_stop_job)
                 } else {
                     Intent(activity, ACCameraPreview::class.java).let {
@@ -154,7 +154,7 @@ class TFSettingCamera : TFSettingBase() {
         mLLFrontCameraDpi.clear()
         var mBackCameraID = ""
         var mFrontCameraID = ""
-        AppUtil.getCameraManager()?.let {
+        App.getCameraManager()?.let {
             val manager = it
             try {
                 val lsDpi = LinkedList<HashMap<String, String>>()

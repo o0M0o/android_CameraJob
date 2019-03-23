@@ -4,13 +4,8 @@ import android.Manifest.permission.READ_PHONE_STATE
 import android.Manifest.permission.READ_SMS
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.annotation.TargetApi
-import android.app.ProgressDialog
-import android.content.DialogInterface
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
-import android.os.Message
 import android.support.design.widget.TextInputEditText
 import android.view.View
 import android.widget.ProgressBar
@@ -30,7 +25,6 @@ import wxm.androidutil.log.TagLog
 import wxm.androidutil.ui.dialog.DlgAlert
 import wxm.androidutil.ui.dialog.DlgOKOrNOBase
 import wxm.androidutil.util.SIMCardUtil
-import wxm.androidutil.util.WRMsgHandler
 import java.io.IOException
 
 /**
