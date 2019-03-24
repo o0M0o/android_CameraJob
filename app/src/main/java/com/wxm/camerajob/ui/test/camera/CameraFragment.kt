@@ -277,14 +277,14 @@ class CameraFragment : Fragment(), FragmentCompat.OnRequestPermissionsResultCall
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
         //initLooper();
         //initUIAndListener(v);
-        return inflater.inflate(R.layout.ac_camera, null)
+        return inflater.inflate(R.layout.frg_camera, null)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         //view.findViewById(R.id.picture).setOnClickListener(this);
         //view.findViewById(R.id.info).setOnClickListener(this);
         //mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        mTextureView = view.findViewById(R.id.frag_camera_textureview)
+        mTextureView = view.findViewById(R.id.camera_texture_view)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout android:id="@+id/rl_start" android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/iv_clock_start" android:layout_width="42dp"
+            android:layout_height="42dp" android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" android:src="@drawable/ic_calendar_clock" />
+
+        <TextView android:id="@+id/tv_date_start_tag" android:textSize="12sp"
+            android:layout_toEndOf="@id/iv_clock_start" android:layout_alignTop="@id/iv_clock_start"
+            android:layout_marginStart="16dp" android:text="@string/hint_job_time_start"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+        <TextView android:id="@+id/tv_date_start" android:textSize="16sp"
+            android:layout_toEndOf="@id/iv_clock_start"
+            android:layout_alignBottom="@id/iv_clock_start" android:layout_marginStart="16dp"
+            android:text="2016/11/07 12:00" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+
+    <ImageView android:id="@+id/iv_calender_date_line" android:layout_below="@id/rl_start"
+        android:layout_width="match_parent" android:layout_height="2dp"
+        android:layout_marginLeft="8dp" android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp" android:layout_marginBottom="4dp"
+        android:background="@color/grey_1" />
+
+    <RelativeLayout android:id="@+id/rl_end" android:layout_below="@id/iv_calender_date_line"
+        android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/iv_clock_end" android:layout_width="42dp"
+            android:layout_height="42dp" android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" android:src="@drawable/ic_calendar_clock" />
+
+        <TextView android:id="@+id/tv_date_end_tag" android:textSize="12sp"
+            android:layout_toEndOf="@id/iv_clock_end" android:layout_alignTop="@id/iv_clock_end"
+            android:layout_marginStart="16dp" android:text="@string/hint_job_time_finish"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+        <TextView android:id="@+id/tv_date_end" android:textSize="16sp"
+            android:layout_toEndOf="@id/iv_clock_end" android:layout_alignBottom="@id/iv_clock_end"
+            android:layout_marginStart="16dp" android:text="2016/11/07 12:00"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+</RelativeLayout>

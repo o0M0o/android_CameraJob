@@ -25,7 +25,6 @@ object PreferencesUtil {
     /**
      * load camera parameter
      * (camera parameter is GLOBAL in app)
-     * @return  camera parameter
      */
     fun loadCameraParam(): CameraParam {
         return CameraParam(null).apply {
@@ -47,7 +46,7 @@ object PreferencesUtil {
     /**
      * save camera parameter
      * (camera parameter is GLOBAL in app)
-     * @param cp    camera parameter
+     * [cp] is camera parameter
      */
     fun saveCameraParam(cp: CameraParam) {
         App.self.getSharedPreferences(GlobalDef.STR_CAMERAPROPERTIES_NAME,
@@ -71,8 +70,7 @@ object PreferencesUtil {
     }
 
     /**
-     * check camera is set or not
-     * @return  if camera is set return true
+     * if camera is set return true
      */
     fun checkCameraIsSet(): Boolean {
         return App.self.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE)
@@ -80,8 +78,7 @@ object PreferencesUtil {
     }
 
     /**
-     * set camera set flag
-     * @param isSet  flag for camera set
+     * [isSet] is camera set flag
      */
     private fun setCameraSetFlag(isSet: Boolean) {
         App.self.getSharedPreferences(CAMERA_SET, Context.MODE_PRIVATE).edit()

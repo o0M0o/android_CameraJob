@@ -34,7 +34,7 @@ internal class GlobalMsgHandler : Handler() {
     }
 
     private fun onWakeup(msg: Message) {
-        App.getCameraJobUtility().allData.let {
+        App.getCameraJobHelper().getAllJob().let {
             App.getJobProcess().processorWakeup(it)
         }
 
@@ -43,7 +43,7 @@ internal class GlobalMsgHandler : Handler() {
 
     private fun onQueryCameraJob(msg: Message) {
         val h = msg.obj as Handler
-        App.getCameraJobUtility().allData?.let {
+        App.getCameraJobHelper().getAllJob()?.let {
             if(it.isNotEmpty()) {
                 Message.obtain(h, EMsgType.REPLAY.id, it).let {
                     it.arg1 = EMsgType.CAMERAJOB_QUERY.id
@@ -58,12 +58,12 @@ internal class GlobalMsgHandler : Handler() {
             val jobId = UtilFun.cast<Int>(it[0])
             val photoCount = UtilFun.cast<Int>(it[1])
 
-            App.getCameraJobUtility().getData(jobId)?.let {
+            App.getCameraJobHelper().getCameraJobById(jobId)?.let {
                 it.status.let {
                     it.job_photo_count = it.job_photo_count + photoCount
                     it.ts.time = Calendar.getInstance().timeInMillis
 
-                    App.getCameraJobStatusUtility().modifyData(it)
+                    App.getCameraJobHelper().modifyCameraJobStatus(it)
                 }
             }
 

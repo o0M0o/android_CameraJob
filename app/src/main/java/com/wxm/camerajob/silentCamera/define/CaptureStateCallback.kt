@@ -21,7 +21,7 @@ internal class CaptureStateCallback constructor(private val mHome: SilentCamera,
 
         // Auto focus should be continuous for camera preview.
         try {
-            mHome.mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG)!!.let {
+            mHome.mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_VIDEO_SNAPSHOT)!!.let {
                 setUpCaptureBuilder(it)
                 mCaptureBuilder = it
 

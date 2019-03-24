@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <com.wxm.camerajob.ui.base.AutoFitTextureView
-        android:id="@+id/frag_camera_textureview"
+        android:id="@+id/camera_texture_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

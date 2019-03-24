@@ -1,5 +1,6 @@
 package com.wxm.camerajob.ui.extend.scaleLayout
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
@@ -37,6 +38,7 @@ class ScaleLayout : ConstraintLayout {
                 View.MeasureSpec.makeMeasureSpec(measuredHeight, View.MeasureSpec.EXACTLY))
     }
 
+    @SuppressLint("Recycle")
     private fun init(ct: Context, attrs: AttributeSet?)  {
         context.obtainStyledAttributes(attrs, R.styleable.ScaleLayout)?.let1 {
             mWidthToHeight = it.getFloat(R.styleable.ScaleLayout_slWidthToHeight, DEF_WIDTH_TO_HEIGHT)

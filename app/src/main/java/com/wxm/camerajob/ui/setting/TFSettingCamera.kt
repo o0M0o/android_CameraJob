@@ -119,7 +119,7 @@ class TFSettingCamera : TFSettingBase() {
             }
 
             R.id.rl_switch -> {
-                if (0 < App.getCameraJobUtility().getActiveJobCount()) {
+                if (0 < App.getCameraJobHelper().getActiveJobCount()) {
                     DlgAlert.showAlert(context!!, R.string.dlg_warn, R.string.info_need_stop_job)
                 } else {
                     Intent(activity, ACCameraPreview::class.java).let {

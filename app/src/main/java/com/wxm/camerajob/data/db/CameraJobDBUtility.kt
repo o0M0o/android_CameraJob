@@ -12,13 +12,7 @@ import wxm.androidutil.db.DBUtilityBase
  * Created by WangXM on 2016/6/16.
  */
 class CameraJobDBUtility(private val mHelper: DBOrmLiteHelper) : DBUtilityBase<CameraJob, Int>() {
-    /**
-     * get amount for activity jobs
-     * @return  amount for live jobs
-     */
-    fun getActiveJobCount(): Int {
-        return allData.filter { it.status.job_status == EJobStatus.RUN.status }.count()
-    }
+
 
     override fun getDBHelper(): RuntimeExceptionDao<CameraJob, Int> {
         return mHelper.cameraJobREDao

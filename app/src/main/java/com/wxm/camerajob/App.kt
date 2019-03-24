@@ -51,10 +51,7 @@ class App : AppBase() {
     private lateinit var mJobProcessor: CameraJobProcess
 
     // for db
-    private lateinit var mCameraJobUtility: CameraJobDBUtility
-    private lateinit var mCameraJobStatusUtility: CameraJobStatusDBUtility
     private lateinit var mCameraJobHelper: CameraJobUtility
-
 
     override fun onTerminate() {
         TagLog.i("Application onTerminate")
@@ -87,9 +84,8 @@ class App : AppBase() {
 
         // for db
         DBOrmLiteHelper(this).let {
-            mCameraJobUtility = CameraJobDBUtility(it)
-            mCameraJobStatusUtility = CameraJobStatusDBUtility(it)
-            mCameraJobHelper = CameraJobUtility(mCameraJobUtility, mCameraJobStatusUtility)
+            mCameraJobHelper = CameraJobUtility(CameraJobDBUtility(it),
+                    CameraJobStatusDBUtility(it))
         }
 
         // for job
@@ -202,16 +198,8 @@ class App : AppBase() {
             return self.mJobProcessor
         }
 
-        fun getCameraJobUtility(): CameraJobDBUtility {
-            return self.mCameraJobUtility
-        }
-
-        fun getCameraJobStatusUtility(): CameraJobStatusDBUtility {
-            return self.mCameraJobStatusUtility
-        }
-
         fun getCameraJobHelper(): CameraJobUtility  {
-            return self.mCameraJobHelper;
+            return self.mCameraJobHelper
         }
 
         /**

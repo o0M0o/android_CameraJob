@@ -20,7 +20,9 @@
         android:label="@string/cn_app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="andriod:label">
+        tools:replace="andriod:label"
+        android:fullBackupContent="@xml/backup_descriptor"
+        tools:ignore="GoogleAppIndexingWarning">
         <receiver android:name=".alarm.AlarmReceiver" />
         <!-- android:process=":remote" /> -->
 

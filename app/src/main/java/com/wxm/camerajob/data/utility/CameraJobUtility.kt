@@ -4,6 +4,8 @@ import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.App
 import com.wxm.camerajob.data.db.CameraJobDBUtility
 import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
+import com.wxm.camerajob.data.define.EJobStatus
+import com.wxm.camerajob.data.entity.CameraJobStatus
 
 import wxm.androidutil.util.FileUtil
 import wxm.androidutil.util.UtilFun
@@ -47,5 +49,45 @@ class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility,
         App.getCameraJobDir(cj_id)?.let {
             FileUtil.deleteDirectory(it)
         }
+    }
+
+    /**
+     * modify camera job status
+     * [js] is new status data
+     */
+    fun modifyCameraJobStatus(js: CameraJobStatus) {
+        mCameraJobStatusUtility.modifyData(js)
+    }
+
+    /**
+     * get all run cameraJob
+     */
+    fun getAllRunJob(): List<CameraJob> {
+        return mCameraJobUtility.allData.filterNotNull()
+                .filter { it.status.job_status == EJobStatus.RUN.status  }
+                .sortedBy { it._id }
+    }
+
+    /**
+     * get all cameraJob
+     */
+    fun getAllJob(): List<CameraJob>    {
+        return mCameraJobUtility.allData.filterNotNull().sortedBy { it._id }
+    }
+
+    /**
+     * get cameraJob with id [jid]
+     */
+    fun getCameraJobById(jid: Int): CameraJob?  {
+        return mCameraJobUtility.getData(jid)
+    }
+
+    /**
+     * get amount for activity jobs
+     */
+    fun getActiveJobCount(): Int {
+        return mCameraJobUtility.allData
+                .filter { it.status.job_status == EJobStatus.RUN.status }
+                .count()
     }
 }

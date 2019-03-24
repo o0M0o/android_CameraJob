@@ -50,8 +50,7 @@ class AlarmReceiver : BroadcastReceiver() {
             var ret = GlobalDef.INT_GLOBALJOB_PERIOD.toLong()
             try {
                 ret = LinkedList<Long>().apply {
-                    App.getCameraJobUtility().allData
-                            .filter { it.status.job_status == EJobStatus.RUN.status }
+                    App.getCameraJobHelper().getAllRunJob()
                             .forEach {
                                 ETimeGap.getETimeGap(it.point)?.let { eg ->
                                     add(eg.getDelay(Calendar.getInstance()))

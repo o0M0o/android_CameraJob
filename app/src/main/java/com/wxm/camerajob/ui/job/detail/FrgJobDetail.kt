@@ -81,7 +81,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
         // for job
         if (GlobalDef.INT_INVALID_ID != mJobID) {
             mJobPath = App.getCameraJobDir(mJobID)!!
-            App.getCameraJobUtility().getData(mJobID)!!.let1 {
+            App.getCameraJobHelper().getCameraJobById(mJobID)?.let1 {
                 aliveCameraJob(it)
             }
         } else {
@@ -129,11 +129,11 @@ class FrgJobDetail : FrgSupportBaseAdv() {
             }
 
             R.id.ib_job_run_or_pause -> {
-                App.getCameraJobUtility().getData(id)?.let1 { cj ->
+                App.getCameraJobHelper().getCameraJobById(id)?.let1 { cj ->
                     cj.status.let1 {
                         it.job_status = (it.job_status == EJobStatus.PAUSE.status)
                                 .doJudge(EJobStatus.RUN.status, EJobStatus.PAUSE.status)
-                        App.getCameraJobStatusUtility().modifyData(it)
+                        App.getCameraJobHelper().modifyCameraJobStatus(it)
                     }
                     reloadUI()
                 }

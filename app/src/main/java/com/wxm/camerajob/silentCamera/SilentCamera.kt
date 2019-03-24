@@ -27,7 +27,7 @@ import java.util.*
  * Created by WangXM on 2016/7/4.
  */
 class SilentCamera {
-    private var mCameraStatus = ECameraStatus.NOT_OPEN
+    private var mCameraStatus = ECameraStatus.CLOSE
 
     internal var mCamera: CameraHardWare? = null
     internal lateinit var mTPParam: TakePhotoParam
@@ -151,7 +151,7 @@ class SilentCamera {
 
         mCameraDevice?.close()
         mCaptureSession?.close()
-        mCameraStatus = ECameraStatus.NOT_OPEN
+        mCameraStatus = ECameraStatus.CLOSE
     }
 
     /// PRIVATE START

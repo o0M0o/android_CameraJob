@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.support.annotation.RequiresApi
 import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
@@ -32,7 +31,6 @@ import java.util.concurrent.TimeUnit
  * fragment for camera preview
  * Created by WangXM on 2016/10/14.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class FrgCameraPreview : FrgSupportBaseAdv() {
     private var mPreviewRequestBuilder: CaptureRequest.Builder? = null
     private var mCameraDevice: CameraDevice? = null
@@ -49,7 +47,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
 
     private var mCPParam: CameraParam? = null
 
-    private val mTextureView: AutoFitTextureView by bindView(R.id.frag_camera_textureview)
+    private val mTextureView: AutoFitTextureView by bindView(R.id.camera_texture_view)
 
     private val mCameraDeviceStateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
@@ -103,16 +101,11 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 mPreviewRequestBuilder!!.set(
                         CaptureRequest.CONTROL_AF_MODE,
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
-                // Flash is automatically enabled when necessary.
-                if (mFlashSupported) {
-                    mPreviewRequestBuilder!!.set(CaptureRequest.CONTROL_AE_MODE,
-                            CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)
-                }
 
                 // Finally, we start displaying the camera preview.
                 val mPreviewRequest = mPreviewRequestBuilder!!.build()
                 mCaptureSession!!.setRepeatingRequest(mPreviewRequest,
-                        mCaptureCallback, mBackgroundHandler)
+                        null, mBackgroundHandler)
             } catch (e: CameraAccessException) {
                 e.printStackTrace()
             }
@@ -155,16 +148,16 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                         captureStillPicture();
                     }
                     */
-                STATE_WAITING_PRECAPTURE -> {
+                STATE_WAITING_PRE_CAPTURE -> {
                     // CONTROL_AE_STATE can be null on some devices
                     val aeState = result.get(CaptureResult.CONTROL_AE_STATE)
                     if (aeState == null ||
                             aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
                             aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED) {
-                        mState = STATE_WAITING_NON_PRECAPTURE
+                        mState = STATE_WAITING_NON_PRE_CAPTURE
                     }
                 }
-                STATE_WAITING_NON_PRECAPTURE -> {
+                STATE_WAITING_NON_PRE_CAPTURE -> {
                 }/*
                     // CONTROL_AE_STATE can be null on some devices
                     Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
@@ -190,7 +183,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     }
 
     override fun isUseEventBus(): Boolean = false
-    override fun getLayoutID(): Int = R.layout.ac_camera
+    override fun getLayoutID(): Int = R.layout.frg_camera
 
     override fun initUI(savedInstanceState: Bundle?) {
         mCPParam = PreferencesUtil.loadCameraParam()
@@ -222,12 +215,9 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 e.printStackTrace()
             }
 
+        } else {
+            mTextureView.surfaceTextureListener = mSurfaceTextureListener
         }
-        /*
-        else {
-            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-        }
-        */
     }
 
     /// BEGIN PRIVATE
@@ -262,25 +252,19 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
      */
     private fun createCameraPreviewSession() {
         try {
-            mTextureView.surfaceTexture!!.let {
-                // We configure the size of default buffer to be the size of camera preview we want.
-                it.setDefaultBufferSize(mPreviewSize!!.width, mPreviewSize!!.height)
+            val st = mTextureView.surfaceTexture!!
+            // We configure the size of default buffer to be the size of camera preview we want.
+            st.setDefaultBufferSize(mPreviewSize!!.width, mPreviewSize!!.height)
 
-                // This is the output Surface we need to start preview.
-                val sf = Surface(it)
-                try {
-                    // We set up a CaptureRequest.Builder with the output Surface.
-                    mPreviewRequestBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-                    mPreviewRequestBuilder!!.addTarget(sf)
+            // This is the output Surface we need to start preview.
+            val sf = Surface(st)
+            // We set up a CaptureRequest.Builder with the output Surface.
+            mPreviewRequestBuilder = mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+            mPreviewRequestBuilder!!.addTarget(sf)
 
-                    // Here, we create a CameraCaptureSession for camera preview.
-                    mCameraDevice!!.createCaptureSession(listOf(sf),
-                            mSessionStateCallback, null)
-
-                } finally {
-                    sf.release()
-                }
-            }
+            // Here, we create a CameraCaptureSession for camera preview.
+            mCameraDevice!!.createCaptureSession(listOf(sf),
+                    mSessionStateCallback, null)
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
@@ -290,7 +274,6 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     /**
      * Opens the camera specified by
      */
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun openCamera(face: Int, width: Int, height: Int) {
         setUpCameraOutputs(face, width, height)
         if (UtilFun.StringIsNullOrEmpty(mCameraId))
@@ -387,7 +370,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
 
                 val lsSize = map.getOutputSizes(ImageFormat.JPEG)
-                        .filterNotNull().map {sz -> MySize(sz.width, sz.height) }
+                        .filterNotNull().map { sz -> MySize(sz.width, sz.height) }
                 // Find out if we need to swap dimension to get the preview size relative to sensor
                 // coordinate.
                 val mLargestSize = Collections.max(lsSize, CompareSizesByArea())
@@ -406,7 +389,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
 
                 Point().apply {
                     activity!!.windowManager.defaultDisplay.getSize(this)
-                }.let1 {pt ->
+                }.let1 { pt ->
                     var maxPreviewWidth: Int
                     var maxPreviewHeight: Int
                     val rotatedPreviewWidth: Int
@@ -447,7 +430,8 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
                 }
 
                 // Check if the flash is supported.
-                mFlashSupported = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
+                mFlashSupported = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE)
+                        ?: false
                 mCameraId = it
                 return
             }
@@ -469,9 +453,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     }
 
     /**
-     * Shows a [Toast] on the UI thread.
-     *
-     * @param text The message to show
+     * Shows [text] in UI
      */
     private fun showToast(text: String) {
         activity!!.let {
@@ -483,8 +465,8 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     companion object {
         private const val STATE_PREVIEW = 0
         private const val STATE_WAITING_LOCK = 1
-        private const val STATE_WAITING_PRECAPTURE = 2
-        private const val STATE_WAITING_NON_PRECAPTURE = 3
+        private const val STATE_WAITING_PRE_CAPTURE = 2
+        private const val STATE_WAITING_NON_PRE_CAPTURE = 3
 
         /**
          * Max preview width that is guaranteed by Camera2 API

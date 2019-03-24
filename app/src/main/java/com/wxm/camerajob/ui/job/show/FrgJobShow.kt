@@ -61,7 +61,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
     override fun loadUI(savedInstanceState: Bundle?) {
         val dirs = FileUtil.getDirDirs(App.getPhotoRootDir(), false)
         ArrayList<HashMap<String, String>>().apply {
-            App.getCameraJobUtility().allData.filterNotNull().sortedBy { it._id }.forEach {
+            App.getCameraJobHelper().getAllJob().forEach {
                 aliveCameraJob(this, it)
                 App.getCameraJobDir(it._id).let {
                     dirs.remove(it)

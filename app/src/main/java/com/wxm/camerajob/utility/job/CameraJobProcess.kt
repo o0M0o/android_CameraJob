@@ -53,7 +53,7 @@ class CameraJobProcess {
     private fun wakeupDuty(lsJob: LinkedList<CameraJob>) {
         if (lsJob.isNotEmpty()) {
             lsJob.pop().let {
-                Log.i(LOG_TAG, "wakeup job : " + it.toString())
+                Log.i(LOG_TAG, "wakeup job : $it")
                 val path = App.getCameraJobDir(it._id)
                 if (null == path) {
                     wakeupDuty(lsJob)
