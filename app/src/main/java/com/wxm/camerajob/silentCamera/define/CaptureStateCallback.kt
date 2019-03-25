@@ -21,14 +21,10 @@ internal class CaptureStateCallback constructor(private val mHome: SilentCamera,
 
         // Auto focus should be continuous for camera preview.
         try {
-            mHome.mCameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_VIDEO_SNAPSHOT)!!.let {
-                setUpCaptureBuilder(it)
-                mCaptureBuilder = it
-
-                doCapture(null)
-
-                Unit
-            }
+            mCaptureBuilder = mHome.mCameraDevice!!
+                    .createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG)
+            setUpCaptureBuilder(mCaptureBuilder!!)
+            doCapture(null)
         } catch (e: CameraAccessException) {
             TagLog.e("onConfigured", e)
             mHome.takePhotoCallBack(false)

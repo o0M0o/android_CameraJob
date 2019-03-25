@@ -245,25 +245,14 @@ class SilentCamera {
                 mCamera = null
             }
 
-            Runnable {
-                val mTimer = java.util.Timer()
-                try {
-                    mTimer.schedule(object : TimerTask()    {
-                        override fun run() {
-                            instance.closeCamera()
-                        }
-                    }, 5000)
-
-                    instance.mCParam.mSessionHandler = Handler()
-                    instance.openCamera()
-                } catch (e: Throwable) {
-                    TagLog.e("take photo failure", e)
-                    FileLogger.getLogger().severe(e.toString())
-                } finally {
-                    mTimer.cancel()
-                    instance.closeCamera()
-                }
-            }.run()
+            try {
+                instance.mCParam.mSessionHandler = Handler()
+                instance.openCamera()
+            } catch (e: Throwable) {
+                instance.closeCamera()
+                TagLog.e("take photo failure", e)
+                FileLogger.getLogger().severe(e.toString())
+            }
         }
     }
 }

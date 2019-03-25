@@ -20,37 +20,44 @@ internal class CaptureCallback constructor(private val mHome: SilentCamera,
                                            private val mDoCapture: CaptureStateCallback)
     : CameraCaptureSession.CaptureCallback() {
     companion object {
-        private const val MAX_WAIT_TIMES = 10
-        private const val MAX_SUCCESS_TIMES = 4
+        // max capture limit
+        private const val MAX_CAPTURE_TIMES = 5
+        // max capture success limit
+        private const val MAX_CAPTURE_SUCCESS_TIMES = 2
     }
 
     private var mSuccessCount = 0
     private var mWaitCount = 0
     private val mAEArray = intArrayOf(
+            CameraMetadata.CONTROL_AE_STATE_INACTIVE,
             CameraMetadata.CONTROL_AE_STATE_LOCKED, CameraMetadata.CONTROL_AE_STATE_CONVERGED,
             CameraMetadata.CONTROL_AE_STATE_PRECAPTURE, CameraMetadata.CONTROL_AE_STATE_FLASH_REQUIRED)
 
     private val mAFArray = intArrayOf(
+            CameraMetadata.CONTROL_AF_STATE_PASSIVE_FOCUSED, CameraMetadata.CONTROL_AF_STATE_INACTIVE,
             CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED, CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED,
             CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED, CameraMetadata.CONTROL_AF_STATE_PASSIVE_SCAN)
 
+    /**
+     * 对焦和曝光成功的次数大于[MAX_CAPTURE_SUCCESS_TIMES], 保存照片
+     * 如果拍照次数大于[MAX_CAPTURE_TIMES], 保存照片
+     */
     override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest,
                                     result: TotalCaptureResult) {
         super.onCaptureCompleted(session, request, result)
 
         mWaitCount++
-        if (MAX_WAIT_TIMES < mWaitCount) {
+        if (MAX_CAPTURE_TIMES < mWaitCount) {
             TagLog.e("wait too many times")
             saveImage()
         } else {
             if (checkState(result)) {
-                if(MAX_SUCCESS_TIMES > mSuccessCount)  {
+                mSuccessCount++
+                if(MAX_CAPTURE_SUCCESS_TIMES > mSuccessCount)  {
                     mDoCapture.doCapture(this)
                 } else  {
                     saveImage()
                 }
-
-                mSuccessCount++
             } else {
                 mDoCapture.doCapture(this)
             }
@@ -70,28 +77,32 @@ internal class CaptureCallback constructor(private val mHome: SilentCamera,
         mHome.takePhotoCallBack(false)
     }
 
+    /**
+     * if first time fail to acquire image, wait 200ms try again
+     */
     private fun saveImage() {
-        mReader.acquireLatestImage().let {
-            if(null != it) {
-                it
-            } else    {
-                TagLog.i("first get image failure")
-                Thread.sleep(200)
+        var ig = mReader.acquireLatestImage()
+        if(null == ig)  {
+            TagLog.i("get image failure first")
 
-                mReader.acquireLatestImage()
-            }
-        }.let1 {ig ->
-            if (null != ig) {
-                mSuccessCount = 0
-                TagLog.i("get image success")
-                ig.use { processImage(it) }
-            } else {
-                TagLog.i("get image failure")
-                mHome.takePhotoCallBack(false)
-            }
+            Thread.sleep(200)
+            ig = mReader.acquireLatestImage()
+        }
+
+        if (null != ig) {
+            TagLog.i("get image success")
+            mSuccessCount = 0
+            ig.use { processImage(it) }
+        } else {
+            TagLog.i("get image failure")
+            mHome.takePhotoCallBack(false)
         }
     }
 
+    /**
+     * check capture result status
+     * @return true if capture is ok
+     */
     private fun checkState(result: TotalCaptureResult): Boolean {
         val af = result.get(CaptureResult.CONTROL_AF_STATE)
         val ae = result.get(CaptureResult.CONTROL_AE_STATE)
@@ -103,23 +114,23 @@ internal class CaptureCallback constructor(private val mHome: SilentCamera,
     }
 
 
+    /**
+     * save [ig] to file
+     */
     private fun processImage(ig: Image) {
         val bytes = ig.use {
-            it.planes[0].buffer.let {
-                ByteArray(it.remaining()).apply {
-                    it.get(this)
-                }
+            val bb = it.planes[0].buffer
+            ByteArray(bb.remaining()).apply {
+                bb.get(this)
             }
         }
 
         try {
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!.let {
+            val ret = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)!!.let {
                 ImageUtil.saveBitmapToJPGFile(it, mHome.mTPParam.mPhotoFileDir, mHome.mTPParam.mFileName)
-            }.let {
-                mHome.takePhotoCallBack(it)
-
-                Unit
             }
+
+            mHome.takePhotoCallBack(ret)
         } catch (e: Throwable) {
             TagLog.e("save file failure", e)
             mHome.takePhotoCallBack(false)

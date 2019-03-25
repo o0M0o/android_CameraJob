@@ -3,30 +3,26 @@ package com.wxm.camerajob.ui.test.silentCamera
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import com.wxm.camerajob.App
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.preference.PreferencesUtil
-import com.wxm.camerajob.silentCamera.TakePhotoParam
 import com.wxm.camerajob.silentCamera.ITakePhoto
 import com.wxm.camerajob.silentCamera.SilentCamera
-import com.wxm.camerajob.App
+import com.wxm.camerajob.silentCamera.TakePhotoParam
 import kotterknife.bindView
 import wxm.androidutil.app.AppBase
 import wxm.androidutil.image.ImageUtil
 import wxm.androidutil.log.TagLog
-import java.lang.ref.WeakReference
 
 class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
     private val mBTCapture: Button by bindView(R.id.acbt_capture)
     private val mIVPhoto: ImageView by bindView(R.id.aciv_photo)
-    private val mSelfHandler: ACTestMsgHandler = ACTestMsgHandler(this)
 
     private val mCLBlack: Int = AppBase.getColor(R.color.black)
 
@@ -37,14 +33,14 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
             mBTCapture.isClickable = true
             mBTCapture.setTextColor(mCLBlack)
 
-            mSelfHandler.sendEmptyMessage(MSG_TAKE_PHOTO_FAILED)
+            onTakePhotoFailed()
         }
 
         override fun onTakePhotoSuccess(tp: TakePhotoParam) {
             mBTCapture.isClickable = true
             mBTCapture.setTextColor(mCLBlack)
 
-            mSelfHandler.sendEmptyMessage(MSG_TAKE_PHOTO_SUCCESS)
+            onTakePhotoSuccess()
         }
     }
 
@@ -78,39 +74,25 @@ class ACTestSilentCamera : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private class ACTestMsgHandler internal constructor(ac: ACTestSilentCamera) : Handler() {
-        private val mActivity: WeakReference<ACTestSilentCamera> = WeakReference(ac)
+    /// PRIVATE START
+    private fun onTakePhotoSuccess() {
+        Toast.makeText(this, "takePhoto ok", Toast.LENGTH_SHORT).show()
 
-        override fun handleMessage(msg: Message) {
-            val acHome = mActivity.get() ?: return
-            when (msg.what) {
-                MSG_TAKE_PHOTO_SUCCESS -> {
-                    Toast.makeText(acHome, "takePhoto ok", Toast.LENGTH_SHORT).show()
-
-                    acHome.mIVPhoto.getDrawingRect(Rect())
-                    val fn = "${acHome.mTPParam.mPhotoFileDir}/${acHome.mTPParam.mFileName}"
-                    //ImageUtil.getRotatedLocalBitmap(fn).let {
-                    ImageUtil.getLocalBitmap(fn).let {
-                        if (null != it) {
-                            acHome.mIVPhoto.setImageBitmap(it)
-                        } else {
-                            Toast.makeText(acHome, "load '$fn' failed!",
-                                    Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-
-                MSG_TAKE_PHOTO_FAILED -> {
-                    Toast.makeText(acHome, "takePhoto failed", Toast.LENGTH_SHORT).show()
-                }
-
-                else -> TagLog.e("msg('$msg') can not process")
+        mIVPhoto.getDrawingRect(Rect())
+        val fn = "${mTPParam.mPhotoFileDir}/${mTPParam.mFileName}"
+        //ImageUtil.getRotatedLocalBitmap(fn).let {
+        ImageUtil.getLocalBitmap(fn).let {
+            if (null != it) {
+                mIVPhoto.setImageBitmap(it)
+            } else {
+                Toast.makeText(this, "load '$fn' failed!",
+                        Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    companion object {
-        private const val MSG_TAKE_PHOTO_SUCCESS = 1
-        private const val MSG_TAKE_PHOTO_FAILED = 2
+    private fun onTakePhotoFailed() {
+        Toast.makeText(this, "takePhoto failed", Toast.LENGTH_SHORT).show()
     }
+    /// PRIVATE END
 }
