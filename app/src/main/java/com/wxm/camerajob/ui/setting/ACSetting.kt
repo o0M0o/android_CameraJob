@@ -39,6 +39,7 @@ class ACSetting : ACSwitcherActivity<TFSettingBase>() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.acm_save_giveup, menu)
         return true
     }

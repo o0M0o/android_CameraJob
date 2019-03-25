@@ -51,6 +51,20 @@ class FrgWelcome : FrgSupportSwitcher<FrgSupportBaseAdv>() {
         }
     }
 
+    /**
+     * do back action
+     * @return true if do anything
+     */
+    fun doBack(): Boolean    {
+        return if(hotPage == mPGSetting)   {
+            mPGSetting.leavePage()
+            true
+        } else  {
+            false
+        }
+    }
+
+    /// PRIVATE START
     private fun switchToHotPage(v: View)    {
         (v as IconButton).let1 {
             if (!it.isHot) {
@@ -86,6 +100,7 @@ class FrgWelcome : FrgSupportSwitcher<FrgSupportBaseAdv>() {
             }
         }
     }
+    /// PRIVATE END
 
     companion object {
         private const val REQUEST_CODE_JOB_CREATE = 1

@@ -113,6 +113,12 @@ class ACWelcome : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         return true
     }
 
+    override fun onBackPressed() {
+        if(!mFRWelcome.doBack()) {
+            super.onBackPressed()
+        }
+    }
+
     /**
      * 给作者留言
      */

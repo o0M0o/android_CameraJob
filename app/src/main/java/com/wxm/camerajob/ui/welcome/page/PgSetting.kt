@@ -49,7 +49,6 @@ class PgSetting : FrgSupportSwitcher<TFSettingBase>(), PageBase {
         }
     }
 
-
     override fun setupFragment(savedInstanceState: Bundle?) {
         addChildFrg(mPGMain)
         addChildFrg(mPGCamera)
