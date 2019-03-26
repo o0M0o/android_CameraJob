@@ -4,6 +4,9 @@ package com.wxm.camerajob.ui.welcome.page
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.ListView
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.db.DBDataChangeEvent
@@ -13,6 +16,9 @@ import com.wxm.camerajob.preference.PreferencesChangeEvent
 import com.wxm.camerajob.ui.base.PageBase
 import com.wxm.camerajob.ui.job.detail.ACJobDetail
 import com.wxm.camerajob.App
+import com.wxm.camerajob.BuildConfig
+import com.wxm.camerajob.ui.test.camera.ACTestCamera
+import com.wxm.camerajob.ui.test.silentCamera.ACTestSilentCamera
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -38,6 +44,11 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
 
     override fun leavePage(): Boolean {
         return true
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     /**
@@ -86,6 +97,31 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
                             R.id.tv_job_type, R.id.tv_job_date,
                             R.id.tv_phtot_count, R.id.tv_photo_last_time))
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        @Suppress("ConstantConditionIf")
+        if (BuildConfig.TestCamera) {
+            inflater!!.inflate(R.menu.acm_welcome, menu)
+        }
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.mi_camera_test -> {
+                startActivityForResult(Intent(activity, ACTestCamera::class.java), 1)
+            }
+
+            R.id.mi_silentcamera_test -> {
+                startActivityForResult(Intent(activity, ACTestSilentCamera::class.java), 1)
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+        }
+
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

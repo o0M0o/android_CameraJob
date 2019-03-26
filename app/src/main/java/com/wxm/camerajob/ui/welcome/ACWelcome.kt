@@ -60,34 +60,9 @@ class ACWelcome : AppCompatActivity(), NavigationView.OnNavigationItemSelectedLi
         mFRWelcome.reloadUI()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        @Suppress("ConstantConditionIf")
-        if (BuildConfig.TestCamera) {
-            menuInflater.inflate(R.menu.acm_welcome, menu)
-        }
-
-        return true
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         mFRWelcome.reloadUI()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.mi_camera_test -> {
-                startActivityForResult(Intent(this, ACTestCamera::class.java), 1)
-            }
-
-            R.id.mi_silentcamera_test -> {
-                startActivityForResult(Intent(this, ACTestSilentCamera::class.java), 1)
-            }
-
-            else -> return super.onOptionsItemSelected(item)
-        }
-
-        return true
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
