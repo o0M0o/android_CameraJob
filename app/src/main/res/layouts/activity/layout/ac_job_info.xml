@@ -39,30 +39,24 @@
         </android.support.design.widget.TextInputLayout>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/rl_line"
+    <ImageView
+        android:id="@+id/iv_line"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="2dp"
         android:layout_below="@id/rl_name"
-        android:paddingBottom="6dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="6dp">
-
-        <ImageView
-            android:id="@+id/iv_line1"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/grey_1" />
-    </RelativeLayout>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/grey_1" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/rl_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/rl_line"
-        android:paddingBottom="12dp"
-        android:paddingTop="8dp">
+        android:layout_below="@id/iv_line"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp">
 
         <ImageView
             android:id="@+id/iv_active"
@@ -76,20 +70,21 @@
 
         <RadioGroup
             android:id="@+id/rg_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_marginEnd ="4dp"
+            android:layout_marginEnd="4dp"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_active"
-            android:orientation="horizontal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" >
+            app:layout_constraintTop_toTopOf="parent">
 
             <RadioButton
                 android:id="@+id/rb_minute"
-                android:checked="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="@string/gap_minute" />
 
             <RadioButton
@@ -110,13 +105,13 @@
         <GridView
             android:id="@+id/gv_job_point"
             android:layout_width="0dp"
-            android:layout_height="28dp"
+            android:layout_height="36dp"
             android:layout_marginStart="4dp"
-            android:layout_marginEnd ="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
             android:horizontalSpacing="2dp"
-            android:verticalSpacing="2dp"
             android:numColumns="4"
+            android:verticalSpacing="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_active"

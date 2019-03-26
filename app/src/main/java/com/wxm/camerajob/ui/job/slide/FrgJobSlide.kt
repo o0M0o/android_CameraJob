@@ -80,8 +80,7 @@ class FrgJobSlide : FrgSupportBaseAdv() {
 
     /// BEGIN PRIVATE
     /**
-     * 相册跳转到新位置
-     * @param position  新位置
+     * gallery jump to [position]
      */
     fun toPosition(position: Int) {
         mISPhoto.setImageDrawable(UtilFun.cast_t<Drawable>(mGYPhotos.adapter.getItem(position)))
@@ -94,34 +93,22 @@ class FrgJobSlide : FrgSupportBaseAdv() {
     }
     /// END PRIVATE
     /**
-     * 定义Gallery的数据适配器MainGalleryAdapter
+     * for gallery
      */
     internal inner class MainGalleryAdapter : BaseAdapter() {
-        /**
-         * 获得数量
-         */
         override fun getCount(): Int {
             return mLLPhotoFN.size
         }
 
-        /**
-         * 获得当前选项
-         */
         override fun getItem(position: Int): Any {
             return BitmapDrawable(resources,
                     ImageUtil.getRotatedLocalBitmap(mLLPhotoFN[position], SHOW_SIZE))
         }
 
-        /**
-         * 获得当前选项的id
-         */
         override fun getItemId(position: Int): Long {
             return position.toLong()
         }
 
-        /**
-         * 获得当前选项的视图
-         */
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             return ImageView(activity).apply {
                 layoutParams = Gallery.LayoutParams(400, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -129,11 +116,10 @@ class FrgJobSlide : FrgSupportBaseAdv() {
 
                 setImageBitmap(ImageUtil.getRotatedLocalBitmap(mLLPhotoFN[position], GALLERY_SIZE)!!)
 
-                activity!!.obtainStyledAttributes(R.styleable.Gallery).let1 {
-                    setBackgroundResource(it.getResourceId(
-                            R.styleable.Gallery_android_galleryItemBackground, 0))
-                    it.recycle()
-                }
+                val ta = activity!!.obtainStyledAttributes(R.styleable.Gallery)
+                setBackgroundResource(ta.getResourceId(
+                        R.styleable.Gallery_android_galleryItemBackground, 0))
+                ta.recycle()
             }
         }
     }

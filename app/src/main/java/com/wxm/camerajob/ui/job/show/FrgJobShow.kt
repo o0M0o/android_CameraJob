@@ -34,19 +34,11 @@ class FrgJobShow : FrgSupportBaseAdv() {
     override fun isUseEventBus(): Boolean = true
     override fun getLayoutID(): Int = R.layout.pg_job_show
 
-    /**
-     * 数据库内数据变化处理器
-     * @param event     事件
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDBDataChangeEvent(event: DBDataChangeEvent) {
         reloadUI()
     }
 
-    /**
-     * 配置变化处理器
-     * @param event     事件
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPreferencesChangeEvent(event: PreferencesChangeEvent) {
         if (GlobalDef.STR_CAMERAPROPERTIES_NAME == event.attrName) {
@@ -128,8 +120,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
     /// END PRIVATE
 
     /**
-     * adapter for listview to show jobs status
-     * Created by wxm on 2016/8/13.
+     * adapter for jobs status
      */
     inner class LVJobShowAdapter(private val mFrgHome: FrgJobShow, data: List<Map<String, String>>, fromKey: Array<String?>, toId: IntArray)
         : MoreAdapter(context!!, data, R.layout.li_job_show, fromKey, toId) {
