@@ -80,8 +80,8 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
         ArrayList<HashMap<String, String>>().apply {
             App.getCameraJobHelper().getAllJob().forEach {
                 aliveCameraJob(this, it)
-                App.getCameraJobDir(it._id).let {
-                    dirs.remove(it)
+                App.getCameraJobDir(it._id)?.let {path ->
+                    dirs.remove(path)
                 }
             }
 
@@ -154,8 +154,8 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
 
             it[KEY_JOB_TYPE] = context!!.getString(R.string.fs_job_type, cj.type, cj.point)
 
-            it[KEY_JOB_START_END_DATE] = CalendarUtility.YearMonthDayHourMinute.let {
-                context!!.getString(R.string.fs_start_end_date, it.format(cj.startTime), it.format(cj.endTime))
+            it[KEY_JOB_START_END_DATE] = CalendarUtility.YearMonthDayHourMinute.let {cu ->
+                context!!.getString(R.string.fs_start_end_date, cu.format(cj.startTime), cu.format(cj.endTime))
             }
 
             it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.photoCount)
@@ -182,7 +182,7 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
                 mFrgHome.startActivityForResult(
                         Intent(mContext, ACJobDetail::class.java).apply {
                             if (ALIVE_JOB == hm[KEY_TYPE]) {
-                                putExtra(ACJobDetail.KEY_JOB_ID, Integer.parseInt(hm[KEY_ID]!!))
+                                putExtra(ACJobDetail.KEY_JOB_ID, Integer.parseInt(hm.getValue(KEY_ID)))
                             } else {
                                 putExtra(ACJobDetail.KEY_JOB_DIR, hm[KEY_JOB_DIR])
                             }

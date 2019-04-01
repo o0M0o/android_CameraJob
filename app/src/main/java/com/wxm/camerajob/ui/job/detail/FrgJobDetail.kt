@@ -289,7 +289,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
         : MoreAdapter(context!!, data, R.layout.gi_pic) {
         override fun loadView(pos: Int, vhHolder: ViewHolder) {
             @Suppress("UNCHECKED_CAST")
-            val path = (getItem(pos) as Map<String, String>)[KEY_PIC_PATH]!!
+            val path = (getItem(pos) as Map<String, String>).getValue(KEY_PIC_PATH)
             vhHolder.getView<ImageView>(R.id.iv_pic)!!
                     .setImageBitmap(loadBitMapForGV(path))
         }

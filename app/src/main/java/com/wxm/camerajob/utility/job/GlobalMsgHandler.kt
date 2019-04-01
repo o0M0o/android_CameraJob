@@ -47,9 +47,9 @@ internal class GlobalMsgHandler : Handler() {
         val h = msg.obj as Handler
         App.getCameraJobHelper().getAllJob().let {
             if(it.isNotEmpty()) {
-                Message.obtain(h, EMsgType.REPLAY.id, it).let {
-                    it.arg1 = EMsgType.CAMERAJOB_QUERY.id
-                    it.sendToTarget()
+                Message.obtain(h, EMsgType.REPLAY.id, it).let {msg ->
+                    msg.arg1 = EMsgType.CAMERAJOB_QUERY.id
+                    msg.sendToTarget()
                 }
             }
         }

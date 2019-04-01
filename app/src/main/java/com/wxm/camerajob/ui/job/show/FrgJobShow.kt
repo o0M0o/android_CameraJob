@@ -55,8 +55,8 @@ class FrgJobShow : FrgSupportBaseAdv() {
         ArrayList<HashMap<String, String>>().apply {
             App.getCameraJobHelper().getAllJob().forEach {
                 aliveCameraJob(this, it)
-                App.getCameraJobDir(it._id).let {
-                    dirs.remove(it)
+                App.getCameraJobDir(it._id)?.let {path ->
+                    dirs.remove(path)
                 }
             }
 
@@ -131,9 +131,9 @@ class FrgJobShow : FrgSupportBaseAdv() {
                 mFrgHome.startActivityForResult(
                         Intent(mContext, ACJobDetail::class.java).apply {
                             if(ALIVE_JOB == hm[KEY_TYPE])   {
-                                putExtra(ACJobDetail.KEY_JOB_ID, Integer.parseInt(hm[KEY_ID]!!))
+                                putExtra(ACJobDetail.KEY_JOB_ID, Integer.parseInt(hm.getValue(KEY_ID)))
                             } else  {
-                                putExtra(ACJobDetail.KEY_JOB_DIR, Integer.parseInt(hm[KEY_JOB_DIR]!!))
+                                putExtra(ACJobDetail.KEY_JOB_DIR, Integer.parseInt(hm.getValue(KEY_JOB_DIR)))
                             }
                         },
                         1)

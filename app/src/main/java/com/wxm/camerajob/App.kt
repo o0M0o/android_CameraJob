@@ -162,8 +162,8 @@ class App : AppBase() {
         fun getCameraJobFromDir(path: String): CameraJob? {
             return File(path, INFO_FN).let {
                 if (it.exists()) {
-                    FileReader(it).use {
-                        CameraJob.readFromJson(JsonReader(it))
+                    FileReader(it).use {fr ->
+                        CameraJob.readFromJson(JsonReader(fr))
                     }
                 } else null
             }

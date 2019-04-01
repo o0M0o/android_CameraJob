@@ -34,8 +34,8 @@ object PreferencesUtil {
                         CameraCharacteristics.LENS_FACING_BACK)
 
                 it.getString(EProperty.PROPERTIES_CAMERA_DPI.paraName,
-                        MySize(640, 480).toString())!!.let {
-                    mPhotoSize = MySize.parseSize(it)
+                        MySize(640, 480).toString())!!.let {size ->
+                    mPhotoSize = MySize.parseSize(size)
                 }
                 mAutoFocus = it.getBoolean(EProperty.PROPERTIES_CAMERA_AUTO_FOCUS.paraName, true)
                 mAutoFlash = it.getBoolean(EProperty.PROPERTIES_CAMERA_AUTO_FLASH.paraName, true)

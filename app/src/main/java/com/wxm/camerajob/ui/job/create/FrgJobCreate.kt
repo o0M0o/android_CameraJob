@@ -251,8 +251,8 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
                                 tv.text = String.format(Locale.CHINA, "%s %02d:%02d",
                                         strDate, hourOfDay, minute)
                                 tv.requestFocus()
-                            }.let {
-                                TimePickerDialog(context, it, cl.get(Calendar.HOUR_OF_DAY),
+                            }.let { tp ->
+                                TimePickerDialog(context, tp, cl.get(Calendar.HOUR_OF_DAY),
                                         cl.get(Calendar.MINUTE), true)
                                         .apply { setTitle(title) }
                                         .show()

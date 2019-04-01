@@ -33,8 +33,7 @@ class ACJobCreate : ACSwitcherActivity<FrgJobCreate>() {
         return true
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
             GlobalDef.INTRET_CS_ACCEPT -> {

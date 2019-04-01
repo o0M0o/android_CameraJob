@@ -18,6 +18,7 @@ import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
 import com.wxm.camerajob.App
 import kotterknife.bindView
+import wxm.androidutil.improve.let1
 import wxm.androidutil.type.MySize
 import wxm.androidutil.ui.dialog.DlgAlert
 import wxm.androidutil.ui.view.EventHelper
@@ -154,16 +155,14 @@ class TFSettingCamera : TFSettingBase() {
         mLLFrontCameraDpi.clear()
         var mBackCameraID = ""
         var mFrontCameraID = ""
-        App.getCameraManager()?.let {
-            val manager = it
+        App.getCameraManager()?.let {cm ->
             try {
                 val lsDpi = LinkedList<HashMap<String, String>>()
-                manager.cameraIdList.forEach {
-                    val cameraId = it
+                cm.cameraIdList.forEach {cameraID ->
                     lsDpi.clear()
-                    manager.getCameraCharacteristics(it)?.let {
-                        it.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.let {
-                            lsDpi.addAll(it.getOutputSizes(ImageFormat.JPEG)
+                    cm.getCameraCharacteristics(cameraID).let1 {cc ->
+                        cc.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.let1 {map ->
+                            lsDpi.addAll(map.getOutputSizes(ImageFormat.JPEG)
                                     .map { MySize(it.width, it.height) }
                                     .sortedWith(CompareSizesByArea())
                                     .map {
@@ -172,24 +171,20 @@ class TFSettingCamera : TFSettingBase() {
                                         }
                                     }
                             )
-
-                            Unit
                         }
 
                         // 前后相机只采用第一个
-                        it.get(CameraCharacteristics.LENS_FACING)?.let {
-                            if (CameraCharacteristics.LENS_FACING_BACK == it && mBackCameraID.isEmpty()) {
-                                mBackCameraID = cameraId
+                        cc.get(CameraCharacteristics.LENS_FACING)?.let {face ->
+                            if (CameraCharacteristics.LENS_FACING_BACK == face && mBackCameraID.isEmpty()) {
+                                mBackCameraID = cameraID
                                 mLLBackCameraDpi.addAll(lsDpi)
                             }
 
-                            if (CameraCharacteristics.LENS_FACING_FRONT == it && mFrontCameraID.isEmpty()) {
-                                mFrontCameraID = cameraId
+                            if (CameraCharacteristics.LENS_FACING_FRONT == face && mFrontCameraID.isEmpty()) {
+                                mFrontCameraID = cameraID
                                 mLLFrontCameraDpi.addAll(lsDpi)
                             }
                         }
-
-                        Unit
                     }
                 }
             } catch (e: CameraAccessException) {
