@@ -35,7 +35,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
     override fun getLayoutID(): Int = R.layout.pg_job_show
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onDBDataChangeEvent(event: DBDataChangeEvent) {
+    fun onDBDataChangeEvent(@Suppress("UNUSED_PARAMETER") event: DBDataChangeEvent) {
         reloadUI()
     }
 
@@ -93,15 +93,15 @@ class FrgJobShow : FrgSupportBaseAdv() {
 
     private fun aliveCameraJob(jobs: MutableList<HashMap<String, String>>, cj: CameraJob) {
         val at = CalendarUtility.YearMonthDayHourMinute.let {
-            context!!.getString(R.string.fs_start_end_date, it.format(cj.starttime), it.format(cj.endtime))
+            context!!.getString(R.string.fs_start_end_date, it.format(cj.startTime), it.format(cj.endTime))
         }
 
-        val jobName = (if (cj.status.job_status == EJobStatus.RUN.status) "运行" else "暂停").let {
+        val jobName = (if (cj.status == EJobStatus.RUN.status) "运行" else "暂停").let {
             "${cj.name}($it)"
         }
 
-        val detail = if (0 != cj.status.job_photo_count)
-            context!!.getString(R.string.fs_photo_last, CalendarUtility.Full.format(cj.status.ts))
+        val detail = if (0 != cj.photoCount)
+            context!!.getString(R.string.fs_photo_last, CalendarUtility.Full.format(cj.lastPhotoTime))
         else ""
 
 
@@ -109,10 +109,10 @@ class FrgJobShow : FrgSupportBaseAdv() {
             it[KEY_JOB_NAME] = jobName
             it[KEY_JOB_TYPE] = context!!.getString(R.string.fs_job_type, cj.type, cj.point)
             it[KEY_JOB_START_END_DATE] = at
-            it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.status.job_photo_count)
+            it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.photoCount)
             it[KEY_PHOTO_LAST_TIME] = detail
             it[KEY_ID] = Integer.toString(cj._id)
-            it[KEY_STATUS] = cj.status.job_status!!
+            it[KEY_STATUS] = cj.status
             it[KEY_TYPE] = ALIVE_JOB
             jobs.add(it)
         }

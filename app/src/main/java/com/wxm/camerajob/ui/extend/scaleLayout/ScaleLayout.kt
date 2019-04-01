@@ -39,7 +39,7 @@ class ScaleLayout : ConstraintLayout {
     }
 
     @SuppressLint("Recycle")
-    private fun init(ct: Context, attrs: AttributeSet?)  {
+    private fun init(@Suppress("UNUSED_PARAMETER") ct: Context, attrs: AttributeSet?)  {
         context.obtainStyledAttributes(attrs, R.styleable.ScaleLayout)?.let1 {
             mWidthToHeight = it.getFloat(R.styleable.ScaleLayout_slWidthToHeight, DEF_WIDTH_TO_HEIGHT)
             it.recycle()

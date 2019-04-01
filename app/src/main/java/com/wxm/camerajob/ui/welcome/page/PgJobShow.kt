@@ -149,22 +149,24 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
 
     private fun aliveCameraJob(jobs: MutableList<HashMap<String, String>>, cj: CameraJob) {
         HashMap<String, String>().let1 {
-            it[KEY_JOB_NAME] = "${cj.name}(${(cj.status.job_status == EJobStatus.RUN.status)
+            it[KEY_JOB_NAME] = "${cj.name}(${(cj.status == EJobStatus.RUN.status)
                     .doJudge("运行", "暂停")})"
 
             it[KEY_JOB_TYPE] = context!!.getString(R.string.fs_job_type, cj.type, cj.point)
 
             it[KEY_JOB_START_END_DATE] = CalendarUtility.YearMonthDayHourMinute.let {
-                context!!.getString(R.string.fs_start_end_date, it.format(cj.starttime), it.format(cj.endtime))
+                context!!.getString(R.string.fs_start_end_date, it.format(cj.startTime), it.format(cj.endTime))
             }
 
-            it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.status.job_photo_count)
+            it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.photoCount)
 
-            it[KEY_PHOTO_LAST_TIME] = (0 != cj.status.job_photo_count)
-                    .doJudge(context!!.getString(R.string.fs_photo_last, CalendarUtility.Full.format(cj.status.ts)), "")
+            it[KEY_PHOTO_LAST_TIME] = (0 != cj.photoCount)
+                    .doJudge(context!!.getString(R.string.fs_photo_last,
+                            CalendarUtility.Full.format(cj.lastPhotoTime)),
+                            "")
 
             it[KEY_ID] = Integer.toString(cj._id)
-            it[KEY_STATUS] = cj.status.job_status!!
+            it[KEY_STATUS] = cj.status
             it[KEY_TYPE] = ALIVE_JOB
             jobs.add(it)
         }

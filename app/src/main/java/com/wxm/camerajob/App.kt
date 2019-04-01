@@ -14,7 +14,6 @@ import android.util.JsonWriter
 import android.view.WindowManager
 import com.wxm.camerajob.alarm.AlarmReceiver
 import com.wxm.camerajob.data.db.CameraJobDBUtility
-import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
 import com.wxm.camerajob.data.db.DBOrmLiteHelper
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.data.define.GlobalDef
@@ -84,8 +83,7 @@ class App : AppBase() {
 
         // for db
         DBOrmLiteHelper(this).let {
-            mCameraJobHelper = CameraJobUtility(CameraJobDBUtility(it),
-                    CameraJobStatusDBUtility(it))
+            mCameraJobHelper = CameraJobUtility(CameraJobDBUtility(it))
         }
 
         // for job

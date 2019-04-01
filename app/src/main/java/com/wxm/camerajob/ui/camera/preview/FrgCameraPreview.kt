@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
@@ -362,8 +363,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
         try {
             manager.cameraIdList.filter {
                 val cc = manager.getCameraCharacteristics(it)
-                null != cc
-                        && face == cc.get(CameraCharacteristics.LENS_FACING)
+                        face == cc.get(CameraCharacteristics.LENS_FACING)
                         && null != cc.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
             }.forEach {
                 val characteristics = manager.getCameraCharacteristics(it)

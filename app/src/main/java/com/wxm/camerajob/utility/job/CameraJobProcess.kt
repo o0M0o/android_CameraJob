@@ -34,9 +34,9 @@ class CameraJobProcess {
      * @return  true if wakeup else false
      */
     private fun checkJobWakeup(cj: CameraJob): Boolean {
-        if (cj.status.job_status == EJobStatus.RUN.status) {
+        if (cj.status == EJobStatus.RUN.status) {
             val cur = System.currentTimeMillis()
-            if (cur in cj.starttime.time..(cj.endtime.time - 1)) {
+            if (cur in cj.startTime.time..(cj.endTime.time - 1)) {
                 ETimeGap.values().find { cj.point == it.gapName }?.let {
                     return it.isArrive(Calendar.getInstance())
                 }
@@ -75,7 +75,7 @@ class CameraJobProcess {
                         }
                     }
 
-                    SilentCamera.takePhoto(PreferencesUtil.loadCameraParam(), param, cbTakePhoto)
+                    SilentCamera.takePhoto(it.getCameraParam(), param, cbTakePhoto)
                 }
             }
         }

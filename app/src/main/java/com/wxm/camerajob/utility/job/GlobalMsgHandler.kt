@@ -7,6 +7,8 @@ import com.wxm.camerajob.alarm.AlarmReceiver
 
 import com.wxm.camerajob.data.define.EMsgType
 import com.wxm.camerajob.App
+import wxm.androidutil.improve.let1
+import wxm.androidutil.log.TagLog
 
 import java.util.Calendar
 
@@ -25,7 +27,7 @@ internal class GlobalMsgHandler : Handler() {
                 EMsgType.CAMERAJOB_QUERY -> onQueryCameraJob(msg)
                 EMsgType.CAMERAJOB_TAKEPHOTO -> onTakePhoto(msg)
                 else -> {
-                    Log.e(LOG_TAG, "$it can not process")
+                    TagLog.e("$it can not process")
                 }
             }
 
@@ -43,7 +45,7 @@ internal class GlobalMsgHandler : Handler() {
 
     private fun onQueryCameraJob(msg: Message) {
         val h = msg.obj as Handler
-        App.getCameraJobHelper().getAllJob()?.let {
+        App.getCameraJobHelper().getAllJob().let {
             if(it.isNotEmpty()) {
                 Message.obtain(h, EMsgType.REPLAY.id, it).let {
                     it.arg1 = EMsgType.CAMERAJOB_QUERY.id
@@ -54,25 +56,16 @@ internal class GlobalMsgHandler : Handler() {
     }
 
     private fun onTakePhoto(msg: Message) {
-        UtilFun.cast<Array<Any>>(msg.obj)?.let {
-            val jobId = UtilFun.cast<Int>(it[0])
-            val photoCount = UtilFun.cast<Int>(it[1])
+        UtilFun.cast<Array<Any>>(msg.obj)?.let1 {ar ->
+            val jobId = UtilFun.cast<Int>(ar[0])
+            val photoCount = UtilFun.cast<Int>(ar[1])
 
             App.getCameraJobHelper().getCameraJobById(jobId)?.let {
-                it.status.let {
-                    it.job_photo_count = it.job_photo_count + photoCount
-                    it.ts.time = Calendar.getInstance().timeInMillis
+                it.photoCount += photoCount
+                it.lastPhotoTime.time = Calendar.getInstance().timeInMillis
 
-                    App.getCameraJobHelper().modifyCameraJobStatus(it)
-                }
+                App.getCameraJobHelper().modifyCameraJob(it)
             }
-
-            Unit
         }
    }
-
-    companion object {
-        private val LOG_TAG = ::GlobalMsgHandler.javaClass.simpleName
-    }
-
 }

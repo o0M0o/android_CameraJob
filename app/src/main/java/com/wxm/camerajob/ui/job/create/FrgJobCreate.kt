@@ -125,13 +125,22 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         }
 
         CameraJob().apply {
+            // for job
             name = jobName
             type = getJobGap()
             point = jobPoint
-            starttime = st
-            endtime = et
+            startTime = st
+            endTime = et
             ts.time = System.currentTimeMillis()
-            status.job_status = EJobStatus.RUN.status
+            status = EJobStatus.RUN.status
+
+            // for camera
+            PreferencesUtil.loadCameraParam().let1 {
+                photoSize = it.mPhotoSize.toString()
+                autoFlash = it.mAutoFlash
+                autoFocus = it.mAutoFocus
+                face = it.mFace
+            }
         }.let {
             return App.getCameraJobHelper().createCameraJob(it)
         }
@@ -197,11 +206,8 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
             mTVJobEndDate.text = CalendarUtility.YearMonthDayHourMinute.format(it + 1000 * 3600 * 24 * 7)
         }
 
-        // for job type & job point
-
         // for send pic
-        mSTSendPic.setOnCheckedChangeListener { _, isChecked
-            ->
+        mSTSendPic.setOnCheckedChangeListener { _, isChecked ->
             mVSEmailDetail.displayedChild = if (isChecked) 0 else 1
         }
 
@@ -329,11 +335,10 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
         override fun loadView(pos: Int, vhHolder: ViewHolder) {
             vhHolder.convertView!!.let1 {
                 it.setOnClickListener { v ->
-                    mGVJobPoint.getPositionForView(v).let {
-                        if (mLastSelected != it) {
-                            mLastSelected = it
-                            notifyDataSetChanged()
-                        }
+                    val selected = mGVJobPoint.getPositionForView(v)
+                    if (mLastSelected != selected) {
+                        mLastSelected = selected
+                        notifyDataSetChanged()
                     }
                 }
                 it.setBackgroundColor((mLastSelected == pos).doJudge(mCLSelected, mCLNotSelected))

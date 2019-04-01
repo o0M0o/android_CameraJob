@@ -3,9 +3,7 @@ package com.wxm.camerajob.data.utility
 import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.App
 import com.wxm.camerajob.data.db.CameraJobDBUtility
-import com.wxm.camerajob.data.db.CameraJobStatusDBUtility
 import com.wxm.camerajob.data.define.EJobStatus
-import com.wxm.camerajob.data.entity.CameraJobStatus
 
 import wxm.androidutil.util.FileUtil
 import wxm.androidutil.util.UtilFun
@@ -15,8 +13,7 @@ import wxm.androidutil.util.UtilFun
  * helper for job
  * Created by WangXM on 2016/11/9.
  */
-class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility,
-                       private val mCameraJobStatusUtility: CameraJobStatusDBUtility) {
+class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility) {
     /**
      * create camera job
      * first create job directory, then create job
@@ -52,11 +49,11 @@ class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility,
     }
 
     /**
-     * modify camera job status
-     * [js] is new status data
+     * modify camera job
+     * [js] is modify data
      */
-    fun modifyCameraJobStatus(js: CameraJobStatus) {
-        mCameraJobStatusUtility.modifyData(js)
+    fun modifyCameraJob(js: CameraJob) {
+        mCameraJobUtility.modifyData(js)
     }
 
     /**
@@ -64,7 +61,7 @@ class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility,
      */
     fun getAllRunJob(): List<CameraJob> {
         return mCameraJobUtility.allData.filterNotNull()
-                .filter { it.status.job_status == EJobStatus.RUN.status  }
+                .filter { it.status == EJobStatus.RUN.status  }
                 .sortedBy { it._id }
     }
 
@@ -87,7 +84,7 @@ class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility,
      */
     fun getActiveJobCount(): Int {
         return mCameraJobUtility.allData
-                .filter { it.status.job_status == EJobStatus.RUN.status }
+                .filter { it.status == EJobStatus.RUN.status }
                 .count()
     }
 }

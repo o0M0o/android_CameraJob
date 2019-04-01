@@ -1,8 +1,10 @@
 package com.wxm.camerajob.silentCamera
 
+import com.wxm.camerajob.data.entity.CameraParam
+
 /**
- * use [TakePhotoParam] set take photo parameter
- * use [ITakePhoto] listen take photo result
+ * [TakePhotoParam] is parameter for take photo
+ * [ITakePhoto] is listen take photo result
  * @author      WangXM
  * @version     create：2018/12/9
  */

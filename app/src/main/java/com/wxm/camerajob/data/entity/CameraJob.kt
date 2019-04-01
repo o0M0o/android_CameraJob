@@ -8,9 +8,11 @@ import android.util.JsonWriter
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
+import com.wxm.camerajob.data.define.EJobStatus
 import wxm.androidutil.db.IDBRow
 import wxm.androidutil.time.toFullTag
 import wxm.androidutil.time.toTimestamp
+import wxm.androidutil.type.MySize
 
 import java.io.IOException
 import java.sql.Timestamp
@@ -33,35 +35,51 @@ class CameraJob : Cloneable, IDBRow<Int> {
     @DatabaseField(columnName = "point", canBeNull = false, dataType = DataType.STRING)
     var point: String = ""
 
-    @DatabaseField(columnName = "status_id", foreign = true, foreignAutoCreate = true,
-            foreignColumnName = CameraJobStatus.FIELD_ID, canBeNull = false)
-    var status: CameraJobStatus = CameraJobStatus()
+    @DatabaseField(columnName = "status", canBeNull = false, dataType = DataType.STRING)
+    var status: String = EJobStatus.STOP.status
 
-    @DatabaseField(columnName = "cameraSetting_id", foreign = true, foreignAutoCreate = true,
-            foreignColumnName = CameraSetting.FIELD_ID, canBeNull = false)
-    var cameraSetting: CameraSetting = CameraSetting()
+    @DatabaseField(columnName = "photo_count", dataType = DataType.INTEGER)
+    var photoCount: Int = 0
 
-    @DatabaseField(columnName = "endtime", canBeNull = false, dataType = DataType.TIME_STAMP)
-    var endtime: Timestamp = Timestamp(System.currentTimeMillis())
+    @DatabaseField(columnName = "face", canBeNull = false, dataType = DataType.INTEGER)
+    var face: Int = CameraParam.LENS_FACING_BACK
 
-    @DatabaseField(columnName = "starttime", canBeNull = false, dataType = DataType.TIME_STAMP)
-    var starttime: Timestamp = Timestamp(System.currentTimeMillis())
+    @DatabaseField(columnName = "photo_size", canBeNull = false, dataType = DataType.STRING)
+    var photoSize: String = ""
+
+    @DatabaseField(columnName = "auto_flash", canBeNull = false, dataType = DataType.BOOLEAN)
+    var autoFlash: Boolean = false
+
+    @DatabaseField(columnName = "auto_focus", canBeNull = false, dataType = DataType.BOOLEAN)
+    var autoFocus: Boolean = false
+
+    @DatabaseField(columnName = "end_time", canBeNull = false, dataType = DataType.TIME_STAMP)
+    var endTime: Timestamp = Timestamp(System.currentTimeMillis())
+
+    @DatabaseField(columnName = "start_time", canBeNull = false, dataType = DataType.TIME_STAMP)
+    var startTime: Timestamp = Timestamp(System.currentTimeMillis())
+
+    @DatabaseField(columnName = "last_photo_time", canBeNull = false, dataType = DataType.TIME_STAMP)
+    var lastPhotoTime: Timestamp = Timestamp(System.currentTimeMillis())
 
     @DatabaseField(columnName = "ts", dataType = DataType.TIME_STAMP)
     var ts: Timestamp = Timestamp(System.currentTimeMillis())
-
-    constructor()
 
     public override fun clone(): Any {
         return (super.clone() as CameraJob).let{
             it._id = _id
             it.name = name
-            it.status = status
             it.type = type
             it.point = point
-            it.endtime = endtime
-            it.cameraSetting = cameraSetting
-            it.starttime = starttime
+            it.status = status
+            it.photoCount = photoCount
+            it.face = face
+            it.photoSize = photoSize
+            it.autoFlash = autoFlash
+            it.autoFocus = autoFocus
+            it.startTime = Timestamp(startTime.time)
+            it.endTime = Timestamp(endTime.time)
+            it.lastPhotoTime = Timestamp(lastPhotoTime.time)
             it.ts = ts
 
             it
@@ -69,25 +87,9 @@ class CameraJob : Cloneable, IDBRow<Int> {
     }
 
     override fun toString(): String {
-        return String.format("paraName : %s, type : %s, point : %s, startDate : %s, endDate : %s, status : %s",
-                name, type, point,
-                starttime, endtime, status.toString())
-    }
-
-    // for parcel
-    constructor(inSteam: Parcel) {
-        ts = Timestamp(0)
-        starttime = Timestamp(0)
-        endtime = Timestamp(0)
-
-        _id = inSteam.readInt()
-        name = inSteam.readString()
-        type = inSteam.readString()
-        point = inSteam.readString()
-        starttime.time = inSteam.readLong()
-        endtime.time = inSteam.readLong()
-        ts.time = inSteam.readLong()
-        status = CameraJobStatus(inSteam)
+        return "CameraJob[name = $name, type = $type, point = $point, status = $status, " +
+                "photoCount = $photoCount, face = $face, photoSize = $photoSize, " +
+                "startTime = $startTime, endTime = $endTime, lastPhotoTime = $lastPhotoTime, ts = $ts]"
     }
 
     // for json
@@ -95,11 +97,11 @@ class CameraJob : Cloneable, IDBRow<Int> {
         try {
             jw.beginObject()
             jw.name("_id").value(_id.toLong())
-            jw.name("Name").value(name)
-            jw.name("Type").value(type)
-            jw.name("Point").value(point)
-            jw.name("Starttime").value(starttime.toFullTag())
-            jw.name("Endtime").value(endtime.toFullTag())
+            jw.name("name").value(name)
+            jw.name("type").value(type)
+            jw.name("point").value(point)
+            jw.name("startTime").value(startTime.toFullTag())
+            jw.name("endTime").value(endTime.toFullTag())
             jw.endObject()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -117,6 +119,20 @@ class CameraJob : Cloneable, IDBRow<Int> {
         _id = integer
     }
 
+    /**
+     * get camera param for job
+     * @return camera param
+     */
+    fun getCameraParam(): CameraParam   {
+        val self = this
+        return CameraParam(null).apply {
+            mFace = self.face
+            mPhotoSize = MySize.parseSize(self.photoSize)
+            mAutoFlash = self.autoFlash
+            mAutoFocus = self.autoFocus
+        }
+    }
+
     companion object {
         const val FIELD_ID = "_id"
 
@@ -132,11 +148,11 @@ class CameraJob : Cloneable, IDBRow<Int> {
                     val name = jr.nextName()
                     when (name) {
                         "_id" -> ret._id = jr.nextInt()
-                        "Name" -> ret.name = jr.nextString()
-                        "Type" -> ret.type = jr.nextString()
-                        "Point" -> ret.point = jr.nextString()
-                        "Starttime" -> ret.starttime = jr.nextString().toTimestamp()
-                        "Endtime" -> ret.endtime = jr.nextString().toTimestamp()
+                        "name" -> ret.name = jr.nextString()
+                        "type" -> ret.type = jr.nextString()
+                        "point" -> ret.point = jr.nextString()
+                        "startTime" -> ret.startTime = jr.nextString().toTimestamp()
+                        "endTime" -> ret.endTime = jr.nextString().toTimestamp()
                         else -> jr.skipValue()
                     }
                 }

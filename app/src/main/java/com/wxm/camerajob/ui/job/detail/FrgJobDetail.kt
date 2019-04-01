@@ -103,7 +103,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
 
     /// BEGIN PRIVATE
     private fun onIBClick(v: View) {
-        val id = Integer.parseInt(mJobHMap[KEY_ID])
+        val id = Integer.parseInt(mJobHMap[KEY_ID] ?: "-1")
         when (v.id) {
             R.id.ib_job_stop -> {
                 if (ALIVE_JOB == mJobHMap[KEY_TYPE]) {
@@ -130,10 +130,10 @@ class FrgJobDetail : FrgSupportBaseAdv() {
 
             R.id.ib_job_run_or_pause -> {
                 App.getCameraJobHelper().getCameraJobById(id)?.let1 { cj ->
-                    cj.status.let1 {
-                        it.job_status = (it.job_status == EJobStatus.PAUSE.status)
+                    cj.let1 {
+                        it.status = (it.status == EJobStatus.PAUSE.status)
                                 .doJudge(EJobStatus.RUN.status, EJobStatus.PAUSE.status)
-                        App.getCameraJobHelper().modifyCameraJobStatus(it)
+                        App.getCameraJobHelper().modifyCameraJob(it)
                     }
                     reloadUI()
                 }
@@ -200,24 +200,24 @@ class FrgJobDetail : FrgSupportBaseAdv() {
     private fun aliveCameraJob(cj: CameraJob) {
         mJobHMap.clear()
         val at = CalendarUtility.YearMonthDayHourMinute.let {
-            context!!.getString(R.string.fs_start_end_date, it.format(cj.starttime), it.format(cj.endtime))
+            context!!.getString(R.string.fs_start_end_date, it.format(cj.startTime), it.format(cj.endTime))
         }
 
-        val jobName = (if (cj.status.job_status == EJobStatus.RUN.status) "运行" else "暂停").let {
+        val jobName = (if (cj.status == EJobStatus.RUN.status) "运行" else "暂停").let {
             "${cj.name}($it)"
         }
 
-        val detail = if (0 != cj.status.job_photo_count)
-            context!!.getString(R.string.fs_photo_last, CalendarUtility.Full.format(cj.status.ts))
+        val detail = if (0 != cj.photoCount)
+            context!!.getString(R.string.fs_photo_last, CalendarUtility.Full.format(cj.lastPhotoTime))
         else ""
 
         mJobHMap[KEY_JOB_NAME] = jobName
         mJobHMap[KEY_JOB_TYPE] = context!!.getString(R.string.fs_job_type, cj.type, cj.point)
         mJobHMap[KEY_JOB_START_END_DATE] = at
-        mJobHMap[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.status.job_photo_count)
+        mJobHMap[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.photoCount)
         mJobHMap[KEY_PHOTO_LAST_TIME] = detail
         mJobHMap[KEY_ID] = Integer.toString(cj._id)
-        mJobHMap[KEY_STATUS] = cj.status.job_status!!
+        mJobHMap[KEY_STATUS] = cj.status
         mJobHMap[KEY_TYPE] = ALIVE_JOB
 
         doShow()

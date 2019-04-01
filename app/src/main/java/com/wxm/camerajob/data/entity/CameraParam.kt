@@ -24,7 +24,7 @@ class CameraParam : Parcelable, Cloneable {
     var mSessionHandler: Handler? = null
 
     constructor(sessionHandler: Handler?) {
-        mWaitMSecs = WAIT_MSECS.toLong()
+        mWaitMSecs = WAIT_MS.toLong()
         mFace = LENS_FACING_BACK
         mSessionHandler = sessionHandler
 
@@ -91,7 +91,7 @@ class CameraParam : Parcelable, Cloneable {
         const val LENS_FACING_BACK = 1
         const val LENS_FACING_FRONT = 0
 
-        private const val WAIT_MSECS = 8000
+        private const val WAIT_MS = 8000
 
         override fun createFromParcel(parcel: Parcel): CameraParam {
             return CameraParam(parcel)
