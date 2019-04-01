@@ -10,15 +10,11 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.Menu
 import android.view.MenuItem
-import com.wxm.camerajob.BuildConfig
 import com.wxm.camerajob.R
 import com.wxm.camerajob.data.define.GlobalDef
 import com.wxm.camerajob.ui.help.ACHelp
 import com.wxm.camerajob.ui.dialog.DlgUsrMessage
-import com.wxm.camerajob.ui.test.camera.ACTestCamera
-import com.wxm.camerajob.ui.test.silentCamera.ACTestSilentCamera
 import com.wxm.camerajob.App
 import kotterknife.bindView
 import wxm.androidutil.improve.let1

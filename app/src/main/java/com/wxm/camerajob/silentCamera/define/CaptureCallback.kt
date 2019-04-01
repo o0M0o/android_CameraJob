@@ -8,7 +8,6 @@ import android.media.ImageReader
 import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.utility.log.FileLogger
 import wxm.androidutil.image.ImageUtil
-import wxm.androidutil.improve.let1
 import wxm.androidutil.log.TagLog
 
 /**

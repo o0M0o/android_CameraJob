@@ -6,7 +6,6 @@ import com.wxm.camerajob.data.define.EJobStatus
 import com.wxm.camerajob.data.define.EMsgType
 import com.wxm.camerajob.data.define.ETimeGap
 import com.wxm.camerajob.data.entity.CameraJob
-import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.silentCamera.ITakePhoto
 import com.wxm.camerajob.silentCamera.SilentCamera
 import com.wxm.camerajob.silentCamera.TakePhotoParam

@@ -9,11 +9,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
 import com.wxm.camerajob.R
+import com.wxm.camerajob.data.define.EAction
 import com.wxm.camerajob.data.entity.CameraParam
 import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.base.AutoFitTextureView
@@ -46,7 +46,7 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     private var mFlashSupported: Boolean = false
     private var mState = STATE_PREVIEW
 
-    private var mCPParam: CameraParam? = null
+    private lateinit var mCPParam: CameraParam
 
     private val mTextureView: AutoFitTextureView by bindView(R.id.camera_texture_view)
 
@@ -187,7 +187,8 @@ class FrgCameraPreview : FrgSupportBaseAdv() {
     override fun getLayoutID(): Int = R.layout.frg_camera
 
     override fun initUI(savedInstanceState: Bundle?) {
-        mCPParam = PreferencesUtil.loadCameraParam()
+        mCPParam = activity!!.intent.getParcelableExtra(EAction.LOAD_CAMERA_SETTING.actName)
+                ?: PreferencesUtil.loadCameraParam()
         mTextureView.surfaceTextureListener = mSurfaceTextureListener
     }
 

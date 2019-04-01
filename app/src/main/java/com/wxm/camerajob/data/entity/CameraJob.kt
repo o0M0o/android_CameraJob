@@ -1,7 +1,5 @@
 package com.wxm.camerajob.data.entity
 
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.JsonReader
 import android.util.JsonWriter
 

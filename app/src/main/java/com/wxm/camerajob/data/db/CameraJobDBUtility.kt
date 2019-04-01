@@ -2,7 +2,6 @@ package com.wxm.camerajob.data.db
 
 import com.j256.ormlite.dao.RuntimeExceptionDao
 import com.wxm.camerajob.data.entity.CameraJob
-import com.wxm.camerajob.data.define.EJobStatus
 
 import org.greenrobot.eventbus.EventBus
 import wxm.androidutil.db.DBUtilityBase

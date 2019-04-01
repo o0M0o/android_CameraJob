@@ -13,7 +13,6 @@ import wxm.androidutil.ui.activity.ACSwitcherActivity
 /**
  * camera preview
  */
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 class ACCameraPreview : ACSwitcherActivity<FrgCameraPreview>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

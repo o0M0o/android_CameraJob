@@ -3,7 +3,6 @@ package com.wxm.camerajob.ui.base
 import android.app.Activity
 import android.content.Intent
 import com.wxm.camerajob.data.define.GlobalDef
-import wxm.androidutil.improve.let1
 
 /**
  * @author      WangXM

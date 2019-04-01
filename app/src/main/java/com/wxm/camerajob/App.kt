@@ -199,14 +199,5 @@ class App : AppBase() {
         fun getCameraJobHelper(): CameraJobUtility  {
             return self.mCameraJobHelper
         }
-
-        /**
-         * check whether use new camera api
-         * @return  true if use new camera api else false
-         */
-        @SuppressLint("ObsoleteSdkInt")
-        fun useNewCamera(): Boolean {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        }
     }
 }

@@ -16,7 +16,6 @@ import com.wxm.camerajob.data.entity.CameraJob
 import com.wxm.camerajob.ui.base.JobGallery
 import com.wxm.camerajob.ui.job.slide.ACJobSlide
 import com.wxm.camerajob.App
-import com.wxm.camerajob.data.utility.CameraJobUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

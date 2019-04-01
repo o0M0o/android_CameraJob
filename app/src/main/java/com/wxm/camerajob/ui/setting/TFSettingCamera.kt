@@ -79,8 +79,7 @@ class TFSettingCamera : TFSettingBase() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        if (App.useNewCamera())
-            loadCameraInfo()
+        loadCameraInfo()
 
         EventHelper.setOnClickOperator(view!!,
                 intArrayOf(R.id.acrb_cs_backcamera, R.id.acrb_cs_frontcamera, R.id.rl_switch),
@@ -90,7 +89,7 @@ class TFSettingCamera : TFSettingBase() {
     }
 
     override fun loadUI(savedInstanceState: Bundle?) {
-        PreferencesUtil.loadCameraParam().let {
+        PreferencesUtil.loadCameraParam().let1 {
             if (CameraCharacteristics.LENS_FACING_BACK == it.mFace) {
                 mCPBack = it.clone()
                 fillBackCamera()
@@ -98,10 +97,25 @@ class TFSettingCamera : TFSettingBase() {
                 mCPFront = it.clone()
                 fillFrontCamera()
             }
-
-            Unit
         }
     }
+
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if(!hidden) {
+            reloadUI()
+        }
+    }
+
+    override fun updateSetting() {
+        if (isSettingDirty) {
+            PreferencesUtil.saveCameraParam(curCameraParam)
+            isSettingDirty = false
+        }
+    }
+
+    /// PRIVATE START
 
     private fun clickProcess(v: View)   {
         when(v.id)  {
@@ -129,13 +143,6 @@ class TFSettingCamera : TFSettingBase() {
                     }
                 }
             }
-        }
-    }
-
-    override fun updateSetting() {
-        if (isSettingDirty) {
-            PreferencesUtil.saveCameraParam(curCameraParam)
-            isSettingDirty = false
         }
     }
 
@@ -235,4 +242,5 @@ class TFSettingCamera : TFSettingBase() {
         mSWAutoFlash.isChecked = cp.mAutoFlash
         mSWAutoFocus.isChecked = cp.mAutoFocus
     }
+    /// PRIVATE END
 }

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import com.wxm.camerajob.R
 import com.wxm.camerajob.ui.job.create.ACJobCreate
-import com.wxm.camerajob.ui.base.PageBase
 import com.wxm.camerajob.ui.welcome.page.PgJobShow
 import com.wxm.camerajob.ui.welcome.page.PgSetting
 import wxm.androidutil.improve.let1

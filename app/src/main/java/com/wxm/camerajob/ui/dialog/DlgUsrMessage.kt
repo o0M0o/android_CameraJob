@@ -80,7 +80,7 @@ class DlgUsrMessage : DlgOKOrNOBase() {
             val usr = (AppBase.checkPermission(READ_PHONE_STATE) && AppBase.checkPermission(READ_SMS)).doJudge(
                     SIMCardUtil(context).nativePhoneNumber, "null")
             val replyAddress = mETReplyAddress.text.toString().forObj({t -> t},  {""})
-            HttpPostTask(usr, it, replyAddress).execute()
+            HttpPostTask(usr, it, replyAddress, this).execute()
             return true
         }
     }
@@ -102,90 +102,67 @@ class DlgUsrMessage : DlgOKOrNOBase() {
                 })
     }
 
-    /**
-     * for send http post
-     */
-    inner class HttpPostTask internal constructor(private val mSZUsr: String,
-                                                  private val mSZMsg: String,
-                                                  private val mSZReplyAddress: String)
-        : AsyncTask<Void, Void, Boolean>() {
-        override fun onPreExecute() {
-            super.onPreExecute()
-            mProgressStatus = 0
-
-            showProgress(true)
-            TagLog.i("start post")
-        }
-
-        override fun doInBackground(vararg params: Void): Boolean? {
-            TagLog.i("in post")
-            val client = OkHttpClient()
-            try {
-                // set param
-                val body = JSONObject().apply {
-                    put(mSZColUsr, mSZUsr)
-                    put(mSZColMsg, mSZMsg)
-                    put(mSZColReplyAddress, mSZReplyAddress)
-                    put(mSZColAppName, "$mSZColValAppName-${AppBase.getVerName()}")
-                }.let {
-                    RequestBody.create(JSON, it.toString())
-                }
-
-                /*
-                mProgressStatus = 50
-                Message().apply { what = MSG_PROGRESS_UPDATE }.let {
-                    mHDProgress.sendMessage(it)
-                }
-                */
-
-                Request.Builder().url(mSZUrlPost).post(body).build().let {
-                    client.newCall(it).execute()
-                }
-
-                /*
-                mProgressStatus = 100
-                Message().apply { what = MSG_PROGRESS_UPDATE }.let {
-                    mHDProgress.sendMessage(it)
-                }
-                */
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-            return true
-        }
-
-        override fun onPostExecute(bret: Boolean?) {
-            super.onPostExecute(bret)
-            showProgress(false)
-            TagLog.i("end post")
-        }
-    }
-
-
-    /*
-    /**
-     * safe message hanlder
-     */
-    private class LocalMsgHandler
-    internal constructor(ac: DlgUsrMessage) : WRMsgHandler<DlgUsrMessage>(ac) {
-        override fun processMsg(m: Message, home: DlgUsrMessage) {
-            when (m.what) {
-                MSG_PROGRESS_UPDATE -> {
-                    home.mPDDlg.progress = home.mProgressStatus
-                }
-
-                else -> TagLog.e("$m can not process")
-            }
-        }
-    }
-    */
-
     companion object {
         // for http post
         private val JSON = MediaType.parse("application/json; charset=utf-8")
         private const val shortAnimTime = 5000
+
+        /**
+         * send http post
+         */
+        class HttpPostTask internal constructor(private val mSZUsr: String,
+                                                private val mSZMsg: String,
+                                                private val mSZReplyAddress: String,
+                                                private val dlgUsrMessage: DlgUsrMessage)
+            : AsyncTask<Void, Void, Boolean>() {
+            override fun onPreExecute() {
+                super.onPreExecute()
+                dlgUsrMessage.mProgressStatus = 0
+
+                dlgUsrMessage.showProgress(true)
+                TagLog.i("start post")
+            }
+
+            override fun doInBackground(vararg params: Void): Boolean? {
+                TagLog.i("doing post")
+                val client = OkHttpClient()
+                try {
+                    // set param
+                    val body = JSONObject().apply {
+                        put(dlgUsrMessage.mSZColUsr, mSZUsr)
+                        put(dlgUsrMessage.mSZColMsg, mSZMsg)
+                        put(dlgUsrMessage.mSZColReplyAddress, mSZReplyAddress)
+                        put(dlgUsrMessage.mSZColAppName,
+                                "${dlgUsrMessage.mSZColValAppName}-${AppBase.getVerName()}")
+                    }.let {
+                        RequestBody.create(JSON, it.toString())
+                    }
+
+                    dlgUsrMessage.activity!!.runOnUiThread {
+                        dlgUsrMessage.mProgressStatus = 50
+                    }
+
+                    Request.Builder().url(dlgUsrMessage.mSZUrlPost).post(body).build().let {
+                        client.newCall(it).execute()
+                    }
+
+                    dlgUsrMessage.activity!!.runOnUiThread {
+                        dlgUsrMessage.mProgressStatus = 100
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+
+                return true
+            }
+
+            override fun onPostExecute(bret: Boolean?) {
+                super.onPostExecute(bret)
+                dlgUsrMessage.showProgress(false)
+                TagLog.i("end post")
+            }
+        }
     }
 }

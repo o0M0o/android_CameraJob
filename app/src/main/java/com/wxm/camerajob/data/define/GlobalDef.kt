@@ -5,10 +5,9 @@ package com.wxm.camerajob.data.define
  * Created by wxm on 2016/6/10.
  */
 object GlobalDef {
-    const val INTRET_CAMERAJOB_ACCEPT = 2000
-    const val INTRET_CAMERAJOB_GIVEUP = 2001
     const val INTRET_CS_ACCEPT = 2010
     const val INTRET_CS_GIVEUP = 2011
+    @Suppress("unused")
     const val INTRET_ACCEPT = 2020
     const val INTRET_GIVEUP = 2021
     const val INTRET_SURE = 2022
@@ -23,6 +22,7 @@ object GlobalDef {
 
     const val MS_SECOND = 1000
     const val MS_MINUTE = 60000
+    @Suppress("unused")
     const val MS_HOUR = 3600000
 
     const val STR_HELP_TYPE = "HELP_TYPE"

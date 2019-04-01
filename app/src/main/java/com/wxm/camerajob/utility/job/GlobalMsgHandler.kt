@@ -2,7 +2,6 @@ package com.wxm.camerajob.utility.job
 
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import com.wxm.camerajob.alarm.AlarmReceiver
 
 import com.wxm.camerajob.data.define.EMsgType

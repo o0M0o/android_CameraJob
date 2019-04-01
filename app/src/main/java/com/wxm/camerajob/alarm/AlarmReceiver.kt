@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Message
-import com.wxm.camerajob.data.define.EJobStatus
 import com.wxm.camerajob.data.define.EMsgType
 import com.wxm.camerajob.data.define.ETimeGap
 import com.wxm.camerajob.data.define.GlobalDef

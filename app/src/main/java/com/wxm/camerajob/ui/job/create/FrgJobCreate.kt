@@ -22,7 +22,6 @@ import com.wxm.camerajob.preference.PreferencesUtil
 import com.wxm.camerajob.ui.base.IAcceptAble
 import com.wxm.camerajob.ui.camera.preview.ACCameraPreview
 import com.wxm.camerajob.ui.camera.setting.ACCameraSetting
-import com.wxm.camerajob.data.utility.CameraJobUtility
 import kotterknife.bindView
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
