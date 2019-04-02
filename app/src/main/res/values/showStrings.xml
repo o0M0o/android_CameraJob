@@ -44,4 +44,6 @@
     <string name="fs_photo_count">已拍摄 %d张</string>
     <string name="fs_photo_last">最后拍摄时间 : %s</string>
     <string name="desc_job_picture">picture for job</string>
+    <string name="cn_capture_max_count">拍照重试次数</string>
+    <string name="cn_capture_skip_frame">保存照片前跳过帧数</string>
 </resources>

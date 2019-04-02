@@ -1,12 +1,10 @@
 package com.wxm.camerajob.ui.setting
 
 
-import android.annotation.TargetApi
 import android.content.Intent
 import android.graphics.ImageFormat
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -30,11 +28,13 @@ import java.util.*
  * Created by WangXM on 2016/10/10.
  */
 class TFSettingCamera : TFSettingBase() {
-    private val mRBFrontCamera: RadioButton by bindView(R.id.acrb_cs_frontcamera)
-    private val mRBBackCamera: RadioButton by bindView(R.id.acrb_cs_backcamera)
-    private val mSWAutoFocus: Switch by bindView(R.id.acsw_cs_autofocus)
-    private val mSWAutoFlash: Switch by bindView(R.id.acsw_cs_autoflash)
-    private val mSPPhotoSize: Spinner by bindView(R.id.acsp_cs_dpi)
+    private val mRBFrontCamera: RadioButton by bindView(R.id.rb_front_camera)
+    private val mRBBackCamera: RadioButton by bindView(R.id.rb_back_camera)
+    private val mSWAutoFocus: Switch by bindView(R.id.sw_auto_focus)
+    private val mSWAutoFlash: Switch by bindView(R.id.sw_auto_flash)
+    private val mSPPhotoSize: Spinner by bindView(R.id.sp_cs_dpi)
+    private val mSPCaptureTryCount: Spinner by bindView(R.id.sp_try_count)
+    private val mSPCaptureSkipFrame: Spinner by bindView(R.id.sp_skip_count)
 
     private val mLLBackCameraDpi: LinkedList<HashMap<String, String>> = LinkedList()
     private val mLLFrontCameraDpi: LinkedList<HashMap<String, String>> = LinkedList()
@@ -55,9 +55,17 @@ class TFSettingCamera : TFSettingBase() {
                 mFace = if (mRBBackCamera.isChecked) CameraParam.LENS_FACING_BACK
                 else CameraParam.LENS_FACING_FRONT
 
-                mSPPhotoSize.selectedItem.let {
+                mSPPhotoSize.selectedItem.let1 {
                     mPhotoSize = MySize.parseSize(it?.toString()
                             ?: mSPPhotoSize.getItemAtPosition(0).toString())
+                }
+
+                mSPCaptureTryCount.selectedItem?.let1 {
+                    mCaptureTryCount = it as Int
+                }
+
+                mSPCaptureSkipFrame.selectedItem?.let1 {
+                    mCaptureSkipFrame = it as Int
                 }
 
                 mAutoFlash = mSWAutoFlash.isChecked
@@ -70,8 +78,8 @@ class TFSettingCamera : TFSettingBase() {
             it.setOnCheckedChangeListener { _, _ -> isSettingDirty = true }
         }
 
-        //mSPPhotoSize.adapter = ArrayAdapter<String>(context, R.layout.li_photo_size, R.id.ItemPhotoSize)
-        mSPPhotoSize.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        // for spinner
+        val il = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 isSettingDirty = true
             }
@@ -79,10 +87,14 @@ class TFSettingCamera : TFSettingBase() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
+        mSPPhotoSize.onItemSelectedListener = il
+        mSPCaptureTryCount.onItemSelectedListener = il
+        mSPCaptureSkipFrame.onItemSelectedListener = il
+
         loadCameraInfo()
 
         EventHelper.setOnClickOperator(view!!,
-                intArrayOf(R.id.acrb_cs_backcamera, R.id.acrb_cs_frontcamera, R.id.rl_switch),
+                intArrayOf(R.id.rb_back_camera, R.id.rb_front_camera, R.id.rl_switch),
                 ::clickProcess)
 
         loadUI(savedInstanceState)
@@ -92,10 +104,10 @@ class TFSettingCamera : TFSettingBase() {
         PreferencesUtil.loadCameraParam().let1 {
             if (CameraCharacteristics.LENS_FACING_BACK == it.mFace) {
                 mCPBack = it.clone()
-                fillBackCamera()
+                renderBackCamera()
             } else {
                 mCPFront = it.clone()
-                fillFrontCamera()
+                renderFrontCamera()
             }
         }
     }
@@ -119,16 +131,16 @@ class TFSettingCamera : TFSettingBase() {
 
     private fun clickProcess(v: View)   {
         when(v.id)  {
-            R.id.acrb_cs_backcamera -> {
+            R.id.rb_back_camera -> {
                 mCPFront = curCameraParam.clone()
-                fillBackCamera()
+                renderBackCamera()
 
                 isSettingDirty = true
             }
 
-            R.id.acrb_cs_frontcamera -> {
+            R.id.rb_front_camera -> {
                 mCPBack = curCameraParam.clone()
-                fillFrontCamera()
+                renderFrontCamera()
 
                 isSettingDirty = true
             }
@@ -149,7 +161,6 @@ class TFSettingCamera : TFSettingBase() {
     /**
      * 加载新版系统相机信息
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private fun loadCameraInfo() {
         class CompareSizesByArea : Comparator<MySize> {
             override fun compare(lhs: MySize, rhs: MySize): Int {
@@ -201,24 +212,24 @@ class TFSettingCamera : TFSettingBase() {
     }
 
     /**
-     * 用后置相机填充view
+     * render view when use back camera
      */
-    private fun fillBackCamera() {
+    private fun renderBackCamera() {
         mRBBackCamera.isChecked = true
         mRBFrontCamera.isChecked = false
 
-        mSPPhotoSize.adapter = ArrayAdapter<String>(context, R.layout.li_photo_size, R.id.ItemPhotoSize).apply{
+        mSPPhotoSize.adapter = ArrayAdapter<String>(context!!, R.layout.li_photo_size, R.id.ItemPhotoSize).apply{
             addAll(mLLBackCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
         }
 
-        fillOthers(mCPBack)
+        renderOthers(mCPBack)
     }
 
 
     /**
-     * 用前置相机填充view
+     * render view when use front camera
      */
-    private fun fillFrontCamera() {
+    private fun renderFrontCamera() {
         mRBBackCamera.isChecked = false
         mRBFrontCamera.isChecked = true
 
@@ -226,19 +237,40 @@ class TFSettingCamera : TFSettingBase() {
             addAll(mLLFrontCameraDpi.map { it[GlobalDef.STR_CAMERA_DPI] })
         }
 
-        fillOthers(mCPFront)
+        renderOthers(mCPFront)
     }
 
     /**
-     * 填充公共部分
-     * @param cp 填充参数
+     * render public view
+     * [cp] is current camera
      */
-    private fun fillOthers(cp: CameraParam) {
+    private fun renderOthers(cp: CameraParam) {
         @Suppress("UNCHECKED_CAST")
         (mSPPhotoSize.adapter as ArrayAdapter<String>).getPosition(cp.mPhotoSize.toString()).let {
             mSPPhotoSize.setSelection(if (-1 == it) 0 else it)
         }
 
+        // try count
+        mSPCaptureTryCount.adapter = ArrayAdapter<Int>(context!!, R.layout.li_photo_size, R.id.ItemPhotoSize).apply{
+            addAll(5, 6, 7, 8, 9, 10)
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        (mSPCaptureTryCount.adapter as ArrayAdapter<Int>).getPosition(cp.mCaptureTryCount).let {
+            mSPCaptureTryCount.setSelection(if (-1 == it) 0 else it)
+        }
+
+        // skip frame
+        mSPCaptureSkipFrame.adapter = ArrayAdapter<Int>(context!!, R.layout.li_photo_size, R.id.ItemPhotoSize).apply{
+            addAll(1, 2, 3, 4, 5)
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        (mSPCaptureSkipFrame.adapter as ArrayAdapter<Int>).getPosition(cp.mCaptureSkipFrame).let {
+            mSPCaptureSkipFrame.setSelection(if (-1 == it) 0 else it)
+        }
+
+        // other
         mSWAutoFlash.isChecked = cp.mAutoFlash
         mSWAutoFocus.isChecked = cp.mAutoFocus
     }

@@ -80,7 +80,7 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
         ArrayList<HashMap<String, String>>().apply {
             App.getCameraJobHelper().getAllJob().forEach {
                 aliveCameraJob(this, it)
-                App.getCameraJobDir(it._id)?.let {path ->
+                App.getCameraJobDir(it.id)?.let { path ->
                     dirs.remove(path)
                 }
             }
@@ -140,7 +140,7 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
             put(KEY_JOB_START_END_DATE, "")
             put(KEY_PHOTO_COUNT, "可查看已拍摄图片")
             put(KEY_PHOTO_LAST_TIME, "可移除此任务")
-            put(KEY_ID, Integer.toString(cj._id))
+            put(KEY_ID, Integer.toString(cj.id))
             put(KEY_STATUS, EJobStatus.STOP.status)
             put(KEY_TYPE, DIED_JOB)
             put(KEY_JOB_DIR, dir)
@@ -165,7 +165,7 @@ class PgJobShow : FrgSupportBaseAdv(), PageBase {
                             CalendarUtility.Full.format(cj.lastPhotoTime)),
                             "")
 
-            it[KEY_ID] = Integer.toString(cj._id)
+            it[KEY_ID] = Integer.toString(cj.id)
             it[KEY_STATUS] = cj.status
             it[KEY_TYPE] = ALIVE_JOB
             jobs.add(it)

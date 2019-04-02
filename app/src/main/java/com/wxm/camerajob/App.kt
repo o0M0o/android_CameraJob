@@ -1,13 +1,11 @@
 package com.wxm.camerajob
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.hardware.camera2.CameraManager
-import android.os.Build
 import android.os.Handler
 import android.util.JsonReader
 import android.util.JsonWriter
@@ -131,7 +129,7 @@ class App : AppBase() {
          * when success return directory path, else null
          */
         fun createJobDir(cj: CameraJob): String? {
-            File(getPhotoRootDir() + "/" + cj._id).let {
+            File(getPhotoRootDir() + "/" + cj.id).let {
                 if (!it.exists()) {
                     it.mkdirs()
                 }

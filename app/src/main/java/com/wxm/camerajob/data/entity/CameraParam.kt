@@ -23,6 +23,9 @@ class CameraParam : Parcelable, Cloneable {
     var mAutoFocus: Boolean = false
     var mSessionHandler: Handler? = null
 
+    var mCaptureTryCount = 8
+    var mCaptureSkipFrame = 2
+
     constructor(sessionHandler: Handler?) {
         mWaitMSecs = WAIT_MS.toLong()
         mFace = LENS_FACING_BACK

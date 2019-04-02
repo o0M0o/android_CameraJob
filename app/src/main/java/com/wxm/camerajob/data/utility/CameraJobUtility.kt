@@ -62,14 +62,14 @@ class CameraJobUtility(private val mCameraJobUtility: CameraJobDBUtility) {
     fun getAllRunJob(): List<CameraJob> {
         return mCameraJobUtility.allData.filterNotNull()
                 .filter { it.status == EJobStatus.RUN.status  }
-                .sortedBy { it._id }
+                .sortedBy { it.id }
     }
 
     /**
      * get all cameraJob
      */
     fun getAllJob(): List<CameraJob>    {
-        return mCameraJobUtility.allData.filterNotNull().sortedBy { it._id }
+        return mCameraJobUtility.allData.filterNotNull().sortedBy { it.id }
     }
 
     /**

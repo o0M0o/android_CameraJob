@@ -32,17 +32,16 @@ android {
         applicationId "com.wxm.camerajob"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.11"
+        versionCode 12
+        versionName "1.12"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
             buildConfigField "Boolean", "ThrowDebugException", "false"
             buildConfigField "Boolean", "TestCamera", "false"
-            buildConfigField "String", "UsrMsgUrl", "http://192.168.0.196:8080/api/usrMsg"
+            buildConfigField "String", "UsrMsgUrl", "\"http://192.168.0.196:7070/api/usrMsg\""
         }
         debug {
             buildConfigField "Boolean", "ThrowDebugException", "true"
@@ -104,10 +103,8 @@ static def releaseTime() {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
-
     implementation files('libs/extend_libs/javamail/activation.jar')
     implementation files('libs/extend_libs/javamail/additionnal.jar')
     implementation files('libs/extend_libs/javamail/mail.jar')
@@ -116,25 +113,20 @@ dependencies {
     implementation 'com.android.support:support-v13:28.0.0'
     implementation 'org.apache.logging.log4j:log4j:2.11.1'
     implementation 'com.facebook.fresco:fresco:0.12.0'
-
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
     implementation 'org.greenrobot:eventbus:3.1.1'
-
     implementation 'io.reactivex:rxandroid:1.1.0'
     implementation 'com.trello:rxlifecycle:0.5.0'
     implementation 'com.trello:rxlifecycle-components:0.5.0'
     implementation 'com.squareup.retrofit2:retrofit:2.0.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.0.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.1'
-
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation 'org.xutils:xutils:3.3.36'
     implementation 'cn.finalteam:toolsfinal:1.1.4'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'org.jetbrains:annotations:15.0'
-
     implementation project(':galleryfinal')
     implementation project(':androidutil')
     implementation project(':uilib')

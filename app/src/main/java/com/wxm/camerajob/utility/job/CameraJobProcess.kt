@@ -53,13 +53,13 @@ class CameraJobProcess {
         if (lsJob.isNotEmpty()) {
             lsJob.pop().let {
                 Log.i(LOG_TAG, "wakeup job : $it")
-                val path = App.getCameraJobDir(it._id)
+                val path = App.getCameraJobDir(it.id)
                 if (null == path) {
                     wakeupDuty(lsJob)
                 } else {
                     val param = TakePhotoParam(path, String.format(Locale.CHINA, "%s.jpg",
                             CALENDAR_STR.format(System.currentTimeMillis())),
-                            Integer.toString(it._id))
+                            Integer.toString(it.id))
 
                     val cbTakePhoto = object : ITakePhoto {
                         override fun onTakePhotoFailed(tp: TakePhotoParam) {

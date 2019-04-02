@@ -139,6 +139,9 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
                 autoFlash = it.mAutoFlash
                 autoFocus = it.mAutoFocus
                 face = it.mFace
+
+                captureTryCount = it.mCaptureTryCount
+                captureSkipFrame = it.mCaptureSkipFrame
             }
         }.let {
             return App.getCameraJobHelper().createCameraJob(it)
@@ -305,7 +308,7 @@ open class FrgJobCreate : FrgSupportBaseAdv(), IAcceptAble {
 
         PreferencesUtil.loadCameraParam().let {
             mTVCameraFace.text = getString((CameraParam.LENS_FACING_BACK == it.mFace)
-                    .doJudge(R.string.cn_backcamera, R.string.cn_frontcamera))
+                    .doJudge(R.string.cn_back_camera, R.string.cn_front_camera))
 
             mTVCameraDpi.text = it.mPhotoSize.toString()
             mTVCameraFlash.text = getString((it.mAutoFlash)

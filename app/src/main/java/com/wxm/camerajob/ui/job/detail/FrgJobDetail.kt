@@ -189,7 +189,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
         mJobHMap[KEY_JOB_START_END_DATE] = ""
         mJobHMap[KEY_PHOTO_COUNT] = "可查看已拍摄图片"
         mJobHMap[KEY_PHOTO_LAST_TIME] = "可移除此任务"
-        mJobHMap[KEY_ID] = Integer.toString(cj._id)
+        mJobHMap[KEY_ID] = Integer.toString(cj.id)
         mJobHMap[KEY_STATUS] = EJobStatus.STOP.status
         mJobHMap[KEY_TYPE] = DIED_JOB
 
@@ -215,7 +215,7 @@ class FrgJobDetail : FrgSupportBaseAdv() {
         mJobHMap[KEY_JOB_START_END_DATE] = at
         mJobHMap[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.photoCount)
         mJobHMap[KEY_PHOTO_LAST_TIME] = detail
-        mJobHMap[KEY_ID] = Integer.toString(cj._id)
+        mJobHMap[KEY_ID] = Integer.toString(cj.id)
         mJobHMap[KEY_STATUS] = cj.status
         mJobHMap[KEY_TYPE] = ALIVE_JOB
 

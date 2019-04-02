@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingBottom="2dp"
-        android:paddingEnd="12dp"
         android:paddingStart="12dp"
-        android:paddingTop="2dp">
+        android:paddingTop="2dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="2dp">
 
         <include layout="@layout/ac_job_info" />
     </RelativeLayout>
@@ -22,12 +22,12 @@
         android:id="@+id/rl_camera"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:background="@color/white"
-        android:paddingBottom="4dp"
-        android:paddingEnd="16dp"
         android:paddingStart="12dp"
-        android:paddingTop="4dp">
+        android:paddingTop="4dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp">
 
         <include layout="@layout/ac_camera_info" />
     </RelativeLayout>
@@ -37,12 +37,12 @@
         android:id="@+id/rl_start_end_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:background="@color/white"
-        android:paddingBottom="2dp"
-        android:paddingEnd="12dp"
         android:paddingStart="12dp"
-        android:paddingTop="2dp">
+        android:paddingTop="2dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="2dp">
 
         <include layout="@layout/ac_calender_date" />
     </RelativeLayout>
@@ -53,10 +53,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@color/white"
-        android:paddingBottom="2dp"
         android:paddingLeft="12dp"
-        android:paddingRight="12dp"
         android:paddingTop="2dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="2dp"
         android:visibility="invisible">
 
         <RelativeLayout
@@ -64,8 +64,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/linen"
-            android:paddingBottom="4dp"
-            android:paddingTop="4dp">
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
 
             <Switch
                 android:id="@+id/sw_send_pic"

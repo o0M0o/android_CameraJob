@@ -8,7 +8,7 @@
         android:id="@+id/ItemPhotoSize"
         android:textSize="16sp"
         android:textColor="@color/black"
-        android:text="photosize">
+        android:text="photo_size">
     </TextView>
 
 </RelativeLayout>

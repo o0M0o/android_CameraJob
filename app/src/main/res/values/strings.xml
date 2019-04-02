@@ -26,8 +26,8 @@
     <string name="navigation_drawer_open">打开导航绘图</string>
     <string name="navigation_drawer_close">关闭导航绘图</string>
 
-    <string name="cn_frontcamera">前摄像头</string>
-    <string name="cn_backcamera">后摄像头</string>
+    <string name="cn_front_camera">前摄像头</string>
+    <string name="cn_back_camera">后摄像头</string>
     <string name="cn_cameradpi">图像大小</string>
     <string name="cn_autofocus">自动对焦</string>
     <string name="cn_focus_no">不自动对焦</string>

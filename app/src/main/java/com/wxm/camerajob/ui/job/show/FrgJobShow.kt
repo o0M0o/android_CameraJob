@@ -55,7 +55,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
         ArrayList<HashMap<String, String>>().apply {
             App.getCameraJobHelper().getAllJob().forEach {
                 aliveCameraJob(this, it)
-                App.getCameraJobDir(it._id)?.let {path ->
+                App.getCameraJobDir(it.id)?.let { path ->
                     dirs.remove(path)
                 }
             }
@@ -83,7 +83,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
             it[KEY_JOB_START_END_DATE] = ""
             it[KEY_PHOTO_COUNT] = "可查看已拍摄图片"
             it[KEY_PHOTO_LAST_TIME] = "可移除此任务"
-            it[KEY_ID] = Integer.toString(cj._id)
+            it[KEY_ID] = Integer.toString(cj.id)
             it[KEY_STATUS] = EJobStatus.STOP.status
             it[KEY_TYPE] = DIED_JOB
             it[KEY_JOB_DIR] = dir
@@ -111,7 +111,7 @@ class FrgJobShow : FrgSupportBaseAdv() {
             it[KEY_JOB_START_END_DATE] = at
             it[KEY_PHOTO_COUNT] = context!!.getString(R.string.fs_photo_count, cj.photoCount)
             it[KEY_PHOTO_LAST_TIME] = detail
-            it[KEY_ID] = Integer.toString(cj._id)
+            it[KEY_ID] = Integer.toString(cj.id)
             it[KEY_STATUS] = cj.status
             it[KEY_TYPE] = ALIVE_JOB
             jobs.add(it)

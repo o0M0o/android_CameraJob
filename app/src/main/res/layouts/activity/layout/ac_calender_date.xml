@@ -1,51 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RelativeLayout android:id="@+id/rl_start" android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/rl_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="2dp">
 
-        <ImageView android:id="@+id/iv_clock_start" android:layout_width="42dp"
-            android:layout_height="42dp" android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" android:src="@drawable/ic_calendar_clock" />
+        <ImageView
+            android:id="@+id/iv_clock_start"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:src="@drawable/ic_calendar_clock"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView android:id="@+id/tv_date_start_tag" android:textSize="12sp"
-            android:layout_toEndOf="@id/iv_clock_start" android:layout_alignTop="@id/iv_clock_start"
-            android:layout_marginStart="16dp" android:text="@string/hint_job_time_start"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-        <TextView android:id="@+id/tv_date_start" android:textSize="16sp"
-            android:layout_toEndOf="@id/iv_clock_start"
-            android:layout_alignBottom="@id/iv_clock_start" android:layout_marginStart="16dp"
-            android:text="2016/11/07 12:00" android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tv_date_start_tag"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:ignore="HardcodedText" />
-    </RelativeLayout>
+            android:layout_alignTop="@id/iv_clock_start"
+            android:layout_marginStart="16dp"
+            android:text="@string/hint_job_time_start"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/iv_clock_start"
+            app:layout_constraintTop_toTopOf="@id/iv_clock_start" />
 
-    <ImageView android:id="@+id/iv_calender_date_line" android:layout_below="@id/rl_start"
-        android:layout_width="match_parent" android:layout_height="2dp"
-        android:layout_marginLeft="8dp" android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp" android:layout_marginBottom="4dp"
+        <TextView
+            android:id="@+id/tv_date_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/iv_clock_start"
+            android:layout_toEndOf="@id/iv_clock_start"
+            android:text="2016/11/07 12:00"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_clock_start"
+            app:layout_constraintStart_toStartOf="@id/tv_date_start_tag"
+            tools:ignore="HardcodedText" />
+    </android.support.constraint.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/iv_calender_date_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/rl_start"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="4dp"
         android:background="@color/grey_1" />
 
-    <RelativeLayout android:id="@+id/rl_end" android:layout_below="@id/iv_calender_date_line"
-        android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/rl_end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_calender_date_line"
+        android:paddingStart="4dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="2dp">
 
-        <ImageView android:id="@+id/iv_clock_end" android:layout_width="42dp"
-            android:layout_height="42dp" android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" android:src="@drawable/ic_calendar_clock" />
+        <ImageView
+            android:id="@+id/iv_clock_end"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_calendar_clock"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView android:id="@+id/tv_date_end_tag" android:textSize="12sp"
-            android:layout_toEndOf="@id/iv_clock_end" android:layout_alignTop="@id/iv_clock_end"
-            android:layout_marginStart="16dp" android:text="@string/hint_job_time_finish"
-            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tv_date_end_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/iv_clock_end"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/iv_clock_end"
+            android:text="@string/hint_job_time_finish"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/iv_clock_end"
+            app:layout_constraintTop_toTopOf="@id/iv_clock_end" />
 
-        <TextView android:id="@+id/tv_date_end" android:textSize="16sp"
-            android:layout_toEndOf="@id/iv_clock_end" android:layout_alignBottom="@id/iv_clock_end"
-            android:layout_marginStart="16dp" android:text="2016/11/07 12:00"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/tv_date_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/iv_clock_end"
+            android:layout_toEndOf="@id/iv_clock_end"
+            android:text="2016/11/07 12:00"
+            app:layout_constraintBottom_toBottomOf="@id/iv_clock_end"
+            app:layout_constraintStart_toStartOf="@id/tv_date_end_tag"
             tools:ignore="HardcodedText" />
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 </RelativeLayout>

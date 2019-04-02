@@ -22,7 +22,7 @@ import java.sql.Timestamp
 @DatabaseTable(tableName = "tbCameraJob")
 class CameraJob : Cloneable, IDBRow<Int> {
     @DatabaseField(generatedId = true, columnName = FIELD_ID, dataType = DataType.INTEGER)
-    var _id: Int = 0
+    var id: Int = 0
 
     @DatabaseField(columnName = "paraName", canBeNull = false, dataType = DataType.STRING)
     var name: String = ""
@@ -51,6 +51,12 @@ class CameraJob : Cloneable, IDBRow<Int> {
     @DatabaseField(columnName = "auto_focus", canBeNull = false, dataType = DataType.BOOLEAN)
     var autoFocus: Boolean = false
 
+    @DatabaseField(columnName = "capture_try_count", canBeNull = false, dataType = DataType.INTEGER)
+    var captureTryCount: Int = 8
+
+    @DatabaseField(columnName = "capture_skip_frame", canBeNull = false, dataType = DataType.INTEGER)
+    var captureSkipFrame: Int = 2
+
     @DatabaseField(columnName = "end_time", canBeNull = false, dataType = DataType.TIME_STAMP)
     var endTime: Timestamp = Timestamp(System.currentTimeMillis())
 
@@ -65,7 +71,7 @@ class CameraJob : Cloneable, IDBRow<Int> {
 
     public override fun clone(): Any {
         return (super.clone() as CameraJob).let{
-            it._id = _id
+            it.id = id
             it.name = name
             it.type = type
             it.point = point
@@ -75,6 +81,8 @@ class CameraJob : Cloneable, IDBRow<Int> {
             it.photoSize = photoSize
             it.autoFlash = autoFlash
             it.autoFocus = autoFocus
+            it.captureTryCount = captureTryCount
+            it.captureSkipFrame = captureSkipFrame
             it.startTime = Timestamp(startTime.time)
             it.endTime = Timestamp(endTime.time)
             it.lastPhotoTime = Timestamp(lastPhotoTime.time)
@@ -87,6 +95,7 @@ class CameraJob : Cloneable, IDBRow<Int> {
     override fun toString(): String {
         return "CameraJob[name = $name, type = $type, point = $point, status = $status, " +
                 "photoCount = $photoCount, face = $face, photoSize = $photoSize, " +
+                "captureTryCount = $captureTryCount, captureSkipFrame = $captureSkipFrame, " +
                 "startTime = $startTime, endTime = $endTime, lastPhotoTime = $lastPhotoTime, ts = $ts]"
     }
 
@@ -94,7 +103,7 @@ class CameraJob : Cloneable, IDBRow<Int> {
     fun writeToJson(jw: JsonWriter): Boolean {
         try {
             jw.beginObject()
-            jw.name("_id").value(_id.toLong())
+            jw.name("id").value(id.toLong())
             jw.name("name").value(name)
             jw.name("type").value(type)
             jw.name("point").value(point)
@@ -110,11 +119,11 @@ class CameraJob : Cloneable, IDBRow<Int> {
     }
 
     override fun getID(): Int {
-        return _id
+        return id
     }
 
     override fun setID(integer: Int) {
-        _id = integer
+        id = integer
     }
 
     /**
@@ -128,11 +137,14 @@ class CameraJob : Cloneable, IDBRow<Int> {
             mPhotoSize = MySize.parseSize(self.photoSize)
             mAutoFlash = self.autoFlash
             mAutoFocus = self.autoFocus
+
+            mCaptureTryCount = self.captureTryCount
+            mCaptureSkipFrame = self.captureSkipFrame
         }
     }
 
     companion object {
-        const val FIELD_ID = "_id"
+        const val FIELD_ID = "id"
 
         fun readFromJson(jr: JsonReader): CameraJob? {
             var ret: CameraJob? = null
@@ -145,7 +157,7 @@ class CameraJob : Cloneable, IDBRow<Int> {
 
                     val name = jr.nextName()
                     when (name) {
-                        "_id" -> ret._id = jr.nextInt()
+                        "id" -> ret.id = jr.nextInt()
                         "name" -> ret.name = jr.nextString()
                         "type" -> ret.type = jr.nextString()
                         "point" -> ret.point = jr.nextString()

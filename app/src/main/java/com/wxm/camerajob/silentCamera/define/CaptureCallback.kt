@@ -18,13 +18,6 @@ internal class CaptureCallback constructor(private val mHome: SilentCamera,
                                            private val mReader: ImageReader,
                                            private val mDoCapture: CaptureStateCallback)
     : CameraCaptureSession.CaptureCallback() {
-    companion object {
-        // max capture limit
-        private const val MAX_CAPTURE_TIMES = 5
-        // max capture success limit
-        private const val MAX_CAPTURE_SUCCESS_TIMES = 2
-    }
-
     private var mSuccessCount = 0
     private var mWaitCount = 0
     private val mAEArray = intArrayOf(
@@ -37,22 +30,25 @@ internal class CaptureCallback constructor(private val mHome: SilentCamera,
             CameraMetadata.CONTROL_AF_STATE_PASSIVE_UNFOCUSED, CameraMetadata.CONTROL_AF_STATE_FOCUSED_LOCKED,
             CameraMetadata.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED, CameraMetadata.CONTROL_AF_STATE_PASSIVE_SCAN)
 
+    private val mCaptureTryCount = mHome.mCParam.mCaptureTryCount
+    private val mCaptureSkipFrame = mHome.mCParam.mCaptureSkipFrame
+
     /**
-     * 对焦和曝光成功的次数大于[MAX_CAPTURE_SUCCESS_TIMES], 保存照片
-     * 如果拍照次数大于[MAX_CAPTURE_TIMES], 保存照片
+     * 对焦和曝光成功的次数大于[mCaptureTryCount], 保存照片
+     * 如果拍照次数大于[mCaptureSkipFrame], 保存照片
      */
     override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest,
                                     result: TotalCaptureResult) {
         super.onCaptureCompleted(session, request, result)
 
         mWaitCount++
-        if (MAX_CAPTURE_TIMES < mWaitCount) {
+        if (mCaptureTryCount <= mWaitCount) {
             TagLog.e("wait too many times")
             saveImage()
         } else {
             if (checkState(result)) {
                 mSuccessCount++
-                if(MAX_CAPTURE_SUCCESS_TIMES > mSuccessCount)  {
+                if(mCaptureSkipFrame > mSuccessCount)  {
                     mDoCapture.doCapture(this)
                 } else  {
                     saveImage()
